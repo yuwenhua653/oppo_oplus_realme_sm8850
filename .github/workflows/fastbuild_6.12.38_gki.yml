@@ -62,7 +62,8 @@ env:
   BETTER_NET: ${{ inputs.better_net }}
   BASEBAND_GUARD: ${{ inputs.baseband_guard }}
   KERNEL_SUFFIX: ${{ inputs.kernel_suffix }}
-  CCACHE_DEBUG: ${{ inputs.ccache_debug }}
+  # 工作流开关不能使用 ccache 保留的 CCACHE_DEBUG；它拒绝字符串 false。
+  WORKFLOW_CCACHE_DEBUG: ${{ inputs.ccache_debug }}
 
 jobs:
   build:
@@ -342,7 +343,7 @@ jobs:
         run: |
           set -euo pipefail
           source kernel_workspace/build-env.sh
-          if [[ "$CCACHE_DEBUG" == true ]]; then
+          if [[ "$WORKFLOW_CCACHE_DEBUG" == true ]]; then
             export CCACHE_LOGFILE="$GITHUB_WORKSPACE/dist/ccache.log"
           fi
           cd kernel_workspace/common
