@@ -266,6 +266,34 @@ jobs:
           bash ../bbg-setup.sh
           echo "BBG_COMMIT=$(git -C Baseband-guard rev-parse HEAD)" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
 
+      - name: 修正 KernelSU 在 ACK r38 的独立输出目录包含路径
+        if: inputs.ksu_type != 'none'
+        run: |
+          set -euo pipefail
+          ksu_root=$(realpath kernel_workspace/common/drivers/kernelsu)
+          test -f "$ksu_root/Kbuild"
+          test -f "$ksu_root/Kconfig"
+          # uapi 是仓库根目录源码，kernel/include/uapi 是指向它的符号链接。
+          # 若源码或链接确实缺失，先报错，不能靠忽略错误继续编译。
+          if [[ -f "$ksu_root/policy/allowlist.h" ]] && \
+             grep -Fq '"uapi/app_profile.h"' "$ksu_root/policy/allowlist.h"; then
+            if [[ ! -s "$ksu_root/include/uapi/app_profile.h" ]]; then
+              echo "::error::KernelSU 头文件或符号链接缺失：$ksu_root/include/uapi/app_profile.h"
+              exit 1
+            fi
+          fi
+          # 本 tag 的 scripts/Makefile.build 已把 VPATH 加入 $(src)。
+          # O=out 时应使用 ../drivers/kernelsu/include，不能再次拼接 $(srctree)。
+          if ! grep -Fxq 'ccflags-y += -I$(src) -I$(src)/include' "$ksu_root/Kbuild"; then
+            cat >> "$ksu_root/Kbuild" <<'KBUILD'
+
+          # ACK r38 out-of-tree include paths
+          ccflags-y += -I$(src) -I$(src)/include
+          KBUILD
+          fi
+          git -C "$ksu_root" diff --binary -- Kbuild > "$GITHUB_WORKSPACE/dist/kernelsu-build-fix.patch"
+          sha256sum "$GITHUB_WORKSPACE/dist/kernelsu-build-fix.patch" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+
       - name: 生成并核验最终配置
         run: |
           set -euo pipefail
