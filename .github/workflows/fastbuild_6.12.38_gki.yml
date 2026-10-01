@@ -1,0 +1,410 @@
+# Adapted from cctv18/oppo_oplus_realme_sm8850 fastbuild_6.12.23_gki.yml.
+# ACK source is pinned; optional third-party setup scripts follow their named branches.
+# Produces Image + AnyKernel3 ZIP, not a standalone boot.img or vendor modules.
+name: ACK 6.12.38 GKI 构建（android16 r38）
+
+on:
+  workflow_dispatch:
+    inputs:
+      ksu_type:
+        description: 'KernelSU 分支；none 为不加入 KSU'
+        type: choice
+        default: resukisu
+        options: [resukisu, ksunext, ksu, none]
+      susfs_enable:
+        description: '实验性 SUSFS；补丁不兼容时停止，不忽略错误'
+        type: boolean
+        default: false
+      kpm_enable:
+        description: '实验性 KPatch-Next 镜像修补'
+        type: boolean
+        default: false
+      lz4_enable:
+        description: '实验性 LZ4/ZSTD 补丁；只构建 Image，不替换 zram 模块'
+        type: boolean
+        default: false
+      bbr_enable:
+        description: 'BBR：false 不更改；true 编入；default 设为默认'
+        type: choice
+        default: 'false'
+        options: ['false', 'true', 'default']
+      better_net:
+        description: '加入 IPSet/Netfilter 配置，可能影响 VINTF 检查'
+        type: boolean
+        default: false
+      baseband_guard:
+        description: '实验性 Baseband-guard 外部补丁'
+        type: boolean
+        default: false
+      kernel_suffix:
+        description: '附加标识，可留空；只允许字母、数字、点、下划线、连字符，最多 16 字符'
+        type: string
+        default: ''
+      ccache_debug:
+        description: '上传 ccache 调试日志'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  TZ: Asia/Shanghai
+  ACK_TAG: android16-6.12-2025-09_r38
+  ACK_COMMIT: 98d5b9e071f1828ec75981d3758cc20c452616a3
+  EXPECTED_VERSION: 6.12.38
+  TOOLCHAIN_RELEASE: https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang19-r536225
+  KSU_TYPE: ${{ inputs.ksu_type }}
+  SUSFS_ENABLE: ${{ inputs.susfs_enable }}
+  KPM_ENABLE: ${{ inputs.kpm_enable }}
+  LZ4_ENABLE: ${{ inputs.lz4_enable }}
+  BBR_ENABLE: ${{ inputs.bbr_enable }}
+  BETTER_NET: ${{ inputs.better_net }}
+  BASEBAND_GUARD: ${{ inputs.baseband_guard }}
+  KERNEL_SUFFIX: ${{ inputs.kernel_suffix }}
+  CCACHE_DEBUG: ${{ inputs.ccache_debug }}
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: 检查输入及安装依赖
+        run: |
+          set -euo pipefail
+          if [[ ! "$KERNEL_SUFFIX" =~ ^[a-zA-Z0-9._-]{0,16}$ ]]; then
+            echo '::error::kernel_suffix 只能包含字母、数字、点、下划线、连字符，最多 16 字符'
+            exit 1
+          fi
+          if [[ "$SUSFS_ENABLE" == true && "$KSU_TYPE" == none ]]; then
+            echo '::error::SUSFS 需要选择 KernelSU 分支'
+            exit 1
+          fi
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            bc bison flex gawk build-essential binutils git curl ca-certificates \
+            python3 python-is-python3 libssl-dev libelf-dev libdw-dev \
+            zlib1g-dev libzstd-dev dwarves zstd zip unzip xz-utils ccache rsync
+          mkdir -p "$GITHUB_WORKSPACE/kernel_workspace" "$GITHUB_WORKSPACE/dist"
+          echo "CCACHE_DIR=$GITHUB_WORKSPACE/.ccache-r38" >> "$GITHUB_ENV"
+          echo 'CCACHE_MAXSIZE=3G' >> "$GITHUB_ENV"
+          echo 'CCACHE_COMPILERCHECK=content' >> "$GITHUB_ENV"
+          echo "CCACHE_BASEDIR=$GITHUB_WORKSPACE/kernel_workspace" >> "$GITHUB_ENV"
+
+      - name: 获取并核验官方 ACK tag
+        run: |
+          set -euo pipefail
+          cd kernel_workspace
+          git init common
+          git -C common remote add origin https://android.googlesource.com/kernel/common
+          git -C common fetch --depth=1 origin "refs/tags/$ACK_TAG:refs/tags/$ACK_TAG"
+          git -C common checkout --detach "refs/tags/$ACK_TAG"
+          actual_commit=$(git -C common rev-parse HEAD)
+          [[ "$actual_commit" == "$ACK_COMMIT" ]] || { echo '::error::ACK tag 的提交与预期不同'; exit 1; }
+          actual_version=$(make -s -C common kernelversion)
+          [[ "$actual_version" == "$EXPECTED_VERSION" ]] || { echo "::error::源码版本错误：$actual_version"; exit 1; }
+          grep -qx 'BRANCH=android16-6.12' common/build.config.constants
+          grep -qx 'KMI_GENERATION=5' common/build.config.constants
+          grep -qx 'CLANG_VERSION=r536225' common/build.config.constants
+          grep -qx 'RUSTC_VERSION=1.82.0' common/build.config.constants
+          {
+            echo "ACK_TAG=$ACK_TAG"
+            echo "ACK_COMMIT=$actual_commit"
+            echo "KERNEL_VERSION=$actual_version"
+            echo 'KMI_GENERATION=5'
+            echo "WORKFLOW_REPOSITORY=$GITHUB_REPOSITORY"
+            echo "WORKFLOW_COMMIT=$GITHUB_SHA"
+            echo "RUN_URL=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "KSU_TYPE=$KSU_TYPE SUSFS=$SUSFS_ENABLE KPM=$KPM_ENABLE"
+            echo "LZ4_ZSTD=$LZ4_ENABLE BBR=$BBR_ENABLE IPSET=$BETTER_NET BBG=$BASEBAND_GUARD"
+          } > "$GITHUB_WORKSPACE/dist/build-info.txt"
+
+      - name: 获取原脚本补丁（固定提交）
+        if: inputs.lz4_enable
+        uses: actions/checkout@v4
+        with:
+          repository: cctv18/oppo_oplus_realme_sm8850
+          ref: 2844bf492f557fb39113fc93a2dd1602e05790d7
+          path: upstream-patches
+          persist-credentials: false
+          sparse-checkout: zram_patch
+
+      - name: 获取 Clang 19、Rust 1.82 和构建工具
+        run: |
+          set -euo pipefail
+          cd kernel_workspace
+          # 沿用原作者工具链镜像。校验版本，并记录每次下载的 SHA256。
+          curl -fL --retry 5 "$TOOLCHAIN_RELEASE/clang-r536225.zip" -o clang.zip
+          curl -fL --retry 5 "$TOOLCHAIN_RELEASE/rust.zip" -o rust.zip
+          curl -fL --retry 5 "$TOOLCHAIN_RELEASE/build-tools.zip" -o build-tools.zip
+          sha256sum clang.zip rust.zip build-tools.zip >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          unzip -q clang.zip -d clang19
+          unzip -q rust.zip -d rust
+          unzip -q build-tools.zip
+          rm clang.zip rust.zip build-tools.zip
+          tool_root="$GITHUB_WORKSPACE/kernel_workspace"
+          export PATH="$tool_root/clang19/bin:$tool_root/build-tools/bin:$tool_root/rust/bin:$PATH"
+          export LIBCLANG_PATH="$tool_root/clang19/lib"
+          clang --version | tee "$GITHUB_WORKSPACE/dist/clang-version.txt"
+          grep -q 'r536225' "$GITHUB_WORKSPACE/dist/clang-version.txt"
+          rustc --version | tee "$GITHUB_WORKSPACE/dist/rust-version.txt"
+          grep -Eq '^rustc 1\.82\.0([ -]|$)' "$GITHUB_WORKSPACE/dist/rust-version.txt"
+          bindgen --version
+          pahole --version
+          test -f "$(rustc --print sysroot)/lib/rustlib/src/rust/library/core/src/lib.rs"
+          printf '%s\n' "$tool_root/clang19/bin" "$tool_root/build-tools/bin" "$tool_root/rust/bin" >> "$GITHUB_PATH"
+          echo "LIBCLANG_PATH=$LIBCLANG_PATH" >> "$GITHUB_ENV"
+          {
+            clang --version
+            rustc --version
+            bindgen --version
+            pahole --version
+          } >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+
+      - name: 恢复独立的 r38 编译缓存
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ack-r38-98d5b9e071f1-clang-r536225-v1-${{ runner.os }}-${{ inputs.ksu_type }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ack-r38-98d5b9e071f1-clang-r536225-v1-${{ runner.os }}-${{ inputs.ksu_type }}-
+
+      - name: 准备构建环境及补丁检查函数
+        run: |
+          set -euo pipefail
+          cat > kernel_workspace/build-env.sh <<'ENV'
+          export PATH="$GITHUB_WORKSPACE/kernel_workspace/clang19/bin:$GITHUB_WORKSPACE/kernel_workspace/build-tools/bin:$GITHUB_WORKSPACE/kernel_workspace/rust/bin:$PATH"
+          export ARCH=arm64 LLVM=1 LLVM_IAS=1
+          export RUSTC=rustc BINDGEN=bindgen
+          export KBUILD_GENDWARFKSYMS_STABLE=1
+          export KBUILD_BUILD_USER=build-user KBUILD_BUILD_HOST=build-host KBUILD_BUILD_VERSION=1
+          export SOURCE_DATE_EPOCH
+          SOURCE_DATE_EPOCH=$(git -C "$GITHUB_WORKSPACE/kernel_workspace/common" show -s --format=%ct HEAD)
+          export KBUILD_BUILD_TIMESTAMP
+          KBUILD_BUILD_TIMESTAMP=$(date -u -d "@$SOURCE_DATE_EPOCH" '+%a %b %d %T UTC %Y')
+          export LOCALVERSION="-android16-5-g98d5b9e071f1${KERNEL_SUFFIX:+-$KERNEL_SUFFIX}-4k"
+          # 与直接 make 流程配套，避免 DWARF 里携带 runner 的工作目录。
+          export KCFLAGS="-D__ANDROID_COMMON_KERNEL__ -fdebug-prefix-map=$GITHUB_WORKSPACE/kernel_workspace=. -fmacro-prefix-map=$GITHUB_WORKSPACE/kernel_workspace=. -ffile-prefix-map=$GITHUB_WORKSPACE/kernel_workspace=."
+          export KRUSTFLAGS="--remap-path-prefix=$GITHUB_WORKSPACE/kernel_workspace=."
+          ENV
+          cat > kernel_workspace/apply-patch.sh <<'PATCH'
+          # source 此文件后，在要修改的源码目录调用 apply_checked /path/to/file.patch
+          apply_checked() {
+            local patch_file="$1"
+            if git apply --check "$patch_file"; then
+              git apply "$patch_file"
+              sha256sum "$patch_file" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+            elif git apply --reverse --check "$patch_file"; then
+              echo "补丁已包含：$patch_file"
+              printf 'ALREADY_APPLIED ' >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+              sha256sum "$patch_file" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+            else
+              echo "::error::补丁不适用于当前源码：$patch_file"
+              return 1
+            fi
+          }
+          PATCH
+          ccache --max-size "$CCACHE_MAXSIZE"
+          ccache --set-config compression=true
+
+      - name: 加入所选 KernelSU
+        if: inputs.ksu_type != 'none'
+        run: |
+          set -euo pipefail
+          cd kernel_workspace
+          case "$KSU_TYPE" in
+            resukisu) setup_url=https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh; branch=main; ksu_dir=KernelSU ;;
+            ksunext) setup_url=https://raw.githubusercontent.com/pershoot/KernelSU-Next/dev-susfs/kernel/setup.sh; branch=dev-susfs; ksu_dir=KernelSU-Next ;;
+            ksu) setup_url=https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh; branch=main; ksu_dir=KernelSU ;;
+            *) echo '::error::未知 KSU 类型'; exit 1 ;;
+          esac
+          curl -fL --retry 3 "$setup_url" -o ksu-setup.sh
+          sha256sum ksu-setup.sh >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          bash ksu-setup.sh "$branch"
+          test -f common/drivers/kernelsu/Kconfig
+          echo "KSU_DIR=$ksu_dir" >> "$GITHUB_ENV"
+          echo "KSU_COMMIT=$(git -C "$ksu_dir" rev-parse HEAD)" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+
+      - name: 加入 SUSFS（可选，严格检查补丁）
+        if: inputs.susfs_enable
+        run: |
+          set -euo pipefail
+          source kernel_workspace/apply-patch.sh
+          cd kernel_workspace
+          git clone --depth=1 --branch oki-android16-6.12 https://github.com/cctv18/susfs4oki.git susfs4ksu
+          echo "SUSFS_COMMIT=$(git -C susfs4ksu rev-parse HEAD)" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          cd common
+          apply_checked "$GITHUB_WORKSPACE/kernel_workspace/susfs4ksu/kernel_patches/50_add_susfs_in_gki-android16-6.12.patch"
+          cp ../susfs4ksu/kernel_patches/fs/* fs/
+          cp ../susfs4ksu/kernel_patches/include/linux/* include/linux/
+          if [[ "$KSU_TYPE" == ksu ]]; then
+            cd "../$KSU_DIR"
+            apply_checked "$GITHUB_WORKSPACE/kernel_workspace/susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch"
+          fi
+
+      - name: 加入 LZ4 / ZSTD 补丁（可选）
+        if: inputs.lz4_enable
+        run: |
+          set -euo pipefail
+          source kernel_workspace/apply-patch.sh
+          cd kernel_workspace/common
+          apply_checked "$GITHUB_WORKSPACE/upstream-patches/zram_patch/001-lz4.patch"
+          apply_checked "$GITHUB_WORKSPACE/upstream-patches/zram_patch/002-zstd.patch"
+
+      - name: 加入 Baseband-guard（可选）
+        if: inputs.baseband_guard
+        run: |
+          set -euo pipefail
+          cd kernel_workspace/common
+          curl -fL --retry 3 https://raw.githubusercontent.com/cctv18/Baseband-guard/master/setup.sh -o ../bbg-setup.sh
+          sha256sum ../bbg-setup.sh >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          bash ../bbg-setup.sh
+          echo "BBG_COMMIT=$(git -C Baseband-guard rev-parse HEAD)" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+
+      - name: 生成并核验最终配置
+        run: |
+          set -euo pipefail
+          source kernel_workspace/build-env.sh
+          cd kernel_workspace/common
+          make O=out LLVM=1 ARCH=arm64 rustavailable
+          make O=out LLVM=1 ARCH=arm64 gki_defconfig
+          config() { scripts/config --file out/.config "$@"; }
+          # 版本来自 Makefile 和已校验的 tag，不改 SUBLEVEL，不冒用原厂构建号。
+          config --set-str LOCALVERSION '' --disable LOCALVERSION_AUTO --disable TRIM_UNUSED_KSYMS
+          config --enable RUST --enable MODVERSIONS --enable GENDWARFKSYMS
+          required_y=(RUST MODVERSIONS GENDWARFKSYMS ARM64_4K_PAGES)
+          if [[ "$KSU_TYPE" != none ]]; then
+            config --enable KSU --enable TMPFS_XATTR --enable TMPFS_POSIX_ACL
+            required_y+=(KSU TMPFS_XATTR TMPFS_POSIX_ACL)
+          fi
+          if [[ "$SUSFS_ENABLE" == true ]]; then
+            config --enable KSU_SUSFS
+            required_y+=(KSU_SUSFS)
+            # SUSFS 子选项随分支变化，使用其自身 Kconfig 默认值。
+          elif [[ "$KSU_TYPE" != none ]]; then
+            config --disable KSU_SUSFS
+          fi
+          if [[ "$BBR_ENABLE" != false ]]; then
+            for option in TCP_CONG_ADVANCED TCP_CONG_BBR TCP_CONG_CUBIC NET_SCH_FQ; do
+              config --enable "$option"
+              required_y+=("$option")
+            done
+            if [[ "$BBR_ENABLE" == default ]]; then
+              config --disable DEFAULT_CUBIC --enable DEFAULT_BBR --set-str DEFAULT_TCP_CONG bbr
+            fi
+          fi
+          if [[ "$BETTER_NET" == true ]]; then
+            net_options=(NETFILTER_XT_MATCH_ADDRTYPE NETFILTER_XT_SET IP_SET
+              IP_SET_BITMAP_IP IP_SET_BITMAP_IPMAC IP_SET_BITMAP_PORT
+              IP_SET_HASH_IP IP_SET_HASH_IPMARK IP_SET_HASH_IPPORT IP_SET_HASH_IPPORTIP
+              IP_SET_HASH_IPPORTNET IP_SET_HASH_IPMAC IP_SET_HASH_MAC IP_SET_HASH_NETPORTNET
+              IP_SET_HASH_NET IP_SET_HASH_NETNET IP_SET_HASH_NETPORT IP_SET_HASH_NETIFACE
+              IP_SET_LIST_SET IP6_NF_NAT IP6_NF_TARGET_MASQUERADE)
+            for option in "${net_options[@]}"; do config --enable "$option"; done
+            config --set-val IP_SET_MAX 65534
+            required_y+=("${net_options[@]}")
+          fi
+          if [[ "$BASEBAND_GUARD" == true ]]; then
+            config --enable BBG
+            required_y+=(BBG)
+            lsm=$(scripts/config --file out/.config --state LSM)
+            [[ "$lsm" != undef && "$lsm" != n ]] || { echo '::error::CONFIG_LSM 不存在'; exit 1; }
+            if [[ ",$lsm," != *,baseband_guard,* ]]; then
+              config --set-str LSM "$lsm,baseband_guard"
+            fi
+          fi
+          make O=out LLVM=1 ARCH=arm64 olddefconfig
+          # kernelrelease 不会主动同步配置，先更新 auto.conf 以免读到旧后缀。
+          make O=out LLVM=1 ARCH=arm64 syncconfig
+          for option in "${required_y[@]}"; do
+            grep -qx "CONFIG_${option}=y" out/.config || { echo "::error::配置未生效：CONFIG_$option"; exit 1; }
+          done
+          grep -qx 'CONFIG_ANDROID_BINDER_IPC_RUST=m' out/.config
+          grep -qx '# CONFIG_TRIM_UNUSED_KSYMS is not set' out/.config
+          grep -qx 'CONFIG_GKI_TASK_STRUCT_VENDOR_SIZE_MAX=1024' out/.config
+          if [[ "$KSU_TYPE" == none ]] && grep -Eq '^CONFIG_KSU=[ym]$' out/.config; then exit 1; fi
+          if [[ "$SUSFS_ENABLE" != true ]] && grep -qx 'CONFIG_KSU_SUSFS=y' out/.config; then exit 1; fi
+          if [[ "$BBR_ENABLE" == default ]]; then grep -qx 'CONFIG_DEFAULT_TCP_CONG="bbr"' out/.config; fi
+          if [[ "$BASEBAND_GUARD" == true ]]; then grep '^CONFIG_LSM=' out/.config | grep -q baseband_guard; fi
+          release=$(make -s O=out LLVM=1 ARCH=arm64 kernelrelease)
+          [[ "$release" == "$EXPECTED_VERSION$LOCALVERSION" ]] || { echo "::error::版本标识异常：$release"; exit 1; }
+          echo "KERNEL_RELEASE=$release" >> "$GITHUB_ENV"
+          echo "KERNEL_RELEASE=$release" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          cp out/.config "$GITHUB_WORKSPACE/dist/kernel.config"
+          git diff --binary > "$GITHUB_WORKSPACE/dist/ack-changes.patch"
+          git status --short > "$GITHUB_WORKSPACE/dist/ack-status.txt"
+
+      - name: 编译 Image
+        run: |
+          set -euo pipefail
+          source kernel_workspace/build-env.sh
+          if [[ "$CCACHE_DEBUG" == true ]]; then
+            export CCACHE_LOGFILE="$GITHUB_WORKSPACE/dist/ccache.log"
+          fi
+          cd kernel_workspace/common
+          make -j"$(nproc)" O=out LLVM=1 ARCH=arm64 CC='ccache clang' Image
+          test -s out/arch/arm64/boot/Image
+          cp out/arch/arm64/boot/Image "$GITHUB_WORKSPACE/dist/Image"
+          cp out/vmlinux.symvers "$GITHUB_WORKSPACE/dist/vmlinux.symvers"
+          cp out/System.map "$GITHUB_WORKSPACE/dist/System.map"
+          ccache --show-stats
+
+      - name: KPatch-Next 修补 Image（可选）
+        if: inputs.kpm_enable
+        run: |
+          set -euo pipefail
+          cd kernel_workspace
+          curl -fL --retry 3 https://github.com/KernelSU-Next/KPatch-Next/releases/latest/download/kptools-linux -o kptools-linux
+          curl -fL --retry 3 https://github.com/KernelSU-Next/KPatch-Next/releases/latest/download/kpimg-linux -o kpimg-linux
+          sha256sum kptools-linux kpimg-linux >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          chmod +x kptools-linux
+          cp "$GITHUB_WORKSPACE/dist/Image" "$GITHUB_WORKSPACE/dist/Image.before-kpm"
+          ./kptools-linux -p -i "$GITHUB_WORKSPACE/dist/Image" -k ./kpimg-linux -o Image.patched
+          test -s Image.patched
+          mv Image.patched "$GITHUB_WORKSPACE/dist/Image"
+
+      - name: 打包 AnyKernel3 和构建记录
+        run: |
+          set -euo pipefail
+          cd kernel_workspace
+          git init AnyKernel3
+          git -C AnyKernel3 remote add origin https://github.com/cctv18/AnyKernel3.git
+          git -C AnyKernel3 fetch --depth=1 origin 091ee586e1a5d5c1c1c957d48fe7c61638d04dc4
+          git -C AnyKernel3 checkout --detach FETCH_HEAD
+          [[ $(git -C AnyKernel3 rev-parse HEAD) == 091ee586e1a5d5c1c1c957d48fe7c61638d04dc4 ]]
+          echo 'ANYKERNEL3_COMMIT=091ee586e1a5d5c1c1c957d48fe7c61638d04dc4' >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          cp "$GITHUB_WORKSPACE/dist/Image" AnyKernel3/Image
+          cp "$GITHUB_WORKSPACE/dist/build-info.txt" AnyKernel3/build-info.txt
+          rm -rf AnyKernel3/.git
+          cd AnyKernel3
+          zip_name="AnyKernel3-${KERNEL_RELEASE}-${KSU_TYPE}.zip"
+          zip -qr "$GITHUB_WORKSPACE/dist/$zip_name" . -x '.github/*'
+          cd "$GITHUB_WORKSPACE/dist"
+          sha256sum Image "$zip_name" > SHA256SUMS
+          {
+            echo "### 构建完成：$KERNEL_RELEASE"
+            echo "源码：\`$ACK_TAG\` / \`$ACK_COMMIT\`"
+            echo '产物包含 Image、AnyKernel3 ZIP、kernel.config、vmlinux.symvers 和构建信息。'
+            echo 'Image 不是 boot.img；没有构建或更新 vendor_boot、DTBO、system_dlkm、vendor_dlkm。'
+            echo '本次只验证构建成功，未验证特定机型或原厂模块的兼容性。'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 保存 r38 编译缓存
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+
+      - name: 上传内核及构建信息
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACK-6.12.38-r38-${{ inputs.ksu_type }}-${{ github.run_id }}
+          path: dist/
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 1
