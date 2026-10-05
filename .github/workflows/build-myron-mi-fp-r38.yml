@@ -921,7 +921,7 @@ jobs:
           echo "STOCK_COMMIT=$STOCK_COMMIT"
           echo 'TRIAL=mi_fp only; stock panel_event_notifier retained'
         } >> "$GITHUB_WORKSPACE/dist/build-info.txt"
-    - name: 用真实核心及原厂 provider 符号表建立 mi_fp 构建基准
+    - name: 准备外部模块链接文件并建立 mi_fp 构建基准
       id: module_prepare
       run: |
         set -euo pipefail
@@ -937,6 +937,33 @@ jobs:
         cp "$out/vmlinux.symvers" "$out/Module.symvers"
         cp "$out/.config" "$diag/kernel.config.before"
         sha256sum "$out/arch/arm64/boot/Image" "$out/.config" "$out/vmlinux.symvers" > "$diag/base-before.sha256"
+        # Image 不会生成 scripts/module.lds；外部 M= 构建也不会自动准备基础内核。
+        # 必须使用相同环境、相同输出目录，不带 M= 执行 modules_prepare。
+        if [[ -s "$out/scripts/module.lds" ]]; then
+          sha256sum "$out/scripts/module.lds" > "$diag/module-lds.before.txt"
+        else
+          echo 'scripts/module.lds: missing or empty before modules_prepare' > "$diag/module-lds.before.txt"
+        fi
+        set +e
+        make -C kernel_workspace/common -j"$(nproc)" O=out LLVM=1 ARCH=arm64 \
+          CC='ccache clang' modules_prepare 2>&1 | tee "$diag/modules-prepare.log"
+        prepare_pipe_status=("${PIPESTATUS[@]}")
+        set -e
+        printf '%s\n' "${prepare_pipe_status[0]}" > "$diag/modules-prepare-exit-code.txt"
+        printf '%s\n' "${prepare_pipe_status[1]}" > "$diag/modules-prepare-log-exit-code.txt"
+        if [[ -s "$out/scripts/module.lds" ]]; then
+          cp "$out/scripts/module.lds" "$diag/module.lds"
+          sha256sum "$out/scripts/module.lds" > "$diag/module-lds.after.txt"
+        else
+          echo 'scripts/module.lds: missing or empty after modules_prepare' > "$diag/module-lds.after.txt"
+        fi
+        sha256sum --check "$diag/base-before.sha256"
+        [[ "${prepare_pipe_status[0]}" == 0 ]] || exit "${prepare_pipe_status[0]}"
+        [[ "${prepare_pipe_status[1]}" == 0 ]] || exit "${prepare_pipe_status[1]}"
+        if [[ ! -s "$out/scripts/module.lds" ]]; then
+          echo '::error::modules_prepare did not generate out/scripts/module.lds'
+          exit 1
+        fi
     - name: 试编 mi_fp（不安装、不打入 AnyKernel3）
       id: module
       run: |
@@ -959,6 +986,14 @@ jobs:
         if [[ -f "$module_root/mi_fp.ko" ]]; then cp "$module_root/mi_fp.ko" "$diag/candidate/"; fi
         if [[ -f "$module_root/mi_fp.mod.c" ]]; then cp "$module_root/mi_fp.mod.c" "$diag/candidate/"; fi
         if [[ -f "$module_root/Module.symvers" ]]; then cp "$module_root/Module.symvers" "$diag/candidate/"; fi
+        if [[ -f "$module_root/modules.order" ]]; then cp "$module_root/modules.order" "$diag/candidate/"; fi
+        for target in mi_fp.o mi_fp.mod.c mi_fp.mod.o .module-common.o modules.order mi_fp.ko; do
+          if [[ -f "$module_root/$target" ]]; then
+            stat -c '%n: %s bytes' "$module_root/$target"
+          else
+            printf '%s: missing\n' "$module_root/$target"
+          fi
+        done > "$diag/module-targets.txt"
         cp kernel_workspace/common/out/.config "$diag/kernel.config.after"
         sha256sum --check "$diag/base-before.sha256"
         [[ "$build_status" == 0 ]] || exit "$build_status"
