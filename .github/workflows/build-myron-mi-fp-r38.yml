@@ -464,7 +464,9 @@ jobs:
             "are populated by modpost from provider symvers, not an independent proof "
             "that source prototypes, structure layouts, CFI, module loading or hardware "
             "behavior are ABI-compatible. Vermagic is recorded; exact release equality "
-            "cannot be enforced from a symvers file alone. No modules were loaded or modified."
+            "cannot be enforced from a symvers file alone. Compressed DWARF payloads are "
+            "not decoded; relocation bounds use the uncompressed size in Elf64_Chdr. "
+            "No modules were loaded or modified."
         )
 
 
@@ -524,6 +526,22 @@ jobs:
                     s["index"] = i
                     if s["type"] not in (0, 8):
                         require(s["offset"] + s["size"] <= len(d), "Section exceeds file bounds")
+                    # ELF gABI: SHF_COMPRESSED sh_size describes bytes stored in the
+                    # file, while relocation offsets refer to uncompressed contents.
+                    # Read only the compression header; no DWARF decompression is
+                    # needed for this symbol/modversion audit.
+                    s["logical_size"] = s["size"]
+                    if s["flags"] & 0x800:
+                        require(s["type"] not in (0, 8) and not s["flags"] & 0x2,
+                                "SHF_COMPRESSED requires a non-ALLOC, non-NOBITS section")
+                        require(s["size"] >= 24, "Truncated Elf64_Chdr compression header")
+                        algorithm, reserved, logical_size, alignment = struct.unpack_from("<IIQQ", d, s["offset"])
+                        require(algorithm in (1, 2), "Unsupported ELF compression type")
+                        require(reserved == 0, "Nonzero Elf64_Chdr reserved field")
+                        require(alignment == 0 or alignment & (alignment - 1) == 0,
+                                "Invalid compressed-section logical alignment")
+                        s["logical_size"] = logical_size
+                        s["compression_type"] = algorithm
                     self.sections.append(s)
                 require(self.sections[names_idx]["type"] == 3, "Section names are not STRTAB")
                 strings = self.body(self.sections[names_idx])
@@ -567,7 +585,10 @@ jobs:
                         offset, info, addend = struct.unpack_from("<QQq", self.body(s), pos)
                         idx = info >> 32
                         require(idx < len(symbols), "Relocation symbol index out of bounds")
-                        require(offset < self.sections[s["info"]]["size"], "Relocation offset out of bounds")
+                        target = self.sections[s["info"]]
+                        require(offset < target["logical_size"],
+                                "Relocation offset out of bounds: %s -> %s, offset=%d, logical_size=%d" %
+                                (s["name"], target["name"], offset, target["logical_size"]))
                         key = (s["info"], offset)
                         require(key not in self.relocations, "Duplicate relocation at same address")
                         self.relocations[key] = (info & 0xffffffff, symbols[idx], addend)
@@ -593,6 +614,8 @@ jobs:
 
             def body(self, section):
                 require(section["type"] != 8, "Cannot read NOBITS as file bytes")
+                require(not section["flags"] & 0x800,
+                        "Compressed section contents are not decoded by this audit")
                 return self.data[section["offset"]:section["offset"] + section["size"]]
 
             def section(self, name):
@@ -691,7 +714,11 @@ jobs:
                         "sha256": hashlib.sha256(self.data).hexdigest(),
                         "git_blob_sha1": hashlib.sha1(b"blob " + str(len(self.data)).encode() + b"\0" + self.data).hexdigest(),
                         "modinfo": self.modinfo, "imports": self.imports, "exports": self.exports,
-                        "basic_crcs": self.basic, "extended_crcs": self.extended}
+                        "basic_crcs": self.basic, "extended_crcs": self.extended,
+                        "compressed_sections": [
+                            {"name": s["name"], "compression_type": s["compression_type"],
+                             "stored_size": s["size"], "logical_size": s["logical_size"]}
+                            for s in self.sections if s["flags"] & 0x800]}
 
 
         def read_core(path):
