@@ -1,0 +1,2352 @@
+# Standalone: one pinned r38 Image/GKI build + mi_fp + five source-backed vendor trials.
+# No automatic vendor installation; no flashable system_dlkm/vendor_dlkm image.
+# The previously successful mi_fp workflow is preserved separately.
+name: Myron r38 GKI + 6 vendor module trials
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+env:
+  TZ: Asia/Shanghai
+  ACK_TAG: android16-6.12-2025-09_r38
+  ACK_COMMIT: 98d5b9e071f1828ec75981d3758cc20c452616a3
+  EXPECTED_VERSION: 6.12.38
+  TOOLCHAIN_RELEASE: https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang19-r536225
+  KSU_TYPE: ksunext
+  SUSFS_ENABLE: 'false'
+  KPM_ENABLE: 'false'
+  LZ4_ENABLE: 'false'
+  BBR_ENABLE: 'false'
+  BETTER_NET: 'false'
+  BASEBAND_GUARD: 'false'
+  KERNEL_SUFFIX: ''
+  WORKFLOW_CCACHE_DEBUG: 'false'
+  KSU_COMMIT: 4c5853188012f63a1a1fedd4a57fda6375fecb38
+  KSU_VERSION_BASE: 2b31f7185460e99bc3896a639e9073b1c354ee0d
+  MI_SOURCE_COMMIT: 45705be1220b4cfa8100516ad86711656c0b634e
+  STOCK_COMMIT: 9999f765b53876bf7a013a4fde5221153ad570fc
+  BASE_CONFIG_SHA256: 75fd08bd3615b708efab4433881a604b7d696b98190f15b85e22d34893f1c7e4
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: 检查输入及安装依赖
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/00-step.log") 2>&1
+        set -euo pipefail
+        if [[ ! "$KERNEL_SUFFIX" =~ ^[a-zA-Z0-9._-]{0,16}$ ]]; then
+          echo '::error::kernel_suffix 只能包含字母、数字、点、下划线、连字符，最多 16 字符'
+          exit 1
+        fi
+        if [[ "$SUSFS_ENABLE" == true && "$KSU_TYPE" == none ]]; then
+          echo '::error::SUSFS 需要选择 KernelSU 分支'
+          exit 1
+        fi
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          bc bison flex gawk build-essential binutils git curl ca-certificates \
+          python3 python-is-python3 libssl-dev libelf-dev libdw-dev \
+          zlib1g-dev libzstd-dev dwarves zstd zip unzip xz-utils ccache rsync kmod openssl
+        mkdir -p "$GITHUB_WORKSPACE/kernel_workspace" "$GITHUB_WORKSPACE/dist"
+        echo "CCACHE_DIR=$GITHUB_WORKSPACE/.ccache-r38" >> "$GITHUB_ENV"
+        echo 'CCACHE_MAXSIZE=3G' >> "$GITHUB_ENV"
+        echo 'CCACHE_COMPILERCHECK=content' >> "$GITHUB_ENV"
+        echo "CCACHE_BASEDIR=$GITHUB_WORKSPACE/kernel_workspace" >> "$GITHUB_ENV"
+        mkdir -p "$GITHUB_WORKSPACE/dist/mi_fp-diagnostic" "$GITHUB_WORKSPACE/dist/gki-modules"
+    - name: 获取并核验官方 ACK tag
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/01-step.log") 2>&1
+        set -euo pipefail
+        cd kernel_workspace
+        git init common
+        git -C common remote add origin https://android.googlesource.com/kernel/common
+        git -C common fetch --depth=1 origin "refs/tags/$ACK_TAG:refs/tags/$ACK_TAG"
+        git -C common checkout --detach "refs/tags/$ACK_TAG"
+        actual_commit=$(git -C common rev-parse HEAD)
+        [[ "$actual_commit" == "$ACK_COMMIT" ]] || { echo '::error::ACK tag 的提交与预期不同'; exit 1; }
+        actual_version=$(make -s -C common kernelversion)
+        [[ "$actual_version" == "$EXPECTED_VERSION" ]] || { echo "::error::源码版本错误：$actual_version"; exit 1; }
+        grep -qx 'BRANCH=android16-6.12' common/build.config.constants
+        grep -qx 'KMI_GENERATION=5' common/build.config.constants
+        grep -qx 'CLANG_VERSION=r536225' common/build.config.constants
+        grep -qx 'RUSTC_VERSION=1.82.0' common/build.config.constants
+        {
+          echo "ACK_TAG=$ACK_TAG"
+          echo "ACK_COMMIT=$actual_commit"
+          echo "KERNEL_VERSION=$actual_version"
+          echo 'KMI_GENERATION=5'
+          echo "WORKFLOW_REPOSITORY=$GITHUB_REPOSITORY"
+          echo "WORKFLOW_COMMIT=$GITHUB_SHA"
+          echo "RUN_URL=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "KSU_TYPE=$KSU_TYPE SUSFS=$SUSFS_ENABLE KPM=$KPM_ENABLE"
+          echo "LZ4_ZSTD=$LZ4_ENABLE BBR=$BBR_ENABLE IPSET=$BETTER_NET BBG=$BASEBAND_GUARD"
+        } > "$GITHUB_WORKSPACE/dist/build-info.txt"
+    - name: 获取 Clang 19、Rust 1.82 和构建工具
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/02-step.log") 2>&1
+        set -euo pipefail
+        cd kernel_workspace
+        # 沿用原作者工具链镜像。校验版本，并记录每次下载的 SHA256。
+        curl -fL --retry 5 "$TOOLCHAIN_RELEASE/clang-r536225.zip" -o clang.zip
+        curl -fL --retry 5 "$TOOLCHAIN_RELEASE/rust.zip" -o rust.zip
+        curl -fL --retry 5 "$TOOLCHAIN_RELEASE/build-tools.zip" -o build-tools.zip
+        sha256sum clang.zip rust.zip build-tools.zip >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+        # SHA256 来自已开机的 Actions run 36854083282；镜像变化时停止。
+        cat > toolchains.sha256 <<'HASHES'
+        574ef505fa9222c24bb75a9c6592fd62ca546bd86267f73b5533ec38a239f0ea  clang.zip
+        4adf5f226cd4ac4840f454955b52b07e99a198a859efe635194e89e7c35c3f41  rust.zip
+        821babb745321981222d0cb42af5c1214e4efc908b159ae82dbd8113d978c7dd  build-tools.zip
+        HASHES
+        sha256sum --check toolchains.sha256
+        unzip -q clang.zip -d clang19
+        unzip -q rust.zip -d rust
+        unzip -q build-tools.zip
+        rm clang.zip rust.zip build-tools.zip
+        tool_root="$GITHUB_WORKSPACE/kernel_workspace"
+        export PATH="$tool_root/clang19/bin:$tool_root/build-tools/bin:$tool_root/rust/bin:$PATH"
+        export LIBCLANG_PATH="$tool_root/clang19/lib"
+        clang --version | tee "$GITHUB_WORKSPACE/dist/clang-version.txt"
+        grep -q 'r536225' "$GITHUB_WORKSPACE/dist/clang-version.txt"
+        rustc --version | tee "$GITHUB_WORKSPACE/dist/rust-version.txt"
+        grep -Eq '^rustc 1\.82\.0([ -]|$)' "$GITHUB_WORKSPACE/dist/rust-version.txt"
+        bindgen --version
+        pahole --version
+        test -f "$(rustc --print sysroot)/lib/rustlib/src/rust/library/core/src/lib.rs"
+        printf '%s\n' "$tool_root/clang19/bin" "$tool_root/build-tools/bin" "$tool_root/rust/bin" >> "$GITHUB_PATH"
+        echo "LIBCLANG_PATH=$LIBCLANG_PATH" >> "$GITHUB_ENV"
+        {
+          clang --version
+          rustc --version
+          bindgen --version
+          pahole --version
+        } >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+    - name: 恢复独立的 r38 编译缓存
+      id: cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: myron-r38-gki-modules-4c585318-v1-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          myron-r38-gki-modules-4c585318-v1-${{ runner.os }}-
+          myron-mi-fp-r38-4c585318-v1-${{ runner.os }}-
+    - name: 准备构建环境及补丁检查函数
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/04-step.log") 2>&1
+        set -euo pipefail
+        cat > kernel_workspace/build-env.sh <<'ENV'
+        export PATH="$GITHUB_WORKSPACE/kernel_workspace/clang19/bin:$GITHUB_WORKSPACE/kernel_workspace/build-tools/bin:$GITHUB_WORKSPACE/kernel_workspace/rust/bin:$PATH"
+        export ARCH=arm64 LLVM=1 LLVM_IAS=1
+        export RUSTC=rustc BINDGEN=bindgen
+        export KBUILD_GENDWARFKSYMS_STABLE=1
+        export KBUILD_BUILD_USER=build-user KBUILD_BUILD_HOST=build-host KBUILD_BUILD_VERSION=1
+        export SOURCE_DATE_EPOCH
+        SOURCE_DATE_EPOCH=$(git -C "$GITHUB_WORKSPACE/kernel_workspace/common" show -s --format=%ct HEAD)
+        export KBUILD_BUILD_TIMESTAMP
+        KBUILD_BUILD_TIMESTAMP=$(date -u -d "@$SOURCE_DATE_EPOCH" '+%a %b %d %T UTC %Y')
+        export LOCALVERSION="-android16-5-g98d5b9e071f1${KERNEL_SUFFIX:+-$KERNEL_SUFFIX}-4k"
+        # 与直接 make 流程配套，避免 DWARF 里携带 runner 的工作目录。
+        export KCFLAGS="-D__ANDROID_COMMON_KERNEL__ -fdebug-prefix-map=$GITHUB_WORKSPACE/kernel_workspace=. -fmacro-prefix-map=$GITHUB_WORKSPACE/kernel_workspace=. -ffile-prefix-map=$GITHUB_WORKSPACE/kernel_workspace=."
+        export KRUSTFLAGS="--remap-path-prefix=$GITHUB_WORKSPACE/kernel_workspace=."
+        ENV
+        cat > kernel_workspace/apply-patch.sh <<'PATCH'
+        # source 此文件后，在要修改的源码目录调用 apply_checked /path/to/file.patch
+        apply_checked() {
+          local patch_file="$1"
+          if git apply --check "$patch_file"; then
+            git apply "$patch_file"
+            sha256sum "$patch_file" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          elif git apply --reverse --check "$patch_file"; then
+            echo "补丁已包含：$patch_file"
+            printf 'ALREADY_APPLIED ' >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+            sha256sum "$patch_file" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+          else
+            echo "::error::补丁不适用于当前源码：$patch_file"
+            return 1
+          fi
+        }
+        PATCH
+        ccache --max-size "$CCACHE_MAXSIZE"
+        ccache --set-config compression=true
+    - name: 固定已开机的 KernelSU-Next 源码和版本元数据
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/05-step.log") 2>&1
+        set -euo pipefail
+        cd kernel_workspace
+        git init KernelSU-Next
+        git -C KernelSU-Next remote add origin https://github.com/pershoot/KernelSU-Next.git
+        # 完整祖先历史用于 Kbuild 的版本计算；不使用 shallow clone。
+        git -C KernelSU-Next fetch --tags origin "$KSU_COMMIT"
+        git -C KernelSU-Next checkout -B dev-susfs "$KSU_COMMIT"
+        [[ $(git -C KernelSU-Next rev-parse HEAD) == "$KSU_COMMIT" ]]
+        git -C KernelSU-Next merge-base --is-ancestor "$KSU_VERSION_BASE" HEAD
+        [[ $(git -C KernelSU-Next rev-list --count "$KSU_VERSION_BASE") == 3313 ]]
+        [[ $(git -C KernelSU-Next describe --tags --abbrev=0 "$KSU_VERSION_BASE") == v3.4.0 ]]
+        # 仅固定本地构建用 ref，不写远端；复现原任务的 33313/v3.4.0。
+        git -C KernelSU-Next update-ref refs/remotes/origin/dev "$KSU_VERSION_BASE"
+        test -f KernelSU-Next/kernel/Kconfig
+        test ! -e common/drivers/kernelsu
+        ln -s ../../KernelSU-Next/kernel common/drivers/kernelsu
+        python3 - <<'PY'
+        from pathlib import Path
+        p = Path('common/drivers/Kconfig')
+        s = p.read_text()
+        assert s.endswith('endmenu\n'), 'ACK drivers/Kconfig layout changed'
+        p.write_text(s[:-len('endmenu\n')] + 'source "drivers/kernelsu/Kconfig"\nendmenu\n')
+        p = Path('common/drivers/Makefile')
+        with p.open('a') as f:
+            f.write('\nobj-$(CONFIG_KSU) += kernelsu/\n')
+        PY
+        echo 'KSU_DIR=KernelSU-Next' >> "$GITHUB_ENV"
+        {
+          echo "KSU_COMMIT=$KSU_COMMIT"
+          echo "KSU_VERSION_BASE=$KSU_VERSION_BASE"
+          echo 'KSU_VERSION=33313 KSU_TAG=v3.4.0'
+          echo 'KBUILD_GENDWARFKSYMS_STABLE=1'
+          echo 'BASELINE_RUN=https://github.com/yuwenhua653/oppo_oplus_realme_sm8850/actions/runs/36854083282'
+        } >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+    - name: 修正 KernelSU 在 ACK r38 的独立输出目录包含路径
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/06-step.log") 2>&1
+        set -euo pipefail
+        ksu_root=$(realpath kernel_workspace/common/drivers/kernelsu)
+        test -f "$ksu_root/Kbuild"
+        test -f "$ksu_root/Kconfig"
+        # uapi 是仓库根目录源码，kernel/include/uapi 是指向它的符号链接。
+        # 若源码或链接确实缺失，先报错，不能靠忽略错误继续编译。
+        if [[ -f "$ksu_root/policy/allowlist.h" ]] && \
+           grep -Fq '"uapi/app_profile.h"' "$ksu_root/policy/allowlist.h"; then
+          if [[ ! -s "$ksu_root/include/uapi/app_profile.h" ]]; then
+            echo "::error::KernelSU 头文件或符号链接缺失：$ksu_root/include/uapi/app_profile.h"
+            exit 1
+          fi
+        fi
+        # 本 tag 的 scripts/Makefile.build 已把 VPATH 加入 $(src)。
+        # O=out 时应使用 ../drivers/kernelsu/include，不能再次拼接 $(srctree)。
+        if ! grep -Fxq 'ccflags-y += -I$(src) -I$(src)/include' "$ksu_root/Kbuild"; then
+          cat >> "$ksu_root/Kbuild" <<'KBUILD'
+
+        # ACK r38 out-of-tree include paths
+        ccflags-y += -I$(src) -I$(src)/include
+        KBUILD
+        fi
+        git -C "$ksu_root" diff --binary -- Kbuild > "$GITHUB_WORKSPACE/dist/kernelsu-build-fix.patch"
+        sha256sum "$GITHUB_WORKSPACE/dist/kernelsu-build-fix.patch" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+    - name: 生成并核验最终配置
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/07-step.log") 2>&1
+        set -euo pipefail
+        source kernel_workspace/build-env.sh
+        cd kernel_workspace/common
+        make O=out LLVM=1 ARCH=arm64 rustavailable
+        make O=out LLVM=1 ARCH=arm64 gki_defconfig
+        config() { scripts/config --file out/.config "$@"; }
+        # 版本来自 Makefile 和已校验的 tag，不改 SUBLEVEL，不冒用原厂构建号。
+        config --set-str LOCALVERSION '' --disable LOCALVERSION_AUTO --disable TRIM_UNUSED_KSYMS
+        config --enable RUST --enable MODVERSIONS --enable GENDWARFKSYMS
+        required_y=(RUST MODVERSIONS GENDWARFKSYMS ARM64_4K_PAGES)
+        if [[ "$KSU_TYPE" != none ]]; then
+          config --enable KSU --enable TMPFS_XATTR --enable TMPFS_POSIX_ACL
+          required_y+=(KSU TMPFS_XATTR TMPFS_POSIX_ACL)
+        fi
+        if [[ "$SUSFS_ENABLE" == true ]]; then
+          config --enable KSU_SUSFS
+          required_y+=(KSU_SUSFS)
+          # SUSFS 子选项随分支变化，使用其自身 Kconfig 默认值。
+        elif [[ "$KSU_TYPE" != none ]]; then
+          config --disable KSU_SUSFS
+        fi
+        if [[ "$BBR_ENABLE" != false ]]; then
+          for option in TCP_CONG_ADVANCED TCP_CONG_BBR TCP_CONG_CUBIC NET_SCH_FQ; do
+            config --enable "$option"
+            required_y+=("$option")
+          done
+          if [[ "$BBR_ENABLE" == default ]]; then
+            config --disable DEFAULT_CUBIC --enable DEFAULT_BBR --set-str DEFAULT_TCP_CONG bbr
+          fi
+        fi
+        if [[ "$BETTER_NET" == true ]]; then
+          net_options=(NETFILTER_XT_MATCH_ADDRTYPE NETFILTER_XT_SET IP_SET
+            IP_SET_BITMAP_IP IP_SET_BITMAP_IPMAC IP_SET_BITMAP_PORT
+            IP_SET_HASH_IP IP_SET_HASH_IPMARK IP_SET_HASH_IPPORT IP_SET_HASH_IPPORTIP
+            IP_SET_HASH_IPPORTNET IP_SET_HASH_IPMAC IP_SET_HASH_MAC IP_SET_HASH_NETPORTNET
+            IP_SET_HASH_NET IP_SET_HASH_NETNET IP_SET_HASH_NETPORT IP_SET_HASH_NETIFACE
+            IP_SET_LIST_SET IP6_NF_NAT IP6_NF_TARGET_MASQUERADE)
+          for option in "${net_options[@]}"; do config --enable "$option"; done
+          config --set-val IP_SET_MAX 65534
+          required_y+=("${net_options[@]}")
+        fi
+        if [[ "$BASEBAND_GUARD" == true ]]; then
+          config --enable BBG
+          required_y+=(BBG)
+          lsm=$(scripts/config --file out/.config --state LSM)
+          [[ "$lsm" != undef && "$lsm" != n ]] || { echo '::error::CONFIG_LSM 不存在'; exit 1; }
+          if [[ ",$lsm," != *,baseband_guard,* ]]; then
+            config --set-str LSM "$lsm,baseband_guard"
+          fi
+        fi
+        make O=out LLVM=1 ARCH=arm64 olddefconfig
+        # kernelrelease 不会主动同步配置，先更新 auto.conf 以免读到旧后缀。
+        make O=out LLVM=1 ARCH=arm64 syncconfig
+        for option in "${required_y[@]}"; do
+          grep -qx "CONFIG_${option}=y" out/.config || { echo "::error::配置未生效：CONFIG_$option"; exit 1; }
+        done
+        grep -qx 'CONFIG_ANDROID_BINDER_IPC_RUST=m' out/.config
+        grep -qx '# CONFIG_TRIM_UNUSED_KSYMS is not set' out/.config
+        grep -qx 'CONFIG_GKI_TASK_STRUCT_VENDOR_SIZE_MAX=1024' out/.config
+        if [[ "$KSU_TYPE" == none ]] && grep -Eq '^CONFIG_KSU=[ym]$' out/.config; then exit 1; fi
+        if [[ "$SUSFS_ENABLE" != true ]] && grep -qx 'CONFIG_KSU_SUSFS=y' out/.config; then exit 1; fi
+        if [[ "$BBR_ENABLE" == default ]]; then grep -qx 'CONFIG_DEFAULT_TCP_CONG="bbr"' out/.config; fi
+        if [[ "$BASEBAND_GUARD" == true ]]; then grep '^CONFIG_LSM=' out/.config | grep -q baseband_guard; fi
+        release=$(make -s O=out LLVM=1 ARCH=arm64 kernelrelease)
+        [[ "$release" == "$EXPECTED_VERSION$LOCALVERSION" ]] || { echo "::error::版本标识异常：$release"; exit 1; }
+        echo "KERNEL_RELEASE=$release" >> "$GITHUB_ENV"
+        echo "KERNEL_RELEASE=$release" >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+        cp out/.config "$GITHUB_WORKSPACE/dist/kernel.config"
+        git diff --binary > "$GITHUB_WORKSPACE/dist/ack-changes.patch"
+        git status --short > "$GITHUB_WORKSPACE/dist/ack-status.txt"
+        # 硬性对照已开机那次 kernel.config，禁止试编过程改变 GKI 配置。
+        printf '%s  %s\n' "$BASE_CONFIG_SHA256" out/.config | sha256sum --check
+        for option in SIDE_FINGERPRINT FOD_FINGERPRINT FP_MTK_PLATFORM FP_HAVE_MULTI_SCREEN; do
+          if grep -Eq "^CONFIG_${option}=[ym]$" out/.config; then
+            echo "::error::Unexpected fingerprint mode: CONFIG_$option"
+            exit 1
+          fi
+        done
+        grep -qx 'CONFIG_ANDROID_BINDER_IPC=y' out/.config
+        grep -qx 'CONFIG_MODULE_SIG_ALL=y' out/.config
+        grep -qx 'CONFIG_MODULE_SIG_KEY="certs/signing_key.pem"' out/.config
+        grep -qx '# CONFIG_MODULE_COMPRESS is not set' out/.config
+    - name: 同一输出目录编译 Image 和完整 GKI modules
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/08-kernel.log") 2>&1
+        set -euo pipefail
+        source kernel_workspace/build-env.sh
+        if [[ "$WORKFLOW_CCACHE_DEBUG" == true ]]; then
+          export CCACHE_LOGFILE="$GITHUB_WORKSPACE/dist/ccache.log"
+        fi
+        cd kernel_workspace/common
+        set +e
+        make -j"$(nproc)" O=out LLVM=1 ARCH=arm64 CC='ccache clang' Image modules \
+          2>&1 | tee "$GITHUB_WORKSPACE/dist/image-and-modules-build.log"
+        build_pipe_status=("${PIPESTATUS[@]}")
+        set -e
+        printf 'make=%s\ntee=%s\n' "${build_pipe_status[0]}" "${build_pipe_status[1]}" \
+          > "$GITHUB_WORKSPACE/dist/gki-modules/build-status.txt"
+        [[ "${build_pipe_status[0]}" == 0 ]] || exit "${build_pipe_status[0]}"
+        [[ "${build_pipe_status[1]}" == 0 ]] || exit "${build_pipe_status[1]}"
+        test -s out/arch/arm64/boot/Image
+        for file in vmlinux.symvers Module.symvers System.map modules.order modules.builtin modules.builtin.modinfo; do
+          test -s "out/$file"
+          cp "out/$file" "$GITHUB_WORKSPACE/dist/$file"
+        done
+        cp out/arch/arm64/boot/Image "$GITHUB_WORKSPACE/dist/Image"
+        printf '%s  %s\n' "$BASE_CONFIG_SHA256" out/.config | sha256sum --check
+        grep -Fq 'KernelSU-Next version: 33313' "$GITHUB_WORKSPACE/dist/image-and-modules-build.log"
+        grep -Fq 'KernelSU-Next tag: v3.4.0' "$GITHUB_WORKSPACE/dist/image-and-modules-build.log"
+        sha256sum "$PWD/out/arch/arm64/boot/Image" "$PWD/out/.config" \
+          "$PWD/out/Module.symvers" "$PWD/out/vmlinux.symvers" \
+          > "$GITHUB_WORKSPACE/dist/gki-modules/kernel-base.sha256"
+        ccache --show-stats
+      id: kernel
+    - name: 安装、签名验证并打包 GKI modules staging
+      id: gki_stage
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/09-gki_stage.log") 2>&1
+        set -euo pipefail
+        source kernel_workspace/build-env.sh
+        gki="$GITHUB_WORKSPACE/dist/gki-modules"
+        out="$GITHUB_WORKSPACE/kernel_workspace/common/out"
+        stage="$GITHUB_WORKSPACE/kernel_workspace/gki-staging"
+        test ! -e "$stage"
+        mkdir -p "$stage"
+        test -x /usr/sbin/depmod
+        test -x /usr/sbin/modinfo
+        command -v llvm-strip
+        llvm-strip --version > "$gki/strip-version.txt"
+        /usr/sbin/depmod --version > "$gki/depmod-version.txt"
+        test -s "$out/System.map"
+        test -s "$out/Module.symvers"
+        test -s "$out/certs/signing_key.x509"
+        grep -qx 'CONFIG_MODULE_SIG_ALL=y' "$out/.config"
+        # In-tree modules_install copies, strips, then signs. Never strip installed modules again.
+        set +e
+        make -C kernel_workspace/common -j"$(nproc)" O=out LLVM=1 ARCH=arm64 CC='ccache clang' \
+          INSTALL_MOD_PATH="$stage" INSTALL_MOD_STRIP=--strip-debug \
+          STRIP="$(command -v llvm-strip)" DEPMOD=/usr/sbin/depmod modules_install \
+          2>&1 | tee "$gki/modules-install.log"
+        install_pipe_status=("${PIPESTATUS[@]}")
+        set -e
+        printf 'make=%s\ntee=%s\n' "${install_pipe_status[0]}" "${install_pipe_status[1]}" > "$gki/install-status.txt"
+        [[ "${install_pipe_status[0]}" == 0 ]] || exit "${install_pipe_status[0]}"
+        [[ "${install_pipe_status[1]}" == 0 ]] || exit "${install_pipe_status[1]}"
+        moddir="$stage/lib/modules/$KERNEL_RELEASE"
+        test -d "$moddir"
+        for link in build source; do
+          if [[ -L "$moddir/$link" ]]; then rm "$moddir/$link"; fi
+          test ! -e "$moddir/$link"
+        done
+        # Regenerate dependencies and check unresolved symbols for THIS staging layout.
+        # Do not use the host kmod version as a complete Rust extended-modversion CRC audit.
+        set +e
+        /usr/sbin/depmod -a -e -F "$out/System.map" -b "$stage" "$KERNEL_RELEASE" \
+          2>&1 | tee "$gki/depmod.log"
+        depmod_pipe_status=("${PIPESTATUS[@]}")
+        set -e
+        printf 'depmod=%s\ntee=%s\n' "${depmod_pipe_status[0]}" "${depmod_pipe_status[1]}" > "$gki/depmod-status.txt"
+        [[ "${depmod_pipe_status[0]}" == 0 ]] || exit "${depmod_pipe_status[0]}"
+        [[ "${depmod_pipe_status[1]}" == 0 ]] || exit "${depmod_pipe_status[1]}"
+        if grep -Eqi '(^|[[:space:]])(WARNING|ERROR):' "$gki/depmod.log"; then
+          echo '::error::depmod reported a warning/error; inspect staging before using it.'
+          exit 1
+        fi
+        for file in modules.dep modules.dep.bin modules.order modules.builtin modules.builtin.modinfo; do
+          test -s "$moddir/$file"
+        done
+        for file in Module.symvers vmlinux.symvers System.map modules.order modules.builtin modules.builtin.modinfo; do
+          cp "$out/$file" "$gki/$file"
+        done
+        cp "$out/.config" "$gki/kernel.config"
+        cp "$out/certs/signing_key.x509" "$gki/signing_key.x509"
+        printf '%s\n' "$KERNEL_RELEASE" > "$gki/kernel.release"
+        sha256sum "$GITHUB_WORKSPACE/dist/Image" > "$gki/paired-image.sha256"
+        # Public certificate only. The private signing_key.pem never enters any artifact.
+        openssl x509 -inform DER -in "$gki/signing_key.x509" -out "$gki/signing-certificate.pem"
+        cat > "$gki/stock-release-module-paths.txt" <<'STOCK_PATHS'
+        kernel/arch/arm64/geniezone/gzvm.ko
+        kernel/drivers/android/rust_binder.ko
+        kernel/drivers/base/regmap/regmap-kunit.ko
+        kernel/drivers/base/regmap/regmap-ram.ko
+        kernel/drivers/base/regmap/regmap-raw-ram.ko
+        kernel/drivers/block/virtio_blk.ko
+        kernel/drivers/block/zram/zram.ko
+        kernel/drivers/bluetooth/btbcm.ko
+        kernel/drivers/bluetooth/btqca.ko
+        kernel/drivers/bluetooth/btsdio.ko
+        kernel/drivers/bluetooth/hci_uart.ko
+        kernel/drivers/char/hw_random/cctrng.ko
+        kernel/drivers/char/virtio_console.ko
+        kernel/drivers/clk/clk-gate_test.ko
+        kernel/drivers/clk/clk-test.ko
+        kernel/drivers/clk/clk_kunit_helpers.ko
+        kernel/drivers/gnss/gnss.ko
+        kernel/drivers/hid/hid-uclogic-test.ko
+        kernel/drivers/iio/test/iio-test-format.ko
+        kernel/drivers/input/tests/input_test.ko
+        kernel/drivers/misc/open-dice.ko
+        kernel/drivers/misc/vcpu_stall_detector.ko
+        kernel/drivers/net/can/dev/can-dev.ko
+        kernel/drivers/net/can/slcan/slcan.ko
+        kernel/drivers/net/can/vcan.ko
+        kernel/drivers/net/macsec.ko
+        kernel/drivers/net/mii.ko
+        kernel/drivers/net/ppp/bsd_comp.ko
+        kernel/drivers/net/ppp/ppp_deflate.ko
+        kernel/drivers/net/ppp/ppp_generic.ko
+        kernel/drivers/net/ppp/ppp_mppe.ko
+        kernel/drivers/net/ppp/pppox.ko
+        kernel/drivers/net/ppp/pptp.ko
+        kernel/drivers/net/slip/slhc.ko
+        kernel/drivers/net/usb/aqc111.ko
+        kernel/drivers/net/usb/asix.ko
+        kernel/drivers/net/usb/ax88179_178a.ko
+        kernel/drivers/net/usb/cdc_eem.ko
+        kernel/drivers/net/usb/cdc_ether.ko
+        kernel/drivers/net/usb/cdc_ncm.ko
+        kernel/drivers/net/usb/r8152.ko
+        kernel/drivers/net/usb/r8153_ecm.ko
+        kernel/drivers/net/usb/rtl8150.ko
+        kernel/drivers/net/usb/usbnet.ko
+        kernel/drivers/net/wwan/wwan.ko
+        kernel/drivers/of/of_kunit_helpers.ko
+        kernel/drivers/power/sequencing/pwrseq-core.ko
+        kernel/drivers/pps/pps_core.ko
+        kernel/drivers/ptp/ptp.ko
+        kernel/drivers/ptp/ptp_kvm.ko
+        kernel/drivers/rtc/lib_test.ko
+        kernel/drivers/usb/class/cdc-acm.ko
+        kernel/drivers/usb/mon/usbmon.ko
+        kernel/drivers/usb/serial/ftdi_sio.ko
+        kernel/drivers/usb/serial/usbserial.ko
+        kernel/drivers/virtio/virtio_balloon.ko
+        kernel/drivers/virtio/virtio_pci.ko
+        kernel/drivers/virtio/virtio_pci_legacy_dev.ko
+        kernel/drivers/virtio/virtio_pci_modern_dev.ko
+        kernel/fs/ext4/ext4-inode-test.ko
+        kernel/fs/fat/fat_test.ko
+        kernel/fs/netfs/netfs.ko
+        kernel/kernel/kheaders.ko
+        kernel/kernel/time/time_test.ko
+        kernel/lib/crypto/libarc4.ko
+        kernel/lib/kunit/kunit-example-test.ko
+        kernel/lib/kunit/kunit-test.ko
+        kernel/lib/kunit/kunit.ko
+        kernel/lib/kunit/platform-test.ko
+        kernel/mm/zsmalloc.ko
+        kernel/net/6lowpan/6lowpan.ko
+        kernel/net/6lowpan/nhc_dest.ko
+        kernel/net/6lowpan/nhc_fragment.ko
+        kernel/net/6lowpan/nhc_hop.ko
+        kernel/net/6lowpan/nhc_ipv6.ko
+        kernel/net/6lowpan/nhc_mobility.ko
+        kernel/net/6lowpan/nhc_routing.ko
+        kernel/net/6lowpan/nhc_udp.ko
+        kernel/net/8021q/8021q.ko
+        kernel/net/9p/9pnet.ko
+        kernel/net/9p/9pnet_fd.ko
+        kernel/net/bluetooth/bluetooth.ko
+        kernel/net/bluetooth/hidp/hidp.ko
+        kernel/net/bluetooth/rfcomm/rfcomm.ko
+        kernel/net/can/can-bcm.ko
+        kernel/net/can/can-gw.ko
+        kernel/net/can/can-raw.ko
+        kernel/net/can/can.ko
+        kernel/net/core/dev_addr_lists_test.ko
+        kernel/net/ieee802154/6lowpan/ieee802154_6lowpan.ko
+        kernel/net/ieee802154/ieee802154.ko
+        kernel/net/ieee802154/ieee802154_socket.ko
+        kernel/net/l2tp/l2tp_core.ko
+        kernel/net/l2tp/l2tp_ppp.ko
+        kernel/net/mac802154/mac802154.ko
+        kernel/net/nfc/nfc.ko
+        kernel/net/rfkill/rfkill.ko
+        kernel/net/tipc/tipc.ko
+        kernel/net/tipc/tipc_diag.ko
+        kernel/net/tls/tls.ko
+        kernel/net/vmw_vsock/vmw_vsock_virtio_transport.ko
+        kernel/sound/soc/soc-topology-test.ko
+        kernel/sound/soc/soc-utils-test.ko
+        STOCK_PATHS
+        python3 - <<'PY_GKI'
+        import hashlib, json, os, struct, subprocess, tempfile
+        from pathlib import Path
+        base = Path(os.environ['GITHUB_WORKSPACE'])
+        release = os.environ['KERNEL_RELEASE']
+        gki = base/'dist/gki-modules'
+        stage = base/'kernel_workspace/gki-staging'
+        moddir = stage/'lib/modules'/release
+        cert = gki/'signing-certificate.pem'
+        modules = sorted(moddir.rglob('*.ko'))
+        assert modules, 'No installed modules'
+        assert not list(stage.rglob('*.ko.xz')) and not list(stage.rglob('*.ko.zst')), 'Unexpected compression'
+        assert not any(p.is_symlink() for p in stage.rglob('*')), 'Unexpected staging symlink'
+        marker = b'~Module signature appended~\n'
+        manifest = []
+        for path in modules:
+            data = path.read_bytes()
+            assert data.endswith(marker), 'Missing module signature: '+str(path)
+            header = len(data)-len(marker)-12
+            algo, hash_id, kind, signer_len, key_len, reserved, sig_len = struct.unpack_from('>5B3sI', data, header)
+            assert kind == 2 and signer_len == 0 and key_len == 0 and reserved == b'\0'*3, str(path)
+            assert 0 < sig_len < header, str(path)
+            unsigned, signature = data[:header-sig_len], data[header-sig_len:header]
+            with tempfile.TemporaryDirectory() as temp:
+                temp = Path(temp)
+                (temp/'module').write_bytes(unsigned)
+                (temp/'signature.der').write_bytes(signature)
+                # -noverify skips CA-chain checking; -nointern forces our same-build certificate.
+                # The detached content signature itself is still cryptographically verified.
+                result = subprocess.run(['openssl','cms','-verify','-binary','-inform','DER',
+                    '-in',str(temp/'signature.der'),'-content',str(temp/'module'),
+                    '-certfile',str(cert),'-nointern','-noverify','-out',os.devnull],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                assert result.returncode == 0, str(path)+': '+result.stderr
+            fields = {}
+            for field in ['name','vermagic','depends','signer','sig_key','sig_hashalgo']:
+                fields[field] = subprocess.check_output(['/usr/sbin/modinfo','-F',field,str(path)],text=True).strip()
+            assert fields['vermagic'].split()[0] == release, str(path)
+            assert fields['sig_hashalgo'] == 'sha1', str(path)
+            manifest.append({'path':str(path.relative_to(moddir)), 'size':len(data),
+                'sha256':hashlib.sha256(data).hexdigest(), 'signature_verified_with_same_build_cert':True,
+                **fields})
+        actual = {row['path'] for row in manifest}
+        stock = set((gki/'stock-release-module-paths.txt').read_text().splitlines())
+        assert any(path.endswith('/drivers/android/rust_binder.ko') for path in actual), 'Rust binder was not produced'
+        comparison = {'stock_count':len(stock),'staged_count':len(actual),
+            'added':sorted(actual-stock),'missing':sorted(stock-actual),
+            'note':'Set differences are for review, not an instruction to change the device module set. Directory labels do not prove ABI compatibility.'}
+        (gki/'module-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+        (gki/'stock-module-comparison.json').write_text(json.dumps(comparison,indent=2)+'\n')
+        print('Verified signed modules:',len(manifest),'stock:',len(stock),
+              'added:',len(comparison['added']),'missing:',len(comparison['missing']))
+        PY_GKI
+        sha256sum --check "$gki/kernel-base.sha256"
+        tar -czf "$gki/gki-modules-$KERNEL_RELEASE.tar.gz" -C "$stage" lib
+        gzip -t "$gki/gki-modules-$KERNEL_RELEASE.tar.gz"
+        {
+          echo 'GKI_MODULES=full CONFIG=m build; installed with strip-before-sign'
+          echo 'GKI_DEPMOD_LAYOUT=lib/modules/<release>/kernel/...'
+          echo 'GKI_SIGNATURES=verified with public certificate from this same Image build'
+          sha256sum "$gki/signing_key.x509" "$gki/gki-modules-$KERNEL_RELEASE.tar.gz"
+        } >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+        cat > "$gki/README.txt" <<'GKI_NOTE'
+        This is a signed GKI module staging bundle, NOT a flashable system_dlkm image or installer.
+        Pair these modules with the Image from THIS Actions run. The same release text alone does not imply the same signing key.
+        All staged modules were stripped before signing and verified using this build's public certificate. Do not strip or modify signed modules.
+        The private key is intentionally excluded.
+        modules.dep is valid for the supplied lib/modules/<release>/kernel/... layout.
+        If the offline system_dlkm layout or module set changes, regenerate dependencies for the final layout.
+        stock-module-comparison.json is informational; the stock loader scans .ko files, not only modules.load entries.
+        The supplied stock inventory came from raw image SHA256 c1ba78033b49071a2f111cb4450fa994d75a18a6bfd588c5bda0b9ac8597a128.
+        Stock has 103 unique modules and a second set of independent flatten copies; its filesystem has only 94 KiB free.
+        The current vendor blocklist excludes zram and zsmalloc; the loader attempts the other 101 stock modules.
+        This staging intentionally retains every module built by the unchanged configuration; it does not select or remove device modules.
+        Host depmod checks dependencies and unresolved symbols, not all extended modversion CRCs. Full symbol tables are included for offline audit.
+        No system_dlkm image, AVB changes, module loading or device installation was performed.
+        GKI_NOTE
+        {
+          echo '### 同次构建的 GKI modules staging 已生成'
+          echo '已按 strip -> sign 顺序安装，并使用同次构建公钥验证每个模块签名。'
+          echo '这不是可刷 system_dlkm；需结合现有镜像布局、模块集合和 AVB 信息离线重建。'
+          echo '这些 GKI 模块应与本次 Image 配套；本任务保留 C binder=y、Rust binder=m。'
+        } >> "$GITHUB_STEP_SUMMARY"
+    - name: 打包 AnyKernel3 和构建记录
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/10-step.log") 2>&1
+        set -euo pipefail
+        cd kernel_workspace
+        git init AnyKernel3
+        git -C AnyKernel3 remote add origin https://github.com/cctv18/AnyKernel3.git
+        git -C AnyKernel3 fetch --depth=1 origin 091ee586e1a5d5c1c1c957d48fe7c61638d04dc4
+        git -C AnyKernel3 checkout --detach FETCH_HEAD
+        [[ $(git -C AnyKernel3 rev-parse HEAD) == 091ee586e1a5d5c1c1c957d48fe7c61638d04dc4 ]]
+        echo 'ANYKERNEL3_COMMIT=091ee586e1a5d5c1c1c957d48fe7c61638d04dc4' >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+        cp "$GITHUB_WORKSPACE/dist/Image" AnyKernel3/Image
+        cp "$GITHUB_WORKSPACE/dist/build-info.txt" AnyKernel3/build-info.txt
+        rm -rf AnyKernel3/.git
+        cd AnyKernel3
+        zip_name="AnyKernel3-${KERNEL_RELEASE}-${KSU_TYPE}.zip"
+        zip -qr "$GITHUB_WORKSPACE/dist/$zip_name" . -x '.github/*'
+        cd "$GITHUB_WORKSPACE/dist"
+        sha256sum Image "$zip_name" > SHA256SUMS
+        {
+          echo "### 构建完成：$KERNEL_RELEASE"
+          echo "源码：\`$ACK_TAG\` / \`$ACK_COMMIT\`"
+          echo '产物包含 Image、AnyKernel3 ZIP、kernel.config、vmlinux.symvers 和构建信息。'
+          echo 'Image 不是 boot.img；没有构建或更新 vendor_boot、DTBO、system_dlkm、vendor_dlkm。'
+          echo '此 AnyKernel3 仅包含 Image；GKI staging 和 mi_fp 候选均独立上传，不进入刷机包。'
+          echo '本阶段未生成可刷 system_dlkm；新的 GKI modules 仅与本次 Image 配套。'
+        } >> "$GITHUB_STEP_SUMMARY"
+    - name: 写入批量构建工具 1
+      id: batch_script_1
+      if: always() && steps.kernel.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p kernel_workspace
+        cat > kernel_workspace/mi_fp_audit.py <<'BATCH_SCRIPT_PART_1'
+        #!/usr/bin/env python3
+        """Read-only, pinned-reference audit for ARM64 mi_fp kernel modules.
+
+        Only Python's standard library is used. This checks symbol resolution and
+        modversion records; it cannot establish C type ABI, CFI correctness, successful
+        module loading, or functional hardware compatibility. Never edits a module.
+        """
+
+        import argparse
+        import csv
+        import hashlib
+        import json
+        import re
+        import struct
+        import sys
+        from pathlib import Path
+
+
+        PINS = {
+            "reference": {
+                "sha256": "d58a686ae32d2096d55e0d5857dc014ed37afbb0a05cd54a5d6cf8d3a62ac2a5",
+                "git_blob_sha1": "3c3c4eebd0037f27197ab653e77400cc579646f7",
+            },
+            "provider": {
+                "sha256": "25094f55a64bc263100253746b1cb9554a54f18e7a574bdda6654cf5b34f6232",
+                "git_blob_sha1": "c481db92afa04f580372f76c00832c228f32dcb7",
+            },
+        }
+        NOTIFIERS = {"panel_event_notifier_register", "panel_event_notifier_unregister"}
+        SYMBOL_RE = re.compile(r"[A-Za-z_$][A-Za-z0-9_.$]*\Z")
+        LIMITATION = (
+            "PASS means pinned inputs and symbol/modversion checks passed. Consumer CRCs "
+            "are populated by modpost from provider symvers, not an independent proof "
+            "that source prototypes, structure layouts, CFI, module loading or hardware "
+            "behavior are ABI-compatible. Vermagic is recorded; exact release equality "
+            "cannot be enforced from a symvers file alone. Compressed DWARF payloads are "
+            "not decoded; relocation bounds use the uncompressed size in Elf64_Chdr. "
+            "No modules were loaded or modified."
+        )
+
+
+        class AuditError(Exception):
+            """Malformed, unsupported, or inconsistent audit input."""
+
+
+        def require(condition, message):
+            if not condition:
+                raise AuditError(message)
+
+
+        def crc_text(value):
+            require(0 <= value <= 0xffffffff, "CRC exceeds 32 bits")
+            return "0x%08x" % value
+
+
+        def cstring(data, offset=0, context="string"):
+            require(0 <= offset < len(data), context + ": offset outside section")
+            end = data.find(b"\0", offset)
+            require(end >= 0, context + ": missing NUL terminator")
+            try:
+                return data[offset:end].decode("utf-8", "strict")
+            except UnicodeError as exc:
+                raise AuditError(context + ": invalid UTF-8") from exc
+
+
+        def unique_put(mapping, key, value, context):
+            require(key not in mapping, context + ": duplicate " + key)
+            mapping[key] = value
+
+
+        class ElfModule:
+            def __init__(self, path):
+                self.path = Path(path)
+                self.data = self.path.read_bytes()
+                d = self.data
+                require(len(d) >= 64, "ELF header is truncated")
+                require(d[:7] == b"\x7fELF\x02\x01\x01", "Expected ELF64 little-endian version 1")
+                kind, machine, version = struct.unpack_from("<HHI", d, 16)
+                require((kind, machine, version) == (1, 183, 1), "Expected AArch64 ET_REL module")
+                shoff = struct.unpack_from("<Q", d, 40)[0]
+                ehsize, _, _, entsize, count, names_idx = struct.unpack_from("<HHHHHH", d, 52)
+                require(ehsize == 64 and entsize == 64, "Unexpected ELF/section header size")
+                require(shoff >= 64 and shoff + 64 <= len(d), "Missing section headers")
+                first = struct.unpack_from("<IIQQQQIIQQ", d, shoff)
+                if count == 0:
+                    count = first[5]
+                if names_idx == 0xffff:
+                    names_idx = first[6]
+                require(count > 0 and shoff + count * 64 <= len(d), "Section table is truncated")
+                require(0 < names_idx < count, "Invalid section-name string table")
+                self.sections = []
+                for i in range(count):
+                    v = struct.unpack_from("<IIQQQQIIQQ", d, shoff + i * 64)
+                    s = dict(zip(("name_offset", "type", "flags", "addr", "offset", "size", "link", "info", "align", "entsize"), v))
+                    s["index"] = i
+                    if s["type"] not in (0, 8):
+                        require(s["offset"] + s["size"] <= len(d), "Section exceeds file bounds")
+                    # ELF gABI: SHF_COMPRESSED sh_size describes bytes stored in the
+                    # file, while relocation offsets refer to uncompressed contents.
+                    # Read only the compression header; no DWARF decompression is
+                    # needed for this symbol/modversion audit.
+                    s["logical_size"] = s["size"]
+                    if s["flags"] & 0x800:
+                        require(s["type"] not in (0, 8) and not s["flags"] & 0x2,
+                                "SHF_COMPRESSED requires a non-ALLOC, non-NOBITS section")
+                        require(s["size"] >= 24, "Truncated Elf64_Chdr compression header")
+                        algorithm, reserved, logical_size, alignment = struct.unpack_from("<IIQQ", d, s["offset"])
+                        require(algorithm in (1, 2), "Unsupported ELF compression type")
+                        require(reserved == 0, "Nonzero Elf64_Chdr reserved field")
+                        require(alignment == 0 or alignment & (alignment - 1) == 0,
+                                "Invalid compressed-section logical alignment")
+                        s["logical_size"] = logical_size
+                        s["compression_type"] = algorithm
+                    self.sections.append(s)
+                require(self.sections[names_idx]["type"] == 3, "Section names are not STRTAB")
+                strings = self.body(self.sections[names_idx])
+                self.by_name = {}
+                for s in self.sections:
+                    s["name"] = cstring(strings, s["name_offset"], "section name")
+                    if s["index"]:
+                        unique_put(self.by_name, s["name"], s, "section table")
+                self.symbol_tables = {}
+                self.symbols = []
+                for s in self.sections:
+                    if s["type"] != 2:
+                        continue
+                    require(s["entsize"] == 24 and s["size"] % 24 == 0, "Malformed SYMTAB")
+                    require(0 < s["link"] < count and self.sections[s["link"]]["type"] == 3, "Invalid SYMTAB strings")
+                    strings = self.body(self.sections[s["link"]])
+                    table = []
+                    for pos in range(0, s["size"], 24):
+                        n, info, other, ndx, value, size = struct.unpack_from("<IBBHQQ", self.body(s), pos)
+                        require(ndx != 0xffff, "Extended symbol section indexes are unsupported")
+                        require(ndx < count or ndx >= 0xff00, "Invalid symbol section index")
+                        table.append({"name": cstring(strings, n, "symbol name"), "binding": info >> 4,
+                                      "type": info & 15, "visibility": other, "section": ndx,
+                                      "value": value, "size": size})
+                    self.symbol_tables[s["index"]] = table
+                    self.symbols.extend(table)
+                require(bool(self.symbol_tables), "A non-stripped symbol table is required")
+                self.relocations = {}
+                for s in self.sections:
+                    if s["type"] not in (4, 9):
+                        continue
+                    require(0 < s["info"] < count, "Invalid relocation target")
+                    if s["type"] == 9:
+                        require(not self.sections[s["info"]]["name"].startswith("__ksymtab"),
+                                "REL export relocations unsupported; expected AArch64 RELA")
+                        continue
+                    require(s["entsize"] == 24 and s["size"] % 24 == 0, "Malformed RELA")
+                    require(s["link"] in self.symbol_tables, "Missing relocation symbol table")
+                    symbols = self.symbol_tables[s["link"]]
+                    for pos in range(0, s["size"], 24):
+                        offset, info, addend = struct.unpack_from("<QQq", self.body(s), pos)
+                        idx = info >> 32
+                        require(idx < len(symbols), "Relocation symbol index out of bounds")
+                        target = self.sections[s["info"]]
+                        require(offset < target["logical_size"],
+                                "Relocation offset out of bounds: %s -> %s, offset=%d, logical_size=%d" %
+                                (s["name"], target["name"], offset, target["logical_size"]))
+                        key = (s["info"], offset)
+                        require(key not in self.relocations, "Duplicate relocation at same address")
+                        self.relocations[key] = (info & 0xffffffff, symbols[idx], addend)
+                self.modinfo = {}
+                require(".modinfo" in self.by_name, "Missing .modinfo")
+                modinfo_data = self.section(".modinfo")
+                require(modinfo_data.endswith(b"\0"), "Unterminated modinfo section")
+                for raw in modinfo_data.split(b"\0"):
+                    if not raw:
+                        continue
+                    require(b"=" in raw, "Malformed modinfo entry")
+                    try:
+                        k, v = raw.decode("utf-8", "strict").split("=", 1)
+                    except UnicodeError as exc:
+                        raise AuditError("Invalid modinfo encoding") from exc
+                    self.modinfo.setdefault(k, []).append(v)
+                self.imports = sorted({s["name"] for s in self.symbols
+                                       if s["section"] == 0 and s["name"] and s["binding"] in (1, 2)})
+                self.basic = self.parse_basic()
+                self.extended = self.parse_extended()
+                self.versions = self.extended or self.basic
+                self.exports = self.parse_exports()
+
+            def body(self, section):
+                require(section["type"] != 8, "Cannot read NOBITS as file bytes")
+                require(not section["flags"] & 0x800,
+                        "Compressed section contents are not decoded by this audit")
+                return self.data[section["offset"]:section["offset"] + section["size"]]
+
+            def section(self, name):
+                return self.body(self.by_name[name]) if name in self.by_name else b""
+
+            def parse_basic(self):
+                data = self.section("__versions")
+                require(len(data) % 64 == 0, "Malformed 64-byte basic modversion records")
+                result = {}
+                for pos in range(0, len(data), 64):
+                    name = cstring(data[pos + 8:pos + 64], context="basic modversion name")
+                    require(bool(SYMBOL_RE.fullmatch(name)), "Invalid basic modversion name")
+                    crc = crc_text(struct.unpack_from("<Q", data, pos)[0])
+                    unique_put(result, name, crc, "basic modversions")
+                return result
+
+            def parse_extended(self):
+                has_names = "__version_ext_names" in self.by_name
+                has_crcs = "__version_ext_crcs" in self.by_name
+                require(has_names == has_crcs, "Only one extended-modversion section exists")
+                if not has_names:
+                    return {}
+                names, crcs = self.section("__version_ext_names"), self.section("__version_ext_crcs")
+                require(names.endswith(b"\0") and len(crcs) % 4 == 0, "Malformed extended modversions")
+                # Modpost's C string initializer may add an extra trailing NUL after
+                # the last explicit NUL. Accept only trailing zero padding, never holes.
+                raw_names = []
+                offset = 0
+                for _ in range(len(crcs) // 4):
+                    end = names.find(b"\0", offset)
+                    require(end > offset, "Missing or empty extended modversion name")
+                    raw_names.append(names[offset:end])
+                    offset = end + 1
+                require(not any(names[offset:]), "Extended name/CRC count differs")
+                result = {}
+                for i, raw in enumerate(raw_names):
+                    try:
+                        name = raw.decode("utf-8", "strict")
+                    except UnicodeError as exc:
+                        raise AuditError("Invalid extended modversion name") from exc
+                    require(bool(SYMBOL_RE.fullmatch(name)), "Invalid extended modversion name")
+                    unique_put(result, name, crc_text(struct.unpack_from("<I", crcs, i * 4)[0]), "extended modversions")
+                return result
+
+            def relocated_string(self, secidx, offset):
+                rel = self.relocations.get((secidx, offset))
+                require(rel is not None, "Missing ksymtab name/namespace relocation")
+                kind, symbol, addend = rel
+                require(kind == 261, "Expected R_AARCH64_PREL32 export relocation")
+                require(0 < symbol["section"] < len(self.sections), "Export string has no concrete section")
+                return cstring(self.body(self.sections[symbol["section"]]), symbol["value"] + addend, "export string")
+
+            def parse_exports(self):
+                result = {}
+                crc_symbols = {}
+                for sym in self.symbols:
+                    if sym["name"].startswith("__crc_"):
+                        unique_put(crc_symbols, sym["name"][6:], sym, "CRC symbols")
+                sections = {s["index"]: s for s in self.sections if s["name"] in ("__ksymtab", "__ksymtab_gpl")}
+                seen_offsets = set()
+                for sym in self.symbols:
+                    if not sym["name"].startswith("__ksymtab_") or sym["type"] == 3:
+                        continue
+                    require(sym["section"] in sections, "Unsupported export table section")
+                    sec = sections[sym["section"]]
+                    offset = sym["value"]
+                    require(offset % 12 == 0 and offset + 12 <= sec["size"], "Malformed 12-byte PREL32 export entry")
+                    name = sym["name"][10:]
+                    require(self.relocated_string(sym["section"], offset + 4) == name, "Export name and symbol disagree")
+                    namespace = self.relocated_string(sym["section"], offset + 8)
+                    require(not any(c in namespace for c in "\t\r\n"), "Namespace cannot be written to symvers")
+                    value_rel = self.relocations.get((sym["section"], offset))
+                    require(value_rel is not None and value_rel[0] == 261, "Invalid export value relocation")
+                    require(name in crc_symbols, "Export has no real __crc_ value: " + name)
+                    cs = crc_symbols[name]
+                    if cs["section"] == 0xfff1:
+                        crc = crc_text(cs["value"])
+                    else:
+                        require(0 < cs["section"] < len(self.sections), "Invalid export CRC section")
+                        crc_sec = self.sections[cs["section"]]
+                        require(crc_sec["name"] in ("__kcrctab", "__kcrctab_gpl"), "Export CRC is outside kcrctab")
+                        require(cs["value"] + 4 <= crc_sec["size"], "Export CRC exceeds section")
+                        require((cs["section"], cs["value"]) not in self.relocations, "Indirect export CRC is unsupported")
+                        crc = crc_text(struct.unpack_from("<I", self.body(crc_sec), cs["value"])[0])
+                    unique_put(result, name, {"crc": crc, "export_type": "EXPORT_SYMBOL_GPL" if sec["name"].endswith("_gpl") else "EXPORT_SYMBOL",
+                                              "namespace": namespace}, "exports")
+                    seen_offsets.add((sym["section"], offset))
+                for idx, sec in sections.items():
+                    require(sec["size"] % 12 == 0, "Unsupported export-entry size")
+                    require(sum(key[0] == idx for key in seen_offsets) == sec["size"] // 12,
+                            "Not all exports have named ksymtab entries")
+                return result
+
+            def summary(self):
+                return {"path": str(self.path), "size": len(self.data),
+                        "sha256": hashlib.sha256(self.data).hexdigest(),
+                        "git_blob_sha1": hashlib.sha1(b"blob " + str(len(self.data)).encode() + b"\0" + self.data).hexdigest(),
+                        "modinfo": self.modinfo, "imports": self.imports, "exports": self.exports,
+                        "basic_crcs": self.basic, "extended_crcs": self.extended,
+                        "compressed_sections": [
+                            {"name": s["name"], "compression_type": s["compression_type"],
+                             "stored_size": s["size"], "logical_size": s["logical_size"]}
+                            for s in self.sections if s["flags"] & 0x800]}
+
+
+        def read_core(path):
+            result = {}
+            data = Path(path).read_bytes()
+            for number, line in enumerate(data.decode("utf-8", "strict").splitlines(), 1):
+                if not line:
+                    continue
+                fields = line.split("\t")
+                require(len(fields) in (4, 5), "Core symvers line %d must have 4/5 tab-separated fields" % number)
+                crc, name, owner, export_type = fields[:4]
+                namespace = fields[4] if len(fields) == 5 else ""
+                require(re.fullmatch(r"0x[0-9a-fA-F]{1,8}", crc) is not None, "Invalid core CRC at line %d" % number)
+                require(bool(SYMBOL_RE.fullmatch(name)), "Invalid core symbol at line %d" % number)
+                require(owner == "vmlinux", "Core symvers contains a non-vmlinux provider: " + owner)
+                require(export_type in ("EXPORT_SYMBOL", "EXPORT_SYMBOL_GPL"), "Unsupported core export type")
+        BATCH_SCRIPT_PART_1
+    - name: 写入批量构建工具 2
+      id: batch_script_2
+      if: always() && steps.batch_script_1.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p kernel_workspace
+        cat >> kernel_workspace/mi_fp_audit.py <<'BATCH_SCRIPT_PART_2'
+                unique_put(result, name, {"crc": crc_text(int(crc, 16)), "provider": "vmlinux",
+                                          "export_type": export_type, "namespace": namespace}, "core symvers")
+            require(bool(result), "Core symvers is empty")
+            return result, hashlib.sha256(data).hexdigest()
+
+
+        def check_metadata(module, role, report, reference=None):
+            info = module.modinfo
+            expected_name = "panel_event_notifier" if role == "provider" else "mi_fp"
+            if info.get("name") != [expected_name]:
+                report["errors"].append(role + ": incorrect or ambiguous module name")
+            if role != "provider":
+                aliases = set(info.get("alias", []))
+                expected = set(reference.modinfo.get("alias", [])) if reference else {
+                    "xiaomi-fp", "of:N*T*Cxiaomi,xiaomi-fp", "of:N*T*Cxiaomi,xiaomi-fpC*"}
+                if not expected.issubset(aliases):
+                    report["errors"].append(role + ": missing required aliases: " + ", ".join(sorted(expected - aliases)))
+                depends = {x for value in info.get("depends", []) for x in value.split(",") if x}
+                if "panel_event_notifier" not in depends:
+                    report["errors"].append(role + ": depends lacks panel_event_notifier")
+                if not NOTIFIERS.issubset(module.imports):
+                    report["errors"].append(role + ": both notifier functions must be real undefined imports")
+            if not module.basic or not module.extended or module.basic != module.extended:
+                report["errors"].append(role + ": basic/extended CRC records must both exist and match exactly")
+            missing_versions = set(module.imports) - set(module.versions)
+            if missing_versions:
+                report["errors"].append(role + ": imports without versions: " + ", ".join(sorted(missing_versions)))
+            if "module_layout" not in module.versions:
+                report["errors"].append(role + ": missing module_layout version")
+            unexpected_versions = set(module.versions) - set(module.imports) - {"module_layout"}
+            if unexpected_versions:
+                report["errors"].append(role + ": versions with no corresponding import: " + ", ".join(sorted(unexpected_versions)))
+
+
+        def check_versions(module, role, suppliers, report):
+            checks = []
+            licenses = set(module.modinfo.get("license", []))
+            gpl_compatible = bool(licenses) and licenses.issubset({"GPL", "GPL v2", "GPL and additional rights", "Dual BSD/GPL", "Dual MIT/GPL", "Dual MPL/GPL"})
+            imports_ns = set(module.modinfo.get("import_ns", []))
+            for name, crc in sorted(module.versions.items()):
+                provider = suppliers.get(name)
+                status = "missing" if provider is None else ("match" if crc == provider["crc"] else "crc_mismatch")
+                row = {"role": role, "symbol": name, "consumer_crc": crc,
+                       "provider": provider["provider"] if provider else None,
+                       "provider_crc": provider["crc"] if provider else None, "status": status}
+                if provider:
+                    row.update(export_type=provider["export_type"], namespace=provider["namespace"])
+                    if provider["export_type"] == "EXPORT_SYMBOL_GPL" and not gpl_compatible:
+                        row["status"] = "gpl_license_mismatch"
+                    ns = provider["namespace"]
+                    if ns and ns not in imports_ns:
+                        row["status"] = "namespace_not_imported"
+                checks.append(row)
+                if row["status"] != "match":
+                    report["errors"].append(role + ": " + name + " -> " + row["status"])
+            report["checks"].extend(checks)
+            report["summaries"][role] = {"version_records": len(checks),
+                                        "matches": sum(r["status"] == "match" for r in checks),
+                                        "nonmatches": sum(r["status"] != "match" for r in checks)}
+
+
+        def run_audit(args, report):
+            modules = {}
+            for role, path in (("reference", args.reference), ("provider", args.provider)):
+                module = ElfModule(path)
+                report["inputs"][role] = module.summary()
+                actual = report["inputs"][role]
+                require(all(actual[key] == val for key, val in PINS[role].items()), role + ": pinned reference hash mismatch")
+                modules[role] = module
+            core, core_hash = read_core(args.core_symvers)
+            report["inputs"]["core_symvers"] = {"path": str(args.core_symvers), "sha256": core_hash, "symbols": len(core)}
+            provider = modules["provider"]
+            check_metadata(provider, "provider", report)
+            check_versions(provider, "provider", core, report)
+            suppliers = dict(core)
+            for name, item in provider.exports.items():
+                require(name not in suppliers, "Multiple providers for symbol: " + name)
+                suppliers[name] = dict(item, provider="panel_event_notifier")
+            require(NOTIFIERS.issubset(provider.exports), "Provider does not export both notifier functions")
+            reference = modules["reference"]
+            check_metadata(reference, "reference", report)
+            check_versions(reference, "reference", suppliers, report)
+            if args.command == "verify":
+                candidate = ElfModule(args.candidate)
+                report["inputs"]["candidate"] = candidate.summary()
+                check_metadata(candidate, "candidate", report, reference)
+                candidate_magic = candidate.modinfo.get("vermagic", [])
+                reference_magic = reference.modinfo.get("vermagic", [])
+                if len(candidate_magic) != 1 or not candidate_magic[0].split():
+                    report["errors"].append("candidate: missing or ambiguous vermagic")
+                else:
+                    tokens = candidate_magic[0].split()
+                    if args.expected_release and tokens[0] != args.expected_release:
+                        report["errors"].append("candidate: release differs from the freshly built kernel")
+                    if len(reference_magic) != 1 or tokens[1:] != reference_magic[0].split()[1:]:
+                        report["errors"].append("candidate: vermagic feature flags differ from the reference")
+                check_versions(candidate, "candidate", suppliers, report)
+                for name in sorted(set(candidate.exports) & set(suppliers)):
+                    report["errors"].append("candidate: export conflicts with an existing supplier: " + name)
+                report["import_changes"] = {"added": sorted(set(candidate.imports) - set(reference.imports)),
+                                            "removed": sorted(set(reference.imports) - set(candidate.imports))}
+                report["metadata_changes"] = {
+                    k: {"reference": reference.modinfo.get(k), "candidate": candidate.modinfo.get(k)}
+                    for k in sorted(set(reference.modinfo) | set(candidate.modinfo))
+                    if reference.modinfo.get(k) != candidate.modinfo.get(k)}
+            if not report["errors"]:
+                lines = ["\t".join((item["crc"], name, "panel_event_notifier", item["export_type"], item["namespace"]))
+                         for name, item in sorted(provider.exports.items())]
+                output = Path(args.outdir) / "panel-event-notifier.symvers"
+                output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                report["provider_symvers"] = {"path": str(output), "symbols": len(lines),
+                                               "sha256": hashlib.sha256(output.read_bytes()).hexdigest()}
+
+
+        def write_reports(outdir, report):
+            report["status"] = "FAIL" if report["errors"] else "PASS"
+            (outdir / "audit.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            fields = ["role", "symbol", "consumer_crc", "provider", "provider_crc", "export_type", "namespace", "status"]
+            with (outdir / "symbol-checks.csv").open("w", encoding="utf-8", newline="") as stream:
+                writer = csv.DictWriter(stream, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows(report["checks"])
+            text = ["mi_fp symbol audit: " + report["status"], "Mode: " + report["mode"], "", LIMITATION, ""]
+            for role, summary in report["summaries"].items():
+                text.append("%s: %d/%d version records match; %d do not match" %
+                            (role, summary["matches"], summary["version_records"], summary["nonmatches"]))
+            if "import_changes" in report:
+                text.extend(["", "Added imports: " + ", ".join(report["import_changes"]["added"]),
+                             "Removed imports: " + ", ".join(report["import_changes"]["removed"])])
+            if report["errors"]:
+                text.extend(["", "Errors:"] + ["- " + e for e in report["errors"]])
+            (outdir / "audit.txt").write_text("\n".join(text) + "\n", encoding="utf-8")
+
+
+        def main(argv=None):
+            parser = argparse.ArgumentParser(description=__doc__)
+            commands = parser.add_subparsers(dest="command", required=True)
+            for name in ("prepare", "verify"):
+                sub = commands.add_parser(name)
+                for arg in ("reference", "provider", "core-symvers", "outdir"):
+                    sub.add_argument("--" + arg, type=Path, required=True)
+                if name == "verify":
+                    sub.add_argument("--candidate", type=Path, required=True)
+                    sub.add_argument("--expected-release", help="Require the newly built kernel release in vermagic")
+            args = parser.parse_args(argv)
+            outdir = args.outdir
+            report = {"schema_version": 1, "mode": args.command, "status": "FAIL", "limitations": LIMITATION,
+                      "pins": PINS, "arguments": {k: str(v) for k, v in vars(args).items()},
+                      "inputs": {}, "summaries": {}, "checks": [], "errors": []}
+            report_io_safe = False
+            try:
+                outdir.mkdir(parents=True, exist_ok=True)
+                inputs = [args.reference, args.provider, args.core_symvers]
+                if args.command == "verify":
+                    inputs.append(args.candidate)
+                outputs = [outdir / n for n in ("audit.json", "audit.txt", "symbol-checks.csv", "panel-event-notifier.symvers")]
+                require(not ({p.resolve() for p in inputs} & {p.resolve() for p in outputs}), "An output would overwrite an input")
+                require(not any(p.is_symlink() for p in outputs), "Audit outputs must not be symbolic links")
+                require(not any(o.exists() and i.exists() and o.samefile(i) for o in outputs for i in inputs),
+                        "An output is a hard link to an input")
+                report_io_safe = True
+                # Never leave a previous successful symvers beside a failed current run.
+                (outdir / "panel-event-notifier.symvers").unlink(missing_ok=True)
+                run_audit(args, report)
+            except (AuditError, OSError, ValueError, UnicodeError, struct.error) as exc:
+                report["errors"].append(type(exc).__name__ + ": " + str(exc))
+            if not report_io_safe:
+                print("Cannot safely write audit reports: " + "; ".join(report["errors"]), file=sys.stderr)
+                return 2
+            try:
+                write_reports(outdir, report)
+            except OSError as exc:
+                print("Cannot write audit reports: " + str(exc), file=sys.stderr)
+                return 2
+            print(report["status"] + ": " + str(outdir / "audit.json"))
+            return 1 if report["errors"] else 0
+
+
+        if __name__ == "__main__":
+            sys.exit(main())
+        BATCH_SCRIPT_PART_2
+    - name: 写入批量构建工具 3
+      id: batch_script_3
+      if: always() && steps.batch_script_2.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p kernel_workspace
+        cat > kernel_workspace/myron_vendor_batch.py <<'BATCH_SCRIPT_PART_3'
+        #!/usr/bin/env python3
+        """Build pinned, isolated external-module candidates; never installs modules or changes .config."""
+        import argparse
+        import hashlib
+        import importlib.util
+        import json
+        import os
+        from pathlib import Path, PurePosixPath
+        import re
+        import shlex
+        import signal
+        import subprocess
+        import sys
+        import time
+        from urllib.parse import quote
+
+        GPL_LICENSES = {"GPL", "GPL v2", "GPL and additional rights", "Dual BSD/GPL", "Dual MIT/GPL", "Dual MPL/GPL"}
+        NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+        HEX40 = re.compile(r"[0-9a-f]{40}\Z")
+        HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+        LIMITATION = "Build and static symbol/metadata checks only; not proof of complete type ABI, device behavior or safe installation. No module was installed."
+
+
+        class TrialError(Exception):
+            pass
+
+
+        def require(condition, message):
+            if not condition:
+                raise TrialError(message)
+
+
+        def digest(path):
+            return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+        def kernel_hashes(out):
+            return {name: digest(out / name) for name in
+                    ("arch/arm64/boot/Image", ".config", "Module.symvers", "vmlinux.symvers")}
+
+
+        def review_notes(entry):
+            result = []
+            for field in ("source_review_notes", "known_source_issues"):
+                notes = entry.get(field, [])
+                if isinstance(notes, str):
+                    notes = [notes]
+                require(isinstance(notes, list), "Invalid source review notes")
+                for note in notes:
+                    require(isinstance(note, (str, dict)), "Invalid source review note")
+                    if isinstance(note, dict):
+                        location = str(note.get("source_path", ""))
+                        if "line" in note:
+                            location += ":" + str(note["line"])
+                        note = " ".join(str(x) for x in (note.get("code", ""), location, note.get("detail", "")) if x)
+                    result.append(note)
+            return list(dict.fromkeys(result))
+
+
+        def write_json(path, value):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+
+
+        def local_path(text):
+            require(isinstance(text, str) and text and "\\" not in text, "Invalid relative path")
+            p = PurePosixPath(text)
+            require(not p.is_absolute() and all(x not in (".", "..") for x in p.parts), "Unsafe relative path: " + text)
+            require(re.fullmatch(r"[A-Za-z0-9_./+-]+", text) is not None, "Unsupported path characters: " + text)
+            return p
+
+
+        def load_helper(path):
+            spec = importlib.util.spec_from_file_location("batch_elf_helper", path)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[spec.name] = module
+            spec.loader.exec_module(module)
+            return module
+
+
+        def run(command, log, timeout, cwd=None):
+            log.parent.mkdir(parents=True, exist_ok=True)
+            with log.open("a") as stream:
+                stream.write("$ " + shlex.join([str(x) for x in command]) + "\n")
+                stream.flush()
+                process = subprocess.Popen(command, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+                try:
+                    code = process.wait(timeout=timeout)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGTERM)
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(process.pid, signal.SIGKILL)
+                        process.wait()
+                    stream.write("\nTIMEOUT after %s seconds\n" % timeout)
+                    raise TrialError("Subprocess timed out; see " + str(log))
+                require(code == 0, "Subprocess exited %d; see %s" % (code, log))
+
+
+        def download(url, path, log, timeout, sha256=None, blob=None):
+            require(url.startswith("https://"), "Downloads must use HTTPS")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temp = path.with_name(path.name + ".download")
+            run(["curl", "--fail", "--location", "--retry", "2", "--connect-timeout", "20", "--max-time", "120", url, "--output", str(temp)], log, timeout)
+            data = temp.read_bytes()
+            if sha256:
+                require(HEX64.fullmatch(sha256) is not None, "Invalid expected SHA256")
+                require(hashlib.sha256(data).hexdigest() == sha256, "SHA256 mismatch: " + url)
+            if blob:
+                require(HEX40.fullmatch(blob) is not None, "Invalid expected Git blob SHA1")
+                actual = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+                require(actual == blob, "Git blob mismatch: " + url)
+            require(sha256 or blob, "Unpinned download")
+            temp.replace(path)
+
+
+        def read_symvers(path):
+            result = {}
+            for number, line in enumerate(Path(path).read_text().splitlines(), 1):
+                if not line:
+                    continue
+                parts = line.split("\t")
+                require(len(parts) in (4, 5), "Malformed symvers line %d in %s" % (number, path))
+                crc, name, owner, export_type = parts[:4]
+                namespace = parts[4] if len(parts) == 5 else ""
+                require(re.fullmatch(r"0x[0-9a-fA-F]{1,8}", crc) is not None, "Invalid symvers CRC")
+                require(name and not any(c.isspace() for c in name), "Invalid symbol name")
+                require(owner and export_type in ("EXPORT_SYMBOL", "EXPORT_SYMBOL_GPL"), "Invalid symbol owner/type")
+                require(name not in result, "Duplicate symbol in symvers: " + name)
+                result[name] = {"crc": "0x%08x" % int(crc, 16), "provider": owner, "export_type": export_type, "namespace": namespace}
+            return result
+
+
+        def module_name(module):
+            names = module.modinfo.get("name", [])
+            require(len(names) == 1 and NAME.fullmatch(names[0]), "Missing/ambiguous module name")
+            return names[0]
+
+
+        def exports_as_suppliers(module):
+            return {name: dict(value, provider=module_name(module)) for name, value in module.exports.items()}
+
+
+        def merge_suppliers(target, source):
+            for name, value in source.items():
+                require(name not in target, "Multiple providers for symbol: " + name)
+                target[name] = value
+
+
+        def audit_imports(module, suppliers):
+            errors, checks = [], []
+            for name in set(module.basic) & set(module.extended):
+                if module.basic[name] != module.extended[name]:
+                    errors.append("Basic/extended CRC disagreement: " + name)
+            versions = dict(module.basic)
+            versions.update(module.extended)
+            strong_imports = {symbol["name"] for symbol in module.symbols
+                              if symbol["section"] == 0 and symbol["name"] and symbol["binding"] == 1}
+            missing = strong_imports - set(versions)
+            errors.extend("Import lacks CRC: " + name for name in sorted(missing))
+            unexpected = set(versions) - set(module.imports) - {"module_layout"}
+            errors.extend("CRC record without matching import: " + name for name in sorted(unexpected))
+            for name in sorted(set(module.imports) - strong_imports - set(versions)):
+                checks.append({"symbol": name, "consumer_crc": None, "supplier": suppliers.get(name),
+                               "status": "OPTIONAL_WEAK_UNVERSIONED"})
+            if "module_layout" not in versions:
+                errors.append("Missing module_layout CRC")
+            licenses = set(module.modinfo.get("license", []))
+            gpl = bool(licenses) and licenses.issubset(GPL_LICENSES)
+            namespaces = set(module.modinfo.get("import_ns", []))
+            for name, crc in sorted(versions.items()):
+                provider = suppliers.get(name)
+                status = "MATCH"
+                if provider is None:
+                    status = "MISSING_PROVIDER"
+                elif crc != provider["crc"]:
+                    status = "CRC_MISMATCH"
+                elif provider["export_type"] == "EXPORT_SYMBOL_GPL" and not gpl:
+                    status = "GPL_LICENSE_MISMATCH"
+                elif provider["namespace"] and provider["namespace"] not in namespaces:
+                    status = "NAMESPACE_NOT_IMPORTED"
+                checks.append({"symbol": name, "consumer_crc": crc, "supplier": provider, "status": status})
+                if status != "MATCH":
+                    errors.append(name + ": " + status)
+            return errors, checks
+
+
+        def audit_candidate(candidate, reference, suppliers, expected_name, release, generated_symvers):
+            errors, checks = audit_imports(candidate, suppliers)
+            if module_name(candidate) != expected_name or module_name(reference) != expected_name:
+                errors.append("Candidate/reference module name differs from manifest")
+            magic = candidate.modinfo.get("vermagic", [])
+            stock_magic = reference.modinfo.get("vermagic", [])
+            if len(magic) != 1 or not magic[0].split() or magic[0].split()[0] != release:
+                errors.append("Candidate release differs from this kernel build")
+            elif len(stock_magic) != 1 or magic[0].split()[1:] != stock_magic[0].split()[1:]:
+                errors.append("Candidate/reference vermagic feature flags differ")
+            aliases = set(candidate.modinfo.get("alias", []))
+            stock_aliases = set(reference.modinfo.get("alias", []))
+            if aliases != stock_aliases:
+                errors.append("Candidate/reference aliases differ")
+            for name, expected in reference.exports.items():
+                if candidate.exports.get(name) != expected:
+                    errors.append("Stock export missing or changed CRC/namespace/type: " + name)
+            for name, value in candidate.exports.items():
+                if name in suppliers:
+                    errors.append("Candidate export conflicts with retained provider: " + name)
+                record = generated_symvers.get(name)
+                if record is None or any(record.get(k) != v for k, v in value.items()):
+                    errors.append("Candidate export differs from actual generated Module.symvers: " + name)
+            if set(generated_symvers) != set(candidate.exports):
+                errors.append("Generated Module.symvers export set differs from candidate ELF")
+            changes = {
+                "aliases_added": sorted(aliases - stock_aliases), "aliases_removed": sorted(stock_aliases - aliases),
+                "imports_added": sorted(set(candidate.imports) - set(reference.imports)),
+                "imports_removed": sorted(set(reference.imports) - set(candidate.imports)),
+                "exports_added": sorted(set(candidate.exports) - set(reference.exports)),
+                "depends": {"reference": reference.modinfo.get("depends", []), "candidate": candidate.modinfo.get("depends", [])},
+            }
+            return {"status": "FAIL" if errors else "PASS", "errors": errors, "checks": checks, "changes": changes,
+                    "candidate": candidate.summary(), "reference": reference.summary(), "limitations": LIMITATION}
+
+
+        def write_extra_symvers(path, suppliers):
+            lines = ["\t".join((entry["crc"], name, entry["provider"], entry["export_type"], entry["namespace"]))
+                     for name, entry in sorted(suppliers.items())]
+            path.write_text("\n".join(lines) + ("\n" if lines else ""))
+
+
+        def validate_manifest(manifest):
+            for field in ("source_repository", "stock_repository"):
+                require(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", manifest[field]) is not None, "Invalid repository")
+            for field in ("source_commit", "stock_commit"):
+                require(HEX40.fullmatch(manifest[field]) is not None, "A full pinned commit is required")
+            names = [entry["name"] for entry in manifest["modules"]]
+            require(names and len(names) == len(set(names)) and all(NAME.fullmatch(x) for x in names), "Invalid/duplicate module names")
+            for entry in manifest["modules"]:
+                review_notes(entry)
+                source_repository = entry.get("source_repository", manifest["source_repository"])
+                source_commit = entry.get("source_commit", manifest["source_commit"])
+                require(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", source_repository) is not None, "Invalid module source repository")
+                require(HEX40.fullmatch(source_commit) is not None, "Module source override needs a full pinned commit")
+                require(entry["objects"], "Empty object list: " + entry["name"])
+                for obj in entry["objects"]:
+                    local_path(obj)
+                    require(obj.endswith(".o"), "Object must end in .o")
+                paths = []
+                for item in entry.get("source_files", []) + entry.get("include_files", []):
+                    local_path(item["path"]); local_path(item["source_path"])
+                    require(HEX40.fullmatch(item["git_blob_sha1"]) is not None, "Unpinned source file")
+                    paths.append(item["path"])
+                require(paths and len(paths) == len(set(paths)), "Empty/duplicate source paths")
+                require(not {"Kbuild", "Makefile", "Module.symvers", "modules.order"} & set(paths), "Source collides with generated build metadata")
+                for flag in entry.get("ccflags", []):
+                    valid = re.fullmatch(r"-D[A-Za-z_][A-Za-z0-9_]*(?:=[A-Za-z0-9_]+)?|-I\$\(src\)(?:/[A-Za-z0-9_./+-]+)?", flag)
+                    require(valid is not None and ".." not in flag.split("/"), "Unsupported ccflag: " + flag)
+                dependencies = entry.get("batch_dependencies", [])
+                require(len(dependencies) == len(set(dependencies)) and entry["name"] not in dependencies and set(dependencies).issubset(names), "Invalid batch dependencies")
+                retained_names = {item["name"] for item in entry.get("stock_providers", [])}
+                require(not retained_names.intersection(names), "Stock provider is also in this batch; declare a batch dependency instead")
+
+
+        def ordered_modules(entries):
+            pending = list(entries)
+            complete = set()
+            while pending:
+                ready = [x for x in pending if set(x.get("batch_dependencies", [])).issubset(complete)]
+                require(ready, "Cyclic batch dependencies")
+                for entry in ready:
+                    yield entry
+                    complete.add(entry["name"])
+                    pending.remove(entry)
+
+
+        def checksums(directory):
+            lines = [digest(p) + "  " + str(p.relative_to(directory)) for p in sorted(directory.rglob("*"))
+                     if p.is_file() and not p.is_symlink() and p.name != "SHA256SUMS"]
+            (directory / "SHA256SUMS").write_text("\n".join(lines) + "\n")
+
+
+        def build_one(entry, manifest, args, helper, core, successful):
+            name = entry["name"]
+            work = args.work_root / name
+            output = args.output / name
+            output.mkdir(parents=True, exist_ok=True)
+            result = {"name": name, "status": "PREPARING", "stage": "source", "errors": [], "limitations": LIMITATION,
+                      "source_review_notes": review_notes(entry), "known_source_issues": entry.get("known_source_issues", [])}
+            started = time.monotonic()
+            write_json(output / "manifest.json", entry)
+            try:
+                blocked = [dep for dep in entry.get("batch_dependencies", []) if dep not in successful]
+                if blocked:
+                    result.update(status="BLOCKED_DEPENDENCY", errors=["Upstream not successful: " + ", ".join(blocked)])
+                    return result
+                require(not work.exists(), "Work directory already exists: " + str(work))
+                work.mkdir(parents=True)
+                source_repository = entry.get("source_repository", manifest["source_repository"])
+                source_commit = entry.get("source_commit", manifest["source_commit"])
+                for item in entry.get("source_files", []) + entry.get("include_files", []):
+                    url = "https://raw.githubusercontent.com/%s/%s/%s" % (source_repository, source_commit, quote(item["source_path"], safe="/"))
+                    download(url, work / item["path"], output / "source.log", args.download_timeout, blob=item["git_blob_sha1"])
+                reference_path = output / "reference" / (name + ".ko")
+                reference = entry["reference"]
+                download(reference["url"], reference_path, output / "source.log", args.download_timeout, sha256=reference["sha256"])
+                stock = helper.ElfModule(reference_path)
+                require(module_name(stock) == name, "Reference name differs from manifest")
+                extra = {}
+                for dep in entry.get("batch_dependencies", []):
+                    merge_suppliers(extra, successful[dep])
+                providers = []
+                provider_names = set()
+                for provider in entry.get("stock_providers", []):
+                    require(NAME.fullmatch(provider["name"]) is not None and provider["name"] not in provider_names, "Invalid/duplicate stock provider")
+                    require(provider["name"] != name and provider["name"] not in entry.get("batch_dependencies", []), "Stock provider conflicts with rebuilt module")
+        BATCH_SCRIPT_PART_3
+    - name: 写入批量构建工具 4
+      id: batch_script_4
+      if: always() && steps.batch_script_3.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p kernel_workspace
+        cat >> kernel_workspace/myron_vendor_batch.py <<'BATCH_SCRIPT_PART_4'
+                    provider_names.add(provider["name"])
+                    target = output / "reference" / (provider["name"] + ".ko")
+                    download(provider["url"], target, output / "source.log", args.download_timeout, sha256=provider["sha256"])
+                    parsed = helper.ElfModule(target)
+                    require(module_name(parsed) == provider["name"], "Stock provider name differs from manifest")
+                    providers.append(parsed)
+                    merge_suppliers(extra, exports_as_suppliers(parsed))
+                suppliers = dict(core)
+                merge_suppliers(suppliers, extra)
+                provider_report = []
+                for provider in providers:
+                    errors, checked = audit_imports(provider, suppliers)
+                    provider_report.append({"name": module_name(provider), "errors": errors, "checks": checked, "metadata": provider.summary()})
+                write_json(output / "stock-provider-audit.json", provider_report)
+                require(not any(item["errors"] for item in provider_report), "Retained stock provider fails current supplier CRC audit")
+                extra_path = output / "extra-symbols.symvers"
+                write_extra_symvers(extra_path, extra)
+                lines = ["obj-m := " + name + ".o"]
+                if entry["objects"] != [name + ".o"]:
+                    require(name + ".o" not in entry["objects"], "Composite module cannot contain itself")
+                    lines.append(name + "-y := " + " ".join(entry["objects"]))
+                if entry.get("ccflags"):
+                    lines.append("ccflags-y += " + " ".join(entry["ccflags"]))
+                (work / "Kbuild").write_text("\n".join(lines) + "\n")
+                (output / "Kbuild").write_text((work / "Kbuild").read_text())
+                source_dest = output / "source"
+                source_dest.mkdir()
+                # Preserve pinned input source and headers, not mutable object files or output-tree links.
+                for item in entry.get("source_files", []) + entry.get("include_files", []):
+                    dest = source_dest / item["path"]
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    dest.write_bytes((work / item["path"]).read_bytes())
+                result["stage"] = "build"
+                command = ["make", "-C", str(args.kernel_source), "-j" + str(args.jobs), "O=" + str(args.kernel_out),
+                           "LLVM=1", "LLVM_IAS=1", "ARCH=arm64", "CC=ccache clang", "M=" + str(work)]
+                if extra:
+                    command.append("KBUILD_EXTRA_SYMBOLS=" + str(extra_path))
+                command.append("modules")
+                run(command, output / "build.log", args.build_timeout)
+                result["stage"] = "audit"
+                candidate_path = output / "candidate" / (name + ".ko")
+                candidate_path.parent.mkdir()
+                require((work / (name + ".ko")).is_file(), "Build did not produce expected module")
+                candidate_path.write_bytes((work / (name + ".ko")).read_bytes())
+                for filename in ("Module.symvers", "modules.order", name + ".mod.c"):
+                    if (work / filename).is_file():
+                        (output / "candidate" / filename).write_bytes((work / filename).read_bytes())
+                candidate = helper.ElfModule(candidate_path)
+                generated = read_symvers(work / "Module.symvers")
+                audit = audit_candidate(candidate, stock, suppliers, name, args.release, generated)
+                write_json(output / "audit.json", audit)
+                require(not audit["errors"], "; ".join(audit["errors"]))
+                # Use the actual generated table after proving it agrees with this candidate's exports.
+                successful[name] = generated
+                result.update(status="BUILD_AND_STATIC_AUDIT_PASS", sha256=digest(candidate_path), bytes=candidate_path.stat().st_size)
+            except Exception as error:
+                statuses = {"source": "SOURCE_OR_PROVIDER_FAILED", "build": "BUILD_FAILED", "audit": "AUDIT_FAILED"}
+                result.update(status=statuses.get(result["stage"], "FAILED"), errors=[type(error).__name__ + ": " + str(error)])
+            finally:
+                result["elapsed_seconds"] = round(time.monotonic() - started, 2)
+                write_json(output / "status.json", result)
+                checksums(output)
+            return result
+
+
+        def main(argv=None):
+            parser = argparse.ArgumentParser(description=__doc__)
+            for arg in ("manifest", "work-root", "output", "kernel-source", "kernel-out", "elf-helper"):
+                parser.add_argument("--" + arg, type=Path, required=True)
+            parser.add_argument("--release", required=True)
+            parser.add_argument("--jobs", type=int, default=2)
+            parser.add_argument("--build-timeout", type=int, default=900)
+            parser.add_argument("--download-timeout", type=int, default=180)
+            args = parser.parse_args(argv)
+            for field in ("manifest", "work_root", "output", "kernel_source", "kernel_out", "elf_helper"):
+                setattr(args, field, getattr(args, field).resolve())
+            args.output.mkdir(parents=True, exist_ok=True)
+            report = {"schema_version": 1, "release": args.release, "limitations": LIMITATION, "modules": [], "errors": []}
+            try:
+                require(args.jobs > 0 and args.build_timeout > 0 and args.download_timeout > 0, "Invalid parallelism/timeout")
+                manifest = json.loads(args.manifest.read_text())
+                validate_manifest(manifest)
+                entries = list(ordered_modules(manifest["modules"]))
+                write_json(args.output / "manifest.json", manifest)
+                helper = load_helper(args.elf_helper)
+                core_path = args.kernel_out / "Module.symvers"
+                core = read_symvers(core_path)
+                require(core, "Full kernel Module.symvers is empty")
+                require((args.kernel_out / "scripts/module.lds").is_file(), "Kernel modules build/preparation is incomplete")
+                report["kernel_module_symvers_sha256"] = digest(core_path)
+                report["manifest_sha256"] = digest(args.manifest)
+                successful = {}
+                baseline = kernel_hashes(args.kernel_out)
+                report["kernel_baseline_sha256"] = baseline
+                for entry in entries:
+                    before = kernel_hashes(args.kernel_out)
+                    require(before == baseline, "Kernel baseline changed before " + entry["name"] + "; stopping remaining modules")
+                    result = build_one(entry, manifest, args, helper, core, successful)
+                    report["modules"].append(result)
+                    result["kernel_before_sha256"] = before
+                    try:
+                        after = kernel_hashes(args.kernel_out)
+                    except Exception as error:
+                        result["previous_status"] = result["status"]
+                        result["status"] = "KERNEL_BASELINE_CHECK_FAILED"
+                        result["errors"].append("Cannot verify kernel baseline after build: " + str(error))
+                        write_json(args.output / entry["name"] / "status.json", result)
+                        checksums(args.output / entry["name"])
+                        raise TrialError(result["errors"][-1])
+                    result["kernel_after_sha256"] = after
+                    if after != baseline:
+                        result["previous_status"] = result["status"]
+                        result["status"] = "KERNEL_BASELINE_CHANGED"
+                        result["errors"].append("Kernel Image/config/symvers changed; stopping remaining modules")
+                        write_json(args.output / entry["name"] / "status.json", result)
+                        checksums(args.output / entry["name"])
+                        raise TrialError(result["errors"][-1])
+                    write_json(args.output / entry["name"] / "status.json", result)
+                    checksums(args.output / entry["name"])
+                    write_json(args.output / "summary.json", report)
+                    print(result["name"] + ": " + result["status"], flush=True)
+            except Exception as error:
+                report["errors"].append(type(error).__name__ + ": " + str(error))
+            report["passed"] = sum(row["status"] == "BUILD_AND_STATIC_AUDIT_PASS" for row in report["modules"])
+            report["failed_or_blocked"] = len(report["modules"]) - report["passed"]
+            report["status"] = "FAIL" if report["errors"] or report["failed_or_blocked"] else "PASS"
+            attempted = {row["name"] for row in report["modules"]}
+            report["not_attempted"] = [entry["name"] for entry in locals().get("entries", []) if entry["name"] not in attempted]
+            write_json(args.output / "summary.json", report)
+            rows = ["# Pinned Xiaomi module batch", "", LIMITATION, "", "| Module | Result | Details | Source review notes |", "|---|---|---|---|"]
+            for row in report["modules"]:
+                detail = "; ".join(row["errors"]).replace("|", "\\|").replace("\n", " ")
+                notes = "; ".join(row["source_review_notes"]).replace("|", "\\|").replace("\n", " ")
+                rows.append("| %s | %s | %s | %s |" % (row["name"], row["status"], detail, notes))
+            if report["not_attempted"]:
+                rows.extend(["", "Not attempted after a batch setup/baseline failure: " + ", ".join(report["not_attempted"])])
+            if report["errors"]:
+                rows.extend(["", "Batch setup errors:"] + ["- " + error for error in report["errors"]])
+            rows.extend(["", "Passed: %d; failed or blocked: %d." % (report["passed"], report["failed_or_blocked"])])
+            (args.output / "summary.md").write_text("\n".join(rows) + "\n")
+            checksums(args.output)
+            return 0 if report["status"] == "PASS" else 1
+
+
+        if __name__ == "__main__":
+            sys.exit(main())
+        BATCH_SCRIPT_PART_4
+    - name: 准备通用审计脚本和固定的首批模块清单
+      id: batch_setup
+      if: always() && steps.batch_script_4.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/vendor-batch" "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/batch-setup.log") 2>&1
+        sha256sum --check "$GITHUB_WORKSPACE/dist/gki-modules/kernel-base.sha256"
+        cat > kernel_workspace/vendor-batch-manifest.json <<'VENDOR_BATCH_MANIFEST'
+        {
+          "source_repository": "MiCode/Xiaomi_Kernel_OpenSource",
+          "source_commit": "45705be1220b4cfa8100516ad86711656c0b634e",
+          "stock_repository": "Evolution-X-Devices/kernel_xiaomi_myron-prebuilt",
+          "stock_commit": "9999f765b53876bf7a013a4fde5221153ad570fc",
+          "modules": [
+            {
+              "name": "mi_stack",
+              "source_dir": "drivers/xiaomi/mi_stack",
+              "objects": [
+                "mi_stack.o"
+              ],
+              "source_files": [
+                {
+                  "path": "mi_stack.c",
+                  "source_path": "drivers/xiaomi/mi_stack/mi_stack.c",
+                  "git_blob_sha1": "5e3fc13ccff45a1c8731acc6bc2b576b0503d800"
+                }
+              ],
+              "include_files": [],
+              "ccflags": [],
+              "reference": {
+                "url": "https://raw.githubusercontent.com/Evolution-X-Devices/kernel_xiaomi_myron-prebuilt/9999f765b53876bf7a013a4fde5221153ad570fc/vendor_dlkm/mi_stack.ko",
+                "sha256": "b8482fb416da16ec2d892eee33d381fdc283bdaf23fc49c15dd62495cdb6adc7",
+                "git_blob_sha1": "8c841de41b1e0867555baa7446d31d664882970c"
+              },
+              "stock_providers": [],
+              "batch_dependencies": [],
+              "known_source_issues": [
+                {
+                  "code": "SOURCE_BUFFER_CAPACITY_MISMATCH",
+                  "source_path": "drivers/xiaomi/mi_stack/mi_stack.c",
+                  "line": 121,
+                  "detail": "kbuf is 128 bytes, but simple_write_to_buffer(kbuf, len, ppos, buf, len) uses caller-controlled len as destination capacity. Requires review/fix before any installation; original pinned source remains unchanged."
+                }
+              ],
+              "source_review_notes": [
+                "kbuf is 128 bytes, but simple_write_to_buffer(kbuf, len, ppos, buf, len) uses caller-controlled len as destination capacity. Requires review/fix before any installation; original pinned source remains unchanged."
+              ]
+            },
+            {
+              "name": "mi_ubt",
+              "source_dir": "drivers/xiaomi/mi_ubt",
+              "objects": [
+                "mi_ubt.o"
+              ],
+              "source_files": [
+                {
+                  "path": "mi_ubt.c",
+                  "source_path": "drivers/xiaomi/mi_ubt/mi_ubt.c",
+                  "git_blob_sha1": "e11d861571378e35b8e54f835c9d8e1b26f19a97"
+                }
+              ],
+              "include_files": [],
+              "ccflags": [],
+              "reference": {
+                "url": "https://raw.githubusercontent.com/Evolution-X-Devices/kernel_xiaomi_myron-prebuilt/9999f765b53876bf7a013a4fde5221153ad570fc/vendor_dlkm/mi_ubt.ko",
+                "sha256": "f5b90eb8fb5fbf0139e4d917817a28f6d6333f878b24372907c7d71501936c60",
+                "git_blob_sha1": "6ea9cfc95703f09cb649dc88b278bb448cf68225"
+              },
+              "stock_providers": [],
+              "batch_dependencies": [],
+              "known_source_issues": [],
+              "source_review_notes": []
+            },
+            {
+              "name": "printk_enhance",
+              "source_dir": "drivers/xiaomi/printk_enhance",
+              "objects": [
+                "printk_enhance.o"
+              ],
+              "source_files": [
+                {
+                  "path": "printk_enhance.c",
+                  "source_path": "drivers/xiaomi/printk_enhance/printk_enhance.c",
+                  "git_blob_sha1": "0d73fb6803c99a2c73494142839550f7ec6cef66"
+                }
+              ],
+              "include_files": [],
+              "ccflags": [],
+              "reference": {
+                "url": "https://raw.githubusercontent.com/Evolution-X-Devices/kernel_xiaomi_myron-prebuilt/9999f765b53876bf7a013a4fde5221153ad570fc/vendor_dlkm/printk_enhance.ko",
+                "sha256": "f496bb77735ee6f57d95ee62f9a4b1783e76ed8d6eab45da8120e27603602d62",
+                "git_blob_sha1": "5c5b48bc472b91f1865263f06cfd86e5a58f4143"
+              },
+              "stock_providers": [],
+              "batch_dependencies": [],
+              "known_source_issues": [
+                {
+                  "code": "SOURCE_BUFFER_TERMINATOR_OUT_OF_BOUNDS",
+                  "source_path": "drivers/xiaomi/printk_enhance/printk_enhance.c",
+                  "line": 59,
+                  "detail": "buffer has DATA_LEN=32 bytes; len is clamped to at most 32, then buffer[len] writes past the end when len==32. Requires review/fix before any installation; original pinned source remains unchanged."
+                }
+              ],
+              "source_review_notes": [
+                "buffer has DATA_LEN=32 bytes; len is clamped to at most 32, then buffer[len] writes past the end when len==32. Requires review/fix before any installation; original pinned source remains unchanged."
+              ]
+            },
+            {
+              "name": "boot_stats",
+              "source_dir": "drivers/soc/qcom",
+              "objects": [
+                "boot_stats.o"
+              ],
+              "source_files": [
+                {
+                  "path": "boot_stats.c",
+                  "source_path": "drivers/soc/qcom/boot_stats.c",
+                  "git_blob_sha1": "6857cc67183724d0f6922cc9d855b5374e82e4e5"
+                }
+              ],
+              "include_files": [],
+              "ccflags": [],
+              "reference": {
+                "url": "https://raw.githubusercontent.com/Evolution-X-Devices/kernel_xiaomi_myron-prebuilt/9999f765b53876bf7a013a4fde5221153ad570fc/vendor_dlkm/boot_stats.ko",
+                "sha256": "a17d1c5cec19f648a1bc1990e1263c2e712ee34c328ae4e9333ef9db57b166c4",
+                "git_blob_sha1": "64d4a2c6205f2373fb91db487b209f24f2828595"
+              },
+              "stock_providers": [],
+              "batch_dependencies": [],
+              "known_source_issues": [],
+              "source_review_notes": []
+            },
+            {
+              "name": "panel_event_notifier",
+              "source_dir": "drivers/soc/qcom",
+              "objects": [
+                "panel_event_notifier.o"
+              ],
+              "source_files": [
+                {
+                  "path": "panel_event_notifier.c",
+                  "source_path": "drivers/soc/qcom/panel_event_notifier.c",
+                  "git_blob_sha1": "94591a00501b12bb8f824c5588d3ff86fb21ee34"
+                }
+              ],
+              "include_files": [
+                {
+                  "path": "include/linux/soc/qcom/panel_event_notifier.h",
+                  "source_path": "include/linux/soc/qcom/panel_event_notifier.h",
+                  "git_blob_sha1": "c20d5549b601ce6d4faac29365ab1ce3db7a258a"
+                }
+              ],
+              "ccflags": [
+                "-I$(src)/include",
+                "-DCONFIG_QCOM_PANEL_EVENT_NOTIFIER=1"
+              ],
+              "reference": {
+                "url": "https://raw.githubusercontent.com/Evolution-X-Devices/kernel_xiaomi_myron-prebuilt/9999f765b53876bf7a013a4fde5221153ad570fc/vendor_dlkm/panel_event_notifier.ko",
+                "sha256": "25094f55a64bc263100253746b1cb9554a54f18e7a574bdda6654cf5b34f6232",
+                "git_blob_sha1": "c481db92afa04f580372f76c00832c228f32dcb7"
+              },
+              "stock_providers": [],
+              "batch_dependencies": [],
+              "known_source_issues": [],
+              "source_review_notes": []
+            }
+          ],
+          "deferred": [
+            {
+              "name": "mca_sysfs and other mca_*",
+              "reason": "Pinned drivers/power/supply/mca is a mode120000 symlink to ../../../../../vendor/xiaomi/proprietary/mca/driver/mca; actual implementation is not provided in this source commit."
+            },
+            {
+              "name": "xiaomi_touch",
+              "reason": "No implementation or module registration found in inspected fixed-commit input subtree; drivers/input only contains fingerprint and misc. Stock name/dependency alone is insufficient source provenance."
+            },
+            {
+              "name": "mi_trace",
+              "reason": "Real source and modules.bzl exist, but module declaration depends on minidump and source includes soc/qcom/minidump.h and uses msm_minidump_add_region/remove_region. Provider/header/export closure is not included in this first independent batch."
+            },
+            {
+              "name": "bootmonitor",
+              "reason": "Real three-C source and modules.bzl exist; declared swinfo/boottime providers and ../boottime header/global state need provenance. swinfo and boottime are not named providers in stock375; no unverified provider stubs added."
+            }
+          ],
+          "build_declarations": "Actual pinned vendor build declarations are Kconfig + modules.bzl, not standalone Makefiles; batch generator creates minimal external obj-m Kbuild without changing ACK.config.",
+          "stock_reference_evidence": "All five local stock module bytes match Git blob IDs returned for the fixed public prebuilt commit; SHA256 pinned from those same bytes."
+        }
+        VENDOR_BATCH_MANIFEST
+        cat > "$GITHUB_WORKSPACE/dist/vendor-batch/source-selection.json" <<'SOURCE_SELECTION_JSON'
+        {
+          "source_commit": "45705be1220b4cfa8100516ad86711656c0b634e",
+          "selected": [
+            "mi_stack",
+            "mi_ubt",
+            "printk_enhance",
+            "boot_stats",
+            "panel_event_notifier"
+          ],
+          "build_declarations": "Actual pinned vendor build declarations are Kconfig + modules.bzl, not standalone Makefiles; batch generator creates minimal external obj-m Kbuild without changing ACK.config.",
+          "baseline_symbol_preflight": "All stock imports for these five modules exist in the observed r38 vmlinux.symvers (25/27/21/8/3 imports respectively). Source-specific stack_trace_save_tsk, Maple Tree mas_find/mas_next, access_process_vm, get_task_mm, file_path, panic_notifier_list and both Android printk tracepoint exports are present. ARM64, STACKTRACE, SCHED_INFO, ANDROID_VENDOR_HOOKS, OF and DRM are enabled in the pinned baseline. This is an initial closure check, not a completed build, CRC/CFI audit or runtime approval.",
+          "known_source_issues": {
+            "mi_stack": [
+              {
+                "code": "SOURCE_BUFFER_CAPACITY_MISMATCH",
+                "source_path": "drivers/xiaomi/mi_stack/mi_stack.c",
+                "line": 121,
+                "detail": "kbuf is 128 bytes, but simple_write_to_buffer(kbuf, len, ppos, buf, len) uses caller-controlled len as destination capacity. Requires review/fix before any installation; original pinned source remains unchanged."
+              }
+            ],
+            "printk_enhance": [
+              {
+                "code": "SOURCE_BUFFER_TERMINATOR_OUT_OF_BOUNDS",
+                "source_path": "drivers/xiaomi/printk_enhance/printk_enhance.c",
+                "line": 59,
+                "detail": "buffer has DATA_LEN=32 bytes; len is clamped to at most 32, then buffer[len] writes past the end when len==32. Requires review/fix before any installation; original pinned source remains unchanged."
+              }
+            ]
+          },
+          "deferred": [
+            {
+              "name": "mca_sysfs and other mca_*",
+              "reason": "Pinned drivers/power/supply/mca is a mode120000 symlink to ../../../../../vendor/xiaomi/proprietary/mca/driver/mca; actual implementation is not provided in this source commit."
+            },
+            {
+              "name": "xiaomi_touch",
+              "reason": "No implementation or module registration found in inspected fixed-commit input subtree; drivers/input only contains fingerprint and misc. Stock name/dependency alone is insufficient source provenance."
+            },
+            {
+              "name": "mi_trace",
+              "reason": "Real source and modules.bzl exist, but module declaration depends on minidump and source includes soc/qcom/minidump.h and uses msm_minidump_add_region/remove_region. Provider/header/export closure is not included in this first independent batch."
+            },
+            {
+              "name": "bootmonitor",
+              "reason": "Real three-C source and modules.bzl exist; declared swinfo/boottime providers and ../boottime header/global state need provenance. swinfo and boottime are not named providers in stock375; no unverified provider stubs added."
+            }
+          ],
+          "reference_status": "All five stock references verified against Git blob identities at the pinned public commit; SHA256 embedded in batch-manifest.json.",
+          "scope": "Sources downloaded/read only; no ACK.config changes, source edits, compilation, device loading, or image modifications.",
+          "extra_repository": {
+            "source_repository": "0oiiiiiippqqw-star/android_kernel_xiaomi_sm8850-extra",
+            "source_commit": "8f6b70e02ba9e3c2d6a987653f2afc3c64e36a5e",
+            "default_branch": "resukisu",
+            "modules": [],
+            "deferred": [
+              {
+                "name": "mca_sysfs",
+                "reason": "No MCA source in checked drivers/power recursive tree."
+              },
+              {
+                "name": "xiaomi_touch",
+                "reason": "No Xiaomi touchscreen source in checked drivers/input recursive tree."
+              }
+            ],
+            "checked_subtrees": [
+              "drivers",
+              "drivers/input",
+              "drivers/power",
+              "drivers/misc",
+              "drivers/soc"
+            ],
+            "note": "This checkout is a generic-kernel-shaped tree with upstream-style qcom implementations, and contains no drivers/xiaomi directory. Same-name upstream files alone are insufficient proof of stock Xiaomi module compatibility."
+          }
+        }
+        SOURCE_SELECTION_JSON
+        cp kernel_workspace/myron_vendor_batch.py kernel_workspace/mi_fp_audit.py kernel_workspace/vendor-batch-manifest.json "$GITHUB_WORKSPACE/dist/vendor-batch/"
+        python3 -m py_compile kernel_workspace/myron_vendor_batch.py kernel_workspace/mi_fp_audit.py
+        cat > "$GITHUB_WORKSPACE/dist/vendor-batch/README.md" <<'BATCH_README'
+        # Myron r38 vendor module batch
+
+        One Image + GKI modules build is shared by all external module trials. This artifact
+        contains five new Xiaomi/Qualcomm module trials; mi_fp keeps its established
+        independent build and audit. overview.md includes the status of all stages.
+
+        Each module has its pinned manifest, source, stock reference, build log and status.
+        When linking succeeds, candidate/ contains the unstripped .ko and real Module.symvers.
+        audit.json checks current imports, namespaces, GPL compatibility, release/aliases,
+        and preservation of every original exported CRC, namespace and export type.
+        Source/build/audit failure in one module does not stop independent modules.
+        A changed Image, .config or kernel symbol table stops the batch.
+
+        Read summary.json and overview.md first. BUILD_AND_STATIC_AUDIT_PASS means those
+        checks passed; it does not prove full type/CFI ABI or hardware behavior. No new
+        module is installed or included in AnyKernel3, and no vendor_dlkm/system_dlkm
+        image is generated. mi_stack and printk_enhance have known source bounds issues
+        listed in their reports; fix and review those before considering installation.
+
+        The panel_event_notifier trial is independent of mi_fp: the established mi_fp
+        path still links against its verified original provider. A passing provider
+        export check does not by itself certify all downstream devices or callbacks.
+
+        Artifact layout:
+        - overview.md: GKI, mi_fp and all five batch module statuses
+        - summary.json / summary.md: detailed batch results
+        - <module>/status.json, build.log, audit.json, candidate/, reference/, source/
+        - source-selection.json: source coverage and deferred modules
+        - manifest.json: fixed source blobs and stock SHA256 references
+        - SHA256SUMS: output integrity checks
+
+        Other artifacts from the same run carry Image/AnyKernel3, the mi_fp trial,
+        and signed GKI staging. GKI staging must be paired with this run's Image.
+        BATCH_README
+    - name: 准备固定 mi_fp 源码、配套头和原厂参考模块
+      id: module_source
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/11-module_source.log") 2>&1
+        set -euo pipefail
+        module_root="$GITHUB_WORKSPACE/kernel_workspace/mi_fp"
+        diag="$GITHUB_WORKSPACE/dist/mi_fp-diagnostic"
+        mkdir -p "$module_root/include/linux/soc/qcom" "$diag/reference"
+        cat > "$diag/source-manifest.json" <<'MI_SOURCE_MANIFEST'
+        {
+          "repository": "MiCode/Xiaomi_Kernel_OpenSource",
+          "commit": "45705be1220b4cfa8100516ad86711656c0b634e",
+          "files": [
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/fp_driver.c",
+              "path": "fp_driver.c",
+              "git_blob_sha1": "149cf77be48534d950fbfacb2d47147b6b71fb18",
+              "byte_count": 42265,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/fp_driver.c"
+            },
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/fp_platform.c",
+              "path": "fp_platform.c",
+              "git_blob_sha1": "e9e63941e04476d82cb712ff598e93a2f8eca657",
+              "byte_count": 14082,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/fp_platform.c"
+            },
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/fp_netlink.c",
+              "path": "fp_netlink.c",
+              "git_blob_sha1": "796ae9c9ce495d323bcac03b39695b5f16bf672a",
+              "byte_count": 2344,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/fp_netlink.c"
+            },
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/fp_input.c",
+              "path": "fp_input.c",
+              "git_blob_sha1": "95bc438c533635733dba88f28f262cda207c282c",
+              "byte_count": 4683,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/fp_input.c"
+            },
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/fp_driver.h",
+              "path": "fp_driver.h",
+              "git_blob_sha1": "6631c32aeafd2b9d2de0f4550d29639641c15f2b",
+              "byte_count": 9230,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/fp_driver.h"
+            },
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/fp_ultra.h",
+              "path": "fp_ultra.h",
+              "git_blob_sha1": "4b43fab784f8b4a52a7247be2d35c559759f5bfe",
+              "byte_count": 755,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/fp_ultra.h"
+            },
+            {
+              "source_path": "include/linux/soc/qcom/panel_event_notifier.h",
+              "path": "include/linux/soc/qcom/panel_event_notifier.h",
+              "git_blob_sha1": "c20d5549b601ce6d4faac29365ab1ce3db7a258a",
+              "byte_count": 2527,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/include/linux/soc/qcom/panel_event_notifier.h"
+            },
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/modules.bzl",
+              "path": "modules.bzl",
+              "git_blob_sha1": "8cb227ebe149775742e167238b45dbba785afe96",
+              "byte_count": 697,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/modules.bzl"
+            },
+            {
+              "source_path": "drivers/input/fingerprint/mi_fp/Kconfig",
+              "path": "Kconfig",
+              "git_blob_sha1": "b02e10479213d19718169455e2472dded6a4192b",
+              "byte_count": 530,
+              "source_url": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/45705be1220b4cfa8100516ad86711656c0b634e/drivers/input/fingerprint/mi_fp/Kconfig"
+            }
+          ]
+        }
+        MI_SOURCE_MANIFEST
+        # 固定提交的原始内容；逐文件核验 git blob id，拒绝 HTML/错误页/源文件漂移。
+        python3 - <<'PY'
+        import hashlib, json, os, pathlib, subprocess
+        base = pathlib.Path(os.environ['GITHUB_WORKSPACE'])
+        manifest = json.loads((base/'dist/mi_fp-diagnostic/source-manifest.json').read_text())
+        root = base/'kernel_workspace/mi_fp'
+        for entry in manifest['files']:
+            dest = root/entry['path']
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            url = 'https://raw.githubusercontent.com/' + manifest['repository'] + '/' + manifest['commit'] + '/' + entry['source_path']
+            subprocess.run(['curl', '-fL', '--retry', '3', url, '-o', str(dest)], check=True)
+            b = dest.read_bytes()
+            actual = hashlib.sha1(b'blob ' + str(len(b)).encode() + b'\0' + b).hexdigest()
+            assert actual == entry['git_blob_sha1'] and len(b) == entry['byte_count'], entry['path']
+        PY
+        cat > "$module_root/Kbuild" <<'KBUILD'
+        obj-m := mi_fp.o
+        mi_fp-y := fp_driver.o fp_platform.o fp_netlink.o fp_input.o
+        ccflags-y += -I$(src)/include
+        # retained stock provider exists; enable only the external module's declarations.
+        ccflags-y += -DCONFIG_QCOM_PANEL_EVENT_NOTIFIER=1
+        KBUILD
+        cp "$module_root/Kbuild" "$diag/Kbuild"
+        cp "$GITHUB_WORKSPACE/kernel_workspace/mi_fp_audit.py" "$diag/mi_fp_audit.py"
+        stock_url="https://raw.githubusercontent.com/Evolution-X-Devices/kernel_xiaomi_myron-prebuilt/$STOCK_COMMIT/vendor_dlkm"
+        curl -fL --retry 3 "$stock_url/mi_fp.ko" -o "$diag/reference/mi_fp.ko"
+        curl -fL --retry 3 "$stock_url/panel_event_notifier.ko" -o "$diag/reference/panel_event_notifier.ko"
+        {
+          echo "MI_SOURCE_COMMIT=$MI_SOURCE_COMMIT"
+          echo "STOCK_COMMIT=$STOCK_COMMIT"
+          echo 'TRIAL=mi_fp only; stock panel_event_notifier retained'
+        } >> "$GITHUB_WORKSPACE/dist/build-info.txt"
+      if: always() && steps.batch_setup.outcome == 'success'
+    - name: 准备外部模块链接文件并建立 mi_fp 构建基准
+      id: module_prepare
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/12-module_prepare.log") 2>&1
+        set -euo pipefail
+        source kernel_workspace/build-env.sh
+        diag="$GITHUB_WORKSPACE/dist/mi_fp-diagnostic"
+        out="$GITHUB_WORKSPACE/kernel_workspace/common/out"
+        python3 kernel_workspace/mi_fp_audit.py prepare \
+          --reference "$diag/reference/mi_fp.ko" \
+          --provider "$diag/reference/panel_event_notifier.ko" \
+          --core-symvers "$out/vmlinux.symvers" --outdir "$diag/prepare"
+        # 保留 make Image modules 生成的完整符号表，绝不以核心表覆盖。
+        # 原厂 provider 的真实导出仍由 KBUILD_EXTRA_SYMBOLS 独立传入。
+        test -s "$out/Module.symvers"
+        cp "$out/Module.symvers" "$diag/kernel.Module.symvers"
+        cp "$out/.config" "$diag/kernel.config.before"
+        sha256sum "$out/arch/arm64/boot/Image" "$out/.config" "$out/vmlinux.symvers" "$out/Module.symvers" > "$diag/base-before.sha256"
+        # 完整 modules 构建已生成 module.lds；仍执行同环境准备并检查基线未改变。
+        # 必须使用相同环境、相同输出目录，不带 M= 执行 modules_prepare。
+        if [[ -s "$out/scripts/module.lds" ]]; then
+          sha256sum "$out/scripts/module.lds" > "$diag/module-lds.before.txt"
+        else
+          echo 'scripts/module.lds: missing or empty before modules_prepare' > "$diag/module-lds.before.txt"
+        fi
+        set +e
+        make -C kernel_workspace/common -j"$(nproc)" O=out LLVM=1 ARCH=arm64 \
+          CC='ccache clang' modules_prepare 2>&1 | tee "$diag/modules-prepare.log"
+        prepare_pipe_status=("${PIPESTATUS[@]}")
+        set -e
+        printf '%s\n' "${prepare_pipe_status[0]}" > "$diag/modules-prepare-exit-code.txt"
+        printf '%s\n' "${prepare_pipe_status[1]}" > "$diag/modules-prepare-log-exit-code.txt"
+        if [[ -s "$out/scripts/module.lds" ]]; then
+          cp "$out/scripts/module.lds" "$diag/module.lds"
+          sha256sum "$out/scripts/module.lds" > "$diag/module-lds.after.txt"
+        else
+          echo 'scripts/module.lds: missing or empty after modules_prepare' > "$diag/module-lds.after.txt"
+        fi
+        sha256sum --check "$diag/base-before.sha256"
+        [[ "${prepare_pipe_status[0]}" == 0 ]] || exit "${prepare_pipe_status[0]}"
+        [[ "${prepare_pipe_status[1]}" == 0 ]] || exit "${prepare_pipe_status[1]}"
+        if [[ ! -s "$out/scripts/module.lds" ]]; then
+          echo '::error::modules_prepare did not generate out/scripts/module.lds'
+          exit 1
+        fi
+      if: always() && steps.module_source.outcome == 'success'
+    - name: 试编 mi_fp（不安装、不打入 AnyKernel3）
+      id: module
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/13-module.log") 2>&1
+        set -euo pipefail
+        source kernel_workspace/build-env.sh
+        module_root="$GITHUB_WORKSPACE/kernel_workspace/mi_fp"
+        diag="$GITHUB_WORKSPACE/dist/mi_fp-diagnostic"
+        mkdir -p "$diag/candidate"
+        set +e
+        make -C kernel_workspace/common -j"$(nproc)" O=out LLVM=1 ARCH=arm64 \
+          CC='ccache clang' M="$module_root" \
+          KBUILD_EXTRA_SYMBOLS="$diag/prepare/panel-event-notifier.symvers" modules \
+          2>&1 | tee "$diag/build.log"
+        pipe_status=("${PIPESTATUS[@]}")
+        build_status=${pipe_status[0]}
+        log_status=${pipe_status[1]}
+        set -e
+        printf '%s\n' "$build_status" > "$diag/build-exit-code.txt"
+        printf '%s\n' "$log_status" > "$diag/log-exit-code.txt"
+        if [[ -f "$module_root/mi_fp.ko" ]]; then cp "$module_root/mi_fp.ko" "$diag/candidate/"; fi
+        if [[ -f "$module_root/mi_fp.mod.c" ]]; then cp "$module_root/mi_fp.mod.c" "$diag/candidate/"; fi
+        if [[ -f "$module_root/Module.symvers" ]]; then cp "$module_root/Module.symvers" "$diag/candidate/"; fi
+        if [[ -f "$module_root/modules.order" ]]; then cp "$module_root/modules.order" "$diag/candidate/"; fi
+        for target in mi_fp.o mi_fp.mod.c mi_fp.mod.o .module-common.o modules.order mi_fp.ko; do
+          if [[ -f "$module_root/$target" ]]; then
+            stat -c '%n: %s bytes' "$module_root/$target"
+          else
+            printf '%s: missing\n' "$module_root/$target"
+          fi
+        done > "$diag/module-targets.txt"
+        cp kernel_workspace/common/out/.config "$diag/kernel.config.after"
+        sha256sum --check "$diag/base-before.sha256"
+        [[ "$build_status" == 0 ]] || exit "$build_status"
+        [[ "$log_status" == 0 ]] || exit "$log_status"
+        test -s "$diag/candidate/mi_fp.ko"
+      if: always() && steps.module_prepare.outcome == 'success'
+    - name: 审计新模块的导入 CRC、依赖和设备绑定
+      id: module_verify
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/14-module_verify.log") 2>&1
+        set -euo pipefail
+        source kernel_workspace/build-env.sh
+        diag="$GITHUB_WORKSPACE/dist/mi_fp-diagnostic"
+        python3 kernel_workspace/mi_fp_audit.py verify \
+          --reference "$diag/reference/mi_fp.ko" \
+          --provider "$diag/reference/panel_event_notifier.ko" \
+          --core-symvers kernel_workspace/common/out/vmlinux.symvers \
+          --candidate "$diag/candidate/mi_fp.ko" --expected-release "$KERNEL_RELEASE" --outdir "$diag/verify"
+        readelf -p .modinfo "$diag/candidate/mi_fp.ko" > "$diag/candidate/modinfo.txt"
+        sha256sum "$diag/candidate/mi_fp.ko" > "$diag/candidate/SHA256SUMS"
+        {
+          echo '### mi_fp 试编与符号版本检查通过'
+          echo '候选模块位于独立的 myron-mi-fp-diagnostic artifact，不包含自动安装脚本。'
+          echo '导入 CRC 由 modpost 从真实供应者符号表取得；检查通过不等于完整类型 ABI、ioctl 或硬件行为已验证。'
+          echo '触控、充电、panel_event_notifier 继续使用现有原厂模块。'
+        } >> "$GITHUB_STEP_SUMMARY"
+        mkdir -p "$diag/install-candidate"
+        # This raw external-module build is unsigned. Strip a separate copy; never mutate the original.
+        llvm-strip --strip-debug -o "$diag/install-candidate/mi_fp.ko" "$diag/candidate/mi_fp.ko"
+        python3 - <<'PY_STRIP'
+        import hashlib, importlib.util, json, os
+        from pathlib import Path
+        base = Path(os.environ['GITHUB_WORKSPACE'])
+        spec = importlib.util.spec_from_file_location('mi_fp_audit',base/'kernel_workspace/mi_fp_audit.py')
+        audit = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(audit)
+        diag = base/'dist/mi_fp-diagnostic'
+        before = audit.ElfModule(diag/'candidate/mi_fp.ko')
+        after = audit.ElfModule(diag/'install-candidate/mi_fp.ko')
+        marker = b'~Module signature appended~\n'
+        assert not before.data.endswith(marker) and not after.data.endswith(marker), 'Do not strip a signed module'
+        def allocated(module):
+            return {s['name']:({k:s[k] for k in ['type','flags','addr','size','align','entsize']},
+                None if s['type']==8 else module.body(s)) for s in module.sections if s['flags']&2}
+        def symbol(module, sym):
+            return {**{k:v for k,v in sym.items() if k!='section'},
+                'section':module.sections[sym['section']]['name'] if 0<sym['section']<len(module.sections) else str(sym['section'])}
+        def relocations(module):
+            return sorted([(module.sections[index]['name'],offset,kind,symbol(module,sym),addend)
+                for (index,offset),(kind,sym,addend) in module.relocations.items()
+                if module.sections[index]['flags']&2],key=lambda row:(row[0],row[1]))
+        assert allocated(before)==allocated(after), 'Runtime section changed during strip'
+        assert relocations(before)==relocations(after), 'Runtime relocation changed during strip'
+        for field in ['modinfo','imports','exports','basic','extended']:
+            assert getattr(before,field)==getattr(after,field), 'Changed '+field
+        report = {'status':'PASS','operation':'llvm-strip --strip-debug on unsigned copy',
+            'allocated_sections':len(allocated(before)),'runtime_relocations':len(relocations(before)),
+            'original_bytes':len(before.data),'stripped_bytes':len(after.data),
+            'original_sha256':hashlib.sha256(before.data).hexdigest(),
+            'stripped_sha256':hashlib.sha256(after.data).hexdigest()}
+        (diag/'install-candidate/strip-verification.json').write_text(json.dumps(report,indent=2)+'\n')
+        print(json.dumps(report))
+        PY_STRIP
+        python3 kernel_workspace/mi_fp_audit.py verify \
+          --reference "$diag/reference/mi_fp.ko" --provider "$diag/reference/panel_event_notifier.ko" \
+          --core-symvers kernel_workspace/common/out/vmlinux.symvers \
+          --candidate "$diag/install-candidate/mi_fp.ko" --expected-release "$KERNEL_RELEASE" \
+          --outdir "$diag/verify-stripped"
+        readelf -n "$diag/install-candidate/mi_fp.ko" > "$diag/install-candidate/elf-notes.txt"
+        (cd "$diag/install-candidate" && sha256sum mi_fp.ko > SHA256SUMS)
+        sha256sum --check "$diag/base-before.sha256"
+        sha256sum --check "$GITHUB_WORKSPACE/dist/gki-modules/kernel-base.sha256"
+      if: always() && steps.module.outcome == 'success'
+    - name: 批量试编 5 个模块并逐项审计（单项失败继续）
+      id: vendor_batch
+      if: always() && steps.batch_setup.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/vendor-batch.log") 2>&1
+        source kernel_workspace/build-env.sh
+        batch="$GITHUB_WORKSPACE/dist/vendor-batch"
+        base="$GITHUB_WORKSPACE/dist/gki-modules/kernel-base.sha256"
+        sha256sum --check "$base"
+        cp "$base" "$batch/kernel-base.sha256"
+        set +e
+        python3 kernel_workspace/myron_vendor_batch.py   --manifest kernel_workspace/vendor-batch-manifest.json   --work-root kernel_workspace/vendor-batch   --output "$batch"   --kernel-source kernel_workspace/common   --kernel-out kernel_workspace/common/out   --elf-helper kernel_workspace/mi_fp_audit.py   --release "$KERNEL_RELEASE" --jobs "$(nproc)"   --build-timeout 900 --download-timeout 180
+        batch_exit=$?
+        sha256sum --check "$base"
+        base_exit=$?
+        set -e
+        printf 'batch=%s\nbaseline=%s\n' "$batch_exit" "$base_exit" > "$batch/step-exit-codes.txt"
+        [[ "$base_exit" == 0 ]] || exit "$base_exit"
+        exit "$batch_exit"
+    - name: 保存 r38 编译缓存
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ${{ steps.cache.outputs.cache-primary-key }}
+      if: always() && steps.kernel.outcome == 'success'
+    - name: 保留试编阶段状态
+      if: always()
+      env:
+        KERNEL_STEP_OUTCOME: ${{ steps.kernel.outcome }}
+        SOURCE_STEP_OUTCOME: ${{ steps.module_source.outcome }}
+        PREPARE_STEP_OUTCOME: ${{ steps.module_prepare.outcome }}
+        MODULE_STEP_OUTCOME: ${{ steps.module.outcome }}
+        VERIFY_STEP_OUTCOME: ${{ steps.module_verify.outcome }}
+        GKI_STEP_OUTCOME: ${{ steps.gki_stage.outcome }}
+        BATCH_SETUP_OUTCOME: ${{ steps.batch_setup.outcome }}
+        BATCH_STEP_OUTCOME: ${{ steps.vendor_batch.outcome }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/16-step.log") 2>&1
+        set -euo pipefail
+        diag="$GITHUB_WORKSPACE/dist/mi_fp-diagnostic"
+        mkdir -p "$diag"
+        printf 'kernel=%s\ngki_stage=%s\nmodule_source=%s\nmodule_prepare=%s\nmodule_build=%s\nmodule_verify=%s\n' \
+          "$KERNEL_STEP_OUTCOME" "$GKI_STEP_OUTCOME" "$SOURCE_STEP_OUTCOME" "$PREPARE_STEP_OUTCOME" \
+          "$MODULE_STEP_OUTCOME" "$VERIFY_STEP_OUTCOME" > "$diag/step-status.txt"
+        if [[ -f dist/build-info.txt ]]; then cp dist/build-info.txt "$diag/build-info.txt"; fi
+        if [[ -f dist/kernel.config ]]; then cp dist/kernel.config "$diag/kernel.config"; fi
+        if [[ -f dist/vmlinux.symvers ]]; then cp dist/vmlinux.symvers "$diag/vmlinux.symvers"; fi
+        gki="$GITHUB_WORKSPACE/dist/gki-modules"
+        mkdir -p "$gki"
+        cp "$diag/step-status.txt" "$gki/step-status.txt"
+        for file in build-info.txt kernel.config Module.symvers vmlinux.symvers System.map; do
+          if [[ -f "dist/$file" ]]; then cp "dist/$file" "$gki/$file"; fi
+        done
+        # Do not copy the entire output tree: it contains the private signing key.
+        out="$GITHUB_WORKSPACE/kernel_workspace/common/out"
+        for file in Module.symvers vmlinux.symvers modules.order modules.builtin modules.builtin.modinfo; do
+          if [[ -f "$out/$file" && ! -f "$gki/$file" ]]; then cp "$out/$file" "$gki/$file"; fi
+        done
+        if [[ -f "$out/.config" && ! -f "$gki/kernel.config" ]]; then cp "$out/.config" "$gki/kernel.config"; fi
+        if [[ -f "$gki/gki-modules-${KERNEL_RELEASE:-unavailable}.tar.gz" ]]; then
+          (cd "$gki" && find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+        fi
+
+        batch="$GITHUB_WORKSPACE/dist/vendor-batch"
+        mkdir -p "$batch"
+        cp "$diag/step-status.txt" "$batch/step-status.txt"
+        printf 'batch_setup=%s\nvendor_batch=%s\n' "$BATCH_SETUP_OUTCOME" "$BATCH_STEP_OUTCOME" >> "$batch/step-status.txt"
+        for file in build-info.txt kernel.config Module.symvers vmlinux.symvers; do
+          if [[ -f "dist/$file" ]]; then cp "dist/$file" "$batch/$file"; fi
+        done
+        python3 - <<'BATCH_OVERVIEW_PY'
+        import hashlib, json, os
+        from pathlib import Path
+        batch = Path(os.environ['GITHUB_WORKSPACE'])/'dist/vendor-batch'
+        labels = [('Image + all configured GKI modules','KERNEL_STEP_OUTCOME'),
+                  ('Signed GKI staging','GKI_STEP_OUTCOME'),
+                  ('mi_fp source','SOURCE_STEP_OUTCOME'),
+                  ('mi_fp preparation','PREPARE_STEP_OUTCOME'),
+                  ('mi_fp build','MODULE_STEP_OUTCOME'),
+                  ('mi_fp static audit + stripped-copy verification','VERIFY_STEP_OUTCOME'),
+                  ('Batch setup','BATCH_SETUP_OUTCOME'),('Five-module batch','BATCH_STEP_OUTCOME')]
+        lines = ['# Myron r38 one-run build overview','','| Stage | Outcome |','|---|---|']
+        lines += ['| '+label+' | '+os.environ.get(env,'unknown')+' |' for label,env in labels]
+        lines += ['', 'A passed build/static audit is not hardware validation or installation approval.',
+                  'Image is built once. New external modules are trial artifacts; AnyKernel3 contains Image only.', '']
+        detail = batch/'summary.md'
+        if detail.exists():
+            lines.append(detail.read_text())
+        else:
+            lines.append('Batch was not completed; inspect step-status.txt and the CI logs.')
+        selection = batch/'source-selection.json'
+        if selection.exists():
+            data = json.loads(selection.read_text())
+            lines += ['', '## Source work deferred', '']
+            lines += ['- '+item['name']+': '+item['reason'] for item in data.get('deferred',[])]
+        text = '\n'.join(lines)+'\n'
+        (batch/'overview.md').write_text(text)
+        with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as stream:
+            stream.write('\n'+text)
+        entries = [hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(batch))
+                   for p in sorted(batch.rglob('*')) if p.is_file() and not p.is_symlink() and p.name!='SHA256SUMS']
+        (batch/'SHA256SUMS').write_text('\n'.join(entries)+'\n')
+        BATCH_OVERVIEW_PY
+    - name: 上传内核及构建信息
+      uses: actions/upload-artifact@v4
+      with:
+        name: ACK-6.12.38-r38-gki-modules-${{ github.run_id }}
+        path: |
+          dist/
+          !dist/mi_fp-diagnostic/**
+          !dist/gki-modules/**
+          !dist/vendor-batch/**
+        if-no-files-found: warn
+        retention-days: '14'
+        compression-level: '1'
+        include-hidden-files: false
+      if: always()
+    - name: 上传独立 mi_fp 试编记录（失败也保留）
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: myron-mi-fp-diagnostic-${{ github.run_id }}
+        path: dist/mi_fp-diagnostic/
+        if-no-files-found: warn
+        retention-days: 14
+        compression-level: 6
+    - name: 上传独立 GKI modules staging 与审核记录（失败也保留）
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: myron-r38-gki-modules-staging-${{ github.run_id }}
+        path: dist/gki-modules/
+        if-no-files-found: warn
+        retention-days: 14
+        compression-level: 1
+    - name: 上传批量模块结果与统一报告（失败也保留）
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: myron-r38-vendor-batch-${{ github.run_id }}
+        path: dist/vendor-batch/
+        if-no-files-found: warn
+        retention-days: 14
+        compression-level: 6
