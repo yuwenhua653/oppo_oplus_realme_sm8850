@@ -1,7 +1,7 @@
 # Standalone: one pinned r38 Image/GKI build + mi_fp + five source-backed vendor trials.
 # No automatic vendor installation; no flashable system_dlkm/vendor_dlkm image.
 # The previously successful mi_fp workflow is preserved separately.
-name: Myron r38 GKI + 6 vendor module trials
+name: Myron r38 GKI + 6 vendor trials (source fixes r2)
 'on':
   workflow_dispatch: {}
 permissions:
@@ -650,7 +650,7 @@ jobs:
           echo '此 AnyKernel3 仅包含 Image；GKI staging 和 mi_fp 候选均独立上传，不进入刷机包。'
           echo '本阶段未生成可刷 system_dlkm；新的 GKI modules 仅与本次 Image 配套。'
         } >> "$GITHUB_STEP_SUMMARY"
-    - name: 写入批量构建工具 1
+    - name: 写入批量构建文件 1
       id: batch_script_1
       if: always() && steps.kernel.outcome == 'success'
       run: |
@@ -964,7 +964,7 @@ jobs:
                 require(owner == "vmlinux", "Core symvers contains a non-vmlinux provider: " + owner)
                 require(export_type in ("EXPORT_SYMBOL", "EXPORT_SYMBOL_GPL"), "Unsupported core export type")
         BATCH_SCRIPT_PART_1
-    - name: 写入批量构建工具 2
+    - name: 写入批量构建文件 2
       id: batch_script_2
       if: always() && steps.batch_script_1.outcome == 'success'
       run: |
@@ -1152,7 +1152,7 @@ jobs:
         if __name__ == "__main__":
             sys.exit(main())
         BATCH_SCRIPT_PART_2
-    - name: 写入批量构建工具 3
+    - name: 写入批量构建文件 3
       id: batch_script_3
       if: always() && steps.batch_script_2.outcome == 'success'
       run: |
@@ -1389,6 +1389,66 @@ jobs:
             path.write_text("\n".join(lines) + ("\n" if lines else ""))
 
 
+        def validate_source_edits(entry):
+            edits = entry.get("source_edits", [])
+            require(isinstance(edits, list), "source_edits must be a list")
+            inputs = entry.get("source_files", []) + entry.get("include_files", [])
+            paths = {item["path"] for item in inputs}
+            seen = set()
+            required = {"path", "before_sha256", "after_sha256", "content", "reason"}
+            for edit in edits:
+                require(isinstance(edit, dict) and set(edit) == required, "Invalid source_edits fields")
+                path = edit["path"]
+                require(str(local_path(path)) == path and path in paths, "Source edit must name a listed, canonical input path")
+                require(path not in seen, "Duplicate source edit: " + path)
+                seen.add(path)
+                for field in ("before_sha256", "after_sha256"):
+                    require(isinstance(edit[field], str) and HEX64.fullmatch(edit[field]), "Invalid source edit " + field)
+                require(isinstance(edit["content"], str), "Source edit content must be UTF-8 text")
+                require(isinstance(edit["reason"], str) and edit["reason"].strip(), "Source edit requires a reason")
+            return edits
+
+
+        def source_fix_records(entry):
+            return [{key: edit[key] for key in ("path", "before_sha256", "after_sha256", "reason")} | {"status": "NOT_APPLIED"}
+                    for edit in entry.get("source_edits", [])]
+
+
+        def apply_source_edits(entry, work, output, records):
+            """Apply only fully pinned edits after original files passed their Git blob checks."""
+            edits = validate_source_edits(entry)
+            if not edits:
+                return
+            inputs = entry.get("source_files", []) + entry.get("include_files", [])
+            provenance = {"status": "VALIDATING", "edits": records, "limitations": LIMITATION}
+            try:
+                for item in inputs:
+                    original = output / "original-source" / item["path"]
+                    original.parent.mkdir(parents=True, exist_ok=True)
+                    original.write_bytes((work / item["path"]).read_bytes())
+                prepared = []
+                # Check every edit before changing any work file; no partial application on a pin mismatch.
+                for edit in edits:
+                    require(digest(work / edit["path"]) == edit["before_sha256"], "Source edit before SHA256 mismatch: " + edit["path"])
+                    content = edit["content"].encode("utf-8", errors="strict")
+                    require(hashlib.sha256(content).hexdigest() == edit["after_sha256"], "Source edit after SHA256 mismatch: " + edit["path"])
+                    prepared.append(content)
+                for edit, content, record in zip(edits, prepared, records):
+                    (work / edit["path"]).write_bytes(content)
+                    require(digest(work / edit["path"]) == edit["after_sha256"], "Written source edit SHA256 mismatch: " + edit["path"])
+                    record["status"] = "APPLIED"
+                for item in inputs:
+                    patched = output / "source" / item["path"]
+                    patched.parent.mkdir(parents=True, exist_ok=True)
+                    patched.write_bytes((work / item["path"]).read_bytes())
+                provenance["status"] = "APPLIED"
+            except Exception as error:
+                provenance.update(status="FAIL", error=type(error).__name__ + ": " + str(error))
+                raise
+            finally:
+                write_json(output / "source-edits-applied.json", provenance)
+
+
         def validate_manifest(manifest):
             for field in ("source_repository", "stock_repository"):
                 require(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", manifest[field]) is not None, "Invalid repository")
@@ -1413,10 +1473,19 @@ jobs:
                     paths.append(item["path"])
                 require(paths and len(paths) == len(set(paths)), "Empty/duplicate source paths")
                 require(not {"Kbuild", "Makefile", "Module.symvers", "modules.order"} & set(paths), "Source collides with generated build metadata")
+                validate_source_edits(entry)
                 for flag in entry.get("ccflags", []):
                     valid = re.fullmatch(r"-D[A-Za-z_][A-Za-z0-9_]*(?:=[A-Za-z0-9_]+)?|-I\$\(src\)(?:/[A-Za-z0-9_./+-]+)?", flag)
                     require(valid is not None and ".." not in flag.split("/"), "Unsupported ccflag: " + flag)
                 dependencies = entry.get("batch_dependencies", [])
+        BATCH_SCRIPT_PART_3
+    - name: 写入批量构建文件 4
+      id: batch_script_4
+      if: always() && steps.batch_script_3.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p kernel_workspace
+        cat >> kernel_workspace/myron_vendor_batch.py <<'BATCH_SCRIPT_PART_4'
                 require(len(dependencies) == len(set(dependencies)) and entry["name"] not in dependencies and set(dependencies).issubset(names), "Invalid batch dependencies")
                 retained_names = {item["name"] for item in entry.get("stock_providers", [])}
                 require(not retained_names.intersection(names), "Stock provider is also in this batch; declare a batch dependency instead")
@@ -1446,7 +1515,8 @@ jobs:
             output = args.output / name
             output.mkdir(parents=True, exist_ok=True)
             result = {"name": name, "status": "PREPARING", "stage": "source", "errors": [], "limitations": LIMITATION,
-                      "source_review_notes": review_notes(entry), "known_source_issues": entry.get("known_source_issues", [])}
+                      "source_review_notes": review_notes(entry), "known_source_issues": entry.get("known_source_issues", []),
+                      "source_fixes": source_fix_records(entry)}
             started = time.monotonic()
             write_json(output / "manifest.json", entry)
             try:
@@ -1461,6 +1531,7 @@ jobs:
                 for item in entry.get("source_files", []) + entry.get("include_files", []):
                     url = "https://raw.githubusercontent.com/%s/%s/%s" % (source_repository, source_commit, quote(item["source_path"], safe="/"))
                     download(url, work / item["path"], output / "source.log", args.download_timeout, blob=item["git_blob_sha1"])
+                apply_source_edits(entry, work, output, result["source_fixes"])
                 reference_path = output / "reference" / (name + ".ko")
                 reference = entry["reference"]
                 download(reference["url"], reference_path, output / "source.log", args.download_timeout, sha256=reference["sha256"])
@@ -1474,14 +1545,6 @@ jobs:
                 for provider in entry.get("stock_providers", []):
                     require(NAME.fullmatch(provider["name"]) is not None and provider["name"] not in provider_names, "Invalid/duplicate stock provider")
                     require(provider["name"] != name and provider["name"] not in entry.get("batch_dependencies", []), "Stock provider conflicts with rebuilt module")
-        BATCH_SCRIPT_PART_3
-    - name: 写入批量构建工具 4
-      id: batch_script_4
-      if: always() && steps.batch_script_3.outcome == 'success'
-      run: |
-        set -euo pipefail
-        mkdir -p kernel_workspace
-        cat >> kernel_workspace/myron_vendor_batch.py <<'BATCH_SCRIPT_PART_4'
                     provider_names.add(provider["name"])
                     target = output / "reference" / (provider["name"] + ".ko")
                     download(provider["url"], target, output / "source.log", args.download_timeout, sha256=provider["sha256"])
@@ -1508,7 +1571,7 @@ jobs:
                 (work / "Kbuild").write_text("\n".join(lines) + "\n")
                 (output / "Kbuild").write_text((work / "Kbuild").read_text())
                 source_dest = output / "source"
-                source_dest.mkdir()
+                source_dest.mkdir(exist_ok=True)
                 # Preserve pinned input source and headers, not mutable object files or output-tree links.
                 for item in entry.get("source_files", []) + entry.get("include_files", []):
                     dest = source_dest / item["path"]
@@ -1611,11 +1674,13 @@ jobs:
             attempted = {row["name"] for row in report["modules"]}
             report["not_attempted"] = [entry["name"] for entry in locals().get("entries", []) if entry["name"] not in attempted]
             write_json(args.output / "summary.json", report)
-            rows = ["# Pinned Xiaomi module batch", "", LIMITATION, "", "| Module | Result | Details | Source review notes |", "|---|---|---|---|"]
+            rows = ["# Pinned Xiaomi module batch", "", LIMITATION, "", "| Module | Result | Details | Source review notes | Source fixes |", "|---|---|---|---|---|"]
             for row in report["modules"]:
                 detail = "; ".join(row["errors"]).replace("|", "\\|").replace("\n", " ")
                 notes = "; ".join(row["source_review_notes"]).replace("|", "\\|").replace("\n", " ")
-                rows.append("| %s | %s | %s | %s |" % (row["name"], row["status"], detail, notes))
+                fixes = "; ".join(fix["path"] + " (" + fix["status"] + "): " + fix["reason"] for fix in row.get("source_fixes", []))
+                fixes = fixes.replace("|", "\\|").replace("\n", " ")
+                rows.append("| %s | %s | %s | %s | %s |" % (row["name"], row["status"], detail, notes, fixes))
             if report["not_attempted"]:
                 rows.extend(["", "Not attempted after a batch setup/baseline failure: " + ", ".join(report["not_attempted"])])
             if report["errors"]:
@@ -1629,15 +1694,13 @@ jobs:
         if __name__ == "__main__":
             sys.exit(main())
         BATCH_SCRIPT_PART_4
-    - name: 准备通用审计脚本和固定的首批模块清单
-      id: batch_setup
+    - name: 写入批量构建文件 5
+      id: batch_script_5
       if: always() && steps.batch_script_4.outcome == 'success'
       run: |
         set -euo pipefail
-        mkdir -p "$GITHUB_WORKSPACE/dist/vendor-batch" "$GITHUB_WORKSPACE/dist/logs"
-        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/batch-setup.log") 2>&1
-        sha256sum --check "$GITHUB_WORKSPACE/dist/gki-modules/kernel-base.sha256"
-        cat > kernel_workspace/vendor-batch-manifest.json <<'VENDOR_BATCH_MANIFEST'
+        mkdir -p kernel_workspace
+        cat > kernel_workspace/vendor-batch-manifest.json <<'BATCH_SCRIPT_PART_5'
         {
           "source_repository": "MiCode/Xiaomi_Kernel_OpenSource",
           "source_commit": "45705be1220b4cfa8100516ad86711656c0b634e",
@@ -1666,16 +1729,26 @@ jobs:
               },
               "stock_providers": [],
               "batch_dependencies": [],
-              "known_source_issues": [
+              "known_source_issues": [],
+              "source_review_notes": [
+                "The pinned source corrections must be rebuilt and re-audited in this run; no corrected binary has been device-tested."
+              ],
+              "source_edits": [
+                {
+                  "path": "mi_stack.c",
+                  "before_sha256": "4cce972a931695f17dedbc4c88c06b39dae17cda6583ebd3a851ceebdeee596f",
+                  "after_sha256": "59dedbfd36fb4ac8e3ee4fb554719aeb3dbffaad5ce6599854b5e9ef405f1183",
+                  "content": "// SPDX-License-Identifier: GPL-2.0+\n/*\n * mi stack will show kernel stacktrace of the specified task.\n *\n * Copyright (C) 2024 Xiaomi Ltd.\n */\n\n#define pr_fmt(fmt) \"mi_stack: \"fmt\n\n#include <linux/kernel.h>\n#include <linux/kstrtox.h>\n#include <linux/module.h>\n#include <linux/proc_fs.h>\n#include <linux/fs.h>\n#include <linux/file.h>\n#include <linux/seq_file.h>\n#include <linux/mutex.h>\n#include <linux/pid_namespace.h>\n#include <linux/rcupdate.h>\n#include <linux/stacktrace.h>\n#include <asm/stacktrace.h>\n\nstruct __mi_stack {\n\tpid_t pid;\n\tstruct task_struct *task;\n\tstruct proc_dir_entry *stack_proc_dir;\n\tstruct mutex lock;\n} mi_stack = {\n\t.pid = -1,\n\t.task = NULL,\n};\n\nstatic kuid_t proc_kuid;\nstatic int proc_uid = 1000;\n\nstatic kgid_t proc_kgid;\nstatic int proc_gid = 1000;\n\n#define MAX_STACK_TRACE_DEPTH\t64\n/*\n * cat /proc/mi_stack/stack\n *\n * [1, init] Kernel calltrace:\n * [<0>] ep_poll+0x86c/0x93c\n * [<1>] do_epoll_wait+0xc8/0xf4\n * [<2>] __arm64_sys_epoll_pwait+0xd0/0x180\n * [<3>] invoke_syscall+0x58/0x114\n * [<4>] el0_svc_common+0xac/0xe8\n * [<5>] do_el0_svc+0x1c/0x28\n * [<6>] el0_svc+0x3c/0x74\n * [<7>] el0t_64_sync_handler+0x68/0xbc\n * [<8>] el0t_64_sync+0x1a8/0x1ac\n */\nstatic int stack_show(struct seq_file *m, void *v)\n{\n\tunsigned long *entries;\n\tunsigned int i, nr_entries;\n\tpid_t pid;\n\tstruct mutex *lock = &mi_stack.lock;\n\tstruct task_struct *task = NULL;\n\n\tmutex_lock(lock);\n\tpid = mi_stack.pid;\n\trcu_read_lock();\n\ttask = pid_task(find_vpid(pid), PIDTYPE_PID);\n\tif (task)\n\t\tget_task_struct(task);\n\trcu_read_unlock();\n\tif (task == NULL) {\n\t\tmutex_unlock(lock);\n\t\tpr_err(\"can not find pid %d\\n\", pid);\n\t\treturn -ESRCH;\n\t}\n\n\tentries = kmalloc_array(MAX_STACK_TRACE_DEPTH, sizeof(*entries),\n\t\t\t\tGFP_KERNEL);\n\tif (!entries) {\n\t\tput_task_struct(task);\n\t\tmutex_unlock(lock);\n\t\treturn -ENOMEM;\n\t}\n\n\tnr_entries = stack_trace_save_tsk(task, entries,\n\t\t\t\t\t\tMAX_STACK_TRACE_DEPTH, 0);\n\n\tseq_printf(m, \"[%d, %s] Kernel calltrace: \\n\", task->pid, task->comm);\n\tput_task_struct(task);\n\n\tmutex_unlock(lock);\n\tfor (i = 0; i < nr_entries; i++) {\n\t\tseq_printf(m, \"[<%d>] %pB\\n\", i, (void *)entries[i]);\n\t}\n\n\tkfree(entries);\n\n\treturn 0;\n}\n\n/*\n * cat /proc/mi_stack/pid\n *\n * [1, init]\n */\nstatic ssize_t pid_read(struct file *file, char __user *buf,\n\t\t\t\t      size_t len, loff_t *offset)\n{\n\tchar kbuf[16];\n\tint nbytes;\n\tstruct mutex *lock = &mi_stack.lock;\n\n\tmutex_lock(lock);\n\tnbytes = scnprintf(kbuf, sizeof(kbuf), \"%d\\n\", mi_stack.pid);\n\tmutex_unlock(lock);\n\n\treturn simple_read_from_buffer(buf, len, offset, kbuf, nbytes);\n}\n\n/* echo $pid > /proc/mi_stack/pid */\nstatic ssize_t pid_write(struct file *file, const char __user *buf,\n\t\t\t  size_t len, loff_t *ppos)\n{\n\tint ret;\n\tint tmp_pid;\n\tstruct mutex *lock = &mi_stack.lock;\n\n\tif (!len)\n\t\treturn -EINVAL;\n\t/* Keep the whole write within kstrtoint_from_user()'s buffer. */\n\tif (len > 32)\n\t\treturn -E2BIG;\n\n\tret = kstrtoint_from_user(buf, len, 10, &tmp_pid);\n\tif (ret)\n\t\treturn ret;\n\n\tif (tmp_pid < 0) {\n\t\tpr_err(\"pid %d is invalid\\n\", tmp_pid);\n\t\treturn -EINVAL;\n\t}\n\n\tmutex_lock(lock);\n\tmi_stack.pid = tmp_pid;\n\tmutex_unlock(lock);\n\tpr_info(\"User set pid:%d\\n\", tmp_pid);\n\n\t*ppos += len;\n\treturn len;\n}\n\nstatic const struct proc_ops pid_pops = {\n\t.proc_read = pid_read,\n\t.proc_write = pid_write,\n};\n\nstatic int __init mi_stack_init(void)\n{\n\tstruct proc_dir_entry *entry;\n\tstruct proc_dir_entry **stack_proc_dir = &mi_stack.stack_proc_dir;\n\n\tproc_kuid = make_kuid(&init_user_ns, proc_uid);\n\tproc_kgid = make_kgid(&init_user_ns, proc_gid);\n\tif (!uid_valid(proc_kuid) || !gid_valid(proc_kgid))\n\t\treturn -EINVAL;\n\n\tmutex_init(&mi_stack.lock);\n\t*stack_proc_dir = proc_mkdir(\"mi_stack\", NULL);\n\tif (!*stack_proc_dir)\n\t\tgoto fail0;\n\n\tentry = proc_create(\"pid\", S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP, *stack_proc_dir, &pid_pops);\n\tif (!entry)\n\t\tgoto fail1;\n\tproc_set_user(entry, proc_kuid, proc_kgid);\n\n\tentry = proc_create_single(\"stack\", S_IRUSR|S_IRGRP, *stack_proc_dir, stack_show);\n\tif (!entry)\n\t\tgoto fail2;\n\tproc_set_user(entry, proc_kuid, proc_kgid);\n\n\tpr_err(\"%s succeed\\n\", __func__);\n\n\treturn 0;\n\nfail2:\n\tremove_proc_entry(\"pid\", *stack_proc_dir);\nfail1:\n\tremove_proc_entry(\"mi_stack\", NULL);\nfail0:\n\tmutex_destroy(&mi_stack.lock);\n\n\treturn -ENOMEM;\n}\n\nstatic void __exit mi_stack_exit(void)\n{\n\tstruct proc_dir_entry *stack_proc_dir = mi_stack.stack_proc_dir;\n\n\tremove_proc_entry(\"stack\", stack_proc_dir);\n\tremove_proc_entry(\"pid\", stack_proc_dir);\n\tremove_proc_entry(\"mi_stack\", NULL);\n\tmutex_destroy(&mi_stack.lock);\n\n\tpr_err(\"%s\\n\", __func__);\n}\n\nmodule_init(mi_stack_init);\nmodule_exit(mi_stack_exit);\nMODULE_AUTHOR(\"gaoxiang17 <gaoxiang17@xiaomi.com>\");\nMODULE_DESCRIPTION(\"Register Mi Stack driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+                  "reason": "Replace user-controlled buffer capacity and unchecked sscanf with bounded decimal kstrtoint_from_user; propagate -EFAULT/-EINVAL/-ERANGE without state changes. Reject zero-length writes with -EINVAL and writes longer than 32 bytes with -E2BIG before copying, so helper cannot truncate a long write and report success. Make pid_read buffer local and bounded with scnprintf, removing concurrent-reader/writer shared-buffer races. Hold RCU read lock across PID lookup and get_task_struct, then release reference on allocation failure. Initialize mutex before any proc entries are exposed; on failure or unload remove proc entries and drain their callbacks before destroying mutex."
+                }
+              ],
+              "original_source_issues": [
                 {
                   "code": "SOURCE_BUFFER_CAPACITY_MISMATCH",
                   "source_path": "drivers/xiaomi/mi_stack/mi_stack.c",
                   "line": 121,
                   "detail": "kbuf is 128 bytes, but simple_write_to_buffer(kbuf, len, ppos, buf, len) uses caller-controlled len as destination capacity. Requires review/fix before any installation; original pinned source remains unchanged."
                 }
-              ],
-              "source_review_notes": [
-                "kbuf is 128 bytes, but simple_write_to_buffer(kbuf, len, ppos, buf, len) uses caller-controlled len as destination capacity. Requires review/fix before any installation; original pinned source remains unchanged."
               ]
             },
             {
@@ -1701,7 +1774,20 @@ jobs:
               "stock_providers": [],
               "batch_dependencies": [],
               "known_source_issues": [],
-              "source_review_notes": []
+              "source_review_notes": [
+                "The pinned source corrections must be rebuilt and re-audited in this run; no corrected binary has been device-tested.",
+                "Fix scope is mm reference/VMA lifetime only; this is not a complete panic-context audit, and user mappings can change after the boundary snapshot."
+              ],
+              "source_edits": [
+                {
+                  "path": "mi_ubt.c",
+                  "before_sha256": "2af3df6d2453d319baaa73a6080a2e604948d73f43b510b6b92d9264df08c69f",
+                  "after_sha256": "b8e4e42f4dc8c4f2e9209f9dc7119c1d765f7b99ae66dcb91ae7c3af46028f6e",
+                  "content": "// SPDX-License-Identifier: GPL-2.0+\n/*\n * Driver for dump user backtrace.\n *\n * Copyright (C) 2024 Xiaomi Ltd.\n */\n\n#define pr_fmt(fmt) \"mi_ubt: \"fmt\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/sched.h>\n#include <linux/mm.h>\n#include <linux/sched/mm.h>\n#include <linux/panic_notifier.h>\n#include <asm/stacktrace.h>\n#include <asm/memory.h>\n\nstatic void dump_frames(unsigned long *stackframes, int frames_cnt,\n\t\t\tstruct task_struct *task)\n{\n\tint i = 0;\n\tunsigned long pc_cur = 0;\n\tstruct mm_struct *mm;\n\tstruct vm_area_struct *vma;\n\n\tif (task != current)\n\t\tmm = get_task_mm(task);\n\telse\n\t\tmm = task->mm;\n\n\tif (!mm)\n\t\treturn;\n\n\tif (!mmap_read_trylock(mm)) {\n\t\tif (task != current)\n\t\t\tmmput(mm);\n\t\treturn;\n\t}\n\n\twhile (i < frames_cnt) {\n\t\tpc_cur = stackframes[i];\n\t\tif (!pc_cur) {\n\t\t\ti++;\n\t\t\tcontinue;\n\t\t}\n\n\t\tvma = find_vma(mm, pc_cur);\n\t\tif (!vma || pc_cur < vma->vm_start) {\n\t\t\ti++;\n\t\t\tcontinue;\n\t\t}\n\n\t\tif (vma->vm_file) {\n\t\t\tstruct file *f = vma->vm_file;\n\t\t\tchar *buf = (char *)__get_free_page(GFP_NOWAIT);\n\n\t\t\tif (buf) {\n\t\t\t\tchar *p;\n\t\t\t\tchar prefix[64];\n\n\t\t\t\tp = file_path(f, buf, PAGE_SIZE);\n\t\t\t\tif (IS_ERR(p))\n\t\t\t\t\tp = \"?\";\n\t\t\t\tsnprintf(prefix, sizeof(prefix), \"<0x%lx> in \", pc_cur);\n\t\t\t\tpr_err(\"#%d %s%s[%lx-%lx]\\n\", i, prefix, p,\n\t\t\t\t\t\tvma->vm_start,\n\t\t\t\t\t\tvma->vm_end);\n\t\t\t\tfree_page((unsigned long)buf);\n\t\t\t}\n\t\t}\n\n\t\ti++;\n\t}\n\n\tmmap_read_unlock(mm);\n\tif (task != current)\n\t\tmmput(mm);\n}\n\n/* Copy the boundary while the VMA is protected by mmap_lock. */\nstatic int find_user_stack_end(struct task_struct *task, unsigned long sp,\n\t\t\t      unsigned long *stack_end)\n{\n\tstruct mm_struct *mm;\n\tstruct vm_area_struct *vma;\n\tint ret = -EFAULT;\n\n\tif (task != current)\n\t\tmm = get_task_mm(task);\n\telse\n\t\tmm = task->mm;\n\n\tif (!mm)\n\t\treturn -EFAULT;\n\n\tif (!mmap_read_trylock(mm))\n\t\tgoto out_put;\n\n\tvma = find_vma(mm, sp);\n\tif (vma && vma->vm_start <= sp && sp < vma->vm_end) {\n\t\t*stack_end = vma->vm_end;\n\t\tret = 0;\n\t}\n\n\tmmap_read_unlock(mm);\nout_put:\n\tif (task != current)\n\t\tmmput(mm);\n\n\treturn ret;\n}\n\nstatic int get_stackframes(struct task_struct *task,\n\t\t\t    unsigned long *stackframes, int max_frames)\n{\n\tstruct pt_regs *user_regs;\n\tunsigned long userstack_start, userstack_end = 0;\n\tunsigned long fp_cur, fp_next, lr, tmp;\n\tint index = 0;\n\n\tuser_regs = task_pt_regs(task);\n\tif (!user_mode(user_regs)) {\n\t\treturn -EFAULT;\n\t}\n\n\tuserstack_start = user_regs->user_regs.sp;\n\tif (find_user_stack_end(task, userstack_start, &userstack_end))\n\t\treturn -EFAULT;\n\n\ttmp = user_regs->user_regs.pc;\n\tif (!tmp || tmp & 0x3)\n\t\treturn -EFAULT;\n\tstackframes[index++] = tmp - 4;\n\n\ttmp = user_regs->user_regs.regs[30];\n\tif (!tmp || tmp & 0x3)\n\t\treturn -EFAULT;\n\tstackframes[index++] = tmp - 4;\n\n\tfp_cur = user_regs->user_regs.regs[29];\n\n\t/* get frames */\n\twhile ((fp_cur < userstack_end) && (fp_cur > userstack_start) && (index < max_frames)) {\n\t\t/* Disable page fault to make sure get_user going on wheels */\n\t\tpagefault_disable();\n\t\tif (task == current) {\n\t\t\tif (get_user(fp_next, (unsigned long __user *)fp_cur) ||\n\t\t\t\tget_user(lr, (unsigned long __user *)(fp_cur + 8)))\n\t\t\t\tgoto fails;\n\t\t} else {\n\t\t\tif (access_process_vm(task, fp_cur, &fp_next,\n\t\t\t\tsizeof(unsigned long), 0) != sizeof(unsigned long) ||\n\t\t\t\taccess_process_vm(task, fp_cur + 0x08, &lr,\n\t\t\t\tsizeof(unsigned long), 0) != sizeof(unsigned long))\n\t\t\t\tgoto fails;\n\t\t}\n\t\tpagefault_enable();\n\n\t\tif (!lr || lr & 0x3)\n\t\t\treturn -EFAULT;\n\n\t\tstackframes[index++] = lr - 4;\n\t\tfp_cur = fp_next;\n\t}\n\n\treturn index;\nfails:\n\tpagefault_enable();\n\treturn -EFAULT;\n}\n\n#define MAX_STACK_TRACE_DEPTH\t64\nstatic void show_user_backtrace(struct task_struct *task)\n{\n\tunsigned long stackframes[MAX_STACK_TRACE_DEPTH];\n\tint frames_cnt = 0;\n\n\tmemset(stackframes, 0, sizeof(stackframes));\n\tframes_cnt = get_stackframes(task, stackframes, MAX_STACK_TRACE_DEPTH);\n\tif (frames_cnt <= 0) {\n\t\treturn;\n\t}\n\n\tdump_frames(stackframes, frames_cnt, task);\n}\n\nvoid dump_user_backtrace(struct task_struct *task)\n{\n\tif (!task)\n\t\ttask = current;\n\n\tget_task_struct(task);\n\tpr_err(\"[%s, %d, %c, %llu] User backtrace:\\n\",\n\t\t\t\ttask->comm,\n\t\t\t\ttask_pid_nr(task),\n\t\t\t\ttask_state_to_char(task),\n\t\t\t\ttask->sched_info.last_arrival);\n\n\tshow_user_backtrace(task);\n\tput_task_struct(task);\n}\nEXPORT_SYMBOL_GPL(dump_user_backtrace);\n\nstatic int mi_ubt_panic_notifier(struct notifier_block *this, unsigned long event, void *ptr)\n{\n\tdump_user_backtrace(NULL);\n\treturn NOTIFY_DONE;\n}\n\nstatic struct notifier_block mi_ubt_panic_blk = {\n\t.notifier_call  = mi_ubt_panic_notifier,\n\t.priority = INT_MAX,\n};\n\nstatic int __init user_backtrace_init(void)\n{\n\tatomic_notifier_chain_register(&panic_notifier_list, &mi_ubt_panic_blk);\n\tpr_err(\"%s successd\\n\", __func__);\n\n\treturn 0;\n}\ndevice_initcall(user_backtrace_init);\n\nstatic void __exit user_backtrace_exit(void)\n{\n\tatomic_notifier_chain_unregister(&panic_notifier_list, &mi_ubt_panic_blk);\n\tpr_err(\"%s\\n\", __func__);\n}\nmodule_exit(user_backtrace_exit);\n\nMODULE_DESCRIPTION(\"Register user backtrace driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+                  "reason": "Only release mm references acquired by get_task_mm(remote task); current task mm stays borrowed. Use retained mm for find_vma and reject unmapped holes. Copy stack VMA end under mmap_read_lock, returning a scalar instead of an unlocked VMA pointer. Remove direct task->mm maple-tree access before checking and retaining mm."
+                }
+              ],
+              "original_source_issues": []
             },
             {
               "name": "printk_enhance",
@@ -1724,17 +1810,35 @@ jobs:
                 "git_blob_sha1": "5c5b48bc472b91f1865263f06cfd86e5a58f4143"
               },
               "stock_providers": [],
+        BATCH_SCRIPT_PART_5
+    - name: 写入批量构建文件 6
+      id: batch_script_6
+      if: always() && steps.batch_script_5.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p kernel_workspace
+        cat >> kernel_workspace/vendor-batch-manifest.json <<'BATCH_SCRIPT_PART_6'
               "batch_dependencies": [],
-              "known_source_issues": [
+              "known_source_issues": [],
+              "source_review_notes": [
+                "The pinned source corrections must be rebuilt and re-audited in this run; no corrected binary has been device-tested."
+              ],
+              "source_edits": [
+                {
+                  "path": "printk_enhance.c",
+                  "before_sha256": "5faef47d7d012caa47da1f7fa4593b6119ad3811a926499a65b576d0b0ba3717",
+                  "after_sha256": "2852f37e7d4c9162b1dada6b1694a31b045345226029d548f773444b91c798cf",
+                  "content": "// SPDX-License-Identifier: GPL-2.0+\n/*\n * Drivers for printk enhance.\n *\n * Copyright (C) 2024 Xiaomi Ltd.\n */\n\n#define pr_fmt(fmt) \"printk_enhance: \"fmt\n\n#include <linux/kernel.h>\n#include <linux/kstrtox.h>\n#include <linux/module.h>\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n#include <linux/pid_namespace.h>\n#include <trace/hooks/printk.h>\n\n/*\n * [31:30]: ctx\n * [29:24]: cpu\n * [23:0]: tid\n */\n#define PRINTK_CALLER_CTX_SHIFT 30\n#define PRINTK_CALLER_CPU_SHIFT 24\n#define PRINTK_CALLER_TID_SHIFT 0\n\n#define PRINTK_CALLER_CTX_MASK 0xc0000000\n#define PRINTK_CALLER_CPU_MASK 0x3f000000\n#define PRINTK_CALLER_TID_MASK 0x00ffffff\n\nenum printk_caller_ctx {\n\tprintk_ctx_task,\n\tprintk_ctx_softirq,\n\tprintk_ctx_hardirq,\n\tprintk_ctx_nmi,\n};\n\nchar printk_caller_ctx_str[] = {'T', 'S', 'H', 'N'};\nstatic bool enabled = false;\nstatic struct proc_dir_entry *pentry;\n\nstatic int printk_enhance_enable_show(struct seq_file *seq_filp, void *data)\n{\n\tseq_printf(seq_filp, \"%d\\n\", enabled);\n\treturn 0;\n}\n\nstatic ssize_t printk_enhance_enable_write(struct file *file,\n                       const char __user *buf, size_t len, loff_t *ppos)\n{\n\tint ret;\n\tint value;\n\n\tif (!len)\n\t\treturn -EINVAL;\n\t/* Keep the whole write within kstrtoint_from_user()'s buffer. */\n\tif (len > 32)\n\t\treturn -E2BIG;\n\n\tret = kstrtoint_from_user(buf, len, 10, &value);\n\tif (ret)\n\t\treturn ret;\n\tWRITE_ONCE(enabled, value);\n\n\tpr_err(\"enabled has been set to %d\\n\", enabled);\n\n\t*ppos += len;\n\n\treturn len;\n}\n\nint printk_enhance_enable_open(struct inode *inode, struct file *file)\n{\n\treturn single_open(file, printk_enhance_enable_show, file);\n}\n\nstatic const struct proc_ops printk_enhance_enable_proc_fops = {\n\t.proc_open      = printk_enhance_enable_open,\n\t.proc_read      = seq_read,\n\t.proc_write     = printk_enhance_enable_write,\n\t.proc_lseek     = seq_lseek,\n\t.proc_release   = single_release,\n};\n\nstatic int printk_enhance_create_procfs(void)\n{\n\tstruct proc_dir_entry *entry;\n\n\tpentry = proc_mkdir(\"printk_enhance\", NULL);\n\tif (!pentry)\n\t\treturn -ENOMEM;\n\n\tentry = proc_create(\"enabled\", S_IWUGO | S_IRUGO, pentry, &printk_enhance_enable_proc_fops);\n\tif (!entry) {\n\t\tremove_proc_entry(\"printk_enhance\", NULL);\n\t\treturn -ENOMEM;\n\t}\n\n\treturn 0;\n}\n\nstatic void printk_enhance_destory_procfs(void)\n{\n\tremove_proc_entry(\"enabled\", pentry);\n\tremove_proc_entry(\"printk_enhance\", NULL);\n}\n\nstatic enum printk_caller_ctx get_printk_ctx(void)\n{\n\tif (in_nmi())\n\t\treturn printk_ctx_nmi;\n\n\tif (in_irq())\n\t\treturn printk_ctx_hardirq;\n\n\tif (in_softirq())\n\t\treturn printk_ctx_softirq;\n\n\treturn printk_ctx_task;\n}\n\nstatic void enhance_caller_id(void *unused, u32 *caller_id)\n{\n\tif (likely(!enabled))\n\t\treturn;\n\n\t*caller_id = ((get_printk_ctx() << PRINTK_CALLER_CTX_SHIFT) & PRINTK_CALLER_CTX_MASK) + \\\n\t\t\t((smp_processor_id() << PRINTK_CALLER_CPU_SHIFT) & PRINTK_CALLER_CPU_MASK) + \\\n\t\t\t((task_pid_nr(current) << PRINTK_CALLER_TID_SHIFT) & PRINTK_CALLER_TID_MASK);\n}\n\nstatic void enhance_caller(void *unused, char *caller, size_t size, u32 id, int *ret)\n{\n\tif (likely(!enabled))\n\t\treturn;\n\n\tif (snprintf(caller, size, \"%c,T%u,C%u\",\n\t\tprintk_caller_ctx_str[(id & PRINTK_CALLER_CTX_MASK) >> PRINTK_CALLER_CTX_SHIFT],\n\t\t(id & PRINTK_CALLER_TID_MASK) >> PRINTK_CALLER_TID_SHIFT,\n\t\t(id & PRINTK_CALLER_CPU_MASK) >> PRINTK_CALLER_CPU_SHIFT) > 0)\n\t\t*ret = 1;\n}\n\nstatic int hook_printk_enhance_events(void)\n{\n\tint ret;\n\n\tret = register_trace_android_vh_printk_caller_id(enhance_caller_id, NULL);\n\tif (ret) {\n\t\tpr_err(\"%s failed\\n\", __func__);\n\t\treturn ret;\n\t}\n\n\tret = register_trace_android_vh_printk_caller(enhance_caller, NULL);\n\tif (ret) {\n\t\tpr_err(\"%s failed\\n\", __func__);\n\t\tunregister_trace_android_vh_printk_caller_id(enhance_caller_id, NULL);\n\t\treturn ret;\n\t}\n\n\treturn 0;\n}\n\nstatic void unhook_printk_enhance_events(void)\n{\n\tunregister_trace_android_vh_printk_caller(enhance_caller, NULL);\n\tunregister_trace_android_vh_printk_caller_id(enhance_caller_id, NULL);\n}\n\nstatic int __init printk_enhance_init(void)\n{\n\tint ret;\n\n\tret = printk_enhance_create_procfs();\n\tif (ret < 0)\n\t\treturn ret;\n\n\tret = hook_printk_enhance_events();\n\tif (ret < 0)\n\t\tgoto hook_events_fail;\n\n\tpr_err(\"%s succeed\\n\", __func__);\n\treturn 0;\n\nhook_events_fail:\n\tprintk_enhance_destory_procfs();\n\n\treturn ret;\n}\n\nstatic void __exit printk_enhance_exit(void)\n{\n\tunhook_printk_enhance_events();\n\tprintk_enhance_destory_procfs();\n\n\tpr_err(\"%s\\n\", __func__);\n}\n\nmodule_init(printk_enhance_init);\nmodule_exit(printk_enhance_exit);\nMODULE_AUTHOR(\"gaoxiang17 <gaoxiang17@xiaomi.com>\");\nMODULE_DESCRIPTION(\"Register Printk Enhance driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+                  "reason": "Remove DATA_LEN=32 off-by-one NUL store and input truncation. Parse decimal via kstrtoint_from_user with base 10 instead of passing write length as integer base. Reject empty/overlong writes and propagate user-copy/parse failures without updating enabled."
+                }
+              ],
+              "original_source_issues": [
                 {
                   "code": "SOURCE_BUFFER_TERMINATOR_OUT_OF_BOUNDS",
                   "source_path": "drivers/xiaomi/printk_enhance/printk_enhance.c",
                   "line": 59,
                   "detail": "buffer has DATA_LEN=32 bytes; len is clamped to at most 32, then buffer[len] writes past the end when len==32. Requires review/fix before any installation; original pinned source remains unchanged."
                 }
-              ],
-              "source_review_notes": [
-                "buffer has DATA_LEN=32 bytes; len is clamped to at most 32, then buffer[len] writes past the end when len==32. Requires review/fix before any installation; original pinned source remains unchanged."
               ]
             },
             {
@@ -1816,9 +1920,25 @@ jobs:
             }
           ],
           "build_declarations": "Actual pinned vendor build declarations are Kconfig + modules.bzl, not standalone Makefiles; batch generator creates minimal external obj-m Kbuild without changing ACK.config.",
-          "stock_reference_evidence": "All five local stock module bytes match Git blob IDs returned for the fixed public prebuilt commit; SHA256 pinned from those same bytes."
+          "stock_reference_evidence": "All five local stock module bytes match Git blob IDs returned for the fixed public prebuilt commit; SHA256 pinned from those same bytes.",
+          "revision": "r2-source-corrections-after-run-37466024765",
+          "baseline_result": {
+            "run_id": "37466024765",
+            "vendor_compile_passed": 5,
+            "mi_fp_passed": true,
+            "gki_staged_count": 103,
+            "note": "These results apply to the original unmodified sources. Corrected sources require a new build."
+          }
         }
-        VENDOR_BATCH_MANIFEST
+        BATCH_SCRIPT_PART_6
+    - name: 准备通用审计脚本和固定的首批模块清单
+      id: batch_setup
+      if: always() && steps.batch_script_6.outcome == 'success'
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/dist/vendor-batch" "$GITHUB_WORKSPACE/dist/logs"
+        exec > >(tee "$GITHUB_WORKSPACE/dist/logs/batch-setup.log") 2>&1
+        sha256sum --check "$GITHUB_WORKSPACE/dist/gki-modules/kernel-base.sha256"
         cat > "$GITHUB_WORKSPACE/dist/vendor-batch/source-selection.json" <<'SOURCE_SELECTION_JSON'
         {
           "source_commit": "45705be1220b4cfa8100516ad86711656c0b634e",
@@ -1831,24 +1951,6 @@ jobs:
           ],
           "build_declarations": "Actual pinned vendor build declarations are Kconfig + modules.bzl, not standalone Makefiles; batch generator creates minimal external obj-m Kbuild without changing ACK.config.",
           "baseline_symbol_preflight": "All stock imports for these five modules exist in the observed r38 vmlinux.symvers (25/27/21/8/3 imports respectively). Source-specific stack_trace_save_tsk, Maple Tree mas_find/mas_next, access_process_vm, get_task_mm, file_path, panic_notifier_list and both Android printk tracepoint exports are present. ARM64, STACKTRACE, SCHED_INFO, ANDROID_VENDOR_HOOKS, OF and DRM are enabled in the pinned baseline. This is an initial closure check, not a completed build, CRC/CFI audit or runtime approval.",
-          "known_source_issues": {
-            "mi_stack": [
-              {
-                "code": "SOURCE_BUFFER_CAPACITY_MISMATCH",
-                "source_path": "drivers/xiaomi/mi_stack/mi_stack.c",
-                "line": 121,
-                "detail": "kbuf is 128 bytes, but simple_write_to_buffer(kbuf, len, ppos, buf, len) uses caller-controlled len as destination capacity. Requires review/fix before any installation; original pinned source remains unchanged."
-              }
-            ],
-            "printk_enhance": [
-              {
-                "code": "SOURCE_BUFFER_TERMINATOR_OUT_OF_BOUNDS",
-                "source_path": "drivers/xiaomi/printk_enhance/printk_enhance.c",
-                "line": 59,
-                "detail": "buffer has DATA_LEN=32 bytes; len is clamped to at most 32, then buffer[len] writes past the end when len==32. Requires review/fix before any installation; original pinned source remains unchanged."
-              }
-            ]
-          },
           "deferred": [
             {
               "name": "mca_sysfs and other mca_*",
@@ -1869,6 +1971,58 @@ jobs:
           ],
           "reference_status": "All five stock references verified against Git blob identities at the pinned public commit; SHA256 embedded in batch-manifest.json.",
           "scope": "Sources downloaded/read only; no ACK.config changes, source edits, compilation, device loading, or image modifications.",
+          "original_source_issues": {
+            "mi_stack": [
+              {
+                "code": "SOURCE_BUFFER_CAPACITY_MISMATCH",
+                "source_path": "drivers/xiaomi/mi_stack/mi_stack.c",
+                "line": 121,
+                "detail": "kbuf is 128 bytes, but simple_write_to_buffer(kbuf, len, ppos, buf, len) uses caller-controlled len as destination capacity. Requires review/fix before any installation; original pinned source remains unchanged."
+              }
+            ],
+            "printk_enhance": [
+              {
+                "code": "SOURCE_BUFFER_TERMINATOR_OUT_OF_BOUNDS",
+                "source_path": "drivers/xiaomi/printk_enhance/printk_enhance.c",
+                "line": 59,
+                "detail": "buffer has DATA_LEN=32 bytes; len is clamped to at most 32, then buffer[len] writes past the end when len==32. Requires review/fix before any installation; original pinned source remains unchanged."
+              }
+            ]
+          },
+          "source_corrections": {
+            "mi_stack": [
+              {
+                "path": "mi_stack.c",
+                "before_sha256": "4cce972a931695f17dedbc4c88c06b39dae17cda6583ebd3a851ceebdeee596f",
+                "after_sha256": "59dedbfd36fb4ac8e3ee4fb554719aeb3dbffaad5ce6599854b5e9ef405f1183",
+                "reason": "Replace user-controlled buffer capacity and unchecked sscanf with bounded decimal kstrtoint_from_user; propagate -EFAULT/-EINVAL/-ERANGE without state changes. Reject zero-length writes with -EINVAL and writes longer than 32 bytes with -E2BIG before copying, so helper cannot truncate a long write and report success. Make pid_read buffer local and bounded with scnprintf, removing concurrent-reader/writer shared-buffer races. Hold RCU read lock across PID lookup and get_task_struct, then release reference on allocation failure. Initialize mutex before any proc entries are exposed; on failure or unload remove proc entries and drain their callbacks before destroying mutex."
+              }
+            ],
+            "mi_ubt": [
+              {
+                "path": "mi_ubt.c",
+                "before_sha256": "2af3df6d2453d319baaa73a6080a2e604948d73f43b510b6b92d9264df08c69f",
+                "after_sha256": "b8e4e42f4dc8c4f2e9209f9dc7119c1d765f7b99ae66dcb91ae7c3af46028f6e",
+                "reason": "Only release mm references acquired by get_task_mm(remote task); current task mm stays borrowed. Use retained mm for find_vma and reject unmapped holes. Copy stack VMA end under mmap_read_lock, returning a scalar instead of an unlocked VMA pointer. Remove direct task->mm maple-tree access before checking and retaining mm."
+              }
+            ],
+            "printk_enhance": [
+              {
+                "path": "printk_enhance.c",
+                "before_sha256": "5faef47d7d012caa47da1f7fa4593b6119ad3811a926499a65b576d0b0ba3717",
+                "after_sha256": "2852f37e7d4c9162b1dada6b1694a31b045345226029d548f773444b91c798cf",
+                "reason": "Remove DATA_LEN=32 off-by-one NUL store and input truncation. Parse decimal via kstrtoint_from_user with base 10 instead of passing write length as integer base. Reject empty/overlong writes and propagate user-copy/parse failures without updating enabled."
+              }
+            ]
+          },
+          "baseline_result": {
+            "run_id": "37466024765",
+            "vendor_compile_passed": 5,
+            "mi_fp_passed": true,
+            "gki_staged_count": 103,
+            "note": "These results apply to the original unmodified sources. Corrected sources require a new build."
+          },
+          "correction_status": "Source corrections are embedded and hash-pinned; corrected binaries still require this CI build and subsequent device validation.",
           "extra_repository": {
             "source_repository": "0oiiiiiippqqw-star/android_kernel_xiaomi_sm8850-extra",
             "source_commit": "8f6b70e02ba9e3c2d6a987653f2afc3c64e36a5e",
@@ -1905,6 +2059,13 @@ jobs:
         independent build and audit. overview.md includes the status of all stages.
 
         Each module has its pinned manifest, source, stock reference, build log and status.
+        Three debug drivers carry explicit source corrections after run 37466024765:
+        mi_stack (bounded proc input, local read buffer, task lifetime), printk_enhance
+        (bounded decimal parsing), mi_ubt (mm reference and VMA lifetime).
+        Original source first passes its Git blob check, then before/after SHA256 gates
+        the correction. original-source/ and source/ preserve both versions, with
+        source-edits-applied.json recording application. Corrected outputs require a new
+        build/static audit and hardware validation; the old run did not test these fixes.
         When linking succeeds, candidate/ contains the unstripped .ko and real Module.symvers.
         audit.json checks current imports, namespaces, GPL compatibility, release/aliases,
         and preservation of every original exported CRC, namespace and export type.
@@ -1914,8 +2075,8 @@ jobs:
         Read summary.json and overview.md first. BUILD_AND_STATIC_AUDIT_PASS means those
         checks passed; it does not prove full type/CFI ABI or hardware behavior. No new
         module is installed or included in AnyKernel3, and no vendor_dlkm/system_dlkm
-        image is generated. mi_stack and printk_enhance have known source bounds issues
-        listed in their reports; fix and review those before considering installation.
+        image is generated. mi_ubt lifetime fixes are not a complete panic-context audit;
+        the copied stack boundary is a snapshot and subsequent user reads may fail.
 
         The panel_event_notifier trial is independent of mi_fp: the established mi_fp
         path still links against its verified original provider. A passing provider
@@ -1927,6 +2088,7 @@ jobs:
         - <module>/status.json, build.log, audit.json, candidate/, reference/, source/
         - source-selection.json: source coverage and deferred modules
         - manifest.json: fixed source blobs and stock SHA256 references
+        - <module>/source-edits-applied.json: source correction provenance when present
         - SHA256SUMS: output integrity checks
 
         Other artifacts from the same run carry Image/AnyKernel3, the mi_fp trial,
