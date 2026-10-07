@@ -1,0 +1,126 @@
+name: Myron QCOM platform source build
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'full: build all; analyze: dependency analysis only; soc/dtbs: isolate a failure'
+        type: choice
+        required: true
+        default: full
+        options:
+          - full
+          - analyze
+          - soc
+          - dtbs
+      jobs:
+        description: Parallel build jobs
+        type: choice
+        required: true
+        default: '2'
+        options:
+          - '2'
+          - '4'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-qcom-platform-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CCACHE_NODEBUG: 'true'
+      PYTHONUNBUFFERED: '1'
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r1
+      PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
+      BUILD_STAGE: ${{ inputs.stage }}
+      BUILD_JOBS: ${{ inputs.jobs }}
+    steps:
+      - name: Checkout integration files
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Extract uploaded integration ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import os
+          import pathlib
+          import zipfile
+
+          root = pathlib.Path(os.environ["GITHUB_WORKSPACE"])
+          archive = root / "myron-qcom-platform-r1.zip"
+          expected = "770dd907a0d51984a5d005285daef648859f6f7db68576cf98ec823d41b52ca2"
+          if not archive.is_file():
+              raise SystemExit("Upload myron-qcom-platform-r1.zip to the repository root first.")
+          if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
+              raise SystemExit("ZIP checksum mismatch: upload the original myron-qcom-platform-r1.zip.")
+          count = 0
+          with zipfile.ZipFile(archive) as bundle:
+              for item in bundle.infolist():
+                  path = pathlib.PurePosixPath(item.filename)
+                  if path.is_absolute() or ".." in path.parts:
+                      raise SystemExit("Unsafe archive path: " + item.filename)
+                  if not path.parts or path.parts[0] != "myron-qcom-platform-r1":
+                      continue
+                  bundle.extract(item, root)
+                  count += not item.is_dir()
+          if count != 67 or not (root / "myron-qcom-platform-r1/sources.lock.json").is_file():
+              raise SystemExit("Integration package is incomplete.")
+          print(f"Verified ZIP and extracted {count} integration files.")
+          PYTHON
+
+      - name: Prepare hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$PACKAGE_DIR/sources.lock.json"
+          # These are unused preinstalled SDKs on this disposable GitHub-hosted job.
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config
+          df -h .
+          free -h
+
+      - name: Sync pinned platform sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$PACKAGE_DIR/sync_sources.py" --workspace "$WORKSPACE_DIR" --jobs 4
+
+      - name: Apply integration and run selected build
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset CCACHE_DEBUG
+          python3 "$PACKAGE_DIR/build_platform.py" --workspace "$WORKSPACE_DIR" --stage "$BUILD_STAGE" --jobs "$BUILD_JOBS" --ram-mb 10000
+
+      - name: Upload source lock and diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-qcom-reports-${{ github.run_id }}
+          path: |
+            ${{ env.WORKSPACE_DIR }}/integration-reports/
+            ${{ env.PACKAGE_DIR }}/sources.lock.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload compiled diagnostic outputs
+        if: success() && inputs.stage != 'analyze'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-qcom-source-build-${{ inputs.stage }}-${{ github.run_id }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-artifacts/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
