@@ -722,13 +722,22 @@ jobs:
           workspace = Path(os.environ["WORKSPACE_DIR"])
           selector = package / "select_module_candidates.py"
           selector_sha256 = '8ceea88b1fd4229b9412139b82a86e1e936515af3b3ad8a3a0210888ee7c1e1e'
-          source_hashes = {'common/modules.bzl': '4f67b55c9f22db8c7c1dc23cfaeba1f3d12b6a0c5580d60d0fa589b7c40e8f44', 'vendor/qcom/sm8850/kleaf-scripts/android_build.bzl': 'c887ab96d9a22d0defe84bd86eadda6de11b5b0bfa7cef1d539239a67b237124', 'vendor/qcom/sm8850/kleaf-scripts/modules_unprotected.bzl': '136642b7c7f6b21ac0afc871b9327a8db02aa879445f849d902311512ed6e346', 'vendor/qcom/sm8850/modules-lists/modules.systemdlkm_blocklist.msm.canoe': '88e1cb2450801bc732c1386356670a4f0d092b8be428fd2dc8a58f6b0cbb0814'}
+          source_hashes = {'common/modules.bzl': '4f67b55c9f22db8c7c1dc23cfaeba1f3d12b6a0c5580d60d0fa589b7c40e8f44', 'vendor/qcom/sm8850/kleaf-scripts/android_build.bzl': 'f37f6de851941b9f9e282d5cfcb00fe6b5db372eb1caedf721192aeba94b5877', 'vendor/qcom/sm8850/kleaf-scripts/modules_unprotected.bzl': 'ea4c10f3f16c8a139c0c2c954ab44e8dc08db62f21aadcffe74dc904e607a4a8', 'vendor/qcom/sm8850/modules-lists/modules.systemdlkm_blocklist.msm.canoe': 'f6374c5b9af8adda2a7d860fb050562c0a45cf4229c214d3f185c3a38e7a85b2'}
           if hashlib.sha256(selector.read_bytes()).hexdigest() != selector_sha256:
               raise SystemExit("Module selector checksum mismatch")
           compile(selector.read_bytes(), str(selector), "exec")
+          policy_checks = []
           for name, expected in source_hashes.items():
-              if hashlib.sha256((workspace / name).read_bytes()).hexdigest() != expected:
-                  raise SystemExit("Unexpected upstream module override policy: " + name)
+              path = workspace / name
+              actual = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+              policy_checks.append({"path": name, "expected_sha256": expected,
+                                    "actual_sha256": actual, "matches": actual == expected})
+          policy_report = workspace / "integration-reports/upstream-policy-check.json"
+          policy_report.parent.mkdir(parents=True, exist_ok=True)
+          policy_report.write_text(json.dumps({"files": policy_checks}, indent=2) + "\n")
+          mismatches = [entry for entry in policy_checks if not entry["matches"]]
+          if mismatches:
+              raise SystemExit("Unexpected upstream module override policy: " + json.dumps(mismatches))
           edits = [
               {
                   "path": 'build_platform.py',
