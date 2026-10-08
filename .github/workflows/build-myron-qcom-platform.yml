@@ -847,7 +847,7 @@ jobs:
 
           root = Path(os.environ["GITHUB_WORKSPACE"])
           archive = root / "myron-adaptation-r4.zip"
-          expected = "10099134be61316de3ab786bf0363b0bd2024e3c22923e070567eb2c7b7323aa"
+          expected = "19f01022c66f6165582797aa35663300fd9d1bc3ba472df54526417bb1f9aea0"
           if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
               raise SystemExit("Myron r4 ZIP checksum mismatch")
           with zipfile.ZipFile(archive) as bundle:
