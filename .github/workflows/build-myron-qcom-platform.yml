@@ -835,7 +835,7 @@ jobs:
           print("Pinned QCOM zram/zsmalloc candidate selection enabled; all original modules retained.")
           PYTHON
 
-      - name: Install Myron r7 source adaptation and validation gates
+      - name: Install Myron r8 source adaptation and validation gates
         shell: bash
         run: |
           set -euo pipefail
@@ -846,23 +846,23 @@ jobs:
           import zipfile
 
           root = Path(os.environ["GITHUB_WORKSPACE"])
-          archive = root / "myron-adaptation-r7.zip"
-          expected = "95aa89e66a23181a653c53e22cf2649a68f3d4aefac95052dc1a3e97781f294d"
+          archive = root / "myron-adaptation-r8.zip"
+          expected = "ce3d74961fa2ed7cfa0f6924ec86cf0f7b764eb2508eee71c0f59f4d6ffdbe88"
           if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
-              raise SystemExit("Myron r7 ZIP checksum mismatch")
+              raise SystemExit("Myron r8 ZIP checksum mismatch")
           with zipfile.ZipFile(archive) as bundle:
               entries = bundle.infolist()
-              if len(entries) != 205 or len({x.filename for x in entries}) != 205:
-                  raise SystemExit("Incomplete or duplicate r7 ZIP entries")
+              if len(entries) != 306 or len({x.filename for x in entries}) != 306:
+                  raise SystemExit("Incomplete or duplicate r8 ZIP entries")
               for item in entries:
                   path = PurePosixPath(item.filename)
-                  if path.is_absolute() or ".." in path.parts or not path.parts or path.parts[0] != "myron-adaptation-r7" or item.is_dir():
-                      raise SystemExit("Unexpected r7 archive path: " + item.filename)
+                  if path.is_absolute() or ".." in path.parts or not path.parts or path.parts[0] != "myron-adaptation-r8" or item.is_dir():
+                      raise SystemExit("Unexpected r8 archive path: " + item.filename)
               for item in entries:
                   bundle.extract(item, root)
-          print("Verified and extracted the 205-file Myron r7 source adaptation bundle")
+          print("Verified and extracted the 306-file Myron r8 source adaptation bundle")
           PYTHON
-          python3 "$GITHUB_WORKSPACE/myron-adaptation-r7/install_hooks.py" --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR"
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r8/install_hooks.py" --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR"
 
       - name: Apply integration and run selected build
         shell: bash
