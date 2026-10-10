@@ -90,6 +90,35 @@ jobs:
           df -h .
           free -h
 
+      - name: Check r12 fix1 sources before sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import os
+          from pathlib import Path, PurePosixPath
+          import zipfile
+
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          archive = root / "myron-adaptation-r12.zip"
+          expected = "28a8bca847d549df37c671364a8007376e6f7962d59cebd9d42553a0e26cb69d"
+          if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
+              raise SystemExit("Myron r12 ZIP checksum mismatch")
+          with zipfile.ZipFile(archive) as bundle:
+              entries = bundle.infolist()
+              if len(entries) != 914 or len({x.filename for x in entries}) != 914:
+                  raise SystemExit("Incomplete or duplicate r12 ZIP entries")
+              for item in entries:
+                  path = PurePosixPath(item.filename)
+                  if path.is_absolute() or ".." in path.parts or not path.parts or path.parts[0] != "myron-adaptation-r12" or item.is_dir():
+                      raise SystemExit("Unexpected r12 archive path: " + item.filename)
+              for item in entries:
+                  bundle.extract(item, root)
+          print("Verified and extracted the 914-file Myron r12 source adaptation bundle")
+          PYTHON
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/fastcheck_r12.py" --reports "$GITHUB_WORKSPACE/myron-fastchecks"
+
       - name: Sync pinned platform sources
         shell: bash
         run: |
@@ -847,12 +876,12 @@ jobs:
 
           root = Path(os.environ["GITHUB_WORKSPACE"])
           archive = root / "myron-adaptation-r12.zip"
-          expected = "cb2d70f7c6eb21a50e8fc0a78f3067d6867adfc429de849b816cb3af5fc90a2e"
+          expected = "28a8bca847d549df37c671364a8007376e6f7962d59cebd9d42553a0e26cb69d"
           if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
               raise SystemExit("Myron r12 ZIP checksum mismatch")
           with zipfile.ZipFile(archive) as bundle:
               entries = bundle.infolist()
-              if len(entries) != 877 or len({x.filename for x in entries}) != 877:
+              if len(entries) != 914 or len({x.filename for x in entries}) != 914:
                   raise SystemExit("Incomplete or duplicate r12 ZIP entries")
               for item in entries:
                   path = PurePosixPath(item.filename)
@@ -860,7 +889,7 @@ jobs:
                       raise SystemExit("Unexpected r12 archive path: " + item.filename)
               for item in entries:
                   bundle.extract(item, root)
-          print("Verified and extracted the 877-file Myron r12 source adaptation bundle")
+          print("Verified and extracted the 914-file Myron r12 source adaptation bundle")
           PYTHON
           python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/install_hooks.py" --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR"
 
@@ -917,6 +946,7 @@ jobs:
           path: |
             ${{ env.WORKSPACE_DIR }}/integration-reports/
             ${{ env.PACKAGE_DIR }}/sources.lock.json
+            ${{ github.workspace }}/myron-fastchecks/
           if-no-files-found: error
           retention-days: 14
 
