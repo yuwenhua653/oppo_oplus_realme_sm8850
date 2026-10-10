@@ -1,97 +1,53 @@
-Myron r12 fix1：修复 run15 编译失败（累计包）
+Myron r13：五个充电模块运行适配 + run16 离线装配方案
 
-确认失败运行：38030857397 / run15
-提交：d021053af89cc71b2b30b55e8146d457f39c43cb
-已核对：该轮使用的 r12 包与上次交付一致，不是上传错误。
+这是累计源码更新包，不是刷机包。以已复验通过的 run16 为基线；
+r13 修改了实际 C 源码，需要新的目标编译。run16 的旧 KO 不含本轮修复。
+内部目录和仓库 ZIP 仍叫 myron-adaptation-r12，以兼容已固定的 r1 安装器；
+版本以 bundle-lock.json / drivers/source-lock.json 的 revision=r13 为准。
 
-本次修复三类实际编译错误：
-1. 无线反充 4 处固件保护 if 的缩进导致 -Wmisleading-indentation。
-   改为 tab 与明确花括号，保留全部固件写入保护和返回语义。
-2. BQ27Z561 的整个 FG_IC_PROP 属性枚举缺失。
-   按归档上游原顺序在 BQ C 文件恢复私有枚举，共107项（含MAX），
-   覆盖106个实际使用标识；保留106行属性表和全部switch映射，不改公共FG ABI头。
-3. MCA ADSP GLINK 缺少 struct of_device_id 定义。
-   直接包含 linux/mod_devicetable.h。
+本轮修改五个模块、六个源码/私有头文件：
+1. sc8581：按与原机库存同 SHA256 的 stock KO 恢复 PMID2 UVP 三项含义。
+   operation_mode 4、5、其他分别读取第0、1、2项；原DT [350,350,100] 不改。
+   解析时要求恰好三项，并检查寄存器范围。初始化和 ops 回调使用相同映射。
+2. sc96281_charger：正确传播 pinctrl/GPIO/IRQ/wake/notifier 错误，
+   失败 probe 先停 IRQ 再排空 work，回收已申请资源，不改 FOD 或固件保护。
+3. mca_path_control：检查内存分配，拒绝未就绪调用；sysfs 成功后才发布
+   全局对象和启动 work，避免失败 probe 留下悬挂任务。
+4. mca_adsp_glink：检查完整帧和当前请求匹配关系，避免短包越界、
+   错包完成另一个请求及超时后的旧应答。公开接口、wire结构/常量不变。
+5. mca_business_battery_comp：未就绪或缺少 provider 时返回真实不可用状态，
+   不把读取失败伪装成正常电量、健康或充电状态，也不因失败误报0%关机。
 
-下一轮的改进：
-- 在同步内核源码前先运行哈希/源码检查及本次三类错误的回归检查。
-- 对 soc/full，先批量编译22个新增DDK目标，保留 --keep_going 收集同批错误；
-  成功后复用完全相同Bazel参数、output_base和缓存继续原构建。
-- 保留导入CRC、唯一导出、回调ABI及原产物检查；没有通过关闭 -Werror 绕过错误。
-- 冷构建仍要准备/编译基础内核，不能承诺几分钟完成或下一轮一定成功。
+验证范围：实际生产函数提取编译和 host 故障注入、ASan/UBSan，
+源码锁/别名/回归检查、工作流与安装校验；不等于完整内核交叉编译。
+本地目标编译和实机测试均未进行。最终验证见外层 verification/。
+新增测试已接入源码同步前的 fastcheck，旧45模块合同与ABI门禁保留。
 
-使用：将repo-files中3个文件替换原仓库同路径文件，保留原r1包。
-必须上传新的ZIP和匹配的新工作流，然后从新提交启动 main / full / jobs=2。
-不要对旧run15点 Re-run jobs：它会重跑旧提交，不会使用这次修复。
+Actions：
+- 默认 full：一次构建并运行原有完整门禁，jobs=2。可直接选这个模式。
+- 可选 driver-check：只实编译上述五个DDK目标及其正常依赖，保存日志；
+  不跑完整平台验收，也不提供可刷或可替换的模块产物。
+  它仍可能需要冷编译基础内核，不保证几分钟完成。
+  不要求先 driver-check 再 full，以免不必要地做两次冷编译。
+- 不要重跑旧提交来验证新修复；从上传后的新提交运行。
 
-本地验证范围：
-- 修复版源级检查通过，旧r12的无线/GLINK各一个负例被拒绝。
-- BQ完整sysfs表、真实show/store及调用原型的主机语法检查通过；5个负例被拒绝。
-- 新构建顺序的17项主机路由/负控通过；原ABI路由4项保留。
-- 检查不是完整AArch64模块编译；下一轮目标编译和实机验证仍待完成。
+assembly/ 是对已有 run16 产物生成的离线装配草案：
+521 个唯一模块，normal 114 / recovery 352 / system 80 / vendor 387；
+各分区自包含时共有819份副本，已本地生成并逐一核对SHA。
+排除 video、保留 msm_video 后消除5个重复导出；选择的实际符号提供者
+及CRC已验证。它没有 modules.load、init补丁、分区镜像或刷入脚本。
+本轮改过的五个模块在草案中仍是 run16 基线，重编后必须重新计算装配。
+原始原厂路径和真实加载顺序缺少完整证据，未用推测值冒充原机顺序。
 
-run15有3个失败目标，至少4个新增目标被它们的依赖失败阻断。
-其余目标未报错不能等同全部成功；本次继续完整22目标验证。
-本包仍不是刷机包，FT3683、显示及充电板级参数等原有适配缺口仍在。
+仍需解决：
+- FT3683控制器与OEM显示/VIS的匹配实现。
+- SC96281的FOD、Hall等板级绑定，以及充电策略/FG/USB/wireless服务链。
+- 11个此前排除的服务仍有真实分区数据及策略依赖，没有用空实现替代。
+- GLINK实际固件协议与hboost事件尚未实机验证；未知短错误帧会超时。
+- 部分驱动成功probe后的跨模块ops注销/卸载生命周期仍未完成。
+- 装配和init集成、完整新构建验收，最后才是实机测试。
 
-以下是r12原始范围说明；历史证据目录保留原审查时点，最新修复见
- drivers/evidence/r12-fix1/，本次验证报告见交付包verification/。
-
--------------------- 原始r12范围 --------------------
-Myron r12 累计源码批量接入包
-
-目标仓库：yuwenhua653/oppo_oplus_realme_sm8850
-已复核基线：Actions run 14 / 38020123306
-基线提交：9a1c45032ad95fe2cce28e011f1b99314cf35e73
-实际基线内核：6.12.81-android16-6-maybe-dirty-4k
-
-本轮一次新增 22 个源码编译候选：18 个 MCA 服务 + 4 个充电/电量 IC。
-这是一份累计源码更新，尚未得到本轮目标编译结果，不是可刷机包。
-
-新增 IC：hl7603、sc8581、bq27z561、sc96281_charger。
-新增 MCA 服务：
-mca_adsp_glink、mca_bmd、mca_business_battery_comp、mca_business_misc_comp、
-mca_connector_antiburn、mca_ibat_ocp_monitor、mca_lpd_detect、mca_path_control、
-mca_pd_auth、mca_platform_base、mca_platform_wireless_class、mca_qcom_panel、
-mca_qcom_subpmic_proxy、mca_strategy_class、mca_strategy_fg_class、
-mca_vbat_ovp_monitor、mca_wireless_revchg、qcom_adsp_pd_protocol。
-
-主要改动
-- 加入真实来源锁定的源码、DDK 依赖、Kconfig 和模块合同；共检查 45 个适配模块，
-  注册表总数 49（另 4 个沿用 r1 校验）。无空壳模块或强改 CRC。
-- 修复 QTI 电池 getter 错把 MCA 私有数据当成 QTI 结构读取的问题；
-  对非 QTI power_supply 返回 -ENODEV，完整保留引用释放及错误传播。
-- 消除 QTI/MCA 导出重名；保留 QTI 原公共符号，MCA hboost 使用独立名称。
-- 保留 r10 PD 修复和旧 ABI 合同；加入 QTI 三个公共函数的 run14 KCFI 类型门禁。
-- 内置 run14 已验证的 69 个额外 DTBO 构建输出保留规则；未改变诊断合并成员/顺序。
-- CONFIG_MYRON_IC_FIRMWARE_PROGRAMMING=n，新增 IC 固件入口及无线自动升级入口默认拒绝。
-
-使用方法
-1. 解压交付包，将 repo-files 下三个文件放到原仓库对应位置：
-   myron-adaptation-r12.zip
-   myron-adaptation-r12-README.txt
-   .github/workflows/build-myron-qcom-platform.yml
-   注意显示隐藏目录 .github；内层 myron-adaptation-r12.zip 整个上传，不要解压替代它。
-2. 保留原仓库 r1 文件。工作流已经引用累计 r12，不需再安装 r10/r11 或独立 retention 包。
-3. 运行 Myron QCOM platform source build：branch=main、stage=full、jobs=2。
-4. 结束后提供 reports 和 source-build-full 两个产物。本轮须通过严格源码预检、
-   目标 ELF 导入 CRC/唯一导出检查及回调 ABI 门禁，才可开始下一轮装配评估。
-
-已验证范围
-- 250 项实际回调声明主机类型检查：IC 150 + MCA 服务 100。
-- 15 项抽取最终 QTI getter 的 C 分支测试及 UBSan；已接入 CI 前置测试。
-- 当前源码离线预检、旧源码保留检查，以及 run14 实际 ELF 上的增强门禁回归。
-- 上述检查不等于新增模块交叉编译成功，也不证明硬件运行正确。
-
-尚未完成
-- FT3683 控制器源码缺口和 OEM 显示接入；xiaomi_touch 框架不能替代触摸控制器。
-- SC96281 的 FOD/Hall/pinctrl、SC8585 的多模式 UVP、完整充电策略和 hboost 事件桥接。
-- QTI getter 现在安全拒绝异类电源，但尚未提供 MCA 电池属性桥接。
-- 原厂 6.12.23 模块不能直接混入新内核；r11 离线装配只对应 run14，
-  本轮模块通过编译后仍需重新核对依赖和布局。本包不生成镜像或实机自动加载名单。
-
-审查细节：drivers/evidence/r12-hardware/FINAL-INTEGRATION.zh-CN.txt
-源码范围：drivers/source-lock.json 的 new_r12_modules / r12_excluded_reference_modules。
-new_target_build_verified=false
-hardware_tested=false
-flashable=false
+来源/边界：177项既有上游源码记录保留，没有将Onyx参考驱动宣称成
+完整的Myron官方源码。本轮修的是现有实现和原机参数消费方式；
+不会因为编译成功或模块同名就声称硬件已工作。
+drivers/evidence/r13/ 为本轮证据；r12及更早目录保留为历史报告。
