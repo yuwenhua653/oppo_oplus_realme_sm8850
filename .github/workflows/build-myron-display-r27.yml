@@ -1,0 +1,988 @@
+name: Myron R27 bounded DSI log windows build
+
+on:
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Parallel build jobs
+        type: choice
+        required: true
+        default: '2'
+        options:
+          - '2'
+          - '4'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-r27-display-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CCACHE_NODEBUG: 'true'
+      PYTHONUNBUFFERED: '1'
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r1
+      PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
+      BUILD_STAGE: 'display-probe'
+      BUILD_JOBS: ${{ inputs.jobs }}
+    steps:
+      - name: Checkout integration files
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Verify and extract the paired R27 and unchanged R18 bundles
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib, os, zipfile
+          from pathlib import Path, PurePosixPath
+          root = Path(os.environ['GITHUB_WORKSPACE'])
+          def extract(archive, expected, prefix):
+              if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
+                  raise SystemExit(prefix + ' ZIP hash mismatch; use the paired workflow and archive.')
+              if (root / prefix).exists():
+                  raise SystemExit('Refusing stale extracted bundle: ' + prefix)
+              with zipfile.ZipFile(archive) as z:
+                  names = z.namelist()
+                  if len(names) != len(set(names)):
+                      raise SystemExit('Duplicate ZIP entries')
+                  for item in z.infolist():
+                      path = PurePosixPath(item.filename)
+                      if path.is_absolute() or '..' in path.parts or not path.parts or path.parts[0] != prefix or item.is_dir():
+                          raise SystemExit('Unsafe ZIP entry: ' + item.filename)
+                      if chr(92) in item.filename or str(path) != item.filename:
+                          raise SystemExit('Noncanonical ZIP entry')
+                      if (item.external_attr >> 16) & 0o170000 not in (0, 0o100000):
+                          raise SystemExit('Unexpected ZIP file type')
+                  z.extractall(root)
+          extract(root / 'myron-display-r27.zip', '8c2220f5a366fe69da2cffe351ca7777dbafa7dd7220e7401bcc15e73c35ad5c', 'myron-display-r27')
+          extract(root / 'myron-display-r27/baseline/myron-boot-r18.zip',
+                  'a3c7e97e4a28f6574a619bcc10dab8962911ed5fcef8617aeb7fc835bdbe7d13', 'myron-boot-r18')
+          PYTHON
+
+      - name: Extract uploaded integration ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import os
+          import pathlib
+          import zipfile
+
+          root = pathlib.Path(os.environ["GITHUB_WORKSPACE"])
+          archive = root / "myron-boot-r18/baseline/myron-qcom-platform-r1.zip"
+          expected = "770dd907a0d51984a5d005285daef648859f6f7db68576cf98ec823d41b52ca2"
+          if not archive.is_file():
+              raise SystemExit("Upload myron-qcom-platform-r1.zip to the repository root first.")
+          if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
+              raise SystemExit("ZIP checksum mismatch: upload the original myron-qcom-platform-r1.zip.")
+          count = 0
+          with zipfile.ZipFile(archive) as bundle:
+              for item in bundle.infolist():
+                  path = pathlib.PurePosixPath(item.filename)
+                  if path.is_absolute() or ".." in path.parts:
+                      raise SystemExit("Unsafe archive path: " + item.filename)
+                  if not path.parts or path.parts[0] != "myron-qcom-platform-r1":
+                      continue
+                  bundle.extract(item, root)
+                  count += not item.is_dir()
+          if count != 67 or not (root / "myron-qcom-platform-r1/sources.lock.json").is_file():
+              raise SystemExit("Integration package is incomplete.")
+          print(f"Verified ZIP and extracted {count} integration files.")
+          PYTHON
+
+      - name: Prepare hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$PACKAGE_DIR/sources.lock.json"
+          # These are unused preinstalled SDKs on this disposable GitHub-hosted job.
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config
+          df -h .
+          free -h
+
+      - name: Check r13 sources before sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import os
+          from pathlib import Path, PurePosixPath
+          import zipfile
+
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          archive = root / "myron-boot-r18/baseline/myron-adaptation-r12.zip"
+          expected = "64dbec4a01124317682f28e0fce61bd885247af1e05b5cac5e4990ad838111c1"
+          if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
+              raise SystemExit("Myron r12 ZIP checksum mismatch")
+          with zipfile.ZipFile(archive) as bundle:
+              entries = bundle.infolist()
+              if len(entries) != 988 or len({x.filename for x in entries}) != 988:
+                  raise SystemExit("Incomplete or duplicate r12 ZIP entries")
+              for item in entries:
+                  path = PurePosixPath(item.filename)
+                  if path.is_absolute() or ".." in path.parts or not path.parts or path.parts[0] != "myron-adaptation-r12" or item.is_dir():
+                      raise SystemExit("Unexpected r12 archive path: " + item.filename)
+              for item in entries:
+                  bundle.extract(item, root)
+          print("Verified and extracted the 988-file Myron r12 source adaptation bundle")
+          PYTHON
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/fastcheck_r12.py" --reports "$GITHUB_WORKSPACE/myron-fastchecks"
+
+      - name: Sync pinned platform sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$PACKAGE_DIR/sync_sources.py" --workspace "$WORKSPACE_DIR" --jobs 4
+
+      - name: Fix stale QPACE deletion and enable progress
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          workspace = Path(os.environ["WORKSPACE_DIR"])
+          package = Path(os.environ["PACKAGE_DIR"])
+          dt = workspace / "vendor/qcom/sm8850-devicetrees"
+          expected_head = "8b86fedda64183338411f9751f5e62ce25997620"
+          head = subprocess.check_output(["git", "-C", str(dt), "rev-parse", "HEAD"], text=True).strip()
+          if head != expected_head:
+              raise SystemExit("QPACE hotfix requires the pinned r1 DT revision.")
+          canoe = dt / "qcom/canoe.dtsi"
+          if hashlib.sha256(canoe.read_bytes()).hexdigest() != "888b1e020c95f6ab2c186b0433ff9cbc9cc49b1ea4f2fe92edc034fd8274f261":
+              raise SystemExit("Unexpected base DT; cannot verify that QPACE was already removed.")
+
+          edits = [
+              (
+                  dt / "qcom/alor-interposer-common.dtsi",
+                  "2fe19c5a4865e7d4e42121af1cccddcb10de0485de95852914abe480883c6926",
+                  "1db1a0bf08b3422459e6c2f278ad1b9e607fe15b5080ac6514bd78f9a54e5e0a",
+                  b"/delete-node/ &qcom_qpace;\n",
+                  b"",
+              ),
+              (
+                  package / "build_platform.py",
+                  "cac195dbffe144b86cb7f16b7af3110e560cb830f9c2e9c47cf5b4bdd2c08009",
+                  "0cfc2318dcd5755cce2be2093179d00b55436ef5588cfd41ff7549b065b79059",
+                  b'"--noshow_progress"',
+                  b'"--show_progress", "--show_progress_rate_limit=30", "--progress_report_interval=30"',
+              ),
+          ]
+          pending = []
+          records = []
+          for path, before, after, old, new in edits:
+              data = path.read_bytes()
+              current = hashlib.sha256(data).hexdigest()
+              if current == after:
+                  records.append({"path": str(path), "status": "already_applied", "sha256": after})
+                  continue
+              if current != before or data.count(old) != 1:
+                  raise SystemExit("Unexpected contents; refusing to overwrite: " + str(path))
+              fixed = data.replace(old, new, 1)
+              if hashlib.sha256(fixed).hexdigest() != after:
+                  raise SystemExit("Hotfix output checksum mismatch: " + str(path))
+              pending.append((path, fixed))
+              records.append({"path": str(path), "status": "applied", "sha256": after})
+
+          # Validate every input before writing any file; reruns accept only exact outputs.
+          for path, fixed in pending:
+              path.write_bytes(fixed)
+          report = workspace / "integration-reports/qpace-progress-hotfix.json"
+          report.parent.mkdir(parents=True, exist_ok=True)
+          report.write_text(json.dumps({
+              "hotfix": "r1-qpace-progress-fix1",
+              "dt_revision": expected_head,
+              "reason": "QPACE node is already absent; remove only its stale delete-node directive.",
+              "files": records,
+          }, indent=2) + "\n")
+          print("QPACE stale deletion fixed; Bazel progress enabled (30s reports).")
+          PYTHON
+
+      - name: Fix Myron DTBO output collection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          package = Path(os.environ["PACKAGE_DIR"])
+          workspace = Path(os.environ["WORKSPACE_DIR"])
+          # Keep the original r1 archive; update only its reviewed DT integration files.
+          # Basename declarations use Kleaf's recursive lookup from the DT repository root.
+          edits = [
+              {
+                  'path': 'devicetrees/myron-dt-integration.patch',
+                  'before_sha256': 'c0934e8cfc229561fa62f7844f6e2cb5e6415ffe261916bb566f0ac75ab5af74',
+                  'after_sha256': '1eb047983a06ecfae3c88ef06c3ae9f7fd336fc214fc5f8b057e7fba2c2e1571',
+                  "replacements": [
+                      (
+                          '+            # This does not define the OEM dtbo.img table or overlay ordering.\n+            {"name": "audio/myron-audio-mtp.dtbo"},\n+            {"name": "camera/myron-sm8850-camera-sensor.dtbo"},\n+            {"name": "display/display/myron-sde-display-mtp-overlay.dtbo"},\n             {"name": "pandora-sm8850-overlay.dtbo"},\n',
+                          '+            # This does not define the OEM dtbo.img table or overlay ordering.\n+            {"name": "myron-audio-mtp.dtbo"},\n+            {"name": "myron-sm8850-camera-sensor.dtbo"},\n+            {"name": "myron-sde-display-mtp-overlay.dtbo"},\n             {"name": "pandora-sm8850-overlay.dtbo"},\n',
+                      ),
+                  ],
+              },
+              {
+                  'path': 'devicetrees/myron-dt-patch-manifest.json',
+                  'before_sha256': '50abdcf04f749015f2d9cb5324b40b5cff8fb145966e53dd651869c243bc7870',
+                  'after_sha256': 'f41f9badbdf915563ac6c9c8a9fc6930015a77dad9e1822e4e207cd6e94c6191',
+                  "replacements": [
+                      (
+                          '  },\n  "patch_sha256": "c0934e8cfc229561fa62f7844f6e2cb5e6415ffe261916bb566f0ac75ab5af74",\n  "files": [\n',
+                          '  },\n  "patch_sha256": "1eb047983a06ecfae3c88ef06c3ae9f7fd336fc214fc5f8b057e7fba2c2e1571",\n  "files": [\n',
+                      ),
+                      (
+                          '      "before_sha256": "38a928850b24444d4d89d7761390e576da72688d3a6f7410d5fa08a7e42d1fac",\n      "after_sha256": "6b107daabc1a5a652d131063ce81cd6fb5a9495760f2c80c3ed1db545e8df2da"\n    },\n',
+                          '      "before_sha256": "38a928850b24444d4d89d7761390e576da72688d3a6f7410d5fa08a7e42d1fac",\n      "after_sha256": "33a50ccf84bfeb9bb5387322be4c866dda238a9bb58cf4efefdd9e0f088dd357"\n    },\n',
+                      ),
+                  ],
+              },
+              {
+                  'path': 'devicetrees/check-myron-dt-wiring.py',
+                  'before_sha256': 'ad31a87102cae09d9c7536abdffc8bfdae41c81315f2d360d6a8e9dcb4cc9317',
+                  'after_sha256': 'ade0b588932db4f73f013818fb9524cd4b7d48bd30325bbbe05646a21add1130',
+                  "replacements": [
+                      (
+                          '            required.extend(item["name"] for item in platform_map[platform].get(group, []))\n    for name in required:\n        if name not in outputs:\n            raise ValueError("Bazel output absent from Kbuild: " + name)\n        source = dt / "qcom" / name\n        if not any(source.with_suffix(ext).is_file() for ext in (".dts", ".dtso")):\n            raise ValueError("Missing declared DT source: " + name)\n    expected = ["myron-sm8850-overlay.dtbo", "audio/myron-audio-mtp.dtbo",\n                "camera/myron-sm8850-camera-sensor.dtbo",\n                "display/display/myron-sde-display-mtp-overlay.dtbo"]\n    if not set(expected).issubset(required):\n        raise ValueError("A myron component is absent from the Bazel output list")\n    build = (dt / "BUILD.bazel").read_text()\n',
+                          '            required.extend(item["name"] for item in platform_map[platform].get(group, []))\n    # Kleaf searches from the external DT repository root, not its qcom folder.\n    # Its pinned search_and_cp_output.py treats names with \'/\' as exact paths;\n    # basename-only names are found recursively and must have a unique match.\n    physical_outputs = {"qcom/" + name for name in outputs}\n    resolved_outputs = {}\n    for name in required:\n        if "/" in name:\n            matches = [name] if name in physical_outputs else []\n        else:\n            matches = sorted(path for path in physical_outputs if Path(path).name == name)\n        if len(matches) != 1:\n            raise ValueError("Kleaf output must resolve to one Kbuild file: " +\n                             name + " -> " + repr(matches))\n        resolved_outputs[name] = matches[0]\n        source = dt / matches[0]\n        if not any(source.with_suffix(ext).is_file() for ext in (".dts", ".dtso")):\n            raise ValueError("Missing declared DT source: " + str(source))\n    expected = {\n        "myron-sm8850-overlay.dtbo": "qcom/myron-sm8850-overlay.dtbo",\n        "myron-audio-mtp.dtbo": "qcom/audio/myron-audio-mtp.dtbo",\n        "myron-sm8850-camera-sensor.dtbo": "qcom/camera/myron-sm8850-camera-sensor.dtbo",\n        "myron-sde-display-mtp-overlay.dtbo": "qcom/display/display/myron-sde-display-mtp-overlay.dtbo",\n    }\n    for name, physical_path in expected.items():\n        if resolved_outputs.get(name) != physical_path:\n            raise ValueError("A myron component is absent or misrouted: " + name)\n    build = (dt / "BUILD.bazel").read_text()\n',
+                      ),
+                      (
+                          '            raise ValueError("Missing sandbox input: " + pattern)\n    return {"status": "PASS", "scope": "GNU make and source/output wiring only",\n            "platforms": selected, "main_targets": len(top), "subsystem_targets": subcounts,\n            "declared_outputs_checked": len(required), "myron_components": expected,\n            "dtc_compilation": "NOT_RUN", "hardware_validation": "NOT_RUN",\n',
+                          '            raise ValueError("Missing sandbox input: " + pattern)\n    return {"status": "PASS", "scope": "GNU make, DT source and Kleaf collection-path contract only",\n            "platforms": selected, "main_targets": len(top), "subsystem_targets": subcounts,\n            "declared_outputs_checked": len(required), "myron_components": list(expected),\n            "kleaf_resolved_outputs": resolved_outputs,\n            "dtc_compilation": "NOT_RUN", "hardware_validation": "NOT_RUN",\n',
+                      ),
+                  ],
+              },
+          ]
+          pending = []
+          records = []
+          for edit in edits:
+              path = package / edit["path"]
+              data = path.read_bytes()
+              current = hashlib.sha256(data).hexdigest()
+              if current == edit["after_sha256"]:
+                  records.append({"path": edit["path"], "status": "already_applied", "sha256": current})
+                  continue
+              if current != edit["before_sha256"]:
+                  raise SystemExit("Unexpected DT integration contents: " + str(path))
+              fixed = data
+              for old, new in edit["replacements"]:
+                  old, new = old.encode(), new.encode()
+                  if fixed.count(old) != 1:
+                      raise SystemExit("Ambiguous DT output correction: " + str(path))
+                  fixed = fixed.replace(old, new, 1)
+              if hashlib.sha256(fixed).hexdigest() != edit["after_sha256"]:
+                  raise SystemExit("DT output correction checksum mismatch: " + str(path))
+              pending.append((path, fixed))
+              records.append({"path": edit["path"], "status": "applied", "sha256": edit["after_sha256"]})
+          for path, fixed in pending:
+              path.write_bytes(fixed)
+          report = workspace / "integration-reports/dt-output-collection-hotfix.json"
+          report.parent.mkdir(parents=True, exist_ok=True)
+          report.write_text(json.dumps({
+              "hotfix": "r1-dt-output-collection-fix2",
+              "reason": "Collect all three subsystem DTBOs by unique basename; validate the Kleaf lookup contract before compiling.",
+              "files": records,
+          }, indent=2) + "\n")
+          print("Myron DTBO output declarations fixed; collection-path preflight enabled.")
+          PYTHON
+
+      - name: Enable QCOM DDK header profile and batch diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          package = Path(os.environ["PACKAGE_DIR"])
+          workspace = Path(os.environ["WORKSPACE_DIR"])
+          runner = package / "build_platform.py"
+          # Match the reviewed runner after the existing progress hotfix.
+          before = '0cfc2318dcd5755cce2be2093179d00b55436ef5588cfd41ff7549b065b79059'
+          after = '323956fce205b94d0a4d00b1a81cbd9d2ff051fda66728fbeeb81c9ea970d09d'
+          replacements = [
+              (
+                  '                 "--output_base=" + str(root / "out/bazel-integration")]\n        options = ["--cpu=aarch64", f"--jobs={args.jobs}", f"--local_ram_resources={args.ram_mb}", "--color=no", "--curses=no", "--show_progress", "--show_progress_rate_limit=30", "--progress_report_interval=30"]\n        # Only traverse this diagnostic graph. No ABL, boot/vendor_boot or dlkm image targets.\n',
+                  '                 "--output_base=" + str(root / "out/bazel-integration")]\n        # QCOM\'s DDK modules require the internal ACK headers declared by the\n        # pinned SoC tree. The standalone workspace does not import device.bazelrc.\n        # Reuse the same configuration for build and cquery so collected paths\n        # refer to the outputs that were actually compiled.\n        configuration = [\n            "--cpu=aarch64",\n            "--//build/kernel/kleaf:allow_ddk_unsafe_headers",\n            "--//build/kernel/kleaf:user_ddk_unsafe_headers=//vendor/qcom/sm8850:unsafe_headers_qcom_group",\n        ]\n        options = configuration + [f"--jobs={args.jobs}", f"--local_ram_resources={args.ram_mb}", "--color=no", "--curses=no", "--show_progress", "--show_progress_rate_limit=30", "--progress_report_interval=30", "--keep_going"]\n        # Only traverse this diagnostic graph. No ABL, boot/vendor_boot or dlkm image targets.\n',
+              ),
+              (
+                  '        if args.stage != "analyze":\n            output = subprocess.run(bazel + ["cquery", "--cpu=aarch64", "--output=files", "--color=no", "--curses=no", TARGETS[args.stage]],\n                                    cwd=root, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n',
+                  '        if args.stage != "analyze":\n            output = subprocess.run(bazel + ["cquery"] + configuration + ["--output=files", "--color=no", "--curses=no", TARGETS[args.stage]],\n                                    cwd=root, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n',
+              ),
+          ]
+          data = runner.read_bytes()
+          current = hashlib.sha256(data).hexdigest()
+          if current == after:
+              status = "already_applied"
+          elif current == before:
+              fixed = data
+              for old, new in replacements:
+                  old, new = old.encode(), new.encode()
+                  if fixed.count(old) != 1:
+                      raise SystemExit("Ambiguous DDK runner correction")
+                  fixed = fixed.replace(old, new, 1)
+              if hashlib.sha256(fixed).hexdigest() != after:
+                  raise SystemExit("DDK runner checksum mismatch")
+              compile(fixed, str(runner), "exec")
+              runner.write_bytes(fixed)
+              status = "applied"
+          else:
+              raise SystemExit("Unexpected build runner contents; refusing DDK correction")
+          report = workspace / "integration-reports/ddk-header-profile-hotfix.json"
+          report.parent.mkdir(parents=True, exist_ok=True)
+          report.write_text(json.dumps({
+              "hotfix": "r1-ddk-header-profile-fix3",
+              "status": status,
+              "runner_sha256": after,
+              "header_group": "//vendor/qcom/sm8850:unsafe_headers_qcom_group",
+              "build_and_cquery_same_configuration": True,
+              "keep_going": True,
+          }, indent=2) + "\n")
+          print("QCOM DDK header profile enabled for build and cquery; independent failures will be collected in one run.")
+          PYTHON
+
+      - name: Collect same-build GKI modules and check dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$PACKAGE_DIR/check_module_dependencies.py" <<'MODULE_CHECK'
+          #!/usr/bin/env python3
+          """Check collected ARM64 modules as data; never consult host module directories."""
+          import argparse
+          import collections
+          import hashlib
+          import json
+          from pathlib import Path
+          import struct
+
+
+          def normalize(name):
+              return name.replace("-", "_")
+
+
+          def modinfo(path):
+              data = path.read_bytes()
+              if len(data) < 64 or data[:7] != b"\x7fELF\x02\x01\x01":
+                  raise ValueError("expected ELF64 little-endian module")
+              if struct.unpack_from("<HH", data, 16) != (1, 183):
+                  raise ValueError("expected AArch64 ET_REL module")
+              offset = struct.unpack_from("<Q", data, 40)[0]
+              size, count, names_index = struct.unpack_from("<HHH", data, 58)
+              if size != 64 or offset + size > len(data):
+                  raise ValueError("invalid ELF section table")
+              first = struct.unpack_from("<IIQQQQIIQQ", data, offset)
+              count = count or first[5]
+              names_index = first[6] if names_index == 0xffff else names_index
+              if not count or offset + count * size > len(data) or names_index >= count:
+                  raise ValueError("invalid ELF section count/string table")
+              sections = [struct.unpack_from("<IIQQQQIIQQ", data, offset + i * size)
+                          for i in range(count)]
+
+              def contents(section):
+                  start, length = section[4:6]
+                  if start + length > len(data):
+                      raise ValueError("ELF section extends past end of file")
+                  return data[start:start + length]
+
+              names = contents(sections[names_index])
+              metadata = []
+              for section in sections:
+                  start = section[0]
+                  end = names.find(b"\0", start)
+                  if start >= len(names) or end < 0:
+                      raise ValueError("invalid ELF section name")
+                  if names[start:end] == b".modinfo":
+                      metadata.append(contents(section))
+              if len(metadata) != 1:
+                  raise ValueError("expected one .modinfo section")
+              fields = collections.defaultdict(list)
+              for entry in metadata[0].split(b"\0"):
+                  if b"=" in entry:
+                      key, value = entry.decode("utf-8").split("=", 1)
+                      fields[key].append(value)
+              for key in ("name", "vermagic"):
+                  if len(fields[key]) != 1 or not fields[key][0].strip():
+                      raise ValueError("missing or ambiguous .modinfo " + key)
+              name = normalize(fields["name"][0])
+              if not name or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_" for c in name):
+                  raise ValueError("invalid module name")
+              return {
+                  "name": name,
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "vermagic": " ".join(fields["vermagic"][0].split()),
+                  "depends": sorted({normalize(d.strip()) for value in fields.get("depends", [])
+                                     for d in value.split(",") if d.strip()}),
+              }
+
+
+          def audit(root, release_file=None, builtin_file=None, require_metadata=False, kernel_release=None):
+              root = Path(root).resolve()
+              if not root.is_dir():
+                  raise ValueError("artifact root is not a directory")
+              errors, warnings, modules = [], [], []
+              for path in sorted(root.rglob("*.ko")):
+                  file = str(path.relative_to(root))
+                  try:
+                      modules.append(dict(file=file, **modinfo(path)))
+                  except (ValueError, OSError, struct.error) as exc:
+                      errors.append({"kind": "invalid_module", "file": file, "error": str(exc)})
+              if not modules:
+                  errors.append({"kind": "no_modules"})
+
+              metadata = {}
+              def read_metadata(name, explicit):
+                  paths = [Path(explicit)] if explicit else sorted(root.rglob(name))
+                  values = []
+                  for path in paths:
+                      try:
+                          value = path.read_text(encoding="utf-8")
+                          metadata.setdefault(name, []).append(str(path))
+                          values.append(value)
+                      except (OSError, UnicodeError) as exc:
+                          errors.append({"kind": "invalid_metadata", "file": str(path), "error": str(exc)})
+                  if not values:
+                      (errors if require_metadata else warnings).append({"kind": "missing_metadata", "file": name})
+                  return values
+
+              releases = set()
+              release_values = [kernel_release] if kernel_release is not None else read_metadata("kernel.release", release_file)
+              if kernel_release is not None:
+                  metadata["kernel.release"] = ["explicit: " + kernel_release]
+              for value in release_values:
+                  if len(value.split()) != 1:
+                      errors.append({"kind": "invalid_kernel_release", "value": value.strip()})
+                  else:
+                      releases.add(value.strip())
+              if len(releases) > 1:
+                  errors.append({"kind": "conflicting_kernel_releases", "values": sorted(releases)})
+
+              builtin_sets = []
+              for value in read_metadata("modules.builtin", builtin_file):
+                  names = set()
+                  for entry in value.splitlines():
+                      entry = entry.strip()
+                      if not entry:
+                          continue
+                      if not entry.endswith(".ko"):
+                          errors.append({"kind": "invalid_builtin_entry", "value": entry})
+                          continue
+                      names.add(normalize(Path(entry).stem))
+                  builtin_sets.append(names)
+              if builtin_sets and any(names != builtin_sets[0] for names in builtin_sets[1:]):
+                  errors.append({"kind": "conflicting_builtin_lists"})
+              # Conflicting metadata must not make missing dependencies look satisfied.
+              builtins = set.intersection(*builtin_sets) if builtin_sets else set()
+
+              by_name = collections.defaultdict(list)
+              by_vermagic = collections.defaultdict(list)
+              for module in modules:
+                  by_name[module["name"]].append(module)
+                  by_vermagic[module["vermagic"]].append(module["name"])
+                  release = module["vermagic"].split()[0]
+                  if releases and release not in releases:
+                      errors.append({"kind": "kernel_release_mismatch", "module": module["name"],
+                                     "module_release": release, "kernel_releases": sorted(releases)})
+              if len(by_vermagic) > 1:
+                  errors.append({"kind": "mixed_vermagic", "values": sorted(by_vermagic)})
+              duplicates = []
+              for name, group in sorted(by_name.items()):
+                  if len(group) > 1:
+                      entry = {"module": name, "files": [m["file"] for m in group],
+                               "identical": len({m["sha256"] for m in group}) == 1}
+                      duplicates.append(entry)
+                      if not entry["identical"]:
+                          errors.append(dict(kind="conflicting_duplicate_module", **entry))
+
+              missing = collections.defaultdict(set)
+              builtin_dependencies = collections.defaultdict(set)
+              for module in modules:
+                  for dependency in module["depends"]:
+                      if dependency in by_name:
+                          continue
+                      if dependency in builtins:
+                          builtin_dependencies[dependency].add(module["name"])
+                      else:
+                          missing[dependency].add(module["name"])
+              missing_dependencies = [{"dependency": name, "required_by": sorted(dependents)}
+                                      for name, dependents in sorted(missing.items())]
+              errors.extend(dict(kind="missing_dependency", **entry) for entry in missing_dependencies)
+              return {
+                  "success": not errors,
+                  "scope": "Static collected-module dependency and vermagic check; no CRC, signature or hardware validation.",
+                  "root": str(root), "metadata": metadata, "kernel_releases": sorted(releases),
+                  "module_files": len(modules), "unique_modules": len(by_name),
+                  "builtin_modules": len(builtins),
+                  "vermagic": {k: sorted(set(v)) for k, v in sorted(by_vermagic.items())},
+                  "missing_dependencies": missing_dependencies,
+                  "builtin_dependencies": {k: sorted(v) for k, v in sorted(builtin_dependencies.items())},
+                  "duplicates": duplicates, "errors": errors, "warnings": warnings,
+                  "modules": modules,
+              }
+
+
+          def main():
+              parser = argparse.ArgumentParser(description=__doc__)
+              parser.add_argument("--root", required=True, type=Path)
+              parser.add_argument("--output", required=True, type=Path)
+              release = parser.add_mutually_exclusive_group()
+              release.add_argument("--kernel-release", help="Authoritative GKI release string")
+              release.add_argument("--release-file", type=Path, help="Authoritative GKI kernel.release file")
+              parser.add_argument("--builtin-file", type=Path, help="Authoritative GKI modules.builtin file")
+              parser.add_argument("--require-metadata", action="store_true")
+              args = parser.parse_args()
+              try:
+                  report = audit(args.root, args.release_file, args.builtin_file, args.require_metadata, args.kernel_release)
+              except (OSError, ValueError) as exc:
+                  report = {"success": False, "errors": [{"kind": "input_error", "error": str(exc)}]}
+              args.output.parent.mkdir(parents=True, exist_ok=True)
+              args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+              print(json.dumps({k: report[k] for k in ("success", "module_files", "unique_modules", "missing_dependencies", "errors", "warnings") if k in report}, indent=2))
+              return 0 if report["success"] else 1
+
+
+          if __name__ == "__main__":
+              raise SystemExit(main())
+          MODULE_CHECK
+          python3 - <<'PYTHON'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          package = Path(os.environ["PACKAGE_DIR"])
+          workspace = Path(os.environ["WORKSPACE_DIR"])
+          runner = package / "build_platform.py"
+          checker = package / "check_module_dependencies.py"
+          before = '323956fce205b94d0a4d00b1a81cbd9d2ff051fda66728fbeeb81c9ea970d09d'
+          after = 'ed5135492a876d3b382b131b8ea8a0787bd1001d2b729c46df680071afbdfe62'
+          checker_sha256 = '863ff6b8c955ce960afa85c8f16e4438260dad9bcaeabd59f07031f47c73ac11'
+          if hashlib.sha256(checker.read_bytes()).hexdigest() != checker_sha256:
+              raise SystemExit("Module dependency checker checksum mismatch")
+          compile(checker.read_bytes(), str(checker), "exec")
+          replacements = [
+              (
+                  '}\n\n',
+                  '}\n\n\nGKI_TARGETS = [\n    "//common:kernel_aarch64_modules",\n    "//myron_artifact_metadata:kernel_release",\n]\nGKI_METADATA_BUILD = \'# Generated by the Myron diagnostic runner; exposes only existing GKI output.\\nfilegroup(\\n    name = "kernel_release",\\n    srcs = ["//common:kernel_aarch64"],\\n    output_group = "include/config/kernel.release",\\n)\\n\'\n\n\ndef build_targets(root, stage):\n    targets = [TARGETS[stage]]\n    if stage in ("analyze", "soc", "full"):\n        definition = root / "myron_artifact_metadata/BUILD.bazel"\n        if definition.exists() and definition.read_text() != GKI_METADATA_BUILD:\n            raise RuntimeError("Unexpected generated GKI metadata target contents")\n        definition.parent.mkdir(parents=True, exist_ok=True)\n        definition.write_text(GKI_METADATA_BUILD)\n        targets += GKI_TARGETS\n    return targets\n\n',
+              ),
+              (
+                  '    dest = root / "integration-artifacts" / stage\n    dest.mkdir(parents=True, exist_ok=True)\n    items = []\n    for name in paths:\n        source = root / name\n        if not source.is_file():\n            continue\n        if not (source.suffix in (".ko", ".dtb", ".dtbo", ".symvers") or\n                source.name in ("Image", "Image.gz", "Image.lz4", ".config", "System.map", "kernel.release")):\n            continue\n        rel = Path(name)\n',
+                  '    dest = root / "integration-artifacts" / stage\n    # A previous attempt must not supply missing providers to this attempt\'s audit.\n    if dest.exists():\n        shutil.rmtree(dest)\n    dest.mkdir(parents=True, exist_ok=True)\n    items = []\n    for name in dict.fromkeys(paths):\n        rel = Path(name)\n',
+              ),
+              (
+                  '            raise ValueError("Unexpected Bazel output path: " + name)\n        target = dest / "objects" / rel\n',
+                  '            raise ValueError("Unexpected Bazel output path: " + name)\n        source = root / rel\n        if not (source.suffix in (".ko", ".dtb", ".dtbo", ".symvers") or\n                source.name in ("Image", "Image.gz", "Image.lz4", ".config", "System.map", "kernel.release",\n                                "modules.builtin", "modules.builtin.modinfo", "kernel_aarch64_dot_config")):\n            continue\n        if not source.is_file():\n            raise RuntimeError("Declared Bazel output is missing: " + name)\n        target = dest / "objects" / rel\n',
+              ),
+              (
+                  '    if stage in ("soc", "full"):\n        required |= {"mi_fp.ko", "mi_stack.ko", "mi_ubt.ko", "printk_enhance.ko", "panel_event_notifier.ko", "boot_stats.ko"}\n    if stage in ("dtbs", "full"):\n',
+                  '    if stage in ("soc", "full"):\n        required |= {"rfkill.ko", "libarc4.ko", "kernel.release", "modules.builtin",\n                     "modules.builtin.modinfo", "kernel_aarch64_dot_config", "mi_fp.ko", "mi_stack.ko", "mi_ubt.ko", "printk_enhance.ko", "panel_event_notifier.ko", "boot_stats.ko"}\n    if stage in ("dtbs", "full"):\n',
+              ),
+              (
+                  '        raise RuntimeError("Build finished but required outputs are missing: " + ", ".join(missing))\n    return len(items)\n',
+                  '        raise RuntimeError("Build finished but required outputs are missing: " + ", ".join(missing))\n    if stage in ("soc", "full"):\n        # Use common\'s metadata, not the separate DTB-build configuration.\n        def gki_file(basename):\n            matches = [dest / item["file"] for item in items\n                       if Path(item["file"]).name == basename and "/common/kernel_aarch64/" in item["source"]]\n            if len(matches) != 1:\n                raise RuntimeError("Expected one authoritative GKI output: " + basename)\n            return matches[0]\n\n        release_file = gki_file("kernel.release")\n        builtin_file = gki_file("modules.builtin")\n        config_file = gki_file("kernel_aarch64_dot_config")\n        image_file = gki_file("Image")\n        release = release_file.read_text().strip()\n        if not release or len(release.split()) != 1 or (b"Linux version " + release.encode() + b" ") not in image_file.read_bytes():\n            raise RuntimeError("Collected GKI release does not match Image banner")\n        gki_modules = [item for item in items if item["file"].endswith(".ko") and "/common/kernel_aarch64/" in item["source"]]\n        if not gki_modules or any(not (dest / item["file"]).read_bytes().endswith(b"~Module signature appended~\\n") for item in gki_modules):\n            raise RuntimeError("Expected installed GKI modules with appended signatures")\n        provenance = {"kernel_release": release, "kernel_release_file": str(release_file.relative_to(dest)),\n                      "image_config": str(config_file.relative_to(dest)), "modules_builtin": str(builtin_file.relative_to(dest)),\n                      "gki_module_count": len(gki_modules), "gki_modules_have_signature_trailer": True,\n                      "gki_module_source": "//common:kernel_aarch64_modules",\n                      "note": "Includes upstream KUnit outputs; this is not a phone module autoload list. Signature cryptography is not verified here."}\n        (dest / "gki-provenance.json").write_text(json.dumps(provenance, indent=2) + "\\n")\n        report = root / "integration-reports" / (stage + "-module-dependencies.json")\n        try:\n            logged([sys.executable, str(HERE / "check_module_dependencies.py"),\n                    "--root", str(dest / "objects"), "--output", str(report),\n                    "--release-file", str(release_file), "--builtin-file", str(builtin_file),\n                    "--require-metadata"], root, report.with_suffix(".log"))\n        finally:\n            if report.is_file():\n                shutil.copy2(report, dest / "module-dependencies.json")\n    return len(items)\n',
+              ),
+              (
+                  '        options = configuration + [f"--jobs={args.jobs}", f"--local_ram_resources={args.ram_mb}", "--color=no", "--curses=no", "--show_progress", "--show_progress_rate_limit=30", "--progress_report_interval=30", "--keep_going"]\n        # Only traverse this diagnostic graph. No ABL, boot/vendor_boot or dlkm image targets.\n        command = bazel + ["build"] + options\n',
+                  '        options = configuration + [f"--jobs={args.jobs}", f"--local_ram_resources={args.ram_mb}", "--color=no", "--curses=no", "--show_progress", "--show_progress_rate_limit=30", "--progress_report_interval=30", "--keep_going"]\n        targets = build_targets(root, args.stage)\n        status["build_targets"] = targets\n        # Include installed GKI modules without selecting any partition image targets.\n        command = bazel + ["build"] + options\n',
+              ),
+              (
+                  '            command += ["--nobuild"]\n        command += [TARGETS[args.stage]]\n        logged(command, root, reports / (args.stage + ".log"))\n',
+                  '            command += ["--nobuild"]\n        command += targets\n        logged(command, root, reports / (args.stage + ".log"))\n',
+              ),
+              (
+                  '        if args.stage != "analyze":\n            output = subprocess.run(bazel + ["cquery"] + configuration + ["--output=files", "--color=no", "--curses=no", TARGETS[args.stage]],\n                                    cwd=root, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n',
+                  '        if args.stage != "analyze":\n            status["compiled"] = True\n            query = "set(" + " ".join(targets) + ")"\n            output = subprocess.run(bazel + ["cquery"] + configuration + ["--output=files", "--color=no", "--curses=no", query],\n                                    cwd=root, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n',
+              ),
+              (
+                  '            status["artifact_count"] = collect(root, output.stdout.splitlines(), args.stage)\n            status["compiled"] = True\n        else:\n',
+                  '            status["artifact_count"] = collect(root, output.stdout.splitlines(), args.stage)\n            if args.stage in ("soc", "full"):\n                status["module_dependencies_passed"] = True\n        else:\n',
+              ),
+          ]
+          data = runner.read_bytes()
+          current = hashlib.sha256(data).hexdigest()
+          if current == after:
+              status = "already_applied"
+          elif current == before:
+              fixed = data
+              for old, new in replacements:
+                  old, new = old.encode(), new.encode()
+                  if fixed.count(old) != 1:
+                      raise SystemExit("Ambiguous GKI collection correction")
+                  fixed = fixed.replace(old, new, 1)
+              if hashlib.sha256(fixed).hexdigest() != after:
+                  raise SystemExit("GKI collection runner checksum mismatch")
+              compile(fixed, str(runner), "exec")
+              runner.write_bytes(fixed)
+              status = "applied"
+          else:
+              raise SystemExit("Unexpected build runner contents; refusing GKI collection correction")
+          report = workspace / "integration-reports/gki-collection-hotfix.json"
+          report.parent.mkdir(parents=True, exist_ok=True)
+          report.write_text(json.dumps({
+              "hotfix": "r1-gki-module-collection-fix4",
+              "status": status,
+              "runner_sha256": after,
+              "checker_sha256": checker_sha256,
+              "gki_modules": "//common:kernel_aarch64_modules",
+              "checks": ["Image release", "GKI signature trailer presence", "module dependencies", "module vermagic"],
+              "hardware_tested": False,
+          }, indent=2) + "\n")
+          print("Installed GKI modules and authoritative metadata added; module dependency checks enabled.")
+          PYTHON
+
+      - name: Apply pinned QCOM module replacement policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$PACKAGE_DIR/select_module_candidates.py" <<'MODULE_SELECTION'
+          #!/usr/bin/env python3
+          """Select diagnostic QCOM module candidates, retaining all built originals.
+
+          The pinned QCOM build excludes its zram/zsmalloc GKI counterparts from the
+          runtime distribution. This policy is deliberately limited to the two verified
+          output pairs. It is not an autoload list or a flashable partition manifest.
+          """
+          import argparse
+          import collections
+          import json
+          from pathlib import Path, PurePosixPath
+          import re
+
+          POLICY = "myron-qcom-zram-v1"
+          BASE = "bazel-out/aarch64-fastbuild/bin/"
+          OVERRIDES = {
+              "zram": {
+                  "reference": BASE + "common/kernel_aarch64/drivers/block/zram/zram.ko",
+                  "selected": BASE + "vendor/qcom/sm8850/canoe_perf/drivers/block/zram/zram/zram.ko",
+              },
+              "zsmalloc": {
+                  "reference": BASE + "common/kernel_aarch64/mm/zsmalloc.ko",
+                  "selected": BASE + "vendor/qcom/sm8850/canoe_perf/mm/zsmalloc/zsmalloc.ko",
+              },
+          }
+          NOTE = ("Diagnostic candidate selection only: all originals remain in objects/. "
+                  "Not a module autoload list, partition layout, flash package, or hardware validation.")
+
+
+          def build_selection(modules):
+              """Return a selection bound to every input file's path, name, hash and vermagic."""
+              modules = sorted(modules, key=lambda item: item["file"])
+              if not modules:
+                  raise ValueError("No modules to select")
+              by_name = collections.defaultdict(list)
+              files = set()
+              for module in modules:
+                  filename = module["file"]
+                  path = PurePosixPath(filename)
+                  if path.is_absolute() or ".." in path.parts or str(path) != filename or path.suffix != ".ko":
+                      raise ValueError("Unsafe or noncanonical module path: " + filename)
+                  if filename in files:
+                      raise ValueError("Repeated module path: " + filename)
+                  if not re.fullmatch(r"[0-9a-f]{64}", module["sha256"]):
+                      raise ValueError("Invalid module SHA256: " + filename)
+                  if not module["vermagic"].strip():
+                      raise ValueError("Missing module vermagic: " + filename)
+                  files.add(filename)
+                  by_name[module["name"]].append(module)
+              excluded = []
+              for name, expected in OVERRIDES.items():
+                  pair = by_name.get(name, [])
+                  if len(pair) != 2 or {item["file"] for item in pair} != set(expected.values()):
+                      raise ValueError("Expected exactly the pinned common/QCOM pair for " + name)
+                  if len({item["vermagic"] for item in pair}) != 1:
+                      raise ValueError("Common/QCOM vermagic differs for " + name)
+                  excluded.append({
+                      "file": expected["reference"], "name": name,
+                      "selected_instead": expected["selected"],
+                      "reason": "Pinned QCOM module override; retain the GKI original for reference only.",
+                  })
+              # Never turn this policy into a blanket duplicate exception.
+              for name, group in by_name.items():
+                  if name not in OVERRIDES and len({item["sha256"] for item in group}) > 1:
+                      raise ValueError("Unapproved conflicting duplicate module: " + name)
+              excluded_files = {item["file"] for item in excluded}
+              return {
+                  "schema_version": 1, "policy": POLICY,
+                  "flashable": False, "hardware_tested": False, "note": NOTE,
+                  "all_built": [{key: item[key] for key in ("file", "name", "sha256", "vermagic")}
+                                for item in modules],
+                  "selected": [item["file"] for item in modules if item["file"] not in excluded_files],
+                  "excluded": sorted(excluded, key=lambda item: item["file"]),
+              }
+
+
+          def validate_selection(modules, selection):
+              """Reject stale hashes, extra exclusions, path substitutions or missing inputs."""
+              expected = build_selection(modules)
+              if selection != expected:
+                  raise ValueError("Selection manifest differs from the explicit pinned policy or current module files")
+              wanted = set(expected["selected"])
+              return [module for module in modules if module["file"] in wanted]
+
+
+          def main():
+              # Import only for CLI parsing; the dependency gate imports this policy too.
+              from check_module_dependencies import modinfo
+              parser = argparse.ArgumentParser(description=__doc__)
+              parser.add_argument("--root", type=Path, required=True)
+              parser.add_argument("--output", type=Path, required=True)
+              args = parser.parse_args()
+              root = args.root.resolve()
+              if not root.is_dir():
+                  parser.error("module root is not a directory")
+              modules = [dict(file=str(path.relative_to(root)), **modinfo(path))
+                         for path in sorted(root.rglob("*.ko"))]
+              selection = build_selection(modules)
+              args.output.parent.mkdir(parents=True, exist_ok=True)
+              args.output.write_text(json.dumps(selection, indent=2) + "\n")
+              print(json.dumps({"policy": POLICY, "all_built": len(modules),
+                                "selected": len(selection["selected"]),
+                                "reference_only": len(selection["excluded"]), "flashable": False}))
+
+
+          if __name__ == "__main__":
+              main()
+          MODULE_SELECTION
+          python3 - <<'PYTHON'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          package = Path(os.environ["PACKAGE_DIR"])
+          workspace = Path(os.environ["WORKSPACE_DIR"])
+          selector = package / "select_module_candidates.py"
+          selector_sha256 = '8ceea88b1fd4229b9412139b82a86e1e936515af3b3ad8a3a0210888ee7c1e1e'
+          source_hashes = {'common/modules.bzl': '4f67b55c9f22db8c7c1dc23cfaeba1f3d12b6a0c5580d60d0fa589b7c40e8f44', 'vendor/qcom/sm8850/kleaf-scripts/android_build.bzl': 'f37f6de851941b9f9e282d5cfcb00fe6b5db372eb1caedf721192aeba94b5877', 'vendor/qcom/sm8850/kleaf-scripts/modules_unprotected.bzl': 'ea4c10f3f16c8a139c0c2c954ab44e8dc08db62f21aadcffe74dc904e607a4a8', 'vendor/qcom/sm8850/modules-lists/modules.systemdlkm_blocklist.msm.canoe': 'f6374c5b9af8adda2a7d860fb050562c0a45cf4229c214d3f185c3a38e7a85b2'}
+          if hashlib.sha256(selector.read_bytes()).hexdigest() != selector_sha256:
+              raise SystemExit("Module selector checksum mismatch")
+          compile(selector.read_bytes(), str(selector), "exec")
+          policy_checks = []
+          for name, expected in source_hashes.items():
+              path = workspace / name
+              actual = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+              policy_checks.append({"path": name, "expected_sha256": expected,
+                                    "actual_sha256": actual, "matches": actual == expected})
+          policy_report = workspace / "integration-reports/upstream-policy-check.json"
+          policy_report.parent.mkdir(parents=True, exist_ok=True)
+          policy_report.write_text(json.dumps({"files": policy_checks}, indent=2) + "\n")
+          mismatches = [entry for entry in policy_checks if not entry["matches"]]
+          if mismatches:
+              raise SystemExit("Unexpected upstream module override policy: " + json.dumps(mismatches))
+          edits = [
+              {
+                  "path": 'build_platform.py',
+                  "before": 'ed5135492a876d3b382b131b8ea8a0787bd1001d2b729c46df680071afbdfe62',
+                  "after": '8f8bf7d96dc1e29b942e4f03891e1bb6a04aee0b3bb9890919e1ff948c739181',
+                  "replacements": [
+                      (
+                          '                "flashable": False, "kernel": "6.12.81-android16 / KMI generation 6",\n                "note": "Source-build diagnostics. No OEM partition image or AK3 is produced."}\n    (dest / "artifact-manifest.json").write_text(json.dumps(manifest, indent=2) + "\\n")\n    (dest / "NOT-A-FLASH-PACKAGE.txt").write_text("开发构建产物，尚未完成 myron 驱动覆盖、分区装配或实机验证。不能套用之前 r38 测试包的刷入步骤。\\n")\n    if missing:\n',
+                          '                "flashable": False, "kernel": "6.12.81-android16 / KMI generation 6",\n                "module_inventory": "All built originals; consult module-selection.json for the diagnostic candidate set.",\n                "note": "Source-build diagnostics. No OEM partition image or AK3 is produced."}\n    (dest / "artifact-manifest.json").write_text(json.dumps(manifest, indent=2) + "\\n")\n    (dest / "NOT-A-FLASH-PACKAGE.txt").write_text("开发构建产物，尚未完成 myron 驱动覆盖、分区装配或实机验证。不能套用之前 r38 测试包的刷入步骤。objects 保留全部编译原件，包含同名替代模块；请先看 module-selection.json，不可直接铺平复制或全部加载。\\n")\n    if missing:\n',
+                      ),
+                      (
+                          '        (dest / "gki-provenance.json").write_text(json.dumps(provenance, indent=2) + "\\n")\n        report = root / "integration-reports" / (stage + "-module-dependencies.json")\n',
+                          '        (dest / "gki-provenance.json").write_text(json.dumps(provenance, indent=2) + "\\n")\n        selection = dest / "module-selection.json"\n        selection_report = root / "integration-reports" / (stage + "-module-selection.json")\n        try:\n            logged([sys.executable, str(HERE / "select_module_candidates.py"),\n                    "--root", str(dest / "objects"), "--output", str(selection)],\n                   root, selection_report.with_suffix(".log"))\n        finally:\n            if selection.is_file():\n                shutil.copy2(selection, selection_report)\n        report = root / "integration-reports" / (stage + "-module-dependencies.json")\n',
+                      ),
+                      (
+                          '                    "--release-file", str(release_file), "--builtin-file", str(builtin_file),\n                    "--require-metadata"], root, report.with_suffix(".log"))\n        finally:\n',
+                          '                    "--release-file", str(release_file), "--builtin-file", str(builtin_file),\n                    "--require-metadata", "--selection-file", str(selection)], root, report.with_suffix(".log"))\n        finally:\n',
+                      ),
+                      (
+                          '    reports.mkdir(parents=True, exist_ok=True)\n    status = {"stage": args.stage, "target": TARGETS[args.stage], "success": False,\n',
+                          '    reports.mkdir(parents=True, exist_ok=True)\n    # Do not present an earlier successful selection/audit after a failed retry.\n    for suffix in ("-module-selection.json", "-module-selection.log",\n                   "-module-dependencies.json", "-module-dependencies.log"):\n        (reports / (args.stage + suffix)).unlink(missing_ok=True)\n    status = {"stage": args.stage, "target": TARGETS[args.stage], "success": False,\n',
+                      ),
+                  ],
+              },
+              {
+                  "path": 'check_module_dependencies.py',
+                  "before": '863ff6b8c955ce960afa85c8f16e4438260dad9bcaeabd59f07031f47c73ac11',
+                  "after": 'd816c6e5e00ee6fec209b9511fa5906385d6f97c6c0599854b944ca7bb161344',
+                  "replacements": [
+                      (
+                          '\ndef audit(root, release_file=None, builtin_file=None, require_metadata=False, kernel_release=None):\n    root = Path(root).resolve()\n',
+                          '\ndef audit(root, release_file=None, builtin_file=None, require_metadata=False, kernel_release=None,\n          selection_file=None):\n    root = Path(root).resolve()\n',
+                      ),
+                      (
+                          '        errors.append({"kind": "no_modules"})\n\n',
+                          '        errors.append({"kind": "no_modules"})\n\n    selected_modules = modules\n    selection = None\n    if selection_file is not None:\n        # This is an explicit opt-in. The default still audits every original\n        # strictly, including rejecting different binaries with the same name.\n        try:\n            from select_module_candidates import validate_selection\n            selection = json.loads(Path(selection_file).read_text())\n            selected_modules = validate_selection(modules, selection)\n        except (ValueError, OSError, KeyError, TypeError) as exc:\n            selection = None\n            errors.append({"kind": "invalid_selection", "error": str(exc)})\n\n',
+                      ),
+                      (
+                          '    duplicates = []\n    for name, group in sorted(by_name.items()):\n',
+                          '    duplicates = []\n    selected_files = {module["file"] for module in selected_modules}\n    for name, group in sorted(by_name.items()):\n',
+                      ),
+                      (
+                          '            if not entry["identical"]:\n                errors.append(dict(kind="conflicting_duplicate_module", **entry))\n\n',
+                          '            if not entry["identical"]:\n                chosen = [module["file"] for module in group if module["file"] in selected_files]\n                if selection is not None and len(chosen) == 1:\n                    entry["resolution"] = {"policy": selection["policy"], "selected": chosen[0],\n                                           "reference_only": [module["file"] for module in group\n                                                              if module["file"] not in selected_files]}\n                else:\n                    errors.append(dict(kind="conflicting_duplicate_module", **entry))\n\n',
+                      ),
+                      (
+                          '    builtin_dependencies = collections.defaultdict(set)\n    for module in modules:\n        for dependency in module["depends"]:\n            if dependency in by_name:\n                continue\n',
+                          '    builtin_dependencies = collections.defaultdict(set)\n    selected_names = {module["name"] for module in selected_modules}\n    for module in selected_modules:\n        for dependency in module["depends"]:\n            if dependency in selected_names:\n                continue\n',
+                      ),
+                      (
+                          '        "success": not errors,\n        "scope": "Static collected-module dependency and vermagic check; no CRC, signature or hardware validation.",\n        "root": str(root), "metadata": metadata, "kernel_releases": sorted(releases),\n        "module_files": len(modules), "unique_modules": len(by_name),\n        "builtin_modules": len(builtins),\n',
+                          '        "success": not errors,\n        "scope": "Static diagnostic candidate dependency and all-built vermagic check; no CRC, signature or hardware validation. Not an autoload list or flash package.",\n        "root": str(root), "metadata": metadata, "kernel_releases": sorted(releases),\n        "module_files": len(modules), "unique_modules": len(by_name),\n        "selected_module_files": len(selected_modules), "selected_unique_modules": len(selected_names),\n        "selection_policy": selection["policy"] if selection is not None else None,\n        "reference_only": selection["excluded"] if selection is not None else [],\n        "builtin_modules": len(builtins),\n',
+                      ),
+                      (
+                          '        "modules": modules,\n    }\n',
+                          '        "modules": modules,\n        "selected_modules": [module["file"] for module in selected_modules],\n    }\n',
+                      ),
+                      (
+                          '    parser.add_argument("--require-metadata", action="store_true")\n    args = parser.parse_args()\n    try:\n        report = audit(args.root, args.release_file, args.builtin_file, args.require_metadata, args.kernel_release)\n    except (OSError, ValueError) as exc:\n',
+                          '    parser.add_argument("--require-metadata", action="store_true")\n    parser.add_argument("--selection-file", type=Path,\n                        help="Explicit pinned QCOM diagnostic selection; defaults to strict all-built audit")\n    args = parser.parse_args()\n    try:\n        report = audit(args.root, args.release_file, args.builtin_file, args.require_metadata, args.kernel_release,\n                       args.selection_file)\n    except (OSError, ValueError) as exc:\n',
+                      ),
+                  ],
+              },
+          ]
+          pending, records = [], []
+          for edit in edits:
+              path = package / edit["path"]
+              data = path.read_bytes()
+              current = hashlib.sha256(data).hexdigest()
+              if current == edit["after"]:
+                  records.append({"path": edit["path"], "status": "already_applied", "sha256": current})
+                  continue
+              if current != edit["before"]:
+                  raise SystemExit("Unexpected module selection input: " + edit["path"])
+              for old, new in edit["replacements"]:
+                  old, new = old.encode(), new.encode()
+                  if data.count(old) != 1:
+                      raise SystemExit("Ambiguous module selection edit: " + edit["path"])
+                  data = data.replace(old, new, 1)
+              if hashlib.sha256(data).hexdigest() != edit["after"]:
+                  raise SystemExit("Module selection output checksum mismatch: " + edit["path"])
+              compile(data, str(path), "exec")
+              pending.append((path, data))
+              records.append({"path": edit["path"], "status": "applied", "sha256": edit["after"]})
+          for path, data in pending:
+              path.write_bytes(data)
+          report = workspace / "integration-reports/module-selection-hotfix.json"
+          report.parent.mkdir(parents=True, exist_ok=True)
+          report.write_text(json.dumps({
+              "hotfix": "r1-qcom-module-selection-fix5", "files": records,
+              "selector_sha256": selector_sha256, "upstream_policy_sha256": source_hashes,
+              "policy": "Only the pinned zram/zsmalloc pairs select QCOM providers; preserve every built original.",
+              "hardware_tested": False,
+          }, indent=2) + "\n")
+          print("Pinned QCOM zram/zsmalloc candidate selection enabled; all original modules retained.")
+          PYTHON
+
+      - name: Install Myron r13 source adaptation and validation gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import os
+          from pathlib import Path, PurePosixPath
+          import zipfile
+
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          archive = root / "myron-boot-r18/baseline/myron-adaptation-r12.zip"
+          expected = "64dbec4a01124317682f28e0fce61bd885247af1e05b5cac5e4990ad838111c1"
+          if hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
+              raise SystemExit("Myron r12 ZIP checksum mismatch")
+          with zipfile.ZipFile(archive) as bundle:
+              entries = bundle.infolist()
+              if len(entries) != 988 or len({x.filename for x in entries}) != 988:
+                  raise SystemExit("Incomplete or duplicate r12 ZIP entries")
+              for item in entries:
+                  path = PurePosixPath(item.filename)
+                  if path.is_absolute() or ".." in path.parts or not path.parts or path.parts[0] != "myron-adaptation-r12" or item.is_dir():
+                      raise SystemExit("Unexpected r12 archive path: " + item.filename)
+              for item in entries:
+                  bundle.extract(item, root)
+          print("Verified and extracted the 988-file Myron r12 source adaptation bundle")
+          PYTHON
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/install_hooks.py" --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR"
+
+
+      - name: Build the R27 display candidate and required prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset CCACHE_DEBUG
+          # Resource snapshots distinguish a silent action from runner exhaustion.
+          python3 -u - <<'HEARTBEAT' &
+          import datetime
+          import os
+          import subprocess
+          import time
+
+          while True:
+              time.sleep(60)
+              stamp = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+              print("::group::Runner heartbeat " + stamp, flush=True)
+              for command in [
+                  ["free", "-m"],
+                  ["df", "-h", os.environ["WORKSPACE_DIR"]],
+                  ["ps", "-eo", "pid,ppid,pcpu,pmem,etime,comm", "--sort=-pcpu"],
+              ]:
+                  try:
+                      result = subprocess.run(command, text=True, capture_output=True, timeout=10)
+                      output = result.stdout.splitlines()
+                      if command[0] == "ps":
+                          output = output[:13]
+                      print("\n".join(output), flush=True)
+                      if result.returncode:
+                          print("Monitor command exited:", command[0], result.returncode, flush=True)
+                  except (OSError, subprocess.TimeoutExpired) as error:
+                      print("Monitor:", error, flush=True)
+              print("::endgroup::", flush=True)
+          HEARTBEAT
+          heartbeat_pid=$!
+          stop_heartbeat() {
+            local build_rc=$?
+            trap - EXIT
+            kill "$heartbeat_pid" 2>/dev/null || true
+            wait "$heartbeat_pid" 2>/dev/null || true
+            exit "$build_rc"
+          }
+          trap stop_heartbeat EXIT
+          python3 "$GITHUB_WORKSPACE/myron-display-r27/display_probe_build.py" \
+            --workspace "$WORKSPACE_DIR" --package "$PACKAGE_DIR" \
+            --baseline "$GITHUB_WORKSPACE/myron-adaptation-r12" \
+            --r18-bundle "$GITHUB_WORKSPACE/myron-boot-r18" \
+            --jobs "$BUILD_JOBS" --ram-mb 10000
+
+      - name: Upload source lock and diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-r27-display-reports-${{ github.run_id }}
+          path: |
+            ${{ env.WORKSPACE_DIR }}/integration-reports/
+            ${{ env.PACKAGE_DIR }}/sources.lock.json
+            ${{ github.workspace }}/myron-fastchecks/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload compiled diagnostic outputs
+        # Retain whitelisted diagnostic outputs even when post-build validation fails.
+        if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/display-probe/artifact-manifest.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-r27-display-output-${{ github.run_id }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-artifacts/display-probe/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
