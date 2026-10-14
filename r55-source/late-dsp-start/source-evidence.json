@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "baseline_loader": {
+    "path": "r54-build/generated/load-modules.sh",
+    "sha256": "50ec79db22771b5ba8f702e8dbb5bf347c5ac18430bfaa225bdb26e34f92d071"
+  },
+  "candidate_loader": {
+    "path": "r55-source/late-dsp-start/load-modules.sh",
+    "sha256": "0cd37062546401c370734974406e1a901e887a985c6ef9a5e1c7711588b38541"
+  },
+  "mode": "0100755",
+  "uid": 0,
+  "gid": 0,
+  "selinux": "u:object_r:vendor_modinstall-sh_exec:s0",
+  "change_scope": "Append helper inside the vendor branch after all 213 Live checks, the ready property and SELECTED_READY; no RC, native, GKI or module ordering changes.",
+  "load_and_require_calls_identical": true,
+  "prefix_before_vendor_identical": true,
+  "module_ready_precedes_helper": true,
+  "readiness": [
+    "force_sysfs_fallback is read as 1",
+    "init.svc.ueventd=running",
+    "ro.cold_boot_done=true",
+    "nonempty readable target MDT and DTB MDT in existing stock firmware directories"
+  ],
+  "identity": [
+    "unique exact remoteproc name",
+    "canonical class link to pinned platform address",
+    "canonical OF node path",
+    "exact OF compatible",
+    "exact current firmware name",
+    "state file readable and writable"
+  ],
+  "action": "One standard state=start write per offline ADSP/CDSP. State is checked again inside the 20-second timed child. No other remoteproc target, SSR or retry.",
+  "budgets_seconds": {
+    "readiness": 15,
+    "write": 20,
+    "write_kill_grace": 2,
+    "supervisor": 45
+  },
+  "outer_deadline_limit": "The supervisor checks at most 45 one-second intervals, then signals direct workers without waiting. Scheduling overhead is additional. An uninterruptible kernel write can remain pending until kernel completion. The selected-module ready property was already published; no full-boot or DSP success is claimed.",
+  "state_race_limit": "State read and start are not atomic. The rproc mutex prevents duplicate hardware boot, but a competing start can add a power reference. One attempt only, with no compensating stop.",
+  "stock_timing_evidence": "r54-runtime-analysis/autoboot-firmware-timing-review.json",
+  "runtime_observation": "R54 firmware_mounts_complete at 6.093 s is later than audio module init at 5.635 s. Live modules do not imply firmware readiness. Early R55 auto-start failure is a source/timing prediction, not an observed R55 boot.",
+  "exact_sources": [
+    "r54-runtime-analysis/reference-firmware/remoteproc_sysfs.c:state_store",
+    "r54-runtime-analysis/reference-firmware/remoteproc_core.c:rproc_boot",
+    "r53-work/reference-dsp/modules/qcom/opensource/audio-kernel/dsp/adsp-loader.c:adsp_load_fw"
+  ],
+  "route_reason": "Use standard remoteproc state directly. The adsp-loader boot path needs absent qcom,adsp-state and only covers ADSP; it is not appropriate for CDSP.",
+  "diagnostics": "printf inherits the unchanged vendor.modprobe stdio_to_kmsg service directive in R54 /r32/overrides.rc. R54 dmesg contains the existing loader markers.",
+  "timing_evidence_sha256": "bc9bb5ca3849897169b5570ca18a8a3b1e4cddaacb792c7b4efe31567eeb3800",
+  "firmware_directories_evidence": [
+    {
+      "path": "r41-input/r31/partial-boot-metadata-20261013T031734999940Z/inventory/system/configs/system/etc/ueventd.rc",
+      "line": 4,
+      "sha256": "7a26df7521ecba3b3fd66df438b4e5d1b5e8fa6fc5ea1a73c2c93eed803f985e"
+    },
+    {
+      "path": "r41-input/r31/partial-boot-metadata-20261013T031734999940Z/inventory/vendor/configs/etc/ueventd.rc",
+      "line": 69,
+      "sha256": "3d1cdaa8ab7397b959fa8cf73facfd3042ceeb7498459014da44d2f5d846f47f"
+    },
+    {
+      "path": "r41-input/r31/partial-boot-metadata-20261013T031734999940Z/inventory/odm/configs/etc/ueventd.rc",
+      "line": 34,
+      "sha256": "c747aeaa6ecc9274fd0961354dddbaad5f49992ab1f129235bbcd5c748f58daa"
+    }
+  ]
+}

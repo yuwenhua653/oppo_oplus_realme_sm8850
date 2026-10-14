@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "tests_passed": 9,
+  "helper_sha256": "d6f2cb2fcae6df19c8058ad8cb0d03c02b2d7ad25d0a867cef773bb5b44264b3",
+  "candidate_sha256": "0cd37062546401c370734974406e1a901e887a985c6ef9a5e1c7711588b38541",
+  "scope": "Host dash simulations with redirected absolute paths, mock property values and mock successful remoteproc state transitions; production source untouched. This is not device or firmware validation.",
+  "results": [
+    {
+      "name": "both_offline_mounted_firmware",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.815,
+      "writes": [
+        {
+          "path": "/tmp/r55-late-dsp-e1ldjnyg/android/sys/class/remoteproc/remoteproc7/state",
+          "state_after_child": "start",
+          "rc": 0
+        },
+        {
+          "path": "/tmp/r55-late-dsp-e1ldjnyg/android/sys/class/remoteproc/remoteproc3/state",
+          "state_after_child": "start",
+          "rc": 0
+        }
+      ],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=adsp event=START_ONCE node=/tmp/r55-late-dsp-e1ldjnyg/android/sys/class/remoteproc/remoteproc7 mdt=/tmp/r55-late-dsp-e1ldjnyg/android/vendor/firmware_mnt/image/adsp.mdt dtb=/tmp/r55-late-dsp-e1ldjnyg/android/vendor/firmware_mnt/image/adsp_dtb.mdt budget_s=20\nR55_DSP target=cdsp event=START_ONCE node=/tmp/r55-late-dsp-e1ldjnyg/android/sys/class/remoteproc/remoteproc3 mdt=/tmp/r55-late-dsp-e1ldjnyg/android/vendor/firmware_mnt/image/cdsp.mdt dtb=/tmp/r55-late-dsp-e1ldjnyg/android/vendor/firmware_mnt/image/cdsp_dtb.mdt budget_s=20\nR55_DSP target=adsp event=RUNNING node=/tmp/r55-late-dsp-e1ldjnyg/android/sys/class/remoteproc/remoteproc7 writer_rc=0; firmware_QMI_audio_readiness_not_claimed\nR55_DSP target=adsp event=WORKER_EXIT rc=0\nR55_DSP target=cdsp event=RUNNING node=/tmp/r55-late-dsp-e1ldjnyg/android/sys/class/remoteproc/remoteproc3 writer_rc=0; firmware_QMI_audio_readiness_not_claimed\nR55_DSP target=cdsp event=WORKER_EXIT rc=0\nR55_DSP target=all event=END elapsed_s=27; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "stock_search_paths_per_file",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.636,
+      "writes": [
+        {
+          "path": "/tmp/r55-late-dsp-g4gofmso/android/sys/class/remoteproc/remoteproc7/state",
+          "state_after_child": "start",
+          "rc": 0
+        },
+        {
+          "path": "/tmp/r55-late-dsp-g4gofmso/android/sys/class/remoteproc/remoteproc3/state",
+          "state_after_child": "start",
+          "rc": 0
+        }
+      ],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=adsp event=START_ONCE node=/tmp/r55-late-dsp-g4gofmso/android/sys/class/remoteproc/remoteproc7 mdt=/tmp/r55-late-dsp-g4gofmso/android/vendor/vm-system/adsp.mdt dtb=/tmp/r55-late-dsp-g4gofmso/android/etc/firmware/adsp_dtb.mdt budget_s=20\nR55_DSP target=cdsp event=START_ONCE node=/tmp/r55-late-dsp-g4gofmso/android/sys/class/remoteproc/remoteproc3 mdt=/tmp/r55-late-dsp-g4gofmso/android/odm/firmware/cdsp.mdt dtb=/tmp/r55-late-dsp-g4gofmso/android/vendor/modem_firmware/image/cdsp_dtb.mdt budget_s=20\nR55_DSP target=adsp event=RUNNING node=/tmp/r55-late-dsp-g4gofmso/android/sys/class/remoteproc/remoteproc7 writer_rc=0; firmware_QMI_audio_readiness_not_claimed\nR55_DSP target=adsp event=WORKER_EXIT rc=0\nR55_DSP target=cdsp event=RUNNING node=/tmp/r55-late-dsp-g4gofmso/android/sys/class/remoteproc/remoteproc3 writer_rc=0; firmware_QMI_audio_readiness_not_claimed\nR55_DSP target=cdsp event=WORKER_EXIT rc=0\nR55_DSP target=all event=END elapsed_s=24; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "fallback_zero",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.906,
+      "writes": [],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=NOT_READY fallback=0 ueventd=running coldboot=true mdt=/tmp/r55-late-dsp-cx1krhlp/android/vendor/firmware_mnt/image/cdsp.mdt dtb=/tmp/r55-late-dsp-cx1krhlp/android/vendor/firmware_mnt/image/cdsp_dtb.mdt; no_write\nR55_DSP target=adsp event=NOT_READY fallback=0 ueventd=running coldboot=true mdt=/tmp/r55-late-dsp-cx1krhlp/android/vendor/firmware_mnt/image/adsp.mdt dtb=/tmp/r55-late-dsp-cx1krhlp/android/vendor/firmware_mnt/image/adsp_dtb.mdt; no_write\nR55_DSP target=adsp event=WORKER_EXIT rc=1\nR55_DSP target=cdsp event=WORKER_EXIT rc=1\nR55_DSP target=all event=END elapsed_s=38; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "ueventd_stopped",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.877,
+      "writes": [],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=NOT_READY fallback=1 ueventd=stopped coldboot=true mdt=/tmp/r55-late-dsp-4aujinfy/android/vendor/firmware_mnt/image/cdsp.mdt dtb=/tmp/r55-late-dsp-4aujinfy/android/vendor/firmware_mnt/image/cdsp_dtb.mdt; no_write\nR55_DSP target=adsp event=NOT_READY fallback=1 ueventd=stopped coldboot=true mdt=/tmp/r55-late-dsp-4aujinfy/android/vendor/firmware_mnt/image/adsp.mdt dtb=/tmp/r55-late-dsp-4aujinfy/android/vendor/firmware_mnt/image/adsp_dtb.mdt; no_write\nR55_DSP target=adsp event=WORKER_EXIT rc=1\nR55_DSP target=cdsp event=WORKER_EXIT rc=1\nR55_DSP target=all event=END elapsed_s=37; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "coldboot_false",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.867,
+      "writes": [],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=NOT_READY fallback=1 ueventd=running coldboot=false mdt=/tmp/r55-late-dsp-y8qwghn4/android/vendor/firmware_mnt/image/cdsp.mdt dtb=/tmp/r55-late-dsp-y8qwghn4/android/vendor/firmware_mnt/image/cdsp_dtb.mdt; no_write\nR55_DSP target=adsp event=NOT_READY fallback=1 ueventd=running coldboot=false mdt=/tmp/r55-late-dsp-y8qwghn4/android/vendor/firmware_mnt/image/adsp.mdt dtb=/tmp/r55-late-dsp-y8qwghn4/android/vendor/firmware_mnt/image/adsp_dtb.mdt; no_write\nR55_DSP target=adsp event=WORKER_EXIT rc=1\nR55_DSP target=cdsp event=WORKER_EXIT rc=1\nR55_DSP target=all event=END elapsed_s=38; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "adsp_dtb_missing_cdsp_independent",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.89,
+      "writes": [
+        {
+          "path": "/tmp/r55-late-dsp-91dmfw7v/android/sys/class/remoteproc/remoteproc3/state",
+          "state_after_child": "start",
+          "rc": 0
+        }
+      ],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=START_ONCE node=/tmp/r55-late-dsp-91dmfw7v/android/sys/class/remoteproc/remoteproc3 mdt=/tmp/r55-late-dsp-91dmfw7v/android/vendor/firmware_mnt/image/cdsp.mdt dtb=/tmp/r55-late-dsp-91dmfw7v/android/vendor/firmware_mnt/image/cdsp_dtb.mdt budget_s=20\nR55_DSP target=cdsp event=RUNNING node=/tmp/r55-late-dsp-91dmfw7v/android/sys/class/remoteproc/remoteproc3 writer_rc=0; firmware_QMI_audio_readiness_not_claimed\nR55_DSP target=cdsp event=WORKER_EXIT rc=0\nR55_DSP target=adsp event=NOT_READY fallback=1 ueventd=running coldboot=true mdt=/tmp/r55-late-dsp-91dmfw7v/android/vendor/firmware_mnt/image/adsp.mdt dtb=; no_write\nR55_DSP target=adsp event=WORKER_EXIT rc=1\nR55_DSP target=all event=END elapsed_s=38; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "adsp_mdt_empty_cdsp_independent",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.886,
+      "writes": [
+        {
+          "path": "/tmp/r55-late-dsp-08ehxcgx/android/sys/class/remoteproc/remoteproc3/state",
+          "state_after_child": "start",
+          "rc": 0
+        }
+      ],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=cdsp event=START_ONCE node=/tmp/r55-late-dsp-08ehxcgx/android/sys/class/remoteproc/remoteproc3 mdt=/tmp/r55-late-dsp-08ehxcgx/android/vendor/firmware_mnt/image/cdsp.mdt dtb=/tmp/r55-late-dsp-08ehxcgx/android/vendor/firmware_mnt/image/cdsp_dtb.mdt budget_s=20\nR55_DSP target=cdsp event=RUNNING node=/tmp/r55-late-dsp-08ehxcgx/android/sys/class/remoteproc/remoteproc3 writer_rc=0; firmware_QMI_audio_readiness_not_claimed\nR55_DSP target=cdsp event=WORKER_EXIT rc=0\nR55_DSP target=adsp event=NOT_READY fallback=1 ueventd=running coldboot=true mdt= dtb=/tmp/r55-late-dsp-08ehxcgx/android/vendor/firmware_mnt/image/adsp_dtb.mdt; no_write\nR55_DSP target=adsp event=WORKER_EXIT rc=1\nR55_DSP target=all event=END elapsed_s=38; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "writer_zero_without_running_unconfirmed",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.536,
+      "writes": [
+        {
+          "path": "/tmp/r55-late-dsp-pfl27np7/android/sys/class/remoteproc/remoteproc7/state",
+          "state_after_child": "start",
+          "rc": 0
+        },
+        {
+          "path": "/tmp/r55-late-dsp-pfl27np7/android/sys/class/remoteproc/remoteproc3/state",
+          "state_after_child": "start",
+          "rc": 0
+        }
+      ],
+      "stdout": "R55_DSP target=all event=BEGIN module_gate_already_complete=213/213 supervisor_budget_s=45\nR55_DSP target=cdsp event=WAIT_READY budget_s=15\nR55_DSP target=adsp event=WAIT_READY budget_s=15\nR55_DSP target=adsp event=START_ONCE node=/tmp/r55-late-dsp-pfl27np7/android/sys/class/remoteproc/remoteproc7 mdt=/tmp/r55-late-dsp-pfl27np7/android/vendor/firmware_mnt/image/adsp.mdt dtb=/tmp/r55-late-dsp-pfl27np7/android/vendor/firmware_mnt/image/adsp_dtb.mdt budget_s=20\nR55_DSP target=cdsp event=START_ONCE node=/tmp/r55-late-dsp-pfl27np7/android/sys/class/remoteproc/remoteproc3 mdt=/tmp/r55-late-dsp-pfl27np7/android/vendor/firmware_mnt/image/cdsp.mdt dtb=/tmp/r55-late-dsp-pfl27np7/android/vendor/firmware_mnt/image/cdsp_dtb.mdt budget_s=20\nR55_DSP target=adsp event=START_UNCONFIRMED node=/tmp/r55-late-dsp-pfl27np7/android/sys/class/remoteproc/remoteproc7 state=start writer_rc=0; no_retry\nR55_DSP target=adsp event=WORKER_EXIT rc=1\nR55_DSP target=cdsp event=START_UNCONFIRMED node=/tmp/r55-late-dsp-pfl27np7/android/sys/class/remoteproc/remoteproc3 state=start writer_rc=0; no_retry\nR55_DSP target=cdsp event=WORKER_EXIT rc=1\nR55_DSP target=all event=END elapsed_s=22; selected_module_ready_unchanged DSP_result_in_per_target_markers\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "name": "timeout_unavailable_fails_closed",
+      "shell_exit": 0,
+      "elapsed_seconds": 0.029,
+      "writes": [],
+      "stdout": "R55_DSP target=all event=TOOL_UNAVAILABLE timeout_probe_failed; no_write\nR55_DSP helper_failed; selected module readiness retained\n",
+      "stderr": "",
+      "status": "PASS"
+    }
+  ]
+}
