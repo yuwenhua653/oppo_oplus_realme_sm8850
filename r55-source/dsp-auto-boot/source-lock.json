@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "repository": "LineageOS/android_kernel_qcom_sm8850",
+  "commit": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+  "source_path": "drivers/remoteproc/qcom_q6v5_pas.c",
+  "original": {
+    "bytes": 102736,
+    "sha256": "ffe7da1a5c05cd7d684d569ff6e56a9c7b2d9db0af630e6ce90094d128b6cf4c"
+  },
+  "r18_required_input": {
+    "bytes": 102831,
+    "sha256": "06b11e9af536b1ce77c9278602de35d0557e7a908cba12446f71196ec6c4d94a"
+  },
+  "r55_output": {
+    "bytes": 102871,
+    "sha256": "caf8b7e6ab2786b3cea57b7bd15528f8823409bddcebd8bcb83e63bae14c0723"
+  },
+  "patch": {
+    "path": "canoe-dsp-auto-boot.patch",
+    "sha256": "c2ade501a50fe2c0df2c945106e9685d1613ecaead3ffb4eb43e9bc859214eac"
+  },
+  "only_changed_fields": [
+    "canoe_adsp_resource.auto_boot:0->1",
+    "canoe_cdsp_resource.auto_boot:0->1"
+  ],
+  "preserved_fields": {
+    "canoe_adsp_resource.early_boot": 0,
+    "canoe_cdsp_resource.early_boot": 0,
+    "canoe_soccp_resource.auto_boot": 1,
+    "canoe_soccp_resource.early_boot": 1,
+    "canoe_mpss_resource.auto_boot": 0
+  },
+  "baseline_module": {
+    "sha256": "25c8e58e49d072c1a863938419aec57657b1abcc1ad8db4ce42c7de63ece9846",
+    "descriptors": {
+      "canoe_adsp_resource": {
+        "raw_hex": "a70100009402000000000000000000000000000000000000000000000000000000000000010000002400000000000000050000000001000000000000000000000000000000000000000000000000000000000000000000001400000002000000000000000000000000000000000000000000000000000000",
+        "auto_boot": 0,
+        "early_boot": 0
+      },
+      "canoe_cdsp_resource": {
+        "raw_hex": "590200009402000000000000000000000000000000000000000000000000000000000000120000002500000000000000070000000001000000000000000000000000000000000000000000000000000000000000000000001700000005000000000000000000000000000000000000000000000000000000",
+        "auto_boot": 0,
+        "early_boot": 0
+      },
+      "canoe_mpss_resource": {
+        "raw_hex": "a50100000000000000000000000000000000000000000000000000000000000000000000040000002600000000000000030000000101000100000000000000000000000000000000000000000000000000000000000000001200000000000000000000000300000002000000000000000f00000001000000",
+        "auto_boot": 0,
+        "early_boot": 0
+      },
+      "canoe_soccp_resource": {
+        "raw_hex": "900200000000000000000000000000000000000000000000000000000000000000000000330000004100000000000000180000000001010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100",
+        "auto_boot": 1,
+        "early_boot": 1
+      }
+    },
+    "normalized_binding_contract": {
+      "descriptor_pointer_targets": {
+        "canoe_adsp_resource": {
+          "firmware_name": {
+            "offset": 8,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "adsp.mdt"
+          },
+          "dtb_firmware_name": {
+            "offset": 16,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "adsp_dtb.mdt"
+          },
+          "load_state": {
+            "offset": 64,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "adsp"
+          },
+          "ssr_name": {
+            "offset": 72,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "lpass"
+          },
+          "sysmon_name": {
+            "offset": 80,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "adsp"
+          }
+        },
+        "canoe_cdsp_resource": {
+          "firmware_name": {
+            "offset": 8,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "cdsp.mdt"
+          },
+          "dtb_firmware_name": {
+            "offset": 16,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "cdsp_dtb.mdt"
+          },
+          "load_state": {
+            "offset": 64,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "cdsp"
+          },
+          "ssr_name": {
+            "offset": 72,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "cdsp"
+          },
+          "sysmon_name": {
+            "offset": 80,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "cdsp"
+          }
+        },
+        "canoe_mpss_resource": {
+          "firmware_name": {
+            "offset": 8,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "modem.mdt"
+          },
+          "dtb_firmware_name": {
+            "offset": 16,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "modem_dtb.mdt"
+          },
+          "load_state": {
+            "offset": 64,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "modem"
+          },
+          "ssr_name": {
+            "offset": 72,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "mpss"
+          },
+          "sysmon_name": {
+            "offset": 80,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "modem"
+          }
+        },
+        "canoe_soccp_resource": {
+          "firmware_name": {
+            "offset": 8,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "soccp.mbn"
+          },
+          "dtb_firmware_name": {
+            "offset": 16,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "soccp_dtb.mbn"
+          },
+          "ssr_name": {
+            "offset": 72,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "soccp"
+          },
+          "sysmon_name": {
+            "offset": 80,
+            "relocation": "R_AARCH64_ABS64",
+            "string": "soccp"
+          }
+        }
+      },
+      "canoe_of_mappings": {
+        "qcom,canoe-adsp-pas": "canoe_adsp_resource",
+        "qcom,canoe-cdsp-pas": "canoe_cdsp_resource",
+        "qcom,canoe-modem-pas": "canoe_mpss_resource",
+        "qcom,canoe-soccp-pas": "canoe_soccp_resource"
+      }
+    }
+  },
+  "oem_evidence": {
+    "vendor_boot_sha256": "42a6d0837de43eec427a359b756f0306537024a4c7c73eaa5dd0076ac15453e2",
+    "module_sha256": "206119bee3328e047ac830275dfa30d51a48e6a6d2e3e5e47a0876fd79853567",
+    "auto_boot_offset": 42,
+    "early_boot_offset": 106,
+    "auto_boot": {
+      "adsp": 1,
+      "cdsp": 1,
+      "soccp": 1,
+      "mpss": 0
+    },
+    "early_boot": {
+      "adsp": 0,
+      "cdsp": 0,
+      "soccp": 1
+    }
+  },
+  "supersedes": "R18 check_soccp_elf.py guard retaining implicitADSP/CDSPfalse; replaced based on direct OEM descriptor+instruction evidence. SOCCP behavior is preserved.",
+  "hardware_tested": false
+}

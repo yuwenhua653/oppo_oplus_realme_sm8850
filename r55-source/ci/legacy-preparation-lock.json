@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "source_workflow": ".github/workflows/build-myron-boot-r18.yml",
+  "source_commit": "663a72185cdf479e5945a6822b4b8954b80ce314",
+  "source_workflow_sha256": "5e9efa9c9d6fd9f22186f7d2fc7a8bdf1f7eab3c2179826a959e8d2dffa1f19b",
+  "steps": [
+    {
+      "file": "hotfix_01_qpace.sh",
+      "source_step": "Fix stale QPACE deletion and enable progress",
+      "original_body_sha256": "4ba453276f93b3d4b36fae87182100fe25ec4494ba4287a3d550587222df5d6b",
+      "sha256": "f1f0fc7ddfa965103a6d807b08ac343b372a88501599e942268fa872d3029ffc"
+    },
+    {
+      "file": "hotfix_02_dt_collection.sh",
+      "source_step": "Fix Myron DTBO output collection",
+      "original_body_sha256": "0cffc320e7139f218f0c65a12e7a385d62d5f9cd91772d4e986322f4b4e0a3a4",
+      "sha256": "d0a5a81a173005d4ac1cc4f888d33912ed5b5be3c15d40a5a2f417cee9938ea8"
+    },
+    {
+      "file": "hotfix_03_ddk_headers.sh",
+      "source_step": "Enable QCOM DDK header profile and batch diagnostics",
+      "original_body_sha256": "eb8a7f08d0dd7d1b5eb29b1dd2760b15636c67ce6d8a47ac83b1f4b1e78b140f",
+      "sha256": "1af9a78df936dc986d9f06e40de4648a0c491d308c651bddcf0e20a84a1e75ae"
+    },
+    {
+      "file": "hotfix_04_gki_metadata.sh",
+      "source_step": "Collect same-build GKI modules and check dependencies",
+      "original_body_sha256": "eddb1c267945eab1bb7e0c9082d8147dd1fcc62da95743777c7743f6448da390",
+      "sha256": "4bd2d1c6552c792a8339bb9ec2f47471fc2badfc1de333198d6659ec37cf225c"
+    },
+    {
+      "file": "hotfix_05_module_selection.sh",
+      "source_step": "Apply pinned QCOM module replacement policy",
+      "original_body_sha256": "6d14ed9f6cb30bf652bb131f83196cc9971d99ce0bbb22823619249e9bdb7acf",
+      "sha256": "f47e1fec4bc97115f4a6f9dfe303114c4e3eb3e48a9b3cc9009f3f86ace05e64"
+    }
+  ],
+  "note": "Unmodified R18 preparation shell bodies only; no legacy build step is called."
+}

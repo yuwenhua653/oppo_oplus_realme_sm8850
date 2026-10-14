@@ -1,0 +1,18 @@
+--- a/drivers/remoteproc/qcom_q6v5_pas.c
++++ b/drivers/remoteproc/qcom_q6v5_pas.c
+@@ -2910,6 +2910,7 @@
+ 	.sysmon_name = "adsp",
+ 	.ssctl_id = 0x14,
+ 	.uses_elf64 = true,
++	.auto_boot = true,
+ 	.crash_reason_stack = 660,
+ 	.smem_host_id = 2,
+ };
+@@ -2926,6 +2927,7 @@
+ 	.sysmon_name = "cdsp",
+ 	.ssctl_id = 0x17,
+ 	.uses_elf64 = true,
++	.auto_boot = true,
+ 	.crash_reason_stack = 660,
+ 	.smem_host_id = 5,
+ };
