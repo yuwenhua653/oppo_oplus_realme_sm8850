@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config TOUCHSCREEN_FOCALTECH_MYRON
+	tristate "Myron FT3683 SPI touchscreen (TIC test driver)"
+	depends on ARM64 && SPI && INPUT && OF && GPIOLIB && REGULATOR && PINCTRL
+	help
+	  Direct protocol-v2 multitouch for the stock Myron device tree.
+	  Does not implement Xiaomi THP, FOD, gestures, or firmware updates.

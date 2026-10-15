@@ -1,0 +1,30 @@
+[
+  {
+    "repository": "torvalds/linux",
+    "ref": "v6.12",
+    "sha": "db2dfbae8edbd12059826183b1c0f73c7a58ff40",
+    "url": "https://github.com/torvalds/linux/blob/v6.12/include/linux/gpio/consumer.h",
+    "scope": "gpiod consumer API"
+  },
+  {
+    "repository": "torvalds/linux",
+    "ref": "v6.12",
+    "sha": "4b95663163e0b2a5fb5e3d5b5af3db4a863b9c00",
+    "url": "https://github.com/torvalds/linux/blob/v6.12/include/linux/spi/spi.h",
+    "scope": "spi driver and limits"
+  },
+  {
+    "repository": "torvalds/linux",
+    "ref": "v6.12",
+    "sha": "2cf89a538b18bbc7c99c8705c2d22bdc95065238",
+    "url": "https://github.com/torvalds/linux/blob/v6.12/include/linux/input/mt.h",
+    "scope": "input MT APIs"
+  },
+  {
+    "repository": "torvalds/linux",
+    "ref": "v6.12",
+    "sha": "457151f9f263d9042625decde2c15822d860b134",
+    "url": "https://github.com/torvalds/linux/blob/v6.12/include/linux/interrupt.h",
+    "scope": "IRQF_NO_AUTOEN"
+  }
+]

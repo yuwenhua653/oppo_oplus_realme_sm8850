@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "source_review": "PASS",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "integration": {
+    "script": "r58-build-route/apply_touch.py"
+  },
+  "locked_files": [
+    {
+      "path": "r58-driver/focaltech_myron.c",
+      "sha256": "7b1e96763e9ed6cc357bc3329eb8fab3ff59c14b259d12ecf9e8c1effe1e22e4"
+    },
+    {
+      "path": "r58-driver/fts_myron_frame.h",
+      "sha256": "98411331d40e4a7f6fde72f43cd3262fbfed14577fc236777ae2064b46371e73"
+    },
+    {
+      "path": "r58-build-route/payload/drivers/xiaomi/myron/modules.bzl",
+      "sha256": "2b980c3c7dde333438b6408072fccce521c9d581c4533d197a807307e839cae4"
+    },
+    {
+      "path": "r58-build-route/payload/drivers/xiaomi/myron/Kconfig",
+      "sha256": "6092f533002e75ee3a857ae8cc709076618055b83ddc40e3cd5a1e9b04ea1096"
+    },
+    {
+      "path": "r58-build-route/payload/configs/canoe_perf.bzl",
+      "sha256": "4671a7c798664ce7338b7d74ace8bed694ddd64fe09900f8cfb5d35360aa0bdb"
+    },
+    {
+      "path": "r58-build-route/apply_touch.py",
+      "sha256": "7db59e7018baff290a042ecf47237464c2a66ba1ab016ace24dfe9963ba186fa"
+    },
+    {
+      "path": "r58-build-route/action_chain.py",
+      "sha256": "ffede0974d3a2c46416f9096373a8b214305a4a1227ed62b94ebb83d33882eef"
+    },
+    {
+      "path": "r58-build-route/check_touch_inputs.py",
+      "sha256": "832ab43ca74854ffc7d6bf361883bb3056556476450c879ee2ef0b2fcc393aba"
+    },
+    {
+      "path": "r58-build-route/targeted_touch_build.py",
+      "sha256": "f7167bc6e394a3ac00ebfd0d6c6bd0515eee2909aec03368284ff4415a25fbb8"
+    },
+    {
+      "path": "r58-build-route/touch-write-lock.json",
+      "sha256": "44cd8216daa9abd6d51fbc78d30631c3f1421330cad3fd374b9b233f85a1de06"
+    }
+  ],
+  "workspace_files": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/input/touchscreen/myron/focaltech_myron.c",
+      "sha256": "7b1e96763e9ed6cc357bc3329eb8fab3ff59c14b259d12ecf9e8c1effe1e22e4"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/input/touchscreen/myron/fts_myron_frame.h",
+      "sha256": "98411331d40e4a7f6fde72f43cd3262fbfed14577fc236777ae2064b46371e73"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
+      "sha256": "2b980c3c7dde333438b6408072fccce521c9d581c4533d197a807307e839cae4"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
+      "sha256": "6092f533002e75ee3a857ae8cc709076618055b83ddc40e3cd5a1e9b04ea1096"
+    },
+    {
+      "path": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
+      "sha256": "4671a7c798664ce7338b7d74ace8bed694ddd64fe09900f8cfb5d35360aa0bdb"
+    }
+  ],
+  "modules": [
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/input/touchscreen/myron/focaltech_myron",
+      "module_name": "focaltech_myron",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/input/touchscreen/myron/focaltech_myron/focaltech_myron.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/input/touchscreen/myron/focaltech_myron/canoe_perf/drivers/input/touchscreen/myron/focaltech_myron_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/input/touchscreen/myron/focaltech_myron.c",
+        "vendor/qcom/sm8850/drivers/input/touchscreen/myron/fts_myron_frame.h"
+      ]
+    }
+  ],
+  "source_review_scope": "Parent reviewed frozen source/protocol and DT integration; static and host checks only. Fresh KO ABI acceptance and real touchscreen tests remain required.",
+  "hardware_tested": false,
+  "runtime_abi_status": "FRESH_MODULE_NOT_YET_BUILT"
+}

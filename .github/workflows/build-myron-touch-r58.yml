@@ -1,0 +1,123 @@
+name: Myron R58 targeted touch source build
+
+on:
+  push:
+    branches:
+      - codex/myron-r58-touch-tic
+    paths:
+      - .github/workflows/build-myron-touch-r58.yml
+      - r58-driver/**
+      - r58-build-route/**
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Parallel build jobs
+        type: choice
+        required: true
+        default: '2'
+        options:
+          - '2'
+          - '4'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-r58-touch-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CCACHE_NODEBUG: 'true'
+      PYTHONUNBUFFERED: '1'
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r1
+      PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
+      BUILD_JOBS: ${{ inputs.jobs || '2' }}
+    steps:
+      - name: Checkout integration files
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Refuse incomplete touch source review before sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r58-build-route/check_touch_inputs.py --root "$GITHUB_WORKSPACE" \
+            --contract r58-build-route/touch-contract.json
+
+      - name: Verify and extract the pinned R18 and R13 sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r55-source/ci/extract_inputs.py --root "$GITHUB_WORKSPACE"
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/fastcheck_r12.py" --reports "$GITHUB_WORKSPACE/myron-fastchecks"
+
+      - name: Prepare hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Unused SDKs on this disposable hosted runner; no repository files.
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config
+          df -h .
+          free -h
+
+      - name: Sync the exact source and toolchain revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$PACKAGE_DIR/sync_sources.py" --workspace "$WORKSPACE_DIR" --jobs 4
+
+      - name: Apply the unchanged R18 preparation and R13 hooks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r55-source/ci/prepare_legacy.py
+
+      - name: Analyze and compile only reviewed touch targets and core metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset CCACHE_DEBUG
+          python3 r58-build-route/targeted_touch_build.py \
+            --workspace "$WORKSPACE_DIR" --package "$PACKAGE_DIR" \
+            --baseline "$GITHUB_WORKSPACE/myron-adaptation-r12" \
+            --r18 "$GITHUB_WORKSPACE/myron-boot-r18" \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --contract "$GITHUB_WORKSPACE/r58-build-route/touch-contract.json" \
+            --jobs "$BUILD_JOBS" --ram-mb 10000
+
+      - name: Upload source inputs and diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-r58-touch-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.WORKSPACE_DIR }}/integration-reports/
+            ${{ env.PACKAGE_DIR }}/sources.lock.json
+            ${{ github.workspace }}/myron-fastchecks/
+            ${{ github.workspace }}/r55-source/ci/
+            ${{ github.workspace }}/r58-build-route/
+            ${{ github.workspace }}/r58-driver/
+            ${{ github.workspace }}/.github/workflows/build-myron-touch-r58.yml
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload fresh touch modules and core ABI evidence
+        # Keep fresh compiler output even if a later ELF identity gate fails.
+        if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r58-targeted-touch/artifact-manifest.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-r58-touch-output-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-artifacts/r58-targeted-touch/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
+

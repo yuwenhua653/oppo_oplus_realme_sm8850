@@ -1,0 +1,15 @@
+{
+  "schema": "r58-myron-parser-host-test-v1",
+  "date_utc": "2026-10-15",
+  "result": "PASS",
+  "source_sha256": "7b1e96763e9ed6cc357bc3329eb8fab3ff59c14b259d12ecf9e8c1effe1e22e4",
+  "parser_sha256": "98411331d40e4a7f6fde72f43cd3262fbfed14577fc236777ae2064b46371e73",
+  "command": "sh r58-driver/tests/run.sh",
+  "compiler": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+  "flags": "-std=c11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+  "asan_options": "detect_leaks=0",
+  "leak_check_note": "Parser allocates no heap. LeakSanitizer cannot inspect /proc tasks in this ptrace sandbox; ASan bounds and UBSan remain enabled.",
+  "output": "PASS 20115 checks: v2 events, strict bounds, atomic rejection, CRC, 20000 malformed frames",
+  "meaning": "Synthetic data validates portable parser and CRC logic, including adversarial/truncated frames and output unchanged on error.",
+  "limits": "Does not execute Linux I/O, IRQ/workqueue/PM APIs or establish hardware response. Kernel build, final ABI audit and actual phone input testing are separate gates."
+}

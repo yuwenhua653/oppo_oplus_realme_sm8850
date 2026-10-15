@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4"
+  },
+  "writes": [
+    {
+      "source": "r58-driver/focaltech_myron.c",
+      "destination": "vendor/qcom/sm8850/drivers/input/touchscreen/myron/focaltech_myron.c",
+      "before_sha256": null,
+      "after_sha256": "7b1e96763e9ed6cc357bc3329eb8fab3ff59c14b259d12ecf9e8c1effe1e22e4"
+    },
+    {
+      "source": "r58-driver/fts_myron_frame.h",
+      "destination": "vendor/qcom/sm8850/drivers/input/touchscreen/myron/fts_myron_frame.h",
+      "before_sha256": null,
+      "after_sha256": "98411331d40e4a7f6fde72f43cd3262fbfed14577fc236777ae2064b46371e73"
+    },
+    {
+      "source": "r58-build-route/payload/drivers/xiaomi/myron/modules.bzl",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
+      "before_sha256": "16bc4a6e81c33f87a7f317afb5d5622a24df16a7d197e56f52613d5053ae4557",
+      "after_sha256": "2b980c3c7dde333438b6408072fccce521c9d581c4533d197a807307e839cae4"
+    },
+    {
+      "source": "r58-build-route/payload/drivers/xiaomi/myron/Kconfig",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
+      "before_sha256": "bde07376277b9ae8b30a72fbb0afd663d689c4f359cd1500383cf3e20356d473",
+      "after_sha256": "6092f533002e75ee3a857ae8cc709076618055b83ddc40e3cd5a1e9b04ea1096"
+    },
+    {
+      "source": "r58-build-route/payload/configs/canoe_perf.bzl",
+      "destination": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
+      "before_sha256": "7f8434e9bd306c1cbaa82e9f2b82684d630fd2f0bb39884c4bb9f5623cab0db8",
+      "after_sha256": "4671a7c798664ce7338b7d74ace8bed694ddd64fe09900f8cfb5d35360aa0bdb"
+    }
+  ]
+}
