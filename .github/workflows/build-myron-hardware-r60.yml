@@ -47,6 +47,7 @@ jobs:
           set -euo pipefail
           python3 r60-build-route/check_hardware_inputs.py --root "$GITHUB_WORKSPACE" \
             --contract r60-build-route/hardware-contract.json
+          PYTHONDONTWRITEBYTECODE=1 python3 r60-build-route/test_hardware_preimages.py
 
       - name: Verify and extract the pinned R18 and R13 sources
         shell: bash

@@ -9,7 +9,7 @@
   "locked_files": [
     {
       "path": ".github/workflows/build-myron-hardware-r60.yml",
-      "sha256": "84de661397130c1a17cba35ccadcb81a3691e66c2d577de024a7cba08503b643"
+      "sha256": "52fc56d950c58fcbc5fe2ccdf46c2e1d4b2b1cde0e32267a60ed8bef4500abae"
     },
     {
       "path": "r60-build-route/action_chain.py",
@@ -17,7 +17,7 @@
     },
     {
       "path": "r60-build-route/apply_hardware.py",
-      "sha256": "4abbb9d4bdb07509adda5806fb202ad9f7ee1739d4ac4f15159d5bd0e18b5ad1"
+      "sha256": "00dbd6083aeb2412e288e9eb7bbc7c8ce4f16e0a9b57ad722c331f89df9ceb27"
     },
     {
       "path": "r60-build-route/check_hardware_inputs.py",
@@ -25,7 +25,7 @@
     },
     {
       "path": "r60-build-route/hardware-write-lock.json",
-      "sha256": "87fc87f5e04d648ab989d519392a9ba6ba6cc3daca13c7c26f1081b1cddd8c8a"
+      "sha256": "a4b8252aa1926e6a2b51e902b29ee8939c0f271db0ef0cca7ff7a648535920db"
     },
     {
       "path": "r60-build-route/patches/camera-csiphy-v240-sh11.patch",
@@ -45,7 +45,7 @@
     },
     {
       "path": "r60-build-route/payload/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
-      "sha256": "63d0072f353c88563c50154e906279cb4cee2cbd1b0d90a5e500614b1b530a30"
+      "sha256": "4596ccb65232f747a82b67d42fa14a67902707c4b93bac317ac7754efa7f6bf6"
     },
     {
       "path": "r60-build-route/reviews/camera-sh11-draft-review.json",
@@ -57,7 +57,11 @@
     },
     {
       "path": "r60-build-route/reviews/rmnet-perf-init-test.json",
-      "sha256": "de12076dcfae25d2a7c541d76246a308c3c578e7862ac7f66c1b952ff9a93347"
+      "sha256": "de347082abce6ade193a59fcd104ffacb20532c6371875fe4cc8c70c4bb395eb"
+    },
+    {
+      "path": "r60-build-route/reviews/rmnet-perf-source-provenance.json",
+      "sha256": "883c2dc81caada1cbeeb8d28f44471df2377be730145d45929809e60c9966aab"
     },
     {
       "path": "r60-build-route/reviews/source-lock.json",
@@ -70,6 +74,10 @@
     {
       "path": "r60-build-route/targeted_hardware_build.py",
       "sha256": "56b036bfe5a4146e58d1b6b6af621f1ec18c88b17520467037252bc77719f01c"
+    },
+    {
+      "path": "r60-build-route/test_hardware_preimages.py",
+      "sha256": "ef6a7505d3edc34e48a5998fbb39e8b12bdc689c01fe5959954fb3b268a03ddb"
     },
     {
       "path": "r60-build-route/test_sync_with_retry.py",
@@ -87,7 +95,7 @@
     },
     {
       "path": "vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
-      "sha256": "63d0072f353c88563c50154e906279cb4cee2cbd1b0d90a5e500614b1b530a30"
+      "sha256": "4596ccb65232f747a82b67d42fa14a67902707c4b93bac317ac7754efa7f6bf6"
     }
   ],
   "modules": [

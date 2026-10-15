@@ -1040,4 +1040,3 @@ static void __exit rmnet_perf_exit(void)
 
 module_init(rmnet_perf_init);
 module_exit(rmnet_perf_exit);
-

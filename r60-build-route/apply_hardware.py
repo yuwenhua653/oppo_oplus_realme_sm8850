@@ -46,8 +46,24 @@ def main():
         data = safe(repo, row['source']).read_bytes()
         require(sha(data) == row['after_sha256'], 'Hardware source/payload hash mismatch')
         dest = safe(root, row['destination'])
-        before = sha(dest.read_bytes()) if dest.exists() else None
-        require(before in {row['before_sha256'], row['after_sha256']}, 'Unexpected integration preimage: ' + str(dest))
+        current = dest.read_bytes() if dest.exists() else None
+        before = sha(current) if current is not None else None
+        if before not in {row['before_sha256'], row['after_sha256']}:
+            failure = {'schema': 1, 'status': 'FAIL', 'phase': 'preflight',
+                       'destination': row['destination'], 'actual_sha256': before,
+                       'actual_bytes': len(current) if current is not None else None,
+                       'expected_before_sha256': row['before_sha256'],
+                       'expected_after_sha256': row['after_sha256'],
+                       'source_writes_started': False}
+            report = safe(root, 'integration-reports/r60-hardware-preflight-failure.json')
+            report.parent.mkdir(parents=True, exist_ok=True)
+            report.write_text(json.dumps(failure, indent=2) + '\n')
+            print(json.dumps(failure, sort_keys=True), flush=True)
+            raise ValueError('Unexpected integration preimage: ' + row['destination'] +
+                             '; actual_sha256=' + str(before) +
+                             '; actual_bytes=' + str(failure['actual_bytes']) +
+                             '; expected_before=' + row['before_sha256'] +
+                             '; expected_after=' + row['after_sha256'])
         if args.check:
             require(before == row['after_sha256'], 'Hardware integration has not been applied')
         plan.append((dest, data, row, before))
