@@ -71,7 +71,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 "$PACKAGE_DIR/sync_sources.py" --workspace "$WORKSPACE_DIR" --jobs 4
+          python3 r58-build-route/test_sync_with_retry.py
+          python3 r58-build-route/sync_with_retry.py \
+            --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR" --jobs 4
 
       - name: Apply the unchanged R18 preparation and R13 hooks
         shell: bash
