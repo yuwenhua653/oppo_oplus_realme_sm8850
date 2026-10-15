@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322"
+  },
+  "writes": [
+    {
+      "source": "r60-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+      "before_sha256": "cb36b7337416526401d838ea6ca5a1a4688ce94027d3e9f82bf305cc04d81804",
+      "after_sha256": "0cf08aa9251967a9d56e72fcef879eacdd192515c3830fa1fbcd205c88d115af"
+    },
+    {
+      "source": "r60-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+      "before_sha256": "e0de4864c5e04c58cd89ab53cc7efdd37e059d4871e26d324e2829b4c5dec460",
+      "after_sha256": "989c05eae6a88be028156319d9a9d50e77983de3152ee1583d65596626ed9d40"
+    },
+    {
+      "source": "r60-build-route/payload/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
+      "before_sha256": "7f0cd8a21f98f1d1e24ab295e405d5ff95aaec4abb5aef93bab0e231e3729890",
+      "after_sha256": "63d0072f353c88563c50154e906279cb4cee2cbd1b0d90a5e500614b1b530a30"
+    }
+  ]
+}

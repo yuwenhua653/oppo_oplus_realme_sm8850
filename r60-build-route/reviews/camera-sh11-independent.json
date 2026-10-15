@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "verdict": "PASS_SOURCE_REVIEW_FOR_TARGETED_KERNEL_BUILD",
+  "reviewer": "r59_touch_diagnosis independent read-only review",
+  "patch": "system/patches/camera-csiphy-v240-sh11.patch",
+  "patch_sha256": "4e494a5d0575e2dbc464f56205f391947c2083fa69ed5bf480ddd34490206be2",
+  "source_files_git_and_sha_verified": 8,
+  "base_commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "donor_commit": "59d5dae93faae1974004788236f6c0b3ec747476",
+  "files_modified_by_patch": 2,
+  "source_scope_checks": {
+    "donor_sh11_block_exact": true,
+    "donor_selection_branch_exact": true,
+    "existing_header_bytes_preserved_outside_insert": true,
+    "existing_soc_bytes_preserved_outside_insert": true,
+    "base_v240_common_tables_match_donor": true,
+    "no_generic_fallback_or_alias_only_fix": true,
+    "no_donor_struct_header_replacement": true,
+    "no_dt_changes": true,
+    "no_other_phy_model_paths_changed": true
+  },
+  "table_checks": {
+    "eq7_register_entries": 12,
+    "eq8_register_entries": 12,
+    "bandwidths_bits_per_second": [
+      3876000000,
+      4560000000,
+      6840000000,
+      7524000000,
+      7980000000
+    ],
+    "selection": [
+      "EQ8",
+      "EQ8",
+      "EQ8",
+      "EQ7",
+      "EQ7"
+    ],
+    "array_dimensions": "MAX_CSIPHY=8 x CAM_CSIPHY_MAX_DATARATE_VARIANTS=3",
+    "populated_indices": "allPHY0..7,variant0;40designated pointers across5bins",
+    "bandwidth_type": "uint64_t; values above32bit retained",
+    "new_symbol_references": "All SH11 symbols local to added block or existing token-identical v240 common tables/function",
+    "macro_values": {
+      "CPHY_LANE_POS_1": "3",
+      "DPHY_DATA_LANE_POS_2": "4",
+      "DPHY_CLOCK_LANE_POS": "7",
+      "CSIPHY_DEFAULT_PARAMS": "BIT(0)",
+      "CSIPHY_SETTLE_CNT_LOWER_BYTE": "BIT(2)",
+      "CPHY_LANE_POS_2": "5",
+      "CSIPHY_SETTLE_CNT_HIGHER_BYTE": "BIT(3)",
+      "CSIPHY_CDR_LN_SETTINGS": "BIT(11)",
+      "CPHY_LANE_POS_0": "1",
+      "DPHY_DATA_LANE_POS_3": "6",
+      "DPHY_DATA_LANE_POS_1": "2",
+      "DPHY_DATA_LANE_POS_0": "0"
+    },
+    "lane_offset_count": 8,
+    "base_extra_callback": "csiphy_reg_addr_func remains zero initialized, identical to existing normalv240; SH11 table uses no EDGE_CASE_REG_ADDR_SETTING",
+    "donor_only_AutoEQ_fields": "this_setting_max_choice/current_choice are unused by SH11 block; designated initializers safely target unchanged base struct"
+  },
+  "core_semantic_review": {
+    "source": "reviews/sh11-independent/base-cam_csiphy_core.c",
+    "lock": "reviews/sh11-independent/additional-source-lock.json",
+    "default_variant": "CAM_START_DEV initializes datarate_variant_idx=0 at3140; only uses thereafter3254/3338. No variant1/2 selection in this base path.",
+    "type_dispatch": "Base core handles DEFAULT,SETTLE_LOW/HI andCDR_LN flags present in SH11. CDR value uses existing override/sweep semantics.",
+    "null_common_table": "New bins leave common_ctrl_reg_array_size=0, so existing common settings loop executeszero entries; no dereference required.",
+    "clock_and_version": "Uses existing CSIPHY_VERSION_V240=0x240, divisor32=true, clk_lane=0 and get_clk_voting_dynamic; copied donor behavior.",
+    "rate_limit": "Base selects first sufficient bandwidth or final bin if higher. This behavior is unchanged; supported camera mode/signal-quality testing remains necessary."
+  },
+  "binding_evidence": {
+    "runtime": "dmesg-first8174..8178:csiphy0 binds;csiphy1 invalidhwversion0 at DTparse andcomponentbind-22, causingaggregate unwind.",
+    "retained_dtbo": "system/retained-dtbo-csiphy.json;cam_csiphy1 andcam_csiphy3 compatible=[qcom,csiphy-v2.4.0-sh11,qcom,csiphy].",
+    "driver_match": "cam_csiphy_dev.c matches genericqcom,csiphy, so adding a second platform alias is unnecessary. Specific version selection is missing in base parse_dt_info.",
+    "ordering": "Retained SH11 compatible list does not contain generic versionqcom,csiphy-v2.4.0; preceding normalv240 branch doesnot shadow newSH11 branch.",
+    "limit": "Current capture omittedliveCSIPHYcompatibleproperties; evidenceusesretainedoriginalDTBO withhash, notnewlivepropertydump."
+  },
+  "verification": {
+    "command": "cc -std=c11 -Wall -Wextra -Werror -fsyntax-only reviews/sh11-independent/initializer-check.c",
+    "host_initializer_typecheck": "PASS",
+    "static_assertions": 6,
+    "kernel_compile": false,
+    "modpost_abi": false,
+    "runtime_test": false,
+    "scope": "Harness copies actual base structs/macros and exact SH11 block, with opaque dependencies declared. It validates C initializers and bounds, not target kernel integration."
+  },
+  "remaining_gates": [
+    "Build the actual camera module in matching kernel/DDK workspace and verify source/action/output identity and ABI.",
+    "On device confirm both SH11 components bind, camera request manager completes, camera provider stops aborting.",
+    "Test sensor enumeration and front/rear/zoom camera streams; removing first bind failure does not prove all HAL/sensor problems resolved."
+  ]
+}

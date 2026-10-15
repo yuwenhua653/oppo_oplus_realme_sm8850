@@ -1,0 +1,59 @@
+{
+  "base_repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+  "base_commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "donor_repository": "MiCode/vendor_qcom_opensource_camera-kernel",
+  "donor_branch": "popsicle-w-oss",
+  "donor_commit": "59d5dae93faae1974004788236f6c0b3ec747476",
+  "upstream_files": [
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_dev.c",
+      "git_blob": "7227f78df6420e16a3e9a26ca8ed6386c1573532",
+      "size": 22328,
+      "sha256": "cf077b5bd61a8f9877390ad524724ce722c6e2b425fa9944b4371d35bfdc072b"
+    },
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_dev.h",
+      "git_blob": "bd4a6dbceefb14818154452f9922ffc90e0f023e",
+      "size": 21435,
+      "sha256": "78fb210961ffe4b044141182a65540636e0883058e631934930b1c0628bf59ca"
+    },
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+      "git_blob": "9586cb84aabcb3bff94f6fc9ac79480dd0182555",
+      "size": 13787,
+      "sha256": "cb36b7337416526401d838ea6ca5a1a4688ce94027d3e9f82bf305cc04d81804"
+    },
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.h",
+      "git_blob": "a0b9d0c23a8ab9415068b23f3d397380121e5850",
+      "size": 2904,
+      "sha256": "0234d3dd51047b008e9f22658b9f80a4e8b19f5a7e6da41ecd9c6c2f802846a0"
+    },
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+      "git_blob": "cb92fd5372ad8b1592176d245204b5f26012a592",
+      "size": 45975,
+      "sha256": "e0de4864c5e04c58cd89ab53cc7efdd37e059d4871e26d324e2829b4c5dec460"
+    }
+  ],
+  "donor_files": [
+    {
+      "path": "drivers/cam_sensor_module/cam_csiphy/cam_csiphy_dev.h",
+      "git_blob": "ed64d52dd2b29777783d33a02cfabe5c34c53e51",
+      "size": 22001,
+      "sha256": "80f5403621f506ef4b97020a8be0095c698e8157ec1750ec8782be05016cfe9b"
+    },
+    {
+      "path": "drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+      "git_blob": "1d0c645972602fc645dfb0acfce5918dab067f46",
+      "size": 19709,
+      "sha256": "e4a7cd62b7a554f90e03419a8b2327ed571404e9ce571b26c57120ef04a29d73"
+    },
+    {
+      "path": "drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+      "git_blob": "c008be15078b97cb0b33817de6c06527dacca591",
+      "size": 107530,
+      "sha256": "4c8c10f8113d3d935cd5a122ec6e233a8ba4a1d3f3c3d88bbeb055fdf86e0af2"
+    }
+  ]
+}

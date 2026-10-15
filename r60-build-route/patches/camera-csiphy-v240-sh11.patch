@@ -1,0 +1,156 @@
+--- a/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c
++++ b/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c
+@@ -369,6 +369,11 @@
+ 		csiphy_dev->hw_version = CSIPHY_VERSION_V240;
+ 		csiphy_dev->is_divisor_32_comp = true;
+ 		csiphy_dev->clk_lane = 0;
++	} else if (of_device_is_compatible(soc_info->dev->of_node, "qcom,csiphy-v2.4.0-sh11")) {
++		csiphy_dev->ctrl_reg = &ctrl_reg_2_4_0_sh11;
++		csiphy_dev->hw_version = CSIPHY_VERSION_V240;
++		csiphy_dev->is_divisor_32_comp = true;
++		csiphy_dev->clk_lane = 0;
+ 	} else if (of_device_is_compatible(soc_info->dev->of_node, "qcom,csiphy-v2.4.1")) {
+ 		csiphy_dev->ctrl_reg = &ctrl_reg_2_4_1;
+ 		csiphy_dev->hw_version = CSIPHY_VERSION_V241;
+--- a/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h
++++ b/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h
+@@ -1119,4 +1119,139 @@
+ 	.getclockvoting = get_clk_voting_dynamic,
+ };
+ 
++/* xiaomi add phy reg for sh11 - start */
++//EQ7
++struct csiphy_reg_t datarate_240_sh11_eq7[] = {
++	/* AFE Settings */
++	{0x0068, 0xF1, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x006C, 0x0F, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0070, 0x03, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0074, 0x03, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0078, 0x1C, 0x00, CSIPHY_CDR_LN_SETTINGS},
++	{0x0088, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x008C, 0x71, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0090, 0x02, 0x00, CSIPHY_DEFAULT_PARAMS},
++	/* Datarate Sensitive */
++	{0x000C, 0x23, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
++	{0x0008, 0x00, 0x00, CSIPHY_SETTLE_CNT_HIGHER_BYTE},
++	{0x0010, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0014, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
++};
++
++//EQ8
++struct csiphy_reg_t datarate_240_sh11_eq8[] = {
++	/* AFE Settings */
++	{0x0068, 0xF1, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x006C, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0070, 0x03, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0074, 0x03, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0078, 0x1C, 0x00, CSIPHY_CDR_LN_SETTINGS},
++	{0x0088, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x008C, 0x51, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0090, 0x02, 0x00, CSIPHY_DEFAULT_PARAMS},
++	/* Datarate Sensitive */
++	{0x000C, 0x23, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
++	{0x0008, 0x00, 0x00, CSIPHY_SETTLE_CNT_HIGHER_BYTE},
++	{0x0010, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
++	{0x0014, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
++};
++
++static struct data_rate_reg_info_t data_rate_settings_2_4_0_sh11[] = {
++// w 3.3 t 1.99
++	{
++		/* ((1.7 GSpS) * (10^9) * (2.28 bits/symbol)) rounded value */
++		.bandwidth = 3876000000,
++		.data_rate_reg_array_size = ARRAY_SIZE(datarate_240_sh11_eq8),
++		.data_rate_reg_array[0][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[1][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[2][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[3][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[4][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[5][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[6][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[7][0] = datarate_240_sh11_eq8,
++	},
++	{
++		/* ((2.0 GSpS) * (10^9) * (2.28 bits/symbol)) rounded value */
++		.bandwidth = 4560000000,
++		.data_rate_reg_array_size = ARRAY_SIZE(datarate_240_sh11_eq8),
++		.data_rate_reg_array[0][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[1][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[2][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[3][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[4][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[5][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[6][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[7][0] = datarate_240_sh11_eq8,
++	},
++	{
++		/* ((3.0 GSpS) * (10^9) * (2.28 bits/symbol)) rounded value */
++		.bandwidth = 6840000000,
++		.data_rate_reg_array_size = ARRAY_SIZE(datarate_240_sh11_eq8),
++		.data_rate_reg_array[0][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[1][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[2][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[3][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[4][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[5][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[6][0] = datarate_240_sh11_eq8,
++		.data_rate_reg_array[7][0] = datarate_240_sh11_eq8,
++	},
++	{
++		/* ((3.3 GSpS) * (10^9) * (2.28 bits/symbol)) rounded value */
++		.bandwidth = 7524000000,
++		.data_rate_reg_array_size = ARRAY_SIZE(datarate_240_sh11_eq7),
++		.data_rate_reg_array[0][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[1][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[2][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[3][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[4][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[5][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[6][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[7][0] = datarate_240_sh11_eq7,
++	},
++	{
++		/* ((3.5 GSpS) * (10^9) * (2.28 bits/symbol)) rounded value */
++		.bandwidth = 7980000000,
++		.data_rate_reg_array_size = ARRAY_SIZE(datarate_240_sh11_eq7),
++		.data_rate_reg_array[0][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[1][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[2][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[3][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[4][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[5][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[6][0] = datarate_240_sh11_eq7,
++		.data_rate_reg_array[7][0] = datarate_240_sh11_eq7,
++	},
++};
++
++struct data_rate_settings_t data_rate_delta_table_2_4_0_sh11 = {
++	.num_data_rate_settings = ARRAY_SIZE(data_rate_settings_2_4_0_sh11),
++	.data_rate_settings = data_rate_settings_2_4_0_sh11,
++};
++
++struct csiphy_ctrl_t ctrl_reg_2_4_0_sh11 = {
++	.csiphy_common_reg = csiphy_common_reg_2_4_0,
++	.csiphy_2ph_reg = csiphy_2ph_v2_4_0_reg,
++	.csiphy_2ph_clk_ln_reg = csiphy_2ph_v2_4_0_clk_ln_reg,
++	.csiphy_3ph_reg = csiphy_3ph_v2_4_0_reg,
++	.csiphy_reg = &csiphy_v2_4_0,
++	.csiphy_irq_reg = csiphy_irq_reg_2_4_0,
++	.csiphy_reset_enter_regs = csiphy_reset_enter_reg_2_4_0,
++	.csiphy_reset_exit_regs = csiphy_reset_exit_reg_2_4_0,
++	.csiphy_lane_config_reg = csiphy_lane_en_reg_2_4_0,
++	.csiphy_ln_offsets[DPHY_DATA_LANE_POS_0] = 0x0000,
++	.csiphy_ln_offsets[DPHY_DATA_LANE_POS_1] = 0x0400,
++	.csiphy_ln_offsets[DPHY_DATA_LANE_POS_2] = 0x0800,
++	.csiphy_ln_offsets[DPHY_DATA_LANE_POS_3] = 0x0C00,
++	.csiphy_ln_offsets[DPHY_CLOCK_LANE_POS] = 0x0E00,
++	.csiphy_ln_offsets[CPHY_LANE_POS_0] = 0x0200,
++	.csiphy_ln_offsets[CPHY_LANE_POS_1] = 0x0600,
++	.csiphy_ln_offsets[CPHY_LANE_POS_2] = 0x0A00,
++	.data_rates_settings_table = &data_rate_delta_table_2_4_0_sh11,
++	.csiphy_bist_reg = &bist_setting_2_4_0,
++	.getclockvoting = get_clk_voting_dynamic,
++};
++/* xiaomi add phy reg for sh11 - end */
++
+ #endif /* _CAM_CSIPHY_2_4_0_HWREG_H_ */

@@ -1,0 +1,10 @@
+--- a/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c
++++ b/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c
+@@ -1008,6 +1008,7 @@
+ 	}
+ 
+ 	rmnet_perf_set_hooks();
++	return 0;
+ 
+ err2:
+ 	rmnet_perf_udp_exit();

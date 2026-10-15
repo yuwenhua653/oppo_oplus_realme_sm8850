@@ -1,0 +1,20 @@
+{
+  "original": {
+    "exit_code": 1,
+    "output": "PASS tcp_fail rc=-11 calls=tcp_init;\nPASS udp_fail rc=-22 calls=tcp_init;udp_init;tcp_exit;\nPASS netlink_fail rc=-33 calls=tcp_init;udp_init;nl_register;udp_exit;tcp_exit;\nFAIL success rc=0 calls=tcp_init;udp_init;nl_register;set_hooks;udp_exit;tcp_exit;\n"
+  },
+  "fixed": {
+    "exit_code": 0,
+    "output": "PASS tcp_fail rc=-11 calls=tcp_init;\nPASS udp_fail rc=-22 calls=tcp_init;udp_init;tcp_exit;\nPASS netlink_fail rc=-33 calls=tcp_init;udp_init;nl_register;udp_exit;tcp_exit;\nPASS success rc=0 calls=tcp_init;udp_init;nl_register;set_hooks;\n"
+  },
+  "status": "PASS_MINIMAL_INIT_CONTROL_FLOW_FIX",
+  "method": "Compiled exact extracted rmnet_perf_init function with instrumented init/cleanup stubs; verified ordering and error propagation for every return path.",
+  "scope": "Host control-flow regression test; not a kernel module build, ABI review or runtime packet-path verification.",
+  "original_sha256": "7f0cd8a21f98f1d1e24ab295e405d5ff95aaec4abb5aef93bab0e231e3729890",
+  "draft_sha256": "63d0072f353c88563c50154e906279cb4cee2cbd1b0d90a5e500614b1b530a30",
+  "patch_sha256": "a6f56fd05ced4c00ded70ca6ab7748f2715152842eb2b2cd099c50ab8a2d2c59",
+  "source_repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+  "source_commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "full_build_performed": false,
+  "image_changes_performed": false
+}

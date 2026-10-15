@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "source_review": "PASS",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "integration": {
+    "script": "r60-build-route/apply_hardware.py"
+  },
+  "locked_files": [
+    {
+      "path": ".github/workflows/build-myron-hardware-r60.yml",
+      "sha256": "84de661397130c1a17cba35ccadcb81a3691e66c2d577de024a7cba08503b643"
+    },
+    {
+      "path": "r60-build-route/action_chain.py",
+      "sha256": "ffede0974d3a2c46416f9096373a8b214305a4a1227ed62b94ebb83d33882eef"
+    },
+    {
+      "path": "r60-build-route/apply_hardware.py",
+      "sha256": "4abbb9d4bdb07509adda5806fb202ad9f7ee1739d4ac4f15159d5bd0e18b5ad1"
+    },
+    {
+      "path": "r60-build-route/check_hardware_inputs.py",
+      "sha256": "52c32f0238a8b62a2e06553395c26bea12c0d3080f5cfad6aa7dbdbe484ee1d6"
+    },
+    {
+      "path": "r60-build-route/hardware-write-lock.json",
+      "sha256": "87fc87f5e04d648ab989d519392a9ba6ba6cc3daca13c7c26f1081b1cddd8c8a"
+    },
+    {
+      "path": "r60-build-route/patches/camera-csiphy-v240-sh11.patch",
+      "sha256": "4e494a5d0575e2dbc464f56205f391947c2083fa69ed5bf480ddd34490206be2"
+    },
+    {
+      "path": "r60-build-route/patches/rmnet-perf-init-success.patch",
+      "sha256": "a6f56fd05ced4c00ded70ca6ab7748f2715152842eb2b2cd099c50ab8a2d2c59"
+    },
+    {
+      "path": "r60-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+      "sha256": "0cf08aa9251967a9d56e72fcef879eacdd192515c3830fa1fbcd205c88d115af"
+    },
+    {
+      "path": "r60-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+      "sha256": "989c05eae6a88be028156319d9a9d50e77983de3152ee1583d65596626ed9d40"
+    },
+    {
+      "path": "r60-build-route/payload/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
+      "sha256": "63d0072f353c88563c50154e906279cb4cee2cbd1b0d90a5e500614b1b530a30"
+    },
+    {
+      "path": "r60-build-route/reviews/camera-sh11-draft-review.json",
+      "sha256": "3586b899c86e2e769941c30d496b3fd6ff217c17a413292afc2e719d77aad681"
+    },
+    {
+      "path": "r60-build-route/reviews/camera-sh11-independent.json",
+      "sha256": "f7d8f91bc1eef6aef806ab3b68d9db4895ab33b0ad3e21b2a50597061b313aae"
+    },
+    {
+      "path": "r60-build-route/reviews/rmnet-perf-init-test.json",
+      "sha256": "de12076dcfae25d2a7c541d76246a308c3c578e7862ac7f66c1b952ff9a93347"
+    },
+    {
+      "path": "r60-build-route/reviews/source-lock.json",
+      "sha256": "e8d1a7798dc99f6ccab94a32e3ba55be3b91ffabfb5e00ccff1a4ee3a42fc4b6"
+    },
+    {
+      "path": "r60-build-route/sync_with_retry.py",
+      "sha256": "6d34d04e90fde257a2278dacf7afec663a133a6c120cba284eae752cee3e7f90"
+    },
+    {
+      "path": "r60-build-route/targeted_hardware_build.py",
+      "sha256": "56b036bfe5a4146e58d1b6b6af621f1ec18c88b17520467037252bc77719f01c"
+    },
+    {
+      "path": "r60-build-route/test_sync_with_retry.py",
+      "sha256": "a7e3899fcfa9fe35c3c7eb72a6b57878bd51d5fea7ab5925f7d9c9b11c68a1bc"
+    }
+  ],
+  "workspace_files": [
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+      "sha256": "0cf08aa9251967a9d56e72fcef879eacdd192515c3830fa1fbcd205c88d115af"
+    },
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+      "sha256": "989c05eae6a88be028156319d9a9d50e77983de3152ee1583d65596626ed9d40"
+    },
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
+      "sha256": "63d0072f353c88563c50154e906279cb4cee2cbd1b0d90a5e500614b1b530a30"
+    }
+  ],
+  "modules": [
+    {
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel:canoe_perf_camera",
+      "module_name": "camera",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/canoe_perf_camera/camera.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/canoe_perf_camera/canoe_perf_camera_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h"
+      ]
+    },
+    {
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf:canoe_perf_perf",
+      "module_name": "rmnet_perf",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/canoe_perf_perf/rmnet_perf.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/canoe_perf_perf/canoe_perf_perf_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c"
+      ]
+    }
+  ],
+  "source_review_scope": "Minimal SH11 donor support plus rmnet_perf successful-init return. Source/host review only. Fresh KO installed-kernel ABI and device tests remain required.",
+  "hardware_tested": false,
+  "runtime_abi_status": "FRESH_MODULES_NOT_YET_BUILT",
+  "remote_base_commit": "03788ef06f5b1c583efbff6156eee8c9179c47f5",
+  "branch": "codex/myron-r60-hardware"
+}

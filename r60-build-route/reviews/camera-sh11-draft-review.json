@@ -1,0 +1,34 @@
+{
+  "state": "source_draft_ready_for_targeted_CI_not_compiled_or_runtime_tested",
+  "base_commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "donor_commit": "59d5dae93faae1974004788236f6c0b3ec747476",
+  "changes": [
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+      "before_sha256": "cb36b7337416526401d838ea6ca5a1a4688ce94027d3e9f82bf305cc04d81804",
+      "after_sha256": "0cf08aa9251967a9d56e72fcef879eacdd192515c3830fa1fbcd205c88d115af"
+    },
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+      "before_sha256": "e0de4864c5e04c58cd89ab53cc7efdd37e059d4871e26d324e2829b4c5dec460",
+      "after_sha256": "989c05eae6a88be028156319d9a9d50e77983de3152ee1583d65596626ed9d40"
+    }
+  ],
+  "patch_sha256": "4e494a5d0575e2dbc464f56205f391947c2083fa69ed5bf480ddd34490206be2",
+  "transplant_checks": {
+    "all_8_source_blobs_match_git_and_sha256": true,
+    "donor_SH11_block_byte_identical": true,
+    "donor_selection_branch_byte_identical": true,
+    "base_v240_common_tables_token_identical_to_donor": true,
+    "existing_compatible_branches_preserved": true,
+    "base_header_bytes_preserved_except_insert": true,
+    "donor_AutoEQ_struct_extensions_not_imported": true,
+    "base_csiphy_reg_addr_func_preserved_null_like_existing_v240": true
+  },
+  "limits": [
+    "No kernel compile/modpost completed here",
+    "Not a claim that all camera HAL or sensor streaming issues are fixed",
+    "No DTBO edits or unsupported-compatible fallback",
+    "No register values invented; all SH11 bytes copied from locked MiCode source"
+  ]
+}
