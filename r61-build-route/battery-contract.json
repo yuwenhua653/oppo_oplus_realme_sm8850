@@ -59,7 +59,7 @@
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
-      "sha256": "c1db7dda4195412dba1b091c567cb60bda9af2b2a739a9d30e7e5d0f4e17836b"
+      "sha256": "09bc0a2fe4c6acee3c77a2ff8854d21070cfe3fa0387827b756bcfe03bb8bd2a"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c",
@@ -115,7 +115,7 @@
     },
     {
       "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
-      "sha256": "fcc9e4b927011cbe503f82fa78244db876340e884aee475c9786d561239c342e"
+      "sha256": "2de1c8e9d0221097b613bc8b47090105d48ac1a9803139d3fc242ea60a179b92"
     }
   ],
   "modules": [
@@ -255,8 +255,8 @@
   "locked_files": [
     {
       "path": ".github/workflows/build-myron-battery-r61.yml",
-      "sha256": "4ded4e43490c49276f73b4b5d293a624b6fe180ec1295574659e8e14c17270e0",
-      "bytes": 5302
+      "sha256": "fb5f08017d7efc0d5414d07546aa4733849adeec877fa55d7f75468b3b8005a2",
+      "bytes": 5466
     },
     {
       "path": "r60-build-route/hardware-contract.json",
@@ -275,7 +275,7 @@
     },
     {
       "path": "r61-build-route/battery-write-lock.json",
-      "sha256": "bec187e9e72cf06a9217d2f649aa26855e11a1688fd0a89a5c14016d926ae3f9",
+      "sha256": "18f72c212b3ef5310a895c8e533a6246ab1e89e213c2af787881d3abfe5882de",
       "bytes": 11033
     },
     {
@@ -287,6 +287,11 @@
       "path": "r61-build-route/check_battery_inputs.py",
       "sha256": "eb9e30cea3cef7c6451d51cdc5429096f915c9f38276e0e53195bbe0748da37e",
       "bytes": 5660
+    },
+    {
+      "path": "r61-build-route/check_mca_log_deps.py",
+      "sha256": "51c423633309f61aad01081bb7419b144cbd694d0af3e3976b4e4792f0456c2b",
+      "bytes": 3412
     },
     {
       "path": "r61-build-route/payload/common_sources.bzl",
@@ -320,8 +325,8 @@
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
-      "sha256": "c1db7dda4195412dba1b091c567cb60bda9af2b2a739a9d30e7e5d0f4e17836b",
-      "bytes": 167567
+      "sha256": "09bc0a2fe4c6acee3c77a2ff8854d21070cfe3fa0387827b756bcfe03bb8bd2a",
+      "bytes": 167503
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c",
@@ -390,8 +395,8 @@
     },
     {
       "path": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
-      "sha256": "fcc9e4b927011cbe503f82fa78244db876340e884aee475c9786d561239c342e",
-      "bytes": 173079
+      "sha256": "2de1c8e9d0221097b613bc8b47090105d48ac1a9803139d3fc242ea60a179b92",
+      "bytes": 173408
     },
     {
       "path": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_req_mgr/cam_req_mgr_dev.c",
@@ -455,8 +460,8 @@
     },
     {
       "path": "r61-build-route/reviews/bq-diagnostic-tests.json",
-      "sha256": "231a561b7a5c16feb52855b0c6af7bad498faac01b3c6163cb314762919d5f3e",
-      "bytes": 556
+      "sha256": "a71409231b11dd3a8c6ce8889b90f8d6a356f34c4745129e5acd9c3ebcd83f0d",
+      "bytes": 757
     },
     {
       "path": "r61-build-route/reviews/camera-candidate-manifest.json",
@@ -490,13 +495,18 @@
     },
     {
       "path": "r61-build-route/test_bq_readonly_diag.py",
-      "sha256": "70c57ed564999d6a95c11eff5c4039a0d0ad75e9481ad0b07ab81158c682b474",
-      "bytes": 6917
+      "sha256": "1376934b9607d0dba57ba5dea884688adba53b874aa6419c8dd55265130b18ab",
+      "bytes": 8624
     },
     {
       "path": "r61-build-route/test_camera_candidate.py",
       "sha256": "c90bad5fc976c1b5876f2f8f43a1a7af107355a3f05e6ff01874e9a78daf7403",
       "bytes": 7987
+    },
+    {
+      "path": "r61-build-route/test_mca_log_deps.py",
+      "sha256": "4dd5415a509e7745eace76fe2718f16b747f70be96febec14e9004b0d1c5e9f8",
+      "bytes": 1034
     },
     {
       "path": "r61-build-route/test_sync_with_retry.py",

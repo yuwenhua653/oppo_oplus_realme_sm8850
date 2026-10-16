@@ -141,16 +141,16 @@
       "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
       "source": "r61-build-route/payload/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
       "before_sha256": "d7efcbcea065ea434b6bc365aa0c49826ed48cac2d1a45a138aa2c49f7e3eccc",
-      "after_sha256": "c1db7dda4195412dba1b091c567cb60bda9af2b2a739a9d30e7e5d0f4e17836b",
-      "bytes": 167567,
+      "after_sha256": "09bc0a2fe4c6acee3c77a2ff8854d21070cfe3fa0387827b756bcfe03bb8bd2a",
+      "bytes": 167503,
       "preimage": "r61-build-route/preimage/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
     },
     {
       "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
       "source": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
       "before_sha256": "16bc4a6e81c33f87a7f317afb5d5622a24df16a7d197e56f52613d5053ae4557",
-      "after_sha256": "fcc9e4b927011cbe503f82fa78244db876340e884aee475c9786d561239c342e",
-      "bytes": 173079,
+      "after_sha256": "2de1c8e9d0221097b613bc8b47090105d48ac1a9803139d3fc242ea60a179b92",
+      "bytes": 173408,
       "preimage": "r61-build-route/preimage/drivers/xiaomi/myron/modules.bzl"
     },
     {

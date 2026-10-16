@@ -6608,7 +6608,6 @@ static void bq_fg_remove(struct i2c_client *client)
 	struct bq_fg_chip *bq = i2c_get_clientdata(client);
 
 	if (myron_readonly_diag) {
-		devm_device_remove_group(&client->dev, &bq_myron_diag_group);
 		return;
 	}
 

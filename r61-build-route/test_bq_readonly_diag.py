@@ -5,6 +5,10 @@ import hashlib,json,subprocess,tempfile,re
 
 ROOT=Path(__file__).resolve().parent
 block=(ROOT/'bq_diagnostic_block.c').read_text()
+gauge_rel='drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c'
+candidate=(ROOT/'payload'/gauge_rel).read_text()
+before=(ROOT/'preimage'/gauge_rel).read_text()
+remove=candidate[candidate.index('static void bq_fg_remove('):candidate.index('static void bq_fg_shutdown(')]
 prefix=r'''
 #include <assert.h>
 #include <stdbool.h>
@@ -27,6 +31,13 @@ struct device_attribute { struct attribute attr; };
 struct attribute_group { const char *name; struct attribute **attrs; };
 #define DEVICE_ATTR_RO(n) struct device_attribute dev_attr_##n = {{0444}}
 #define to_i2c_client(d) ((struct i2c_client *)((char *)(d)-offsetof(struct i2c_client,dev)))
+struct bq_fg_chip { int data_lock; int i2c_rw_lock; void *sysfs_dev; };
+static struct bq_fg_chip mock_bq;
+static int mutex_removes, sysfs_removes;
+static bool clientdata_null;
+static void *i2c_get_clientdata(struct i2c_client *client) { return clientdata_null ? NULL : &mock_bq; }
+static void mutex_destroy(int *lock) { assert(lock == &mock_bq.data_lock || lock == &mock_bq.i2c_rw_lock); mutex_removes++; }
+static void fg_sysfs_remove_group(void *dev) { assert(dev == mock_bq.sysfs_dev); sysfs_removes++; }
 static int reads[8],regs[8],nr_reads,add_count,add_ret;
 static int i2c_smbus_read_word_data(struct i2c_client *c,unsigned char reg) { regs[nr_reads]=reg;return reads[nr_reads++]; }
 static int i2c_check_functionality(struct i2c_adapter *a,int mask) { assert(mask==I2C_FUNC_SMBUS_READ_WORD_DATA);return a->capable; }
@@ -64,32 +75,44 @@ int main(void) {
  reset();reads[0]=-EIO;strcpy(buf,"untouched");assert(raw_voltage_mv_show(&c.dev,NULL,buf)==-EIO);assert(!strcmp(buf,"untouched"));scenarios++;
  reset();reads[0]=-EREMOTEIO;strcpy(buf,"untouched");assert(raw_temperature_deci_kelvin_show(&c.dev,NULL,buf)==-EREMOTEIO);assert(!strcmp(buf,"untouched"));scenarios++;
  reset();reads[0]=0;assert(raw_soc_show(&c.dev,NULL,buf)==2&&!strcmp(buf,"0\n"));scenarios++;
+ myron_readonly_diag=true;clientdata_null=true;mutex_removes=sysfs_removes=0;
+ bq_fg_remove(&c);assert(mutex_removes==0&&sysfs_removes==0);scenarios++;
+ myron_readonly_diag=false;clientdata_null=false;
+ bq_fg_remove(&c);assert(mutex_removes==2&&sysfs_removes==1);scenarios++;
  printf("{\"passed\":true,\"host_cases\":%d}\n",scenarios);
  return 0;
 }
 '''
 with tempfile.TemporaryDirectory(prefix='r61-bq-diag-') as td:
-    p=Path(td);(p/'test.c').write_text(prefix+block+main)
+    p=Path(td);(p/'test.c').write_text(prefix+block+remove+main)
     subprocess.run(['gcc','-std=gnu11','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-Wno-unused-variable',str(p/'test.c'),'-o',str(p/'test')],check=True,capture_output=True)
     result=json.loads(subprocess.check_output([str(p/'test')],text=True))
+    # Reintroducing the failing API must fail the same actual-function harness.
+    bad_remove=remove.replace('\tif (myron_readonly_diag) {\n',
+                              '\tif (myron_readonly_diag) {\n\t\tdevm_device_remove_group(&client->dev, &bq_myron_diag_group);\n',1)
+    assert bad_remove != remove
+    (p/'old-api.c').write_text(prefix+block+bad_remove+main)
+    bad=subprocess.run(['gcc','-std=gnu11','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-Wno-unused-variable',str(p/'old-api.c'),'-o',str(p/'old-api')],capture_output=True,text=True)
+    assert bad.returncode != 0 and 'devm_device_remove_group' in bad.stderr
 # No stub for any hardware write, MCA provider or power_supply operation exists:
 # if the actual diagnostic block called one, this -Werror compile would fail.
 result.update({'test_scope':'Actual diagnostic C block with mock read-only I2C/sysfs; not a kernel build',
                'kernel_compilation':False,'target_hardware':False,
                'diagnostic_source_sha256':hashlib.sha256(block.encode()).hexdigest()})
-gauge_rel='drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c'
-candidate=(ROOT/'payload'/gauge_rel).read_text()
-before=(ROOT/'preimage'/gauge_rel).read_text()
 reverted=candidate.replace(block+'\n','',1)
 reverted=reverted.replace('\tif (myron_readonly_diag)\n\t\treturn bq_myron_diag_probe(client);\n\n','',1)
 assert reverted.count('\tif (myron_readonly_diag)\n\t\treturn 0;\n')==2
 reverted=reverted.replace('\tif (myron_readonly_diag)\n\t\treturn 0;\n','')
-reverted=reverted.replace('\tif (myron_readonly_diag) {\n\t\tdevm_device_remove_group(&client->dev, &bq_myron_diag_group);\n\t\treturn;\n\t}\n\n','',1)
+reverted=reverted.replace('\tif (myron_readonly_diag) {\n\t\treturn;\n\t}\n\n','',1)
 assert reverted==before, 'Unintended legacy path change'
 probe=candidate[candidate.index('static int bq_fg_probe('):candidate.index('static int bq_fg_suspend(')]
 assert probe.index('return bq_myron_diag_probe(client)')<probe.index('devm_kzalloc(')<probe.index('bq_parse_dt(bq)')
 remove=candidate[candidate.index('static void bq_fg_remove('):candidate.index('static void bq_fg_shutdown(')]
-assert remove.index('devm_device_remove_group(')<remove.index('mutex_destroy(')
+assert remove.index('if (myron_readonly_diag)')<remove.index('mutex_destroy(')
+assert 'devm_device_remove_group' not in remove
+result['old_undefined_remove_API_mutant_rejected']=True
+result['actual_remove_body_compiled_and_exercised']=True
+result['remove_function_sha256']=hashlib.sha256(remove.encode()).hexdigest()
 result['legacy_path_byte_preservation']=True
 result['probe_branch_before_all_normal_allocation_and_hardware_setup']=True
 result['remove_branch_before_normal_cleanup']=True
