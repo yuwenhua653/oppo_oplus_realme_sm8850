@@ -56,14 +56,32 @@ def check(root, contract):
     require(set(aux_names) == set(scope.get('reviewed_auxiliary_provider_names', [])), 'Unreviewed auxiliary provider')
     require(contract.get('diagnostic_auxiliary_providers', []) == scope.get('diagnostic_auxiliary_provider_names', []), 'Unreviewed diagnostic provider')
     require(set(contract.get('diagnostic_auxiliary_providers', [])) <= set(aux_names), 'Unknown diagnostic provider')
-    for row in modules + auxiliary:
+    closure = contract.get('runtime_closure_modules', [])
+    closure_names = [row['module_name'] for row in closure]
+    require(set(closure_names) == set(scope.get('reviewed_runtime_closure_module_names', [])),
+            'Unreviewed runtime closure scope')
+    if closure:
+        require(contract.get('runtime_closure_manifest') in locked, 'Unpinned runtime closure source review')
+        closure_review = json.loads(safe(root, contract['runtime_closure_manifest']).read_text())
+        require(closure_review.get('frozen') is True and closure_review.get('runtime_closure_modules') == closure,
+                'Runtime closure targets differ from frozen source review')
+        integrated_hashes = {row['path']: row['sha256'] for row in integrated}
+        require(closure_review.get('workspace_files') and all(
+            integrated_hashes.get(row['path']) == row['sha256']
+            for row in closure_review['workspace_files']), 'Runtime closure source hashes not integrated')
+    selected = modules + auxiliary + closure
+    normalized_names = [row['module_name'].replace('-', '_') for row in selected]
+    require(len(normalized_names) == len(set(normalized_names)), 'Duplicate normalized module name')
+    for row in selected:
         require(re.fullmatch(r'//[A-Za-z0-9_./+-]+:[A-Za-z0-9_./+-]+', row['target']), 'Invalid target')
         for key, ending in [('output', '.ko'), ('symvers', '.symvers')]:
             p = PurePosixPath(row[key])
             require(not p.is_absolute() and '..' not in p.parts and row[key].startswith('bazel-out/') and row[key].endswith(ending), 'Invalid output')
         require(row.get('expected_sources') and set(row['expected_sources']) <= paths, 'Unlocked module source')
         require(set(row.get('generated_inputs', [])) <= set(generated), 'Unpinned generated module input')
-    require(len({r['target'] for r in modules + auxiliary}) == len(modules + auxiliary), 'Duplicate target')
+    require(len({r['target'] for r in selected}) == len(selected), 'Duplicate target')
+    require(len({r['output'] for r in selected}) == len(selected), 'Duplicate KO output')
+    require(len({r['symvers'] for r in selected}) == len(selected), 'Duplicate symvers output')
     for key in ('script', 'lock'):
         require(contract['integration'][key] in locked, 'Unpinned integration ' + key)
     write_lock = json.loads(safe(root, contract['integration']['lock']).read_text())
@@ -89,6 +107,7 @@ def check(root, contract):
     return {'schema': 1, 'status': 'PASS', 'compile_only': True, 'locked_files': len(locked),
             'writes': len(destinations), 'targets': [r['target'] for r in modules],
             'auxiliary_providers': aux_names,
+            'runtime_closure_modules': closure_names,
             'scope': 'Input readiness only; kernel compile, ABI and device behavior are not claimed.'}
 
 

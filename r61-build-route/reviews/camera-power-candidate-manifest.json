@@ -1,0 +1,71 @@
+{
+  "status": "SOURCE_ONLY_CANDIDATE_NOT_BUILT_NOT_DEPLOYED",
+  "scope": "Xiaomi camera HAL power ABI only; changes numeric 12/13 meanings. Do not apply to generic-HAL targets.",
+  "base": {
+    "repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+    "commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322"
+  },
+  "donor": {
+    "repository": "MiCode/vendor_qcom_opensource_camera-kernel",
+    "commit": "59d5dae93faae1974004788236f6c0b3ec747476"
+  },
+  "excluded": [
+    "voltage overrides",
+    "donor hwid handling",
+    "LDO skip logic",
+    "power ordering changes",
+    "runtime image change"
+  ],
+  "predeploy_gates": [
+    "independent review",
+    "kernel compile and ABI validation",
+    "prefer actual current sensor-module complete powerUp/powerDown sequence inspection"
+  ],
+  "files": [
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+      "base_git_blob": "81681360caff31a8d72ad05ce1b8d475857c1e49",
+      "base_sha256": "b0197c5f1d557bb1394216a00f50b3b9cd40ebb2d6a216ae3dee6b98c6de7739",
+      "candidate_sha256": "1f9c97949f27488900433484e6ee03b050befdabc09238aa755fde7e1d49ae60"
+    },
+    {
+      "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+      "base_git_blob": "d943b6cda30a068f0a6ce1ce0ecab16f29c5404a",
+      "base_sha256": "608ee98984fc3924046cba49a6ece7821e48043ccdb80ef4bd5ce0653188fc9c",
+      "candidate_sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f"
+    }
+  ],
+  "purpose": "Compile-only Xiaomi camera power ABI candidate; no generic HAL compatibility claim.",
+  "integration_base_commit": "9f27e32dee6ca6d5b31d45fa3804ef7735ff954b",
+  "wire_values": {
+    "unchanged": "0..11",
+    "12": "SENSOR_BOB",
+    "13": "SENSOR_BOB2",
+    "14": "SENSOR_VANA1",
+    "15": "SENSOR_CUSTOM_REG3",
+    "16": "SENSOR_SEQ_TYPE_MAX"
+  },
+  "shared_abi_effects": [
+    "All common sensor/eeprom/actuator/OIS/flash power clients must use Xiaomi power sequence values.",
+    "SENSOR_SEQ_TYPE_MAX 14 to 16 changes gpio_num_info array sizes; rebuild whole camera module.",
+    "CAM_CLK 7 to 9 and CAM_VREG_MAX 8 to 10.",
+    "No voltage constants, power order, bypass, hwid changes or exported API changes."
+  ],
+  "regulator_paths": [
+    "named lookup cam_bob/cam_bob2 with existing voltage validation",
+    "power up",
+    "power-up failure unwind",
+    "power down"
+  ],
+  "private_inputs_included": false,
+  "donor_files": [
+    {
+      "path": "drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+      "git_blob": "f34726435731d014b62b756252c3c48b75bcd2bd"
+    },
+    {
+      "path": "drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+      "git_blob": "39f696823ae4314f241cdab6a132d92c49219382"
+    }
+  ]
+}

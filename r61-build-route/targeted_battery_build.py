@@ -79,7 +79,7 @@ def declared_outputs(graph):
     return {artifacts[str(i)] for a in graph.get('actions', []) for i in a.get('outputIds', [])}
 
 
-def collect_outputs(root, output, contract, modules, candidates, r18, generated_files=(), diagnostic=False, auxiliary=()):
+def collect_outputs(root, output, contract, modules, candidates, r18, generated_files=(), diagnostic=False, auxiliary=(), closure=()):
     """Share output checks; only a fully checked subset gets an upload manifest."""
     # The generated private header must remain exact bytes from the pinned core.
     generated_reviews = []
@@ -90,7 +90,11 @@ def collect_outputs(root, output, contract, modules, candidates, r18, generated_
                                   'sha256': sha(original.read_bytes())})
     if not diagnostic:
         write(root / 'integration-reports/r61-targeted-generated-inputs.json', generated_reviews)
-    selected = list(modules) + list(auxiliary)
+    require(not diagnostic or not closure, 'Diagnostic subset must not include the full runtime closure')
+    selected = list(modules) + list(auxiliary) + list(closure)
+    expected_names = sorted(row['module_name'] for row in selected)
+    require(len(expected_names) == len({name.replace('-', '_') for name in expected_names}),
+            'Duplicate normalized compiled module name')
     required = {row['output'] for row in selected} | {CORE + name for name in CORE_REQUIRED}
     required.update(row['symvers'] for row in selected)
     required.update(row['output'] for row in generated_files)
@@ -110,6 +114,7 @@ def collect_outputs(root, output, contract, modules, candidates, r18, generated_
     missing = required - {row['source'] for row in records}
     manifest = {'schema': 1, 'files': records, 'missing': sorted(missing), 'flashable': False,
                 'auxiliary_provider_names': [row['module_name'] for row in auxiliary],
+                'runtime_closure_module_names': [row['module_name'] for row in closure],
                 'source_abi_policy': 'Compile only. Source ABI providers must not be mixed with old CP/buck/FG modules.'}
     if not diagnostic:
         write(output / 'artifact-manifest.json', manifest)
@@ -121,15 +126,29 @@ def collect_outputs(root, output, contract, modules, candidates, r18, generated_
     sys.path.insert(0, str(r18 / 'stage-builder'))
     from elf_contract import parse_elf
     identities = []
+    inventory = []
     for row in selected:
         data = (output / 'objects' / row['output']).read_bytes()
         elf = parse_elf(data)
         require(elf['name'] == row['module_name'], 'Wrong compiled module name')
         require(elf['info']['vermagic'][0].split()[0] == release, 'Wrong module release')
         identities.append({'name': elf['name'], 'sha256': sha(data), 'vermagic': elf['info']['vermagic'][0]})
+        inventory.append({'name': elf['name'], 'file': 'objects/' + row['output'],
+                          'bytes': len(data), 'sha256': sha(data),
+                          'depends': [name for value in elf['info'].get('depends', [])
+                                      for name in value.split(',') if name]})
+    actual_ko_files = {str(path.relative_to(output)) for path in output.rglob('*.ko') if path.is_file()}
+    require(actual_ko_files == {row['file'] for row in inventory}, 'Actual KO file inventory differs from required compiler outputs')
+    require(sorted(row['name'] for row in inventory) == expected_names, 'Actual ELF module inventory differs from required module names')
+    write(output / 'module-inventory.json', {'schema': 1, 'compile_only': True, 'flashable': False,
+        'compiled_collection_complete': True, 'required_module_names': expected_names,
+        'module_count': len(inventory), 'modules': inventory,
+        'runtime_abi_compatible': 'NOT_YET_VALIDATED',
+        'scope': 'Every explicitly reviewed KO is materialized and ELF-identified. Dependency names, source API and installed-kernel ABI still require a separate runtime assembly review.'})
     write(output / 'module-identity.json', {
         'modules': [row for row in identities if row['name'] in {m['module_name'] for m in modules}],
         'auxiliary_providers': [row for row in identities if row['name'] in {m['module_name'] for m in auxiliary}],
+        'runtime_closure_modules': [row for row in identities if row['name'] in {m['module_name'] for m in closure}],
         'runtime_abi_compatible': 'NOT_YET_VALIDATED'})
     if diagnostic:
         manifest.update(scope='diagnostic_subset', partial=True, selected_module_names=[row['module_name'] for row in modules],
@@ -177,6 +196,7 @@ def main():
         status['candidate_module_names'] = [row['module_name'] for row in contract['modules']]
         status['candidate_module_count'] = len(contract['modules'])
         status['auxiliary_provider_names'] = [row['module_name'] for row in contract.get('auxiliary_providers', [])]
+        status['runtime_closure_module_names'] = [row['module_name'] for row in contract.get('runtime_closure_modules', [])]
         status['integration_sequence'] = ['unchanged_R13_apply_and_verify', 'unchanged_R60_apply_and_check', 'R61_apply_and_check']
         require(1 <= args.jobs <= 8 and args.ram_mb >= 2048, 'Invalid resources')
         old = load('r61_r18', r18 / 'boot_build.py')
@@ -200,10 +220,12 @@ def main():
         runner.build_targets(root, 'soc')  # Emit release filegroup, ignore aggregate labels.
         modules = contract['modules']
         auxiliary = contract.get('auxiliary_providers', [])
+        closure = contract.get('runtime_closure_modules', [])
+        selected = modules + auxiliary + closure
         diagnostic_auxiliary = [row for row in auxiliary if row['module_name'] in contract.get('diagnostic_auxiliary_providers', [])]
         # A dependency may build only Module.symvers/staging, leaving its final
         # KO CopyOutputs action unexecuted. Explicitly request every KO we collect.
-        targets = [row['target'] for row in modules + auxiliary] + ['//common:kernel_aarch64', '//myron_artifact_metadata:kernel_release']
+        targets = [row['target'] for row in selected] + ['//common:kernel_aarch64', '//myron_artifact_metadata:kernel_release']
         require(len(targets) == len(set(targets)), 'Duplicate build targets')
         status.update(phase='analyze_explicit_targets', explicit_build_targets=targets)
         write(status_path, status)
@@ -212,17 +234,17 @@ def main():
         write(reports / 'r61-targeted-commands.json', plan)
         # Analyze the actual source-to-output chain before the expensive core build.
         command = bazel + ['aquery'] + options + ['--output=jsonproto', '--include_artifacts=true',
-                     '--include_commandline=true', 'deps(set(' + ' '.join(row['target'] for row in modules + auxiliary) + '))']
+                     '--include_commandline=true', 'deps(set(' + ' '.join(row['target'] for row in selected) + '))']
         result = subprocess.run(command, cwd=root, text=True, capture_output=True)
         (reports / 'r61-targeted-aquery.json').write_text(result.stdout)
         (reports / 'r61-targeted-aquery.log').write_text(result.stderr)
         require(result.returncode == 0, 'aquery analysis failed before build')
         graph = json.loads(result.stdout)
-        required_analysis_outputs = {row[key] for row in modules + auxiliary for key in ('output', 'symvers')}
+        required_analysis_outputs = {row[key] for row in selected for key in ('output', 'symvers')}
         required_analysis_outputs.update(row['output'] for row in contract.get('generated_files', []))
         missing_analysis_outputs = required_analysis_outputs - declared_outputs(graph)
         require(not missing_analysis_outputs, 'Expected KO/symvers not declared before compile: ' + str(sorted(missing_analysis_outputs)))
-        for index, row in enumerate(modules + auxiliary):
+        for index, row in enumerate(selected):
             required_inputs = row['expected_sources'] + row.get('generated_inputs', [])
             write(reports / f'r61-targeted-action-{index}.json', action_chain(graph, required_inputs, row['output']))
         # Preserve the two diagnostic KOs before unrelated MCA targets can fail.
@@ -256,7 +278,7 @@ def main():
         locked_workspace(root, contract['workspace_files'])
         output_owned = True
         status.update(collect_outputs(root, output, contract, modules, result.stdout.splitlines(), r18,
-                                      contract.get('generated_files', []), auxiliary=auxiliary))
+                                      contract.get('generated_files', []), auxiliary=auxiliary, closure=closure))
         status.update(success=True, phase='compiled_and_source_bound', limitation='Actual installed-kernel import CRC/namespace/signature checks and device tests remain mandatory.')
     except Exception as error:
         status['error'] = str(error)
@@ -290,6 +312,14 @@ def main():
                     'full_build_not_passed': not status['success'], 'runtime_abi_compatible': 'NOT_YET_VALIDATED',
                     'artifact_lock_sha256': sha((directory / 'artifact-lock.json').read_bytes()),
                     'diagnostic_manifest_sha256': sha((directory / 'diagnostic-manifest.json').read_bytes())})
+                marker.with_suffix('.tmp').replace(marker)
+            elif status['success']:
+                marker = directory / 'candidate-complete.json'
+                write(marker.with_suffix('.tmp'), {'scope': 'full_candidates', 'compile_only': True,
+                    'runtime_abi_compatible': 'NOT_YET_VALIDATED',
+                    'artifact_lock_sha256': sha((directory / 'artifact-lock.json').read_bytes()),
+                    'module_inventory_sha256': sha((directory / 'module-inventory.json').read_bytes()),
+                    'required_module_count': len(contract['modules']) + len(contract.get('auxiliary_providers', [])) + len(contract.get('runtime_closure_modules', []))})
                 marker.with_suffix('.tmp').replace(marker)
     return 0 if status['success'] else 1
 

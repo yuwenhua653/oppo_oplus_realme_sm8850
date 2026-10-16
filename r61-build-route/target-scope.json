@@ -21,13 +21,13 @@
   "source_scope": {
     "mca_complete_services": 11,
     "bq_diagnostic_default_disabled": 1,
-    "camera_session_8_12_compatibility_with_R60_SH11_preserved": 1,
-    "hardware_provider_end_to_end_compile": 2
+    "hardware_provider_end_to_end_compile": 2,
+    "camera_session_8_12_and_Xiaomi_power_ABI_with_R60_SH11_preserved": 1
   },
   "flashable": false,
   "compiled": false,
   "hardware_tested": false,
-  "source_abi_policy": "CP/buck/FG source extensions require rebuilding registrars and consumers together. Never mix new source ABI providers with old CP/buck/FG modules. Frozen commit 2b7ff84 diagnostic 8-module package is separate and unchanged.",
+  "source_abi_policy": "CP/buck/FG source extensions require rebuilding registrars and consumers together. Never mix new source ABI providers with old CP/buck/FG modules. Frozen commit 2b7ff84 diagnostic 8-module package is separate and unchanged. Camera power enum uses Xiaomi wire values12/13/14/15=BOB/BOB2/VANA1/CUSTOM_REG3 and requires rebuilding the entire camera module; generic HAL power values12/13 are incompatible.",
   "reviewed_auxiliary_provider_names": [
     "mca_platform_cp_class",
     "mca_platform_buckchg_class",
@@ -35,5 +35,39 @@
   ],
   "diagnostic_auxiliary_provider_names": [
     "mca_platform_fg_ic_ops"
-  ]
+  ],
+  "reviewed_runtime_closure_module_names": [
+    "hwid",
+    "miev",
+    "mca_business_battery_comp",
+    "mca_adsp_glink",
+    "mca_charge_interface",
+    "mca_charge_mievent",
+    "mca_event",
+    "mca_hwid",
+    "mca_log",
+    "mca_parse_dts",
+    "mca_qcom_smem",
+    "mca_sysfs",
+    "mca_voter",
+    "mca_workqueue",
+    "mca_bmd",
+    "mca_connector_antiburn",
+    "mca_ibat_ocp_monitor",
+    "mca_lpd_detect",
+    "mca_path_control",
+    "mca_vbat_ovp_monitor",
+    "mca_platform_bc12_class",
+    "mca_platform_loadsw_class",
+    "mca_platform_wireless_class",
+    "mca_protocol_class",
+    "mca_protocol_pd_class",
+    "mca_protocol_qc_class",
+    "mca_strategy_class",
+    "mca_strategy_fg_class",
+    "mca_pd_auth",
+    "mca_wireless_revchg"
+  ],
+  "explicit_module_collection_count": 48,
+  "runtime_closure_limit": "Conservative declared-source closure and API consumers collected for ABI review; compile only, no normal-mode runtime or charging policy approval."
 }

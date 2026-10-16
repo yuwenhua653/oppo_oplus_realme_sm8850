@@ -78,12 +78,14 @@ jobs:
           set -euo pipefail
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_bq_readonly_diag.py > "$WORKSPACE_DIR/integration-reports/r61-host-bq.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_camera_candidate.py > "$WORKSPACE_DIR/integration-reports/r61-host-camera.json"
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_camera_power_abi.py > "$WORKSPACE_DIR/integration-reports/r64-host-camera-power.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_mca_compat.py > "$WORKSPACE_DIR/integration-reports/r61-host-mca-compat.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_hwid_compat.py > "$WORKSPACE_DIR/integration-reports/r61-host-hwid-compat.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_provider_source_port.py > "$WORKSPACE_DIR/integration-reports/r61-host-provider-port.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_fg_source_port.py > "$WORKSPACE_DIR/integration-reports/r61-host-fg-source-port.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_policy_api_port.py > "$WORKSPACE_DIR/integration-reports/r61-host-policy-port.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_diagnostic_preservation.py > "$WORKSPACE_DIR/integration-reports/r61-host-diagnostic-preservation.log" 2>&1
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_runtime_closure_collection.py > "$WORKSPACE_DIR/integration-reports/r64-host-runtime-closure-collection.log" 2>&1
           python3 r61-build-route/test_sync_with_retry.py
           python3 r61-build-route/sync_with_retry.py \
             --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR" --jobs 4
@@ -125,8 +127,8 @@ jobs:
           retention-days: 14
 
       - name: Upload fresh candidate modules and core ABI evidence
-        # Keep fresh compiler output even if a later ELF identity gate fails.
-        if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r61-targeted-battery/artifact-manifest.json') != '' }}
+        # Publish only after every expected KO and ELF identity is verified and evidence is finalized.
+        if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r61-targeted-battery/artifact-manifest.json') != '' && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r61-targeted-battery/candidate-complete.json') != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: myron-r61-battery-output-${{ github.run_id }}-${{ github.run_attempt }}

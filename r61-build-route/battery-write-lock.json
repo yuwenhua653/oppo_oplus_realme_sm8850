@@ -248,6 +248,22 @@
       "after_sha256": "305f85f59082d8a2326a34c9075969247e79901c5868986fa287bd88a59d5fbc",
       "bytes": 35554,
       "preimage": "r61-build-route/preimage/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c"
+    },
+    {
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+      "source": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+      "before_sha256": "b0197c5f1d557bb1394216a00f50b3b9cd40ebb2d6a216ae3dee6b98c6de7739",
+      "after_sha256": "1f9c97949f27488900433484e6ee03b050befdabc09238aa755fde7e1d49ae60",
+      "bytes": 8903,
+      "preimage": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h"
+    },
+    {
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+      "source": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+      "before_sha256": "608ee98984fc3924046cba49a6ece7821e48043ccdb80ef4bd5ce0653188fc9c",
+      "after_sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f",
+      "bytes": 78766,
+      "preimage": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c"
     }
   ],
   "config_ci_overlay": {

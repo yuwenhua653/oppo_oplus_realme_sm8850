@@ -1,0 +1,99 @@
+--- a/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h
++++ b/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h
+@@ -112,6 +112,9 @@
+ 	SENSOR_STANDBY,
+ 	SENSOR_CUSTOM_GPIO1,
+ 	SENSOR_CUSTOM_GPIO2,
++	/* Xiaomi camera HAL wire ABI: BOB=12, BOB2=13. */
++	SENSOR_BOB,
++	SENSOR_BOB2,
+ 	SENSOR_VANA1,
+ 	SENSOR_CUSTOM_REG3,
+ 	SENSOR_SEQ_TYPE_MAX,
+@@ -351,6 +354,8 @@
+ 	CAM_V_CUSTOM1,
+ 	CAM_V_CUSTOM2,
+ 	CAM_V_CUSTOM3,
++	CAM_BOB,
++	CAM_BOB2,
+ 	CAM_CLK,
+ 	CAM_VREG_MAX,
+ };
+--- a/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c
++++ b/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c
+@@ -1301,6 +1301,48 @@
+ 			if (j == num_vreg)
+ 				power_setting[i].seq_val = INVALID_VREG;
+ 			break;
++		case SENSOR_BOB:
++			for (j = 0; j < num_vreg; j++) {
++
++				if (!strcmp(soc_info->rgltr_name[j],
++					"cam_bob")) {
++					CAM_DBG(CAM_SENSOR_UTIL,
++						"bob i:%d j:%d cam_bob", i, j);
++					power_setting[i].seq_val = j;
++
++					if (VALIDATE_VOLTAGE(
++						soc_info->rgltr_min_volt[j],
++						soc_info->rgltr_max_volt[j],
++						power_setting[i].config_val))
++						power_setting[i].valid_config = true;
++
++					break;
++				}
++			}
++			if (j == num_vreg)
++				power_setting[i].seq_val = INVALID_VREG;
++			break;
++		case SENSOR_BOB2:
++			for (j = 0; j < num_vreg; j++) {
++
++				if (!strcmp(soc_info->rgltr_name[j],
++					"cam_bob2")) {
++					CAM_DBG(CAM_SENSOR_UTIL,
++						"bob2 i:%d j:%d cam_bob2", i, j);
++					power_setting[i].seq_val = j;
++
++					if (VALIDATE_VOLTAGE(
++						soc_info->rgltr_min_volt[j],
++						soc_info->rgltr_max_volt[j],
++						power_setting[i].config_val))
++						power_setting[i].valid_config = true;
++
++					break;
++				}
++			}
++			if (j == num_vreg)
++				power_setting[i].seq_val = INVALID_VREG;
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -2331,6 +2373,8 @@
+ 		case SENSOR_CUSTOM_REG1:
+ 		case SENSOR_CUSTOM_REG2:
+ 		case SENSOR_CUSTOM_REG3:
++		case SENSOR_BOB:
++		case SENSOR_BOB2:
+ 			if (debug_bypass_drivers & CAM_BYPASS_RGLTR) {
+ 				CAM_DBG(CAM_SENSOR_UTIL, "Bypass regulator enable seq_type %d",
+ 					power_setting->seq_type);
+@@ -2473,6 +2517,8 @@
+ 		case SENSOR_CUSTOM_REG1:
+ 		case SENSOR_CUSTOM_REG2:
+ 		case SENSOR_CUSTOM_REG3:
++		case SENSOR_BOB:
++		case SENSOR_BOB2:
+ 			if (debug_bypass_drivers & CAM_BYPASS_RGLTR) {
+ 				CAM_DBG(CAM_SENSOR_UTIL, "Bypass regulator disable seq_type %d",
+ 					power_setting->seq_type);
+@@ -2657,6 +2703,8 @@
+ 		case SENSOR_CUSTOM_REG1:
+ 		case SENSOR_CUSTOM_REG2:
+ 		case SENSOR_CUSTOM_REG3:
++		case SENSOR_BOB:
++		case SENSOR_BOB2:
+ 			if (debug_bypass_drivers & CAM_BYPASS_RGLTR) {
+ 				CAM_DBG(CAM_SENSOR_UTIL, "Bypass regulator disable seq_type %d",
+ 					pd->seq_type);
