@@ -640,8 +640,8 @@
     },
     {
       "path": "r61-build-route/targeted_battery_build.py",
-      "sha256": "8776ddcc87455eb65bb147fada34502377a065ac2a29b2f1a4222f8ce090df0c",
-      "bytes": 18194
+      "sha256": "4fa6bd1a318acb24ff5b2a453243ffb8244a4179f34a595c19491b1b410407af",
+      "bytes": 18495
     },
     {
       "path": "r61-build-route/test-inputs/arm64-pgtable-types.h",
@@ -670,8 +670,8 @@
     },
     {
       "path": "r61-build-route/test_diagnostic_preservation.py",
-      "sha256": "0927f78b82cdd696a6aa1321bade83f7aba941b3e2a0d70afcec58e894543236",
-      "bytes": 27201
+      "sha256": "8698ca492e408064de7f7027346edbdfc293f7318aff68ccd50ae04c7be950df",
+      "bytes": 29257
     },
     {
       "path": "r61-build-route/test_fg_source_port.py",

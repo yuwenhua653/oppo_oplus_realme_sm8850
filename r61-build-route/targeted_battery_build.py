@@ -201,7 +201,9 @@ def main():
         modules = contract['modules']
         auxiliary = contract.get('auxiliary_providers', [])
         diagnostic_auxiliary = [row for row in auxiliary if row['module_name'] in contract.get('diagnostic_auxiliary_providers', [])]
-        targets = [row['target'] for row in modules] + ['//common:kernel_aarch64', '//myron_artifact_metadata:kernel_release']
+        # A dependency may build only Module.symvers/staging, leaving its final
+        # KO CopyOutputs action unexecuted. Explicitly request every KO we collect.
+        targets = [row['target'] for row in modules + auxiliary] + ['//common:kernel_aarch64', '//myron_artifact_metadata:kernel_release']
         require(len(targets) == len(set(targets)), 'Duplicate build targets')
         status.update(phase='analyze_explicit_targets', explicit_build_targets=targets)
         write(status_path, status)
@@ -210,7 +212,7 @@ def main():
         write(reports / 'r61-targeted-commands.json', plan)
         # Analyze the actual source-to-output chain before the expensive core build.
         command = bazel + ['aquery'] + options + ['--output=jsonproto', '--include_artifacts=true',
-                     '--include_commandline=true', 'deps(set(' + ' '.join(row['target'] for row in modules) + '))']
+                     '--include_commandline=true', 'deps(set(' + ' '.join(row['target'] for row in modules + auxiliary) + '))']
         result = subprocess.run(command, cwd=root, text=True, capture_output=True)
         (reports / 'r61-targeted-aquery.json').write_text(result.stdout)
         (reports / 'r61-targeted-aquery.log').write_text(result.stderr)
@@ -227,7 +229,7 @@ def main():
         diagnostic_modules = [row for row in modules if row['module_name'] in ('bq27z561', 'camera')]
         require(sorted(row['module_name'] for row in diagnostic_modules) == ['bq27z561', 'camera'],
                 'Diagnostic subset must contain exactly BQ and camera')
-        diagnostic_targets = [row['target'] for row in diagnostic_modules] + targets[-2:]
+        diagnostic_targets = [row['target'] for row in diagnostic_modules + diagnostic_auxiliary] + targets[-2:]
         diagnostic_plan = {'build': bazel + ['build'] + options + diagnostic_targets,
                            'cquery': bazel + ['cquery'] + options + ['--output=files', 'deps(set(' + ' '.join(diagnostic_targets) + '))']}
         write(reports / 'r61-targeted-diagnostic-commands.json', diagnostic_plan)
@@ -239,6 +241,8 @@ def main():
         (reports / 'r61-targeted-diagnostic-cquery.log').write_text(result.stderr)
         require(result.returncode == 0, 'Diagnostic cquery failed')
         locked_workspace(root, contract['workspace_files'])
+        status['phase'] = 'collect_diagnostic_outputs'
+        write(status_path, status)
         collect_outputs(root, diagnostic_output, contract, diagnostic_modules, result.stdout.splitlines(), r18, diagnostic=True, auxiliary=diagnostic_auxiliary)
         status['diagnostic_subset_verified'] = True
         status['phase'] = 'compile_explicit_battery_targets'

@@ -77,6 +77,7 @@ class BuildFixture:
             path.mkdir()
         self.events = []
         self.builds = []
+        self.provider_builds = []
         self.locked = []
         self.modules = []
         self.auxiliary = []
@@ -200,8 +201,10 @@ class BuildFixture:
         assert all(json.loads(path.read_text())['status'] == 'PASS' for path in actions)
         assert self.events.index('aquery-15') < len(self.events)
 
-    def produce(self, modules, full):
-        selected_auxiliary = [row for row in self.auxiliary if full or row['module_name'] in DIAGNOSTIC_AUXILIARY]
+    def produce(self, modules, full, selected_auxiliary):
+        # Model Kleaf dependency output groups: cquery may declare a provider KO
+        # even when the build used only its symvers/staging. Only an explicit
+        # provider target is guaranteed to execute its final KO copy action.
         for row in modules + selected_auxiliary:
             # Decoding alone is stubbed: copied bytes and SHA records stay real.
             self.write_workspace(row['output'], ('ELF-FIXTURE:' + row['module_name']).encode())
@@ -236,7 +239,11 @@ class BuildFixture:
                 # A partial compiler output does not authorize publication.
                 self.write_workspace(selected[0]['output'], b'partial compiler output')
             raise RuntimeError('simulated later MCA failure' if full else 'simulated diagnostic build failure')
-        self.produce(selected, full)
+        selected_auxiliary = [row for row in self.auxiliary if row['target'] in argv]
+        self.provider_builds.append({row['module_name'] for row in selected_auxiliary})
+        self.produce(selected, full, selected_auxiliary)
+        if self.failure == 'unmaterialized_auxiliary' and not full:
+            (self.workspace / selected_auxiliary[0]['output']).unlink()
 
     def subprocess_run(self, argv, **kwargs):
         assert argv[0] == 'fixture-bazel', 'Unexpected subprocess: ' + repr(argv)
@@ -373,6 +380,31 @@ class DiagnosticPreservationTests(unittest.TestCase):
         self.assertIn(fixture.generated['output'], {row['source'] for row in artifacts['files']})
         self.assert_records(fixture.output, artifacts['files'])
         self.assertTrue(json.loads((fixture.output / 'artifact-lock.json').read_text())['success'])
+
+    def test_collected_providers_are_explicit_build_targets(self):
+        fixture = self.fixture()
+        self.assertEqual(fixture.run(), 0)
+        self.assertEqual(fixture.provider_builds,
+                         [DIAGNOSTIC_AUXILIARY, set(AUXILIARY_NAMES)])
+        for filename, providers in [('r61-targeted-diagnostic-commands.json', DIAGNOSTIC_AUXILIARY),
+                                    ('r61-targeted-commands.json', set(AUXILIARY_NAMES))]:
+            plan = json.loads((fixture.reports / filename).read_text())
+            actual = {row['module_name'] for row in fixture.auxiliary
+                      if row['target'] in plan['build']}
+            self.assertEqual(actual, providers)
+
+    def test_cquery_declared_but_unmaterialized_provider_refuses_publication(self):
+        fixture = self.fixture('unmaterialized_auxiliary')
+        self.assertEqual(fixture.run(), 1)
+        self.assertEqual(fixture.builds, [DIAGNOSTIC_NAMES])
+        self.assertFalse((fixture.diagnostic / 'diagnostic-manifest.json').exists())
+        self.assertFalse((fixture.diagnostic / 'diagnostic-complete.json').exists())
+        self.assertFalse((fixture.diagnostic / 'artifact-lock.json').exists())
+        status = json.loads((fixture.reports / 'r61-targeted-status.json').read_text())
+        self.assertEqual(status['phase'], 'collect_diagnostic_outputs')
+        self.assertFalse(status['success'])
+        self.assertFalse(status.get('diagnostic_subset_verified', False))
+        self.assertIn('mca_platform_fg_ic_ops.ko', status['error'])
 
     def test_later_mca_failure_preserves_subset_without_full_success(self):
         fixture = self.fixture('full')
