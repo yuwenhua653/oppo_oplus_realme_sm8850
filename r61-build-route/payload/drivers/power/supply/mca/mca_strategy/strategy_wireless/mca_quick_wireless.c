@@ -1059,7 +1059,8 @@ static void mca_wireless_quick_change_bridge(
 	int retry = QC_SW_BRIDGE_RETRY;
 
 	mca_log_err("bridge_sw mode %d\n", mode);
-	if (!hwid || hwid->platform_version != 5 /* HARDWARE_PROJECT_O8 */)
+	if (!hwid || !hwid->product_name ||
+	    strcmp(hwid->product_name, "bixi"))
 		return;
 
 	platform_class_wireless_get_rx_brg_status(WIRELESS_ROLE_MASTER,
@@ -1582,7 +1583,7 @@ static void mca_wireless_quick_charge_select_cur_work_mode(
 	}
 
 	for (i = 0; i < CHG_MODE_MAX; i++) {
-		mca_log_info("div%ld ibat_max %d\n", BIT(i), ibat_max[i]);
+		mca_log_info("div%lu ibat_max %d\n", BIT(i), ibat_max[i]);
 		if (ibat_max[i] > ibat_max[index])
 			index = i;
 	}

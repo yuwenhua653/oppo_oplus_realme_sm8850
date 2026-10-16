@@ -79,6 +79,64 @@ def declared_outputs(graph):
     return {artifacts[str(i)] for a in graph.get('actions', []) for i in a.get('outputIds', [])}
 
 
+def collect_outputs(root, output, contract, modules, candidates, r18, generated_files=(), diagnostic=False):
+    """Share output checks; only a fully checked subset gets an upload manifest."""
+    # The generated private header must remain exact bytes from the pinned core.
+    generated_reviews = []
+    for row in generated_files:
+        original, generated = root / row['source'], root / row['output']
+        require(original.read_bytes() == generated.read_bytes(), 'Generated header differs from pinned source')
+        generated_reviews.append({'source': row['source'], 'output': row['output'],
+                                  'sha256': sha(original.read_bytes())})
+    if not diagnostic:
+        write(root / 'integration-reports/r61-targeted-generated-inputs.json', generated_reviews)
+    required = {row['output'] for row in modules} | {CORE + name for name in CORE_REQUIRED}
+    required.update(row['symvers'] for row in modules)
+    required.update(row['output'] for row in generated_files)
+    records = []
+    output.mkdir(parents=True)
+    collected_candidates = candidates + [row['output'] for row in generated_files]
+    for name in dict.fromkeys(collected_candidates):
+        if name not in required and not (name.startswith('bazel-out/aarch64-fastbuild/bin/') and name.endswith('.symvers')):
+            continue
+        p = PurePosixPath(name)
+        require(not p.is_absolute() and '..' not in p.parts and name.startswith('bazel-out/'), 'Unsafe output')
+        data = (root / p).read_bytes()
+        target = output / 'objects' / p
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        records.append({'file': 'objects/' + name, 'source': name, 'bytes': len(data), 'sha256': sha(data)})
+    missing = required - {row['source'] for row in records}
+    manifest = {'schema': 1, 'files': records, 'missing': sorted(missing), 'flashable': False}
+    if not diagnostic:
+        write(output / 'artifact-manifest.json', manifest)
+    require(not missing, 'Required compiler output missing')
+    built_image_sha256 = sha((output / 'objects' / CORE / 'Image').read_bytes())
+    built_image_matches_runtime_baseline = built_image_sha256 == contract['baseline_image_sha256']
+    release = (output / 'objects' / CORE / 'include/config/kernel.release').read_text().strip()
+    require(release == contract['baseline_kernel_release'], 'Unexpected kernel release')
+    sys.path.insert(0, str(r18 / 'stage-builder'))
+    from elf_contract import parse_elf
+    identities = []
+    for row in modules:
+        data = (output / 'objects' / row['output']).read_bytes()
+        elf = parse_elf(data)
+        require(elf['name'] == row['module_name'], 'Wrong compiled module name')
+        require(elf['info']['vermagic'][0].split()[0] == release, 'Wrong module release')
+        identities.append({'name': elf['name'], 'sha256': sha(data), 'vermagic': elf['info']['vermagic'][0]})
+    write(output / 'module-identity.json', {'modules': identities, 'runtime_abi_compatible': 'NOT_YET_VALIDATED'})
+    if diagnostic:
+        manifest.update(scope='diagnostic_subset', partial=True, selected_module_names=[row['module_name'] for row in modules],
+                        full_module_count=len(contract['modules']), compiled=True, compile_only=True,
+                        validated_subset=True, full_build_not_passed=True, hardware_tested=False,
+                        built_image_sha256=built_image_sha256,
+                        built_image_matches_runtime_baseline=built_image_matches_runtime_baseline,
+                        runtime_abi_compatible='NOT_YET_VALIDATED')
+        write(output / 'diagnostic-manifest.json', manifest)
+    return {'built_image_sha256': built_image_sha256,
+            'built_image_matches_runtime_baseline': built_image_matches_runtime_baseline}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('workspace', 'package', 'baseline', 'r18', 'repo-root', 'contract'):
@@ -90,6 +148,7 @@ def main():
     root, package, baseline, r18, repo = [getattr(args, n).resolve() for n in ('workspace', 'package', 'baseline', 'r18', 'repo_root')]
     reports = root / 'integration-reports'
     output = root / 'integration-artifacts/r61-targeted-battery'
+    diagnostic_output = output.with_name('r61-targeted-diagnostic')
     status_path = reports / 'r61-targeted-status.json'
     status = {'schema': 1, 'success': False, 'compiled': False, 'compile_only': True, 'flashable': False, 'hardware_tested': False,
               'github': {key: os.environ.get(key, '') for key in ('GITHUB_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT')},
@@ -97,9 +156,10 @@ def main():
     output_owned = False
     write(status_path, status)
     try:
-        require(not output.is_symlink(), 'Redirected artifact output')
-        if output.exists():
-            shutil.rmtree(output)
+        for directory in (output, diagnostic_output):
+            require(not directory.is_symlink(), 'Redirected artifact output')
+            if directory.exists():
+                shutil.rmtree(directory)
         contract = json.loads(args.contract.read_text())
         check(repo, contract)
         prior_contract_path = repo / contract['prerequisite_contract']
@@ -154,6 +214,24 @@ def main():
         for index, row in enumerate(modules):
             required_inputs = row['expected_sources'] + row.get('generated_inputs', [])
             write(reports / f'r61-targeted-action-{index}.json', action_chain(graph, required_inputs, row['output']))
+        # Preserve the two diagnostic KOs before unrelated MCA targets can fail.
+        diagnostic_modules = [row for row in modules if row['module_name'] in ('bq27z561', 'camera')]
+        require(sorted(row['module_name'] for row in diagnostic_modules) == ['bq27z561', 'camera'],
+                'Diagnostic subset must contain exactly BQ and camera')
+        diagnostic_targets = [row['target'] for row in diagnostic_modules] + targets[-2:]
+        diagnostic_plan = {'build': bazel + ['build'] + options + diagnostic_targets,
+                           'cquery': bazel + ['cquery'] + options + ['--output=files', 'deps(set(' + ' '.join(diagnostic_targets) + '))']}
+        write(reports / 'r61-targeted-diagnostic-commands.json', diagnostic_plan)
+        status['phase'] = 'compile_diagnostic_subset'
+        write(status_path, status)
+        runner.logged(diagnostic_plan['build'], root, reports / 'r61-targeted-diagnostic-build.log')
+        result = subprocess.run(diagnostic_plan['cquery'], cwd=root, text=True, capture_output=True)
+        (reports / 'r61-targeted-diagnostic-cquery.txt').write_text(result.stdout)
+        (reports / 'r61-targeted-diagnostic-cquery.log').write_text(result.stderr)
+        require(result.returncode == 0, 'Diagnostic cquery failed')
+        locked_workspace(root, contract['workspace_files'])
+        collect_outputs(root, diagnostic_output, contract, diagnostic_modules, result.stdout.splitlines(), r18, diagnostic=True)
+        status['diagnostic_subset_verified'] = True
         status['phase'] = 'compile_explicit_battery_targets'
         write(status_path, status)
         runner.logged(plan['build'], root, reports / 'r61-targeted-build.log')
@@ -163,48 +241,9 @@ def main():
         (reports / 'r61-targeted-cquery.log').write_text(result.stderr)
         require(result.returncode == 0, 'cquery failed')
         locked_workspace(root, contract['workspace_files'])
-        # The generated private header must remain exact bytes from the pinned core.
-        generated_reviews = []
-        for row in contract.get('generated_files', []):
-            original, generated = root / row['source'], root / row['output']
-            require(original.read_bytes() == generated.read_bytes(), 'Generated header differs from pinned source')
-            generated_reviews.append({'source': row['source'], 'output': row['output'],
-                                      'sha256': sha(original.read_bytes())})
-        write(reports / 'r61-targeted-generated-inputs.json', generated_reviews)
-        required = {row['output'] for row in modules} | {CORE + name for name in CORE_REQUIRED}
-        required.update(row['symvers'] for row in modules)
-        required.update(row['output'] for row in contract.get('generated_files', []))
-        records = []
-        output.mkdir(parents=True)
         output_owned = True
-        collected_candidates = result.stdout.splitlines() + [row['output'] for row in contract.get('generated_files', [])]
-        for name in dict.fromkeys(collected_candidates):
-            if name not in required and not (name.startswith('bazel-out/aarch64-fastbuild/bin/') and name.endswith('.symvers')):
-                continue
-            p = PurePosixPath(name)
-            require(not p.is_absolute() and '..' not in p.parts and name.startswith('bazel-out/'), 'Unsafe output')
-            data = (root / p).read_bytes()
-            target = output / 'objects' / p
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(data)
-            records.append({'file': 'objects/' + name, 'source': name, 'bytes': len(data), 'sha256': sha(data)})
-        missing = required - {row['source'] for row in records}
-        write(output / 'artifact-manifest.json', {'schema': 1, 'files': records, 'missing': sorted(missing), 'flashable': False})
-        require(not missing, 'Required compiler output missing')
-        status['built_image_sha256'] = sha((output / 'objects' / CORE / 'Image').read_bytes())
-        status['built_image_matches_runtime_baseline'] = status['built_image_sha256'] == contract['baseline_image_sha256']
-        release = (output / 'objects' / CORE / 'include/config/kernel.release').read_text().strip()
-        require(release == contract['baseline_kernel_release'], 'Unexpected kernel release')
-        sys.path.insert(0, str(r18 / 'stage-builder'))
-        from elf_contract import parse_elf
-        identities = []
-        for row in modules:
-            data = (output / 'objects' / row['output']).read_bytes()
-            elf = parse_elf(data)
-            require(elf['name'] == row['module_name'], 'Wrong compiled module name')
-            require(elf['info']['vermagic'][0].split()[0] == release, 'Wrong module release')
-            identities.append({'name': elf['name'], 'sha256': sha(data), 'vermagic': elf['info']['vermagic'][0]})
-        write(output / 'module-identity.json', {'modules': identities, 'runtime_abi_compatible': 'NOT_YET_VALIDATED'})
+        status.update(collect_outputs(root, output, contract, modules, result.stdout.splitlines(), r18,
+                                      contract.get('generated_files', [])))
         status.update(success=True, phase='compiled_and_source_bound', limitation='Actual installed-kernel import CRC/namespace/signature checks and device tests remain mandatory.')
     except Exception as error:
         status['error'] = str(error)
@@ -212,16 +251,33 @@ def main():
     finally:
         status['finished_utc'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
         write(status_path, status)
-        if output_owned and output.is_dir() and not output.is_symlink():
-            dest = output / 'reports'
+        for directory, diagnostic in ((output, False), (diagnostic_output, True)):
+            owned = status.get('diagnostic_subset_verified', False) if diagnostic else output_owned
+            if not owned or not directory.is_dir() or directory.is_symlink():
+                continue
+            if diagnostic:
+                manifest_path = directory / 'diagnostic-manifest.json'
+                manifest = json.loads(manifest_path.read_text())
+                manifest.update(full_build_not_passed=not status['success'], source_contract_sha256=status['source_contract_sha256'])
+                write(manifest_path, manifest)
+            dest = directory / 'reports'
             dest.mkdir(exist_ok=True)
             for p in reports.glob('r61-targeted-*'):
                 if p.is_file():
                     shutil.copy2(p, dest / p.name)
-            shutil.copy2(args.contract, output / 'battery-contract.json')
-            write(output / 'artifact-lock.json', {'schema': 1, 'success': status['success'], 'files': [
-                {'file': str(p.relative_to(output)), 'sha256': sha(p.read_bytes()), 'bytes': p.stat().st_size}
-                for p in sorted(output.rglob('*')) if p.is_file() and p.name != 'artifact-lock.json']})
+            shutil.copy2(args.contract, directory / 'battery-contract.json')
+            write(directory / 'artifact-lock.json', {'schema': 1, 'success': status['success'],
+                'scope': 'diagnostic_subset' if diagnostic else 'full_13', 'compile_only': True,
+                'full_build_not_passed': not status['success'], 'files': [
+                {'file': str(p.relative_to(directory)), 'sha256': sha(p.read_bytes()), 'bytes': p.stat().st_size}
+                for p in sorted(directory.rglob('*')) if p.is_file() and p.name != 'artifact-lock.json']})
+            if diagnostic:
+                marker = directory / 'diagnostic-complete.json'
+                write(marker.with_suffix('.tmp'), {'scope': 'diagnostic_subset', 'compile_only': True,
+                    'full_build_not_passed': not status['success'], 'runtime_abi_compatible': 'NOT_YET_VALIDATED',
+                    'artifact_lock_sha256': sha((directory / 'artifact-lock.json').read_bytes()),
+                    'diagnostic_manifest_sha256': sha((directory / 'diagnostic-manifest.json').read_bytes())})
+                marker.with_suffix('.tmp').replace(marker)
     return 0 if status['success'] else 1
 
 

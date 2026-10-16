@@ -3470,7 +3470,8 @@ static void strategy_wireless_monitor_work(struct work_struct *work)
 	if (last_quick_enable == if_qc_enable && !if_qc_enable) {
 		const struct mca_hwid *hwid = mca_get_hwid_info();
 
-		if (hwid && hwid->platform_version == 5 /* HARDWARE_PROJECT_O8 */)
+		if (hwid && hwid->product_name &&
+		    !strcmp(hwid->product_name, "bixi"))
 			strategy_wireless_switch_to_half_bridge(info);
 	}
 	last_quick_enable = if_qc_enable;

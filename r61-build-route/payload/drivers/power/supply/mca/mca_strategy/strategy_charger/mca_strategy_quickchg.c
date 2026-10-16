@@ -768,7 +768,7 @@ mca_quick_charge_select_cur_work_mode(struct mca_quick_charge_info *info)
 	}
 
 	for (i = 0; i < CHG_MODE_MAX; i++) {
-		mca_log_info("div%ld ibat_max %d index %d matched:%d", BIT(i),
+		mca_log_info("div%lu ibat_max %d index %d matched:%d", BIT(i),
 			     ibat_max[i], info->proc_data.adp_info_index[i],
 			     matched[i]);
 		if (ibat_max[i] > ibat_max[index])
@@ -1309,7 +1309,8 @@ static int mca_quick_charge_can_tbat_do_charge(
 		return -1;
 	}
 
-	if (hwid && (hwid->platform_version == HARDWARE_PROJECT_O1 ||
+	if (hwid && ((hwid->product_name &&
+		      !strcmp(hwid->product_name, "xuanyuan")) ||
 		     hwid->platform_version == 11 ||
 		     hwid->country_version == CountryCN)) {
 		if (info->support_curr_monitor && info->curr_monitor_time_s &&

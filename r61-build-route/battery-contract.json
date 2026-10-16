@@ -47,7 +47,7 @@
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
-      "sha256": "a7d1d4cb0a02f60e7d031c68a80e05fd5cc23e6f62372fc7707258984262495d"
+      "sha256": "1498dd4a0c7764ef0cb1de5b6f3eb23de6bb87664d599667653098012866e5d9"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
@@ -71,7 +71,7 @@
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c",
-      "sha256": "9e8b08bb367782b4eb616ad5da2675e4d57cc105f77751b41a530b079114166c"
+      "sha256": "41a27f520b7307e472e41e7659ee3a2dcd902947a5f664d6cc84b9a78ffb120c"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c",
@@ -87,7 +87,7 @@
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
-      "sha256": "e704414877f3f8e41c3422cad43b3fb647fb608d362f1bc1010802b10f4879af"
+      "sha256": "6bc808e85ea543c2cb919e202468cd7d9e6eb046c16726a6220fc1721a94252e"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c",
@@ -99,15 +99,15 @@
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
-      "sha256": "5dc2001203b5c79fd768937f913f826428a3e3c69a66f9881b660e4f2ffdd3f3"
+      "sha256": "2e1378740c8c2fe7bfe7f47752e9327e0f072db4a4ad919f11a6899ebcdbe9ff"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c",
-      "sha256": "d49e02e8f5d41fd907395f30a8f822e4745c7fa3b4b303be02278c94f5a865fe"
+      "sha256": "16bda336742f34791e02ef907d999f069ac217a522036c1a4ce36f6dfb4d5e7a"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c",
-      "sha256": "5109238f66bdf561b0b9f4998dbe78d73974ba3d4f4b50e5fcb724e673754664"
+      "sha256": "f7bd80b8436a347abcfce024c4445bdee6e20972019c6c254971a39912c3375c"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
@@ -255,8 +255,8 @@
   "locked_files": [
     {
       "path": ".github/workflows/build-myron-battery-r61.yml",
-      "sha256": "fb5f08017d7efc0d5414d07546aa4733849adeec877fa55d7f75468b3b8005a2",
-      "bytes": 5466
+      "sha256": "77405168de390675be331128b0d5f6b157cc45fe376951c2957de6d59ef688d6",
+      "bytes": 6780
     },
     {
       "path": "r60-build-route/hardware-contract.json",
@@ -275,7 +275,7 @@
     },
     {
       "path": "r61-build-route/battery-write-lock.json",
-      "sha256": "18f72c212b3ef5310a895c8e533a6246ab1e89e213c2af787881d3abfe5882de",
+      "sha256": "60b74ff3e6a5986789a14ef974ff28ef18411cd7a7f5581f3ea93e34b87c5903",
       "bytes": 11033
     },
     {
@@ -310,8 +310,8 @@
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
-      "sha256": "a7d1d4cb0a02f60e7d031c68a80e05fd5cc23e6f62372fc7707258984262495d",
-      "bytes": 63981
+      "sha256": "1498dd4a0c7764ef0cb1de5b6f3eb23de6bb87664d599667653098012866e5d9",
+      "bytes": 64032
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
@@ -340,8 +340,8 @@
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c",
-      "sha256": "9e8b08bb367782b4eb616ad5da2675e4d57cc105f77751b41a530b079114166c",
-      "bytes": 55181
+      "sha256": "41a27f520b7307e472e41e7659ee3a2dcd902947a5f664d6cc84b9a78ffb120c",
+      "bytes": 55252
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c",
@@ -360,8 +360,8 @@
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
-      "sha256": "e704414877f3f8e41c3422cad43b3fb647fb608d362f1bc1010802b10f4879af",
-      "bytes": 170913
+      "sha256": "6bc808e85ea543c2cb919e202468cd7d9e6eb046c16726a6220fc1721a94252e",
+      "bytes": 170939
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c",
@@ -375,18 +375,18 @@
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
-      "sha256": "5dc2001203b5c79fd768937f913f826428a3e3c69a66f9881b660e4f2ffdd3f3",
+      "sha256": "2e1378740c8c2fe7bfe7f47752e9327e0f072db4a4ad919f11a6899ebcdbe9ff",
       "bytes": 118740
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c",
-      "sha256": "d49e02e8f5d41fd907395f30a8f822e4745c7fa3b4b303be02278c94f5a865fe",
-      "bytes": 148354
+      "sha256": "16bda336742f34791e02ef907d999f069ac217a522036c1a4ce36f6dfb4d5e7a",
+      "bytes": 148364
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c",
-      "sha256": "5109238f66bdf561b0b9f4998dbe78d73974ba3d4f4b50e5fcb724e673754664",
-      "bytes": 92280
+      "sha256": "f7bd80b8436a347abcfce024c4445bdee6e20972019c6c254971a39912c3375c",
+      "bytes": 92289
     },
     {
       "path": "r61-build-route/payload/drivers/xiaomi/myron/Kconfig",
@@ -485,8 +485,8 @@
     },
     {
       "path": "r61-build-route/targeted_battery_build.py",
-      "sha256": "2ef0a266ab049a92908cbdae5b304e171809f00e2f40c282b5571e35a836f762",
-      "bytes": 13368
+      "sha256": "331327e09980c9faf6a198a52a08bc9002455ea7bd30d7183e356d5d97bee7bf",
+      "bytes": 17321
     },
     {
       "path": "r61-build-route/test_battery_preimages.py",
@@ -517,6 +517,56 @@
       "path": "r61-build-route/upstream/common/drivers/scsi/sd.h",
       "sha256": "842cb9ca79896e7f1a429fb376f001699495be82aa6052d1c1621c2c824d59c6",
       "bytes": 7544
+    },
+    {
+      "path": "r61-build-route/test_mca_compat.py",
+      "sha256": "b7ff6c5e1589a9f286be1130de6588faae94553f9aaa56c47f7a8363dca41051",
+      "bytes": 7303
+    },
+    {
+      "path": "r61-build-route/test_diagnostic_preservation.py",
+      "sha256": "01986918a57578284fc0809e2d2819b19f7dff10699bb4ca8f20edbb4d48a59b",
+      "bytes": 24852
+    },
+    {
+      "path": "r61-build-route/test-inputs/fsa4480-i2c.h",
+      "sha256": "7c01fc5c35169c37a52b51832eae0d40551aa8ddffd2114a234ab01f17ffe796",
+      "bytes": 1080
+    },
+    {
+      "path": "r61-build-route/test-inputs/arm64-pgtable-types.h",
+      "sha256": "78ec23ab768f06cf2e461f57c92a1d5031e26d3ece5443446839aa4626a76a60",
+      "bytes": 1448
+    },
+    {
+      "path": "r61-build-route/test_hwid_compat.py",
+      "sha256": "a44955174428706497f3009f8538bd9b0392aff8901f93a91615a0310e70958d",
+      "bytes": 11911
+    },
+    {
+      "path": "r61-build-route/hwid_compat_reference/donor-hwid.h",
+      "sha256": "eae4df4b800b1540f4c71731f03730bedb25251657e818fbcd5660756a4eda5b",
+      "bytes": 985
+    },
+    {
+      "path": "r61-build-route/hwid_compat_reference/mca_hwid.c",
+      "sha256": "505b5d47fc5d2980d694ad0fa186132649cea63eaf64846398c27adaae77e269",
+      "bytes": 2096
+    },
+    {
+      "path": "r61-build-route/hwid_compat_reference/mca_hwid.h",
+      "sha256": "07e0c73bfa4421a18311c15ff752742a8492fa5d3bfcdce718643e0d292129ef",
+      "bytes": 441
+    },
+    {
+      "path": "r61-build-route/hwid_compat_reference/myron-hwid.c",
+      "sha256": "bf9da3e02041599782c8c930e7b4b98f908c6736e86ac90cdacf94b97a86836d",
+      "bytes": 2929
+    },
+    {
+      "path": "r61-build-route/hwid_compat_reference/myron-hwid.h",
+      "sha256": "28a90e94c08854b74fa577e252be741ec49f166d571dba456c4d5994e5675fa8",
+      "bytes": 1174
     }
   ],
   "limits": "Source and host tests only. Compile, installed-kernel ABI and runtime behavior not yet validated."

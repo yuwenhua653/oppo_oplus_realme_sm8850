@@ -18,6 +18,7 @@
  */
 
 #include <linux/kernel.h>
+#include <linux/string.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -90,7 +91,7 @@ static struct mca_smartchg_if_ops *mca_smartchg_if_get_ops(unsigned int type)
 int mca_smartchg_if_ops_register(struct mca_smartchg_if_ops *ops)
 {
 	if (!ops) {
-		mca_log_err("ops invalid %d\n");
+		mca_log_err("ops invalid\n");
 		return -1;
 	}
 
@@ -996,8 +997,9 @@ static void smart_charge_handle_mishow_config(struct smart_charge_info *info)
 
 	if (!hwid || mca_log_get_charge_boot_mode() == 0)
 		return;
-	if (hwid->platform_version != HARDWARE_PROJECT_O8 &&
-	    hwid->platform_version != HARDWARE_PROJECT_O9)
+	if (!hwid->product_name ||
+	    (strcmp(hwid->product_name, "bixi") &&
+	     strcmp(hwid->product_name, "luming")))
 		return;
 
 	charger_partition_get_mishow(&mishow);
@@ -1574,8 +1576,8 @@ static int smart_charge_mmap(struct file *filp, struct vm_area_struct *vma)
 			      virt_to_phys(info->mmap_addr) >> PAGE_SHIFT,
 			      vma->vm_end - vma->vm_start, vma->vm_page_prot);
 
-	mca_log_err("vma start 0x%x, prot %d\n", vma->vm_start,
-		    vma->vm_page_prot);
+	mca_log_err("vma start 0x%lx, prot 0x%llx\n", vma->vm_start,
+		    (unsigned long long)pgprot_val(vma->vm_page_prot));
 	info->map_flag = 1;
 
 	if (ret)

@@ -732,7 +732,7 @@ strateg_fg_ops_get_parallel_calc_rvalue(struct strategy_fg *fg)
 	slave_rvalue = platform_fg_ops_get_calc_rvalue(FG_IC_SLAVE);
 
 	rvalue = (master_rvalue > slave_rvalue) ? master_rvalue : slave_rvalue;
-	mca_log_info("rvalue=%ld, master_rvalue=%ld, slave_rvalue=%ld\n",
+	mca_log_info("rvalue=%lu, master_rvalue=%lu, slave_rvalue=%lu\n",
 		     rvalue, master_rvalue, slave_rvalue);
 
 	return rvalue;

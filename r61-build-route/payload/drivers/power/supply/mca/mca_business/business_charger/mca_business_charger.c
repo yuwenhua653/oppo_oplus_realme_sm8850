@@ -1167,32 +1167,30 @@ business_charger_process_debug_soc_limit(struct business_charger *charger,
 				  MCA_EVENT_DEBUG_CTRL_SOC_LIMIT, packed);
 }
 
-static void
+static int
 business_charger_process_sbu_lpd_status_change(struct business_charger *charger,
 					       int value)
 {
 	struct of_phandle_args switch_args = { 0 };
-	int sbu_event;
 	int rc;
+
+	/* This platform FSA backend has no LPD sense/isolate operations. */
+	if (value == 1 || value == 2)
+		return -EOPNOTSUPP;
 
 	rc = of_parse_phandle_with_args(charger->dev->of_node,
 					"fsa4480-i2c-handle", NULL, 0,
 					&switch_args);
-	if (rc != 0 || switch_args.np == NULL) {
-		mca_log_err("no switch node found\n");
-		return;
-	}
+	if (rc)
+		return rc;
+	if (!switch_args.np)
+		return -ENODEV;
 
-	mca_log_info("handle sbu lpd changed: %#x\n", value);
-	if (value == 1)
-		sbu_event = FSA_USBC_SBU_LPD_SENSE;
-	else if (value == 2)
-		sbu_event = FSA_USBC_SBU_LPD_ISOLATE;
-	else
-		sbu_event = FSA_USBC_DISPLAYPORT_DISCONNECTED;
-
-	mca_log_err("third sbu event is %d\n", sbu_event);
-	fsa4480_switch_event(switch_args.np, sbu_event);
+	/* Preserve the existing fallback for all other status values. */
+	rc = fsa4480_switch_event(switch_args.np,
+				 FSA_USBC_DISPLAYPORT_DISCONNECTED);
+	of_node_put(switch_args.np);
+	return rc;
 }
 
 static void business_charger_process_event(struct business_charger *charger)
@@ -1388,10 +1386,15 @@ static void business_charger_process_event(struct business_charger *charger)
 				business_charger_process_debug_soc_limit(
 					charger, *((int *)event_node->data));
 				break;
-			case MCA_EVENT_SBU_LPD_CHANGE:
-				business_charger_process_sbu_lpd_status_change(
-					charger, *((int *)event_node->data));
+			case MCA_EVENT_SBU_LPD_CHANGE: {
+				int value = *((int *)event_node->data);
+				int rc = business_charger_process_sbu_lpd_status_change(
+					charger, value);
+
+				if (rc)
+					mca_log_err("SBU LPD status %d failed: %d\n", value, rc);
 				break;
+			}
 			}
 			spin_lock(&charger->list_lock);
 			kfree(event_node->data);

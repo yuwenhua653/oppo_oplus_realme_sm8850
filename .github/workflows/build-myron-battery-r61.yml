@@ -78,6 +78,9 @@ jobs:
           set -euo pipefail
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_bq_readonly_diag.py > "$WORKSPACE_DIR/integration-reports/r61-host-bq.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_camera_candidate.py > "$WORKSPACE_DIR/integration-reports/r61-host-camera.json"
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_mca_compat.py > "$WORKSPACE_DIR/integration-reports/r61-host-mca-compat.json"
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_hwid_compat.py > "$WORKSPACE_DIR/integration-reports/r61-host-hwid-compat.json"
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_diagnostic_preservation.py > "$WORKSPACE_DIR/integration-reports/r61-host-diagnostic-preservation.log" 2>&1
           python3 r61-build-route/test_sync_with_retry.py
           python3 r61-build-route/sync_with_retry.py \
             --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR" --jobs 4
@@ -131,3 +134,14 @@ jobs:
           retention-days: 7
 
 
+      - name: Upload verified BQ and camera compile-only subset
+        # A later full MCA failure still fails CI, but does not discard this checked subset.
+        if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r61-targeted-diagnostic/diagnostic-manifest.json') != '' && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r61-targeted-diagnostic/diagnostic-complete.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-r61-diagnostic-subset-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-artifacts/r61-targeted-diagnostic/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
