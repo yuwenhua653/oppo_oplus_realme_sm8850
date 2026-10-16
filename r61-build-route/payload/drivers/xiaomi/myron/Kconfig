@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Isolated myron experiment; each option defaults off for other targets.
+menu "Myron experimental Xiaomi modules"
+config FINGERPRINT_MI_FP
+    tristate "Xiaomi mi_fp fingerprint driver"
+    depends on ARM64 && OF && INPUT && GPIOLIB && REGULATOR
+    depends on QCOM_PANEL_EVENT_NOTIFIER
+    default n
+
+config FP_HAVE_MULTI_SCREEN
+    bool "Fingerprint multi-screen notifications"
+    depends on FINGERPRINT_MI_FP
+    default n
+
+config SIDE_FINGERPRINT
+    bool "Side fingerprint variant"
+    depends on FINGERPRINT_MI_FP
+    default n
+
+config FOD_FINGERPRINT
+    bool "Optical FOD fingerprint variant"
+    depends on FINGERPRINT_MI_FP
+    default n
+    help
+      Keep disabled for the tested myron FP_ULTRA_QCOM source path.
+
+config MI_STACK
+    tristate "Xiaomi task stack inspection"
+    depends on ARM64 && PROC_FS && STACKTRACE
+    default n
+
+config MI_UBT
+    tristate "Xiaomi user backtrace helper"
+    depends on ARM64 && MMU
+    default n
+
+config PRINTK_ENHANCE
+    tristate "Xiaomi printk annotation"
+    depends on PROC_FS && ANDROID_VENDOR_HOOKS
+    default n
+source "$(KCONFIG_EXT_PREFIX)drivers/misc/hwid/Kconfig"
+source "$(KCONFIG_EXT_PREFIX)drivers/misc/miev/Kconfig"
+source "$(KCONFIG_EXT_PREFIX)drivers/input/touchscreen/xiaomi/Kconfig"
+config MYRON_MCA_BASE
+    tristate "Myron MCA base layer source candidates"
+    depends on SYSFS && OF && MI_HARDWARE_ID
+    default n
+    help
+      Seven MCA infrastructure modules. Charger ICs, ADSP protocols
+      and current/voltage/thermal policy drivers are not included.
+config MYRON_MCA_INTERFACE
+    tristate "Myron MCA charge interface source candidate"
+    depends on SYSFS && OF && MYRON_MCA_BASE
+    default n
+    help
+      Source build candidate only. Hardware backends and charging
+      policies require further integration and runtime validation.
+config MYRON_MCA_PLATFORM
+    tristate "Myron MCA platform and protocol interface source candidates"
+    depends on MYRON_MCA_BASE && SYSFS && OF && TREE_SRCU
+    default n
+    help
+      Source build candidate only. Hardware backends and charging
+      policies require further integration and runtime validation.
+config MYRON_MISC
+	tristate "Myron infrared and ST54SE GPIO drivers"
+	depends on OF && GPIOLIB && SPI
+    default n
+config MYRON_MCA_SERVICES
+    tristate "Myron MCA service source candidates"
+    depends on MYRON_MCA_PLATFORM && MYRON_MCA_INTERFACE
+    depends on OF && SYSFS && I2C && POWER_SUPPLY && THERMAL
+    depends on QTI_PMIC_GLINK && DRM_PANEL
+    default n
+    help
+      Same-source build candidates only. GLINK owner conflicts, charging
+      policy coverage, DT resources and removal safety remain deployment gates.
+      No charger_partition source or private SCSI header is included.
+
+config MYRON_CHARGE_IC
+    tristate "Myron charge IC source candidates"
+    depends on I2C && OF && GPIOLIB && REGMAP_I2C
+    depends on MYRON_MCA_BASE && MYRON_MCA_PLATFORM
+    default n
+    help
+      Compile-only candidates from pinned Xiaomi Onyx sources. This does
+      not certify Myron FOD data, voltage thresholds or charging behavior.
+
+config MYRON_IC_FIRMWARE_PROGRAMMING
+    bool
+    default n
+    help
+      Deliberately hidden and disabled: Onyx embedded firmware and battery
+      nonvolatile calibration updates have not been qualified for Myron.
+
+endmenu
+
+config MYRON_MCA_COMPLETE_SERVICES
+    tristate "Myron complete MCA services (compile qualification only)"
+    depends on MYRON_MCA_SERVICES && SCSI && BLK_DEV_SD
+    default n
+    help
+      Build the complete vendor MCA strategy and charging services for
+      compile/modpost qualification. This does not select them for installation
+      or authorize runtime charging/storage behavior. Keep IC firmware
+      programming disabled; persistent writes are guarded off by default.

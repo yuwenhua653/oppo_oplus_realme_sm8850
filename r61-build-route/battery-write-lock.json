@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "purpose": "COMPILE_ONLY_BATTERY_AND_CAMERA_CANDIDATES_NOT_RUNTIME_APPROVED",
+  "compile_tested": false,
+  "runtime_selected": false,
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322"
+  },
+  "writes": [
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_shared_memory/charger_partition.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_shared_memory/charger_partition.c",
+      "before_sha256": null,
+      "after_sha256": "44a70082a3eb052a8bc137f56cb7ca4a854c2560d4b956f1db058eb3bda2b44b",
+      "bytes": 33783,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c",
+      "before_sha256": null,
+      "after_sha256": "d49e02e8f5d41fd907395f30a8f822e4745c7fa3b4b303be02278c94f5a865fe",
+      "bytes": 148354,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c",
+      "before_sha256": null,
+      "after_sha256": "5b43ee7ffc9c62cb9371b394dd72cbb5e77ff066d538ec19bbd599f18100bb98",
+      "bytes": 38109,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
+      "before_sha256": null,
+      "after_sha256": "a7d1d4cb0a02f60e7d031c68a80e05fd5cc23e6f62372fc7707258984262495d",
+      "bytes": 63981,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+      "before_sha256": null,
+      "after_sha256": "783e36610ddec2eb09d8612c0bc4c1b78ba1e0cbe9de642997b0b2385578decb",
+      "bytes": 6304,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_wireless_psy.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_business/business_charger/mca_charger_wireless_psy.c",
+      "before_sha256": null,
+      "after_sha256": "5f3a2486b9eaf09e7f1b64e560938df56be3c63b2a805d32b2165a166f7447c6",
+      "bytes": 5709,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal.c",
+      "before_sha256": null,
+      "after_sha256": "3c7a37215995c24498bd4ed7305a1e48a642589da4bd3407efadf18867f2fd62",
+      "bytes": 38584,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c",
+      "before_sha256": null,
+      "after_sha256": "9f1c261b7e087a5f90053150c1a3c95b57db728d83f1e905f59d785e1b6d9dad",
+      "bytes": 17301,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c",
+      "before_sha256": null,
+      "after_sha256": "5109238f66bdf561b0b9f4998dbe78d73974ba3d4f4b50e5fcb724e673754664",
+      "bytes": 92280,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c",
+      "before_sha256": null,
+      "after_sha256": "9e8b08bb367782b4eb616ad5da2675e4d57cc105f77751b41a530b079114166c",
+      "bytes": 55181,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg.c",
+      "before_sha256": null,
+      "after_sha256": "f475e03195a76bf656edeaac3f8918346995943d0a686b5aefa2b7366dab4d62",
+      "bytes": 107124,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+      "before_sha256": null,
+      "after_sha256": "5dc2001203b5c79fd768937f913f826428a3e3c69a66f9881b660e4f2ffdd3f3",
+      "bytes": 118740,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c",
+      "before_sha256": null,
+      "after_sha256": "141889a0c5470421c51317873913383f21fa0f469934d1d945af5eae4691be8d",
+      "bytes": 9546,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c",
+      "before_sha256": null,
+      "after_sha256": "ad4e52cdf5a3a0727577bb41aa5883e409f517bb3e2224f01d9627584487dddc",
+      "bytes": 19862,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
+      "before_sha256": null,
+      "after_sha256": "e704414877f3f8e41c3422cad43b3fb647fb608d362f1bc1010802b10f4879af",
+      "bytes": 170913,
+      "preimage": null
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/shared_memory/charger_partition_class.h",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/include/mca/shared_memory/charger_partition_class.h",
+      "before_sha256": "592dc1e8117305410e7f33cde37420d62ddcabf67ee6b57657d911a40b44a362",
+      "after_sha256": "9a6e71ff11e27387e215c3ffd2313674e4d80c9aebdf4337b715f9ef4c94c9e5",
+      "bytes": 2784,
+      "preimage": "r61-build-route/preimage/drivers/power/supply/mca/include/mca/shared_memory/charger_partition_class.h"
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
+      "before_sha256": "d7efcbcea065ea434b6bc365aa0c49826ed48cac2d1a45a138aa2c49f7e3eccc",
+      "after_sha256": "c1db7dda4195412dba1b091c567cb60bda9af2b2a739a9d30e7e5d0f4e17836b",
+      "bytes": 167567,
+      "preimage": "r61-build-route/preimage/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
+      "source": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
+      "before_sha256": "16bc4a6e81c33f87a7f317afb5d5622a24df16a7d197e56f52613d5053ae4557",
+      "after_sha256": "fcc9e4b927011cbe503f82fa78244db876340e884aee475c9786d561239c342e",
+      "bytes": 173079,
+      "preimage": "r61-build-route/preimage/drivers/xiaomi/myron/modules.bzl"
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
+      "source": "r61-build-route/payload/drivers/xiaomi/myron/Kconfig",
+      "before_sha256": "bde07376277b9ae8b30a72fbb0afd663d689c4f359cd1500383cf3e20356d473",
+      "after_sha256": "28b7b575bccb55c8128a7fe31d9b3006a2a7ce483d7450b93789438b188f283c",
+      "bytes": 3832,
+      "preimage": "r61-build-route/preimage/drivers/xiaomi/myron/Kconfig"
+    },
+    {
+      "destination": "vendor/qcom/sm8850/common_sources.bzl",
+      "source": "r61-build-route/payload/common_sources.bzl",
+      "before_sha256": "57a2bf9bad077a5b165236557d3df772ddbfb244c79836d9f936d2612e1831c1",
+      "after_sha256": "20b0f1ba28f14700be6cca8e59801fa803a05517f5efccf8ecc7b132509017c7",
+      "bytes": 10596,
+      "preimage": "r61-build-route/preimage/common_sources.bzl"
+    },
+    {
+      "destination": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
+      "source": "r61-build-route/payload/configs/canoe_perf.bzl",
+      "before_sha256": "7f8434e9bd306c1cbaa82e9f2b82684d630fd2f0bb39884c4bb9f5623cab0db8",
+      "after_sha256": "74ebd44474daf58129b6799eeacbc7d27754a9fad126ef51192b007fe95eb057",
+      "bytes": 17484,
+      "preimage": "r61-build-route/preimage/configs/canoe_perf.bzl"
+    },
+    {
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_req_mgr/cam_req_mgr_dev.c",
+      "source": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_req_mgr/cam_req_mgr_dev.c",
+      "before_sha256": "411cb2f3b17b034acf653aebb0bbcfaa73c23af0089a6df685a5c8327ef7ccc3",
+      "after_sha256": "7ae61432177df297cc24986fd67d3210c11bdabcdefe44d677861f8ee78339ac",
+      "bytes": 33991,
+      "preimage": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_req_mgr/cam_req_mgr_dev.c"
+    }
+  ],
+  "config_ci_overlay": {
+    "CONFIG_MYRON_MCA_COMPLETE_SERVICES": "m",
+    "CONFIG_QCOM_FSA4480_I2C": "m"
+  },
+  "must_preserve_disabled": [
+    "CONFIG_MYRON_IC_FIRMWARE_PROGRAMMING"
+  ],
+  "runtime_blocks": [
+    "Unqualified charger storage ownership and boot reset semantics",
+    "Missing strategy/FG class unregister and callback lifetime closure",
+    "Missing late storage readiness reprobe mechanism",
+    "Smart-charge published callbacks and sysfs unwind lifecycle",
+    "Gauge probe performs hardware configuration and reference-provider lifetime is incomplete"
+  ],
+  "preflight": {
+    "source_count": 16,
+    "new_service_module_count": 11,
+    "target_count": 12,
+    "mca_provider_dependency_graph_acyclic": true,
+    "all_existing_declared_headers_present": true,
+    "all_draft_source_hashes_verified": true
+  },
+  "upstream_files": [
+    {
+      "repo": "common",
+      "path": "drivers/scsi/sd.h",
+      "sha256": "842cb9ca79896e7f1a429fb376f001699495be82aa6052d1c1621c2c824d59c6",
+      "bytes": 7544,
+      "source": "r61-build-route/upstream/common/drivers/scsi/sd.h"
+    }
+  ]
+}

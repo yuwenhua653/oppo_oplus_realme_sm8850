@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "reviewed_module_names": [
+    "charger_partition",
+    "mca_basic_wireless",
+    "mca_buckchg_jeita",
+    "mca_business_charger_comp",
+    "mca_charger_thermal",
+    "mca_qcom_sysfs",
+    "mca_quick_wireless",
+    "mca_smart_charge",
+    "mca_strategy_buckchg",
+    "mca_strategy_fg_comp",
+    "mca_strategy_quickchg",
+    "bq27z561",
+    "camera"
+  ],
+  "target_count": 13,
+  "source_scope": {
+    "mca_complete_services": 11,
+    "bq_diagnostic_default_disabled": 1,
+    "camera_session_8_12_compatibility_with_R60_SH11_preserved": 1
+  },
+  "flashable": false,
+  "compiled": false,
+  "hardware_tested": false
+}

@@ -1,0 +1,25 @@
+{
+  "status": "SOURCE_ONLY_CANDIDATE_NOT_RUNTIME_PROVEN",
+  "base_repo": "LineageOS/android_kernel_qcom_sm8850-modules",
+  "base_commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "target": "qcom/opensource/camera-kernel/drivers/cam_req_mgr/cam_req_mgr_dev.c",
+  "preimage": {
+    "bytes": 31920,
+    "sha256": "411cb2f3b17b034acf653aebb0bbcfaa73c23af0089a6df685a5c8327ef7ccc3",
+    "git_blob_sha1": "a9649faa9e9ecbfc7aa8669092065a1d4275e456"
+  },
+  "payload": {
+    "bytes": 33991,
+    "sha256": "7ae61432177df297cc24986fd67d3210c11bdabcdefe44d677861f8ee78339ac"
+  },
+  "legacy_wire_bytes": 8,
+  "xiaomi_wire_bytes": 12,
+  "supported_extended_create_flags": [
+    0
+  ],
+  "nonzero_extended_create_errno": "EOPNOTSUPP",
+  "nonzero_extended_destroy_flags": "unused, preserves backend destroy behavior",
+  "uapi_header_changes": [],
+  "runtime_gate": "Need current HAL bytes or current startup ioctl evidence showing 12-byte request before deployment",
+  "donor_semantics": "MiCode popsicle-w-oss 59d5dae93faae1974004788236f6c0b3ec747476 core.c checks concurrency during apply and schedule; absent in base"
+}

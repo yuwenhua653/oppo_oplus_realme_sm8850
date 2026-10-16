@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "host_cases": 17,
+  "test_scope": "Actual diagnostic C block with mock read-only I2C/sysfs; not a kernel build",
+  "kernel_compilation": false,
+  "target_hardware": false,
+  "diagnostic_source_sha256": "7916d6adb9270af6df995443575c2a16d8ded66f73574d112af538c9e38a7582",
+  "legacy_path_byte_preservation": true,
+  "probe_branch_before_all_normal_allocation_and_hardware_setup": true,
+  "remove_branch_before_normal_cleanup": true,
+  "actual_register_header_sha256": "505fdab2a1d70462754e0f8924db64272d32bfdb3f57bb38deb24f6cec61bb6e"
+}

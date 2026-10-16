@@ -1,0 +1,29 @@
+{
+  "status": "PASS_HOST_HARNESS_ONLY",
+  "stdout": "153 assertions passed",
+  "candidate_sha256": "7ae61432177df297cc24986fd67d3210c11bdabcdefe44d677861f8ee78339ac",
+  "harness_sha256": "ebf5125b9c03bc396623d0424fbd26e63932bea436dd573ca01b93cae2faf930",
+  "actual_helper_and_switch_arms_extracted": true,
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "leak_sanitizer": "disabled: host /proc task walk denied; harness has no heap allocations",
+  "checks": [
+    "strict invalid lengths including UINT32_MAX",
+    "8/12 byte exact copy lengths",
+    "input partial copy fault causes no backend call",
+    "0-flag extended create",
+    "nonzero extended create explicitly unsupported",
+    "extended destroy does not use concurrency flag",
+    "reserved field translation and adjacent canaries",
+    "backend errno propagated",
+    "failed extended copyout destroys newly created handle",
+    "cleanup error logged; EFAULT retained"
+  ],
+  "limitations": [
+    "not a kernel build",
+    "not a device run",
+    "actual HAL wire size is not yet proven"
+  ]
+}
