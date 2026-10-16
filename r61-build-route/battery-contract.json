@@ -30,6 +30,14 @@
       "sha256": "989c05eae6a88be028156319d9a9d50e77983de3152ee1583d65596626ed9d40"
     },
     {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+      "sha256": "1f9c97949f27488900433484e6ee03b050befdabc09238aa755fde7e1d49ae60"
+    },
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+      "sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f"
+    },
+    {
       "path": "vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
       "sha256": "4596ccb65232f747a82b67d42fa14a67902707c4b93bac317ac7754efa7f6bf6"
     },
@@ -39,115 +47,7 @@
     },
     {
       "path": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
-      "sha256": "74ebd44474daf58129b6799eeacbc7d27754a9fad126ef51192b007fe95eb057"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_buckchg_class.h",
-      "sha256": "942f68201b55087e86d75757479ef99c786c87bcf9737ae1452ffca58f25088d"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_cp_class.h",
-      "sha256": "cf5812c3b9afcfe26e66f46fcd791327de862ef923cf34e9b67fa75840aa7ade"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
-      "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/shared_memory/charger_partition_class.h",
-      "sha256": "9a6e71ff11e27387e215c3ffd2313674e4d80c9aebdf4337b715f9ef4c94c9e5"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
-      "sha256": "1498dd4a0c7764ef0cb1de5b6f3eb23de6bb87664d599667653098012866e5d9"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
-      "sha256": "783e36610ddec2eb09d8612c0bc4c1b78ba1e0cbe9de642997b0b2385578decb"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_wireless_psy.c",
-      "sha256": "5f3a2486b9eaf09e7f1b64e560938df56be3c63b2a805d32b2165a166f7447c6"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c",
-      "sha256": "c618afd282e5b1ace6d2cd40d581cc529a0b4a05f5e6f29e8fa1132d70fe45f0"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
-      "sha256": "0bf60a409ba866c2a4f846f1a8430edefa0f6dce1bc16bdb796a9643f56463d6"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class.c",
-      "sha256": "4c03057826da89e7f2158b9f2615108010ab86315cd7b7aa9a1ec5a0c7cda271"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_cp_class.c",
-      "sha256": "cb150a5198d70d5248d0b5818c7ef2d2922270bf6fad53b5d0e8cc8e6902541a"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c",
-      "sha256": "7e3066ca08df7d9815a8bf63330080aa7e4182daf578ec60adfc6fdbbe2f6e72"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c",
-      "sha256": "305f85f59082d8a2326a34c9075969247e79901c5868986fa287bd88a59d5fbc"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c",
-      "sha256": "9f1c261b7e087a5f90053150c1a3c95b57db728d83f1e905f59d785e1b6d9dad"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_shared_memory/charger_partition.c",
-      "sha256": "44a70082a3eb052a8bc137f56cb7ca4a854c2560d4b956f1db058eb3bda2b44b"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c",
-      "sha256": "41a27f520b7307e472e41e7659ee3a2dcd902947a5f664d6cc84b9a78ffb120c"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c",
-      "sha256": "5b43ee7ffc9c62cb9371b394dd72cbb5e77ff066d538ec19bbd599f18100bb98"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal.c",
-      "sha256": "6399aaf45f75093e4258a738459febb83c773f30c38c99ec6541791feb0d6169"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg.c",
-      "sha256": "cb1f328ae9107ce6deb6e1f89f2f21710bd5f392940f61cfebefe8501c2e6e66"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
-      "sha256": "5747dc96ec48605699fb7a42b3440d59cc96667a800e87bdeabc352ca58c3615"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c",
-      "sha256": "ad4e52cdf5a3a0727577bb41aa5883e409f517bb3e2224f01d9627584487dddc"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c",
-      "sha256": "141889a0c5470421c51317873913383f21fa0f469934d1d945af5eae4691be8d"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
-      "sha256": "864bdfc9d8054c269615dde22e0c2448606277c8086cbe7e1c8e7fccbed136fe"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c",
-      "sha256": "16bda336742f34791e02ef907d999f069ac217a522036c1a4ce36f6dfb4d5e7a"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c",
-      "sha256": "9b901b70948e846b94b7ee0b76f5a99808d45bf03f5d0e603ebd6345aca7e8df"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
-      "sha256": "28b7b575bccb55c8128a7fe31d9b3006a2a7ce483d7450b93789438b188f283c"
-    },
-    {
-      "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
-      "sha256": "4ad9cc47ab235f904e9f34549e0dc5e8b58eb710734cd84f7e20b3d88556fb24"
+      "sha256": "31aa95071a54879611199830566a66cdaff09c3c164df7ad8fe6a94f39fe5ded"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/misc/hwid/hwid.c",
@@ -222,6 +122,18 @@
       "sha256": "12628607b2e48a3437a8466af478956348fda176eb6fbe7a7c526fbb9eb32615"
     },
     {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_buckchg_class.h",
+      "sha256": "942f68201b55087e86d75757479ef99c786c87bcf9737ae1452ffca58f25088d"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_cp_class.h",
+      "sha256": "cf5812c3b9afcfe26e66f46fcd791327de862ef923cf34e9b67fa75840aa7ade"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
+      "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+    },
+    {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_loadsw_class.h",
       "sha256": "df7a16ca15cebecb0d376da65b8a77d88332e787054adcde33ea69c9c534533b"
     },
@@ -240,6 +152,10 @@
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/protocol/protocol_qc_class.h",
       "sha256": "0b1340efe2f759b36a4344c90df79190ea1e90a7965c20bbf5d93142ed74744b"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/shared_memory/charger_partition_class.h",
+      "sha256": "9a6e71ff11e27387e215c3ffd2313674e4d80c9aebdf4337b715f9ef4c94c9e5"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/smartchg/smart_chg_class.h",
@@ -292,6 +208,18 @@
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/inc/mca_charger_wireless_psy.h",
       "sha256": "c679f4848594928d231a39220ca4bd2c2cf4da9b98f694cf21ea0d822abe53ad"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
+      "sha256": "1498dd4a0c7764ef0cb1de5b6f3eb23de6bb87664d599667653098012866e5d9"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+      "sha256": "783e36610ddec2eb09d8612c0bc4c1b78ba1e0cbe9de642997b0b2385578decb"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_wireless_psy.c",
+      "sha256": "5f3a2486b9eaf09e7f1b64e560938df56be3c63b2a805d32b2165a166f7447c6"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_misc/inc/mca_business_misc.h",
@@ -348,6 +276,14 @@
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/inc/sc8581_reg.h",
       "sha256": "5f41c0a60f099139e43b4ca609ff58bb76cbc9da9cb4003286f75f7878b3b9bd"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c",
+      "sha256": "c618afd282e5b1ace6d2cd40d581cc529a0b4a05f5e6f29e8fa1132d70fe45f0"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
+      "sha256": "0bf60a409ba866c2a4f846f1a8430edefa0f6dce1bc16bdb796a9643f56463d6"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
@@ -410,6 +346,18 @@
       "sha256": "26bbb4c34dc0ce8554b237f96bd227e23ed91b59b3dbe5a2520e977588294218"
     },
     {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class.c",
+      "sha256": "4c03057826da89e7f2158b9f2615108010ab86315cd7b7aa9a1ec5a0c7cda271"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_cp_class.c",
+      "sha256": "cb150a5198d70d5248d0b5818c7ef2d2922270bf6fad53b5d0e8cc8e6902541a"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c",
+      "sha256": "7e3066ca08df7d9815a8bf63330080aa7e4182daf578ec60adfc6fdbbe2f6e72"
+    },
+    {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_loadsw_class.c",
       "sha256": "cc4366e89f437bfae4b5266a85ebd7c8eab2c8165c93ccc653cfcd29d8babb8a"
     },
@@ -430,12 +378,28 @@
       "sha256": "0c54219a858ed09e9950e46e6dc1c9419de9113119746f29be46eb81be95bbab"
     },
     {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c",
+      "sha256": "305f85f59082d8a2326a34c9075969247e79901c5868986fa287bd88a59d5fbc"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c",
+      "sha256": "9f1c261b7e087a5f90053150c1a3c95b57db728d83f1e905f59d785e1b6d9dad"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_shared_memory/charger_partition.c",
+      "sha256": "44a70082a3eb052a8bc137f56cb7ca4a854c2560d4b956f1db058eb3bda2b44b"
+    },
+    {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_shared_memory/inc/charger_partition.h",
       "sha256": "a308215a69cc55b7ba6c0970441e95397bdec2cae5c5073e0e3597fad0e3f0fe"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_smart_charge/inc/mca_smart_charge.h",
       "sha256": "55527ea1866f8ff5b5586e490dc72bcee6c98bc52717c6e6a8591d52f277a61b"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c",
+      "sha256": "41a27f520b7307e472e41e7659ee3a2dcd902947a5f664d6cc84b9a78ffb120c"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/mca_strategy_class.c",
@@ -458,6 +422,22 @@
       "sha256": "03eb12c6e121c78dc0035162b74e432eed8f4c41665014a3c039a0db3f8719c2"
     },
     {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c",
+      "sha256": "5b43ee7ffc9c62cb9371b394dd72cbb5e77ff066d538ec19bbd599f18100bb98"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal.c",
+      "sha256": "6399aaf45f75093e4258a738459febb83c773f30c38c99ec6541791feb0d6169"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg.c",
+      "sha256": "cb1f328ae9107ce6deb6e1f89f2f21710bd5f392940f61cfebefe8501c2e6e66"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
+      "sha256": "5747dc96ec48605699fb7a42b3440d59cc96667a800e87bdeabc352ca58c3615"
+    },
+    {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/inc/mca_battery_shutdown.h",
       "sha256": "1d9584ea84fa42eb9da038119bd12bdc4a747097f5169ab5b6ecd0dd7d4f9d43"
     },
@@ -476,6 +456,18 @@
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/inc/xm_battery_auth.h",
       "sha256": "b8a928dd69bfe992d45ae6d76a73ff3174b59f0fea0c1bae47961d91281c8ed6"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c",
+      "sha256": "ad4e52cdf5a3a0727577bb41aa5883e409f517bb3e2224f01d9627584487dddc"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c",
+      "sha256": "141889a0c5470421c51317873913383f21fa0f469934d1d945af5eae4691be8d"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+      "sha256": "864bdfc9d8054c269615dde22e0c2448606277c8086cbe7e1c8e7fccbed136fe"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_class.c",
@@ -502,16 +494,28 @@
       "sha256": "d6793e57fd645f05caa14668e81cc5920da9e8f4ebb0ebfb76e76b4fb5f7641b"
     },
     {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c",
+      "sha256": "16bda336742f34791e02ef907d999f069ac217a522036c1a4ce36f6dfb4d5e7a"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c",
+      "sha256": "9b901b70948e846b94b7ee0b76f5a99808d45bf03f5d0e603ebd6345aca7e8df"
+    },
+    {
       "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_wireless_revchg.c",
       "sha256": "027dc5bec8202ca8570ae3e23aac9e7ff397a0f9262da93ef9a8357e5d13eb7f"
     },
     {
-      "path": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
-      "sha256": "1f9c97949f27488900433484e6ee03b050befdabc09238aa755fde7e1d49ae60"
+      "path": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",
+      "sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52"
     },
     {
-      "path": "vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
-      "sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f"
+      "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
+      "sha256": "904f7597f77d0f0b2d272a6f6fba6e53b0186f2ff2150faafa7c65e1fe85e0e5"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
+      "sha256": "bb126e8e33348cf4bac4b99372025933f2ba95aea247af650a146bd77c95561b"
     }
   ],
   "modules": [
@@ -660,6 +664,15 @@
       "expected_sources": [
         "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c"
       ]
+    },
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/myron_bq_readonly",
+      "module_name": "myron_bq_readonly",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_bq_readonly/myron_bq_readonly.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_bq_readonly/canoe_perf/drivers/power/supply/myron_bq_readonly_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c"
+      ]
     }
   ],
   "generated_files": [
@@ -671,8 +684,8 @@
   "locked_files": [
     {
       "path": ".github/workflows/build-myron-battery-r61.yml",
-      "sha256": "950874a8f61c3a6a340cd8e6aafd893410b3f2806998a4a5261c0ee7b8cc88ed",
-      "bytes": 7715
+      "sha256": "89cc81a344fc0d22128ed432e1867a71bcfa63038d6f4380fe0c708a700d4325",
+      "bytes": 7992
     },
     {
       "path": "r60-build-route/hardware-contract.json",
@@ -691,8 +704,8 @@
     },
     {
       "path": "r61-build-route/battery-write-lock.json",
-      "sha256": "b34dcea90b10dc490ed3f8617a54156ff63a2650daffb0565127dca328314439",
-      "bytes": 16704
+      "sha256": "ca00c0309f16fd0e0bd1f95d9ca28bff44dfb7f956581af007d8feaea26d928e",
+      "bytes": 17134
     },
     {
       "path": "r61-build-route/bq_diagnostic_block.c",
@@ -701,8 +714,8 @@
     },
     {
       "path": "r61-build-route/check_battery_inputs.py",
-      "sha256": "e929aa5b62b4f1cf85ad124bf1ff754aac0a87401e45180f59212fd365ab9b7a",
-      "bytes": 7788
+      "sha256": "c803876305a1c552b25628a4cdde48d3f42af3c2ce254c0e369f32e688bfc573",
+      "bytes": 8238
     },
     {
       "path": "r61-build-route/check_mca_log_deps.py",
@@ -741,8 +754,8 @@
     },
     {
       "path": "r61-build-route/payload/configs/canoe_perf.bzl",
-      "sha256": "74ebd44474daf58129b6799eeacbc7d27754a9fad126ef51192b007fe95eb057",
-      "bytes": 17484
+      "sha256": "31aa95071a54879611199830566a66cdaff09c3c164df7ad8fe6a94f39fe5ded",
+      "bytes": 17521
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/mca/include/mca/platform/platform_buckchg_class.h",
@@ -870,19 +883,34 @@
       "bytes": 92316
     },
     {
+      "path": "r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
+      "sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52",
+      "bytes": 6395
+    },
+    {
       "path": "r61-build-route/payload/drivers/xiaomi/myron/Kconfig",
-      "sha256": "28b7b575bccb55c8128a7fe31d9b3006a2a7ce483d7450b93789438b188f283c",
-      "bytes": 3832
+      "sha256": "904f7597f77d0f0b2d272a6f6fba6e53b0186f2ff2150faafa7c65e1fe85e0e5",
+      "bytes": 4304
     },
     {
       "path": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
-      "sha256": "4ad9cc47ab235f904e9f34549e0dc5e8b58eb710734cd84f7e20b3d88556fb24",
-      "bytes": 173567
+      "sha256": "bb126e8e33348cf4bac4b99372025933f2ba95aea247af650a146bd77c95561b",
+      "bytes": 173915
     },
     {
       "path": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_req_mgr/cam_req_mgr_dev.c",
       "sha256": "7ae61432177df297cc24986fd67d3210c11bdabcdefe44d677861f8ee78339ac",
       "bytes": 33991
+    },
+    {
+      "path": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+      "sha256": "1f9c97949f27488900433484e6ee03b050befdabc09238aa755fde7e1d49ae60",
+      "bytes": 8903
+    },
+    {
+      "path": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+      "sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f",
+      "bytes": 78766
     },
     {
       "path": "r61-build-route/preimage/common_sources.bzl",
@@ -965,6 +993,16 @@
       "bytes": 31920
     },
     {
+      "path": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+      "sha256": "b0197c5f1d557bb1394216a00f50b3b9cd40ebb2d6a216ae3dee6b98c6de7739",
+      "bytes": 8803
+    },
+    {
+      "path": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+      "sha256": "608ee98984fc3924046cba49a6ece7821e48043ccdb80ef4bd5ce0653188fc9c",
+      "bytes": 77649
+    },
+    {
       "path": "r61-build-route/preimage/qcom/opensource/camera-kernel/include/uapi/camera/media/cam_defs.h",
       "sha256": "d4eeaab19d67d11116caef79590d922fe078d276b7ab522c89fa1041abca8320",
       "bytes": 42540
@@ -995,19 +1033,39 @@
       "bytes": 1066
     },
     {
+      "path": "r61-build-route/reviews/camera-power-candidate-manifest.json",
+      "sha256": "f0b2601bc9bb0da366807247ecbcfffb01c2abbff3756e592e55a2ad771a3572",
+      "bytes": 2822
+    },
+    {
+      "path": "r61-build-route/reviews/camera-power-candidate.patch",
+      "sha256": "a652600030ff29b950aae6f72762ba2e5f1eff81458ec298b04fd6a0c0a9024f",
+      "bytes": 2813
+    },
+    {
+      "path": "r61-build-route/reviews/standalone-gauge-integration.json",
+      "sha256": "8c12324be72a34461399c1f2bbcdebbddf02eea26f14836b244e663f64ac9a10",
+      "bytes": 3565
+    },
+    {
+      "path": "r61-build-route/runtime-closure-scope.json",
+      "sha256": "e44eab40300916816d8235343c7bbc12ccbb8a052d574c9251522c477893acef",
+      "bytes": 97864
+    },
+    {
       "path": "r61-build-route/sync_with_retry.py",
       "sha256": "6d34d04e90fde257a2278dacf7afec663a133a6c120cba284eae752cee3e7f90",
       "bytes": 8601
     },
     {
       "path": "r61-build-route/target-scope.json",
-      "sha256": "57d073b125fcbdc504a8ab0e7e785b69263787ec869b60444d1ff7114a9e143e",
-      "bytes": 2351
+      "sha256": "407c0b6ede37bb8dafabb810e9f84e23b38762dfa9deae6992afa2a662c310e3",
+      "bytes": 3150
     },
     {
       "path": "r61-build-route/targeted_battery_build.py",
-      "sha256": "a1ef20a2833fa47731ba2d6693b98b8e9fc419523289dabe64551dc263a11899",
-      "bytes": 21166
+      "sha256": "01a5f8dbc23e28fd53b282e3229cd7d9606be4a6f0467958d75836ea1a058554",
+      "bytes": 21259
     },
     {
       "path": "r61-build-route/test-inputs/arm64-pgtable-types.h",
@@ -1018,6 +1076,21 @@
       "path": "r61-build-route/test-inputs/fsa4480-i2c.h",
       "sha256": "7c01fc5c35169c37a52b51832eae0d40551aa8ddffd2114a234ab01f17ffe796",
       "bytes": 1080
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/cases.c",
+      "sha256": "93aa0e6287b9390c602b83b860cce6c949c7ec7ddc782995834e297dc495ce1b",
+      "bytes": 7631
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/fake_kernel.h",
+      "sha256": "7c0588c4149e4db269322ffabda86dd7c59f28592b1924e9225bae509f969587",
+      "bytes": 5286
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/test_myron_bq_readonly.py",
+      "sha256": "4ad8546b9c9ee3f1943c14c6203e2f43dd26665cd19a1a05d3c4b122af752088",
+      "bytes": 2764
     },
     {
       "path": "r61-build-route/test_battery_preimages.py",
@@ -1035,9 +1108,14 @@
       "bytes": 7987
     },
     {
+      "path": "r61-build-route/test_camera_power_abi.py",
+      "sha256": "1cbf2bd66ed1cedf4a8448bdb29989f8d43d6ac938c2dac629adaee6652a47f0",
+      "bytes": 5894
+    },
+    {
       "path": "r61-build-route/test_diagnostic_preservation.py",
-      "sha256": "8698ca492e408064de7f7027346edbdfc293f7318aff68ccd50ae04c7be950df",
-      "bytes": 29257
+      "sha256": "879ff37d0311e2a1b9be1558599a7c8fd36f01ebfc449f108e9a71689d7839dd",
+      "bytes": 31154
     },
     {
       "path": "r61-build-route/test_fg_source_port.py",
@@ -1070,6 +1148,11 @@
       "bytes": 9414
     },
     {
+      "path": "r61-build-route/test_runtime_closure_collection.py",
+      "sha256": "4d08d05de8e422c9a44ad933af5175c15511632d07affde7323999c6ac41fa71",
+      "bytes": 10915
+    },
+    {
       "path": "r61-build-route/test_sync_with_retry.py",
       "sha256": "a7e3899fcfa9fe35c3c7eb72a6b57878bd51d5fea7ab5925f7d9c9b11c68a1bc",
       "bytes": 7746
@@ -1078,51 +1161,6 @@
       "path": "r61-build-route/upstream/common/drivers/scsi/sd.h",
       "sha256": "842cb9ca79896e7f1a429fb376f001699495be82aa6052d1c1621c2c824d59c6",
       "bytes": 7544
-    },
-    {
-      "path": "r61-build-route/runtime-closure-scope.json",
-      "sha256": "e44eab40300916816d8235343c7bbc12ccbb8a052d574c9251522c477893acef",
-      "bytes": 97864
-    },
-    {
-      "path": "r61-build-route/test_runtime_closure_collection.py",
-      "sha256": "c95b42e7b60c383d8fe1ae4002979968a0c996c417c009569d43bce7b7d704e2",
-      "bytes": 10910
-    },
-    {
-      "path": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
-      "sha256": "1f9c97949f27488900433484e6ee03b050befdabc09238aa755fde7e1d49ae60",
-      "bytes": 8903
-    },
-    {
-      "path": "r61-build-route/payload/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
-      "sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f",
-      "bytes": 78766
-    },
-    {
-      "path": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
-      "sha256": "b0197c5f1d557bb1394216a00f50b3b9cd40ebb2d6a216ae3dee6b98c6de7739",
-      "bytes": 8803
-    },
-    {
-      "path": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
-      "sha256": "608ee98984fc3924046cba49a6ece7821e48043ccdb80ef4bd5ce0653188fc9c",
-      "bytes": 77649
-    },
-    {
-      "path": "r61-build-route/reviews/camera-power-candidate-manifest.json",
-      "sha256": "f0b2601bc9bb0da366807247ecbcfffb01c2abbff3756e592e55a2ad771a3572",
-      "bytes": 2822
-    },
-    {
-      "path": "r61-build-route/reviews/camera-power-candidate.patch",
-      "sha256": "a652600030ff29b950aae6f72762ba2e5f1eff81458ec298b04fd6a0c0a9024f",
-      "bytes": 2813
-    },
-    {
-      "path": "r61-build-route/test_camera_power_abi.py",
-      "sha256": "1cbf2bd66ed1cedf4a8448bdb29989f8d43d6ac938c2dac629adaee6652a47f0",
-      "bytes": 5894
     }
   ],
   "limits": "Source and host tests only. Compile, installed-kernel ABI and runtime behavior not yet validated.",
@@ -1522,5 +1560,11 @@
       "observed_in_prior_aquery": true
     }
   ],
-  "runtime_closure_manifest": "r61-build-route/runtime-closure-scope.json"
+  "runtime_closure_manifest": "r61-build-route/runtime-closure-scope.json",
+  "diagnostic_module_names": [
+    "bq27z561",
+    "camera",
+    "myron_bq_readonly"
+  ],
+  "standalone_gauge_review": "r61-build-route/reviews/standalone-gauge-integration.json"
 }

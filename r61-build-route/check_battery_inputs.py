@@ -49,6 +49,12 @@ def check(root, contract):
     names = scope.get('reviewed_module_names', [])
     require(names and len(names) == len(set(names)), 'Empty/duplicate reviewed scope')
     require(len(modules) == len(names) and {r['module_name'] for r in modules} == set(names), 'Targets differ from reviewed module scope')
+    diagnostic_names = contract.get('diagnostic_module_names', ['bq27z561', 'camera'])
+    require(diagnostic_names == scope.get('reviewed_diagnostic_module_names', ['bq27z561', 'camera']),
+            'Unreviewed diagnostic module scope')
+    require(len(diagnostic_names) == len(set(diagnostic_names)) and
+            {'bq27z561', 'camera'} <= set(diagnostic_names) <= set(names),
+            'Diagnostic module scope must preserve BQ and camera')
     generated = {r['output']: r for r in contract.get('generated_files', [])}
     auxiliary = contract.get('auxiliary_providers', [])
     aux_names = [row['module_name'] for row in auxiliary]

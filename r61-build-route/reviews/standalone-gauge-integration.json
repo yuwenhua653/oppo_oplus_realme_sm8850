@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "status": "SOURCE_READY_FOR_COMPILE_ONLY",
+  "compile_only": true,
+  "flashable": false,
+  "baseline_commit": "bdee59b93d40fbfb71d0479d359bcc57f6924bac",
+  "new_module": {
+    "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/myron_bq_readonly",
+    "module_name": "myron_bq_readonly",
+    "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_bq_readonly/myron_bq_readonly.ko",
+    "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_bq_readonly/canoe_perf/drivers/power/supply/myron_bq_readonly_Module.symvers",
+    "expected_sources": [
+      "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c"
+    ]
+  },
+  "new_payload": "r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
+  "new_source_sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52",
+  "registry": {
+    "path": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
+    "baseline_sha256": "4ad9cc47ab235f904e9f34549e0dc5e8b58eb710734cd84f7e20b3d88556fb24",
+    "extended_sha256": "bb126e8e33348cf4bac4b99372025933f2ba95aea247af650a146bd77c95561b",
+    "baseline_bytes": 173567,
+    "unchanged_baseline_prefix": true,
+    "new_module_registration_count": 1
+  },
+  "preserved_original_scope": {
+    "modules": 48,
+    "module_records_canonical_json_sha256": "adbf0042f0d6626eaf9750f983b5fa36ffff488f0a4ddd6edeac513a99ca5fe0",
+    "exact_records_preserved": true,
+    "historical_report": "r61-build-route/runtime-closure-scope.json",
+    "historical_report_sha256": "e44eab40300916816d8235343c7bbc12ccbb8a052d574c9251522c477893acef",
+    "scope_note": "runtime-closure-scope.json remains historical evidence for the original 48-module MCA/API closure and its original registry snapshot. The independent additional module is outside that 114-file historical source set; target-scope.json, the contract, and the extended registry lock define all 49 current targets."
+  },
+  "diagnostic_subset": {
+    "preserve": [
+      "bq27z561",
+      "camera",
+      "mca_platform_fg_ic_ops"
+    ],
+    "add": [
+      "myron_bq_readonly"
+    ],
+    "count": 4
+  },
+  "runtime_defaults": {
+    "kconfig_default": "n",
+    "compile_only_overlay": "m",
+    "module_enable_readonly_default": false
+  },
+  "runtime_validation": "NOT_PERFORMED",
+  "old_BQ_source_changed": false,
+  "old_BQ_test_changed": false,
+  "new_source_bytes": 6395,
+  "frozen_source_and_fixture_files": [
+    {
+      "path": "r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
+      "sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52",
+      "bytes": 6395
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/test_myron_bq_readonly.py",
+      "sha256": "4ad8546b9c9ee3f1943c14c6203e2f43dd26665cd19a1a05d3c4b122af752088",
+      "bytes": 2764
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/fake_kernel.h",
+      "sha256": "7c0588c4149e4db269322ffabda86dd7c59f28592b1924e9225bae509f969587",
+      "bytes": 5286
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/cases.c",
+      "sha256": "93aa0e6287b9390c602b83b860cce6c949c7ec7ddc782995834e297dc495ce1b",
+      "bytes": 7631
+    }
+  ],
+  "source_author_manifest_sha256": "1d5688d589eeb722dba179e2a5a8e15db09380244b30d489a063aaba3d1c434a",
+  "host_test_fixture_groups": 29,
+  "host_test_entire_translation_unit": true,
+  "host_test_sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "kernel_compiled": false
+}

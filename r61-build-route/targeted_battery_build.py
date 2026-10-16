@@ -247,10 +247,11 @@ def main():
         for index, row in enumerate(selected):
             required_inputs = row['expected_sources'] + row.get('generated_inputs', [])
             write(reports / f'r61-targeted-action-{index}.json', action_chain(graph, required_inputs, row['output']))
-        # Preserve the two diagnostic KOs before unrelated MCA targets can fail.
-        diagnostic_modules = [row for row in modules if row['module_name'] in ('bq27z561', 'camera')]
-        require(sorted(row['module_name'] for row in diagnostic_modules) == ['bq27z561', 'camera'],
-                'Diagnostic subset must contain exactly BQ and camera')
+        # Preserve every reviewed diagnostic KO before unrelated MCA targets can fail.
+        diagnostic_names = contract.get('diagnostic_module_names', ['bq27z561', 'camera'])
+        diagnostic_modules = [row for row in modules if row['module_name'] in diagnostic_names]
+        require(sorted(row['module_name'] for row in diagnostic_modules) == sorted(diagnostic_names),
+                'Diagnostic subset differs from reviewed module scope')
         diagnostic_targets = [row['target'] for row in diagnostic_modules + diagnostic_auxiliary] + targets[-2:]
         diagnostic_plan = {'build': bazel + ['build'] + options + diagnostic_targets,
                            'cquery': bazel + ['cquery'] + options + ['--output=files', 'deps(set(' + ' '.join(diagnostic_targets) + '))']}

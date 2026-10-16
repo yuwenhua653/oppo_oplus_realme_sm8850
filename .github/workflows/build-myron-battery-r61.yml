@@ -76,6 +76,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test-inputs/standalone-gauge/test_myron_bq_readonly.py --source r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c > "$WORKSPACE_DIR/integration-reports/r64-host-standalone-gauge.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_bq_readonly_diag.py > "$WORKSPACE_DIR/integration-reports/r61-host-bq.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_camera_candidate.py > "$WORKSPACE_DIR/integration-reports/r61-host-camera.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_camera_power_abi.py > "$WORKSPACE_DIR/integration-reports/r64-host-camera-power.json"
@@ -139,7 +140,7 @@ jobs:
           retention-days: 7
 
 
-      - name: Upload verified BQ and camera compile-only subset
+      - name: Upload verified BQ, camera and standalone gauge compile-only subset
         # A later full MCA failure still fails CI, but does not discard this checked subset.
         if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r61-targeted-diagnostic/diagnostic-manifest.json') != '' && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r61-targeted-diagnostic/diagnostic-complete.json') != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

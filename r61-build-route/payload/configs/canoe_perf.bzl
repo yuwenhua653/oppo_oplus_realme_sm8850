@@ -1,5 +1,6 @@
 canoe_perf_config = {
     # R61 compile-only overlay; never used as a runtime module-selection list.
+    "CONFIG_MYRON_BQ_READONLY": "m",
     "CONFIG_MYRON_MCA_COMPLETE_SERVICES": "m",
     "CONFIG_MYRON_MISC": "m",
     # keep sorted

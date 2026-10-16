@@ -149,16 +149,16 @@
       "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
       "source": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
       "before_sha256": "16bc4a6e81c33f87a7f317afb5d5622a24df16a7d197e56f52613d5053ae4557",
-      "after_sha256": "4ad9cc47ab235f904e9f34549e0dc5e8b58eb710734cd84f7e20b3d88556fb24",
-      "bytes": 173567,
+      "after_sha256": "bb126e8e33348cf4bac4b99372025933f2ba95aea247af650a146bd77c95561b",
+      "bytes": 173915,
       "preimage": "r61-build-route/preimage/drivers/xiaomi/myron/modules.bzl"
     },
     {
       "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
       "source": "r61-build-route/payload/drivers/xiaomi/myron/Kconfig",
       "before_sha256": "bde07376277b9ae8b30a72fbb0afd663d689c4f359cd1500383cf3e20356d473",
-      "after_sha256": "28b7b575bccb55c8128a7fe31d9b3006a2a7ce483d7450b93789438b188f283c",
-      "bytes": 3832,
+      "after_sha256": "904f7597f77d0f0b2d272a6f6fba6e53b0186f2ff2150faafa7c65e1fe85e0e5",
+      "bytes": 4304,
       "preimage": "r61-build-route/preimage/drivers/xiaomi/myron/Kconfig"
     },
     {
@@ -173,8 +173,8 @@
       "destination": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
       "source": "r61-build-route/payload/configs/canoe_perf.bzl",
       "before_sha256": "7f8434e9bd306c1cbaa82e9f2b82684d630fd2f0bb39884c4bb9f5623cab0db8",
-      "after_sha256": "74ebd44474daf58129b6799eeacbc7d27754a9fad126ef51192b007fe95eb057",
-      "bytes": 17484,
+      "after_sha256": "31aa95071a54879611199830566a66cdaff09c3c164df7ad8fe6a94f39fe5ded",
+      "bytes": 17521,
       "preimage": "r61-build-route/preimage/configs/canoe_perf.bzl"
     },
     {
@@ -264,11 +264,20 @@
       "after_sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f",
       "bytes": 78766,
       "preimage": "r61-build-route/preimage/qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c"
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",
+      "source": "r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
+      "before_sha256": null,
+      "after_sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52",
+      "bytes": 6395,
+      "preimage": null
     }
   ],
   "config_ci_overlay": {
     "CONFIG_MYRON_MCA_COMPLETE_SERVICES": "m",
-    "CONFIG_QCOM_FSA4480_I2C": "m"
+    "CONFIG_QCOM_FSA4480_I2C": "m",
+    "CONFIG_MYRON_BQ_READONLY": "m"
   },
   "must_preserve_disabled": [
     "CONFIG_MYRON_IC_FIRMWARE_PROGRAMMING"
@@ -286,7 +295,8 @@
     "target_count": 12,
     "mca_provider_dependency_graph_acyclic": true,
     "all_existing_declared_headers_present": true,
-    "all_draft_source_hashes_verified": true
+    "all_draft_source_hashes_verified": true,
+    "independent_readonly_gauge_new_sources": 1
   },
   "upstream_files": [
     {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the real compile-only builder and collector with 48 reviewed KOs.
+"""Exercise the real compile-only builder and collector with 49 reviewed KOs.
 
 External compiler/preparation commands and ELF decoding use fixtures. Source
 locks, action guards, explicit targets, file copies, hashes, module inventory,
@@ -80,9 +80,9 @@ class ClosureFixture(BuildFixture):
 
     def assert_analysis_complete(self):
         actions = list(self.reports.glob('r61-targeted-action-*.json'))
-        assert len(actions) == len(ALL_NAMES), 'Build started before all 48 source action guards'
+        assert len(actions) == len(ALL_NAMES), 'Build started before all 49 source action guards'
         assert all(json.loads(path.read_text())['status'] == 'PASS' for path in actions)
-        assert 'aquery-15' in self.events
+        assert 'aquery-reviewed' in self.events
 
     def logged(self, argv, root, log):
         self.requested_closure = [row for row in self.closure if row['target'] in argv]
@@ -123,7 +123,7 @@ class RuntimeClosureCollectionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.impl = load_implementation()
-        assert len(CLOSURE_NAMES) == 30 and len(set(ALL_NAMES)) == 48
+        assert len(CLOSURE_NAMES) == 30 and len(set(ALL_NAMES)) == 49
 
     def run_fixture(self, failure=None, missing=None):
         temp = tempfile.TemporaryDirectory(prefix='r64-closure-main-')
@@ -135,28 +135,28 @@ class RuntimeClosureCollectionTests(unittest.TestCase):
         self.assertTrue(completion['full_build_not_passed'])
         inv = json.loads((fixture.diagnostic / 'module-inventory.json').read_text())
         self.assertEqual(set(inv['required_module_names']), DIAGNOSTIC_NAMES | DIAGNOSTIC_AUXILIARY)
-        self.assertEqual(inv['module_count'], 3)
-        self.assertEqual(len(list(fixture.diagnostic.rglob('*.ko'))), 3)
+        self.assertEqual(inv['module_count'], 4)
+        self.assertEqual(len(list(fixture.diagnostic.rglob('*.ko'))), 4)
         self.assertFalse((fixture.output / 'candidate-complete.json').exists())
         self.assertFalse(json.loads((fixture.reports / 'r61-targeted-status.json').read_text())['success'])
 
-    def test_all_48_required_kos_are_explicitly_built_and_collected(self):
+    def test_all_49_required_kos_are_explicitly_built_and_collected(self):
         fixture = self.run_fixture()
         self.assertEqual(fixture.run(), 0)
         self.assertEqual(fixture.closure_builds, [set(), set(CLOSURE_NAMES)])
         inv = json.loads((fixture.output / 'module-inventory.json').read_text())
         self.assertEqual(inv['required_module_names'], sorted(ALL_NAMES))
-        self.assertEqual(inv['module_count'], 48)
+        self.assertEqual(inv['module_count'], 49)
         self.assertTrue(inv['compiled_collection_complete'])
-        self.assertEqual(len(list(fixture.output.rglob('*.ko'))), 48)
+        self.assertEqual(len(list(fixture.output.rglob('*.ko'))), 49)
         self.assertFalse(any('/staging/' in row['file'] for row in inv['modules']))
         self.assertFalse(inv['flashable'])
         self.assertEqual(inv['runtime_abi_compatible'], 'NOT_YET_VALIDATED')
         marker = json.loads((fixture.output / 'candidate-complete.json').read_text())
-        self.assertEqual(marker['required_module_count'], 48)
+        self.assertEqual(marker['required_module_count'], 49)
         self.assertEqual(marker['module_inventory_sha256'], sha((fixture.output / 'module-inventory.json').read_bytes()))
         self.assertEqual(marker['artifact_lock_sha256'], sha((fixture.output / 'artifact-lock.json').read_bytes()))
-        self.assertEqual(len(list(fixture.diagnostic.rglob('*.ko'))), 3)
+        self.assertEqual(len(list(fixture.diagnostic.rglob('*.ko'))), 4)
 
     def test_symvers_and_staging_do_not_substitute_final_kos(self):
         fixture = self.run_fixture('closure_symvers_and_staging_only')
@@ -164,7 +164,7 @@ class RuntimeClosureCollectionTests(unittest.TestCase):
         self.assert_preserved_subset(fixture)
         self.assertFalse((fixture.output / 'module-inventory.json').exists())
 
-    def test_each_of_48_required_kos_missing_refuses_completion(self):
+    def test_each_of_49_required_kos_missing_refuses_completion(self):
         for name in ALL_NAMES:
             with self.subTest(module=name), tempfile.TemporaryDirectory(prefix='r64-missing-ko-') as temp:
                 fixture = ClosureFixture(Path(temp), self.impl, missing=name)
@@ -178,7 +178,7 @@ class RuntimeClosureCollectionTests(unittest.TestCase):
         self.assert_preserved_subset(fixture)
         self.assertFalse((fixture.output / 'module-inventory.json').exists())
 
-    def test_later_build_failure_preserves_three_module_diagnostic(self):
+    def test_later_build_failure_preserves_four_module_diagnostic(self):
         fixture = self.run_fixture('full')
         self.assertEqual(fixture.run(), 1)
         self.assert_preserved_subset(fixture)

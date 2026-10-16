@@ -15,14 +15,16 @@
     "bq27z561",
     "camera",
     "sc8581",
-    "mca_qcom_subpmic_proxy"
+    "mca_qcom_subpmic_proxy",
+    "myron_bq_readonly"
   ],
-  "target_count": 15,
+  "target_count": 16,
   "source_scope": {
     "mca_complete_services": 11,
     "bq_diagnostic_default_disabled": 1,
     "hardware_provider_end_to_end_compile": 2,
-    "camera_session_8_12_and_Xiaomi_power_ABI_with_R60_SH11_preserved": 1
+    "camera_session_8_12_and_Xiaomi_power_ABI_with_R60_SH11_preserved": 1,
+    "independent_readonly_gauge_default_disabled": 1
   },
   "flashable": false,
   "compiled": false,
@@ -68,6 +70,24 @@
     "mca_pd_auth",
     "mca_wireless_revchg"
   ],
-  "explicit_module_collection_count": 48,
-  "runtime_closure_limit": "Conservative declared-source closure and API consumers collected for ABI review; compile only, no normal-mode runtime or charging policy approval."
+  "explicit_module_collection_count": 49,
+  "runtime_closure_limit": "Conservative declared-source closure and API consumers collected for ABI review; compile only, no normal-mode runtime or charging policy approval.",
+  "reviewed_diagnostic_module_names": [
+    "bq27z561",
+    "camera",
+    "myron_bq_readonly"
+  ],
+  "diagnostic_collection_count": 4,
+  "standalone_gauge": {
+    "module_name": "myron_bq_readonly",
+    "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/myron_bq_readonly",
+    "source": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",
+    "config": "CONFIG_MYRON_BQ_READONLY",
+    "config_default": "n",
+    "compile_overlay": "m",
+    "runtime_parameter": "enable_readonly",
+    "runtime_default": false,
+    "vendor_module_dependencies": [],
+    "scope": "Independent new source; no old BQ file edits, no loader/DT/HAL changes; source and compile/runtime validation remain separate."
+  }
 }

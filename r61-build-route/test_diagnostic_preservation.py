@@ -2,7 +2,7 @@
 """Offline regression of the actual build main() and artifact collector.
 
 Only external preparation/build programs and ELF decoding are substituted.
-The real source-contract checker, integrated source locks, 15-module aquery
+The real source-contract checker, integrated source locks, reviewed-module aquery
 provenance, collector, manifests, and exit status run against temporary files.
 No kernel build, ABI compatibility, or device behavior is claimed.
 """
@@ -31,8 +31,9 @@ NAMES = [
     'mca_business_charger_comp', 'mca_charger_thermal', 'mca_qcom_sysfs',
     'mca_quick_wireless', 'mca_smart_charge', 'mca_strategy_buckchg',
     'mca_strategy_fg_comp', 'mca_strategy_quickchg', 'bq27z561', 'camera', 'sc8581', 'mca_qcom_subpmic_proxy',
+    'myron_bq_readonly',
 ]
-DIAGNOSTIC_NAMES = {'bq27z561', 'camera'}
+DIAGNOSTIC_NAMES = {'bq27z561', 'camera', 'myron_bq_readonly'}
 AUXILIARY_NAMES = ['mca_platform_cp_class', 'mca_platform_buckchg_class', 'mca_platform_fg_ic_ops']
 DIAGNOSTIC_AUXILIARY = {'mca_platform_fg_ic_ops'}
 RELEASE = '6.12.81-android16-6-maybe-dirty-4k'
@@ -109,7 +110,7 @@ class BuildFixture:
         prior = {'schema': 1, 'integration': {'script': 'prior/apply.py'},
                  'workspace_files': [{'path': 'vendor/prior.c', 'sha256': sha(prior_data)}]}
         self.lock_file('prior/contract.json', json.dumps(prior).encode())
-        self.lock_file('reviewed-scope.json', json.dumps({'reviewed_module_names': NAMES, 'reviewed_auxiliary_provider_names': AUXILIARY_NAMES, 'diagnostic_auxiliary_provider_names': sorted(DIAGNOSTIC_AUXILIARY)}).encode())
+        self.lock_file('reviewed-scope.json', json.dumps({'reviewed_module_names': NAMES, 'reviewed_auxiliary_provider_names': AUXILIARY_NAMES, 'diagnostic_auxiliary_provider_names': sorted(DIAGNOSTIC_AUXILIARY), 'reviewed_diagnostic_module_names': sorted(DIAGNOSTIC_NAMES)}).encode())
         self.lock_file('apply.py', b'# external integration fixture\n')
         write_lock = {'schema': 1, 'git_heads': {'common': 'fixture-pinned-revision'},
                       'writes': writes, 'upstream_files': [
@@ -126,6 +127,7 @@ class BuildFixture:
             'scope_manifest': 'reviewed-scope.json', 'locked_files': self.locked,
             'workspace_files': self.integrated, 'modules': self.modules,
             'auxiliary_providers': self.auxiliary, 'diagnostic_auxiliary_providers': sorted(DIAGNOSTIC_AUXILIARY),
+            'diagnostic_module_names': sorted(DIAGNOSTIC_NAMES),
             'generated_files': [self.generated],
         }
         self.contract_path = self.repo / 'battery-contract.json'
@@ -197,9 +199,9 @@ class BuildFixture:
 
     def assert_analysis_complete(self):
         actions = sorted(self.reports.glob('r61-targeted-action-*.json'))
-        assert len(actions) == len(NAMES) + len(AUXILIARY_NAMES), 'Build started before all 15 target and 3 provider action guards'
+        assert len(actions) == len(NAMES) + len(AUXILIARY_NAMES), 'Build started before all reviewed target and provider action guards'
         assert all(json.loads(path.read_text())['status'] == 'PASS' for path in actions)
-        assert self.events.index('aquery-15') < len(self.events)
+        assert self.events.index('aquery-reviewed') < len(self.events)
 
     def produce(self, modules, full, selected_auxiliary):
         # Model Kleaf dependency output groups: cquery may declare a provider KO
@@ -244,13 +246,18 @@ class BuildFixture:
         self.produce(selected, full, selected_auxiliary)
         if self.failure == 'unmaterialized_auxiliary' and not full:
             (self.workspace / selected_auxiliary[0]['output']).unlink()
+        if self.failure == 'gauge_symvers_and_staging_only' and not full:
+            gauge = next(row for row in selected if row['module_name'] == 'myron_bq_readonly')
+            (self.workspace / gauge['output']).unlink()
+            staging = str(Path(gauge['output']).parent / 'staging/myron_bq_readonly.ko')
+            self.write_workspace(staging, b'ELF-FIXTURE:myron_bq_readonly')
 
     def subprocess_run(self, argv, **kwargs):
         assert argv[0] == 'fixture-bazel', 'Unexpected subprocess: ' + repr(argv)
         assert kwargs['cwd'] == self.workspace
         if argv[1] == 'aquery':
             assert {row['module_name'] for row in self.selected(argv)} == set(NAMES)
-            self.events.append('aquery-15')
+            self.events.append('aquery-reviewed')
             stdout = json.dumps(self.graph)
         elif argv[1] == 'cquery':
             selected = self.selected(argv)
@@ -459,6 +466,27 @@ class DiagnosticPreservationTests(unittest.TestCase):
         status = json.loads((fixture.reports / 'r61-targeted-status.json').read_text())
         self.assertIn('Required compiler output missing', status['error'])
 
+    def test_new_gauge_symvers_and_staging_cannot_publish_diagnostic(self):
+        fixture = self.fixture('gauge_symvers_and_staging_only')
+        self.assertEqual(fixture.run(), 1)
+        gauge = next(row for row in fixture.modules if row['module_name'] == 'myron_bq_readonly')
+        self.assertTrue((fixture.workspace / gauge['symvers']).is_file())
+        self.assertTrue((fixture.workspace / Path(gauge['output']).parent /
+                         'staging/myron_bq_readonly.ko').is_file())
+        self.assertFalse((fixture.diagnostic / 'diagnostic-manifest.json').exists())
+        self.assertFalse((fixture.diagnostic / 'diagnostic-complete.json').exists())
+        self.assertFalse((fixture.output / 'candidate-complete.json').exists())
+        self.assertEqual(len(fixture.builds), 1)
+
+    def test_new_gauge_cannot_be_silently_removed_from_diagnostic_scope(self):
+        fixture = self.fixture()
+        fixture.contract['diagnostic_module_names'].remove('myron_bq_readonly')
+        write_json(fixture.contract_path, fixture.contract)
+        self.assertEqual(fixture.run(), 1)
+        self.assertEqual(fixture.builds, [])
+        status = json.loads((fixture.reports / 'r61-targeted-status.json').read_text())
+        self.assertIn('Unreviewed diagnostic module scope', status['error'])
+
     def test_auxiliary_source_chain_guard_blocks_diagnostic(self):
         fixture = self.fixture()
         fixture.graph['depSetOfFiles'][-1]['directArtifactIds'] = []
@@ -484,7 +512,7 @@ class DiagnosticPreservationTests(unittest.TestCase):
         (fixture.repo / 'payload/camera.c').write_text('unreviewed bytes\n')
         self.assertEqual(fixture.run(), 1)
         self.assertEqual(fixture.builds, [])
-        self.assertNotIn('aquery-15', fixture.events)
+        self.assertNotIn('aquery-reviewed', fixture.events)
         self.assertFalse((fixture.diagnostic / 'diagnostic-manifest.json').exists())
         status = json.loads((fixture.reports / 'r61-targeted-status.json').read_text())
         self.assertIn('Source bytes/SHA mismatch', status['error'])

@@ -720,3 +720,12 @@ def register_modules(registry):
         includes = ['drivers/power/supply/mca/include', 'drivers/misc/hwid', 'include'],
         deps = ['drivers/power/supply/mca/mca_common/mca_charge_interface', 'drivers/power/supply/mca/mca_common/mca_charge_mievent', 'drivers/power/supply/mca/mca_common/mca_event', 'drivers/power/supply/mca/mca_common/mca_hwid', 'drivers/power/supply/mca/mca_common/mca_parse_dts', 'drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class', 'drivers/power/supply/mca/mca_platform/mca_platform_cp_class', 'drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops', 'drivers/power/supply/mca/mca_platform/mca_platform_loadsw_class', 'drivers/power/supply/mca/mca_protocol/mca_protocol_class', 'drivers/power/supply/mca/mca_protocol/protocol_pd/mca_protocol_pd_class', 'drivers/power/supply/mca/mca_protocol/protocol_qc/mca_protocol_qc_class', 'drivers/power/supply/mca/mca_smart_charge/mca_smart_charge', 'drivers/power/supply/mca/mca_strategy/mca_strategy_class', 'drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_class', 'drivers/power/supply/mca/mca_common/mca_sysfs', 'drivers/power/supply/mca/mca_common/mca_voter', 'drivers/power/supply/mca/mca_common/mca_log'],
     )
+    # Independent read-only gauge; no MCA or vendor BQ source dependencies.
+    registry.register(
+        name = "drivers/power/supply/myron_bq_readonly",
+        out = "myron_bq_readonly.ko",
+        config = "CONFIG_MYRON_BQ_READONLY",
+        srcs = ["drivers/power/supply/myron_bq_readonly.c"],
+        includes = [],
+        deps = [],
+    )

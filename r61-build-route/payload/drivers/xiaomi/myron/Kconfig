@@ -104,3 +104,13 @@ config MYRON_MCA_COMPLETE_SERVICES
       compile/modpost qualification. This does not select them for installation
       or authorize runtime charging/storage behavior. Keep IC firmware
       programming disabled; persistent writes are guarded off by default.
+config MYRON_BQ_READONLY
+    tristate "Myron independent read-only fuel gauge (compile qualification only)"
+    depends on I2C && OF && POWER_SUPPLY
+    default n
+    help
+      Build an independent read-only I2C fuel-gauge candidate using Linux
+      power_supply interfaces. This option only permits compilation; the
+      module also requires an explicit enable_readonly opt-in at load time.
+      No charging policy, firmware update or device deployment is selected.
+
