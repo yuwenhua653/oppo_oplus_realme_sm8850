@@ -145,11 +145,11 @@ static ssize_t strategy_fg_sysfs_store(struct device *dev,
 					    struct device_attribute *attr,
 					    const char *buf, size_t count);
 static int strategy_fg_check_battery_adapt_power(void *data, int *match);
-static void mca_strategy_get_manufacturing_date(struct strategy_fg *fg,
+static int mca_strategy_get_manufacturing_date(struct strategy_fg *fg,
 						char *date);
-static void mca_strategy_get_first_usage_date(struct strategy_fg *fg,
+static int mca_strategy_get_first_usage_date(struct strategy_fg *fg,
 					      char *date);
-static void mca_strategy_set_first_usage_date(struct strategy_fg *fg,
+static int mca_strategy_set_first_usage_date(struct strategy_fg *fg,
 					      const char *date);
 
 static int strategy_fg_ops_get_soc_decimal(void *data, int *soc_decimal,
@@ -372,7 +372,9 @@ static ssize_t strategy_fg_sysfs_store(struct device *dev,
 		info->self_equal_max_count = val;
 		break;
 	case FG_PROP_FIRST_USAGE_DATE:
-		mca_strategy_set_first_usage_date(info, buf);
+		val = mca_strategy_set_first_usage_date(info, buf);
+		if (val)
+			return val;
 		break;
 	default:
 		break;
@@ -490,14 +492,18 @@ static ssize_t strategy_fg_sysfs_show(struct device *dev,
 	case FG_PROP_MANUFACTURING_DATE: {
 		char date_buf[16] = { 0 };
 
-		mca_strategy_get_manufacturing_date(info, date_buf);
+		val = mca_strategy_get_manufacturing_date(info, date_buf);
+		if (val)
+			return val;
 		count = scnprintf(buf, PAGE_SIZE, "%s\n", date_buf);
 		break;
 	}
 	case FG_PROP_FIRST_USAGE_DATE: {
 		char date_buf[16] = { 0 };
 
-		mca_strategy_get_first_usage_date(info, date_buf);
+		val = mca_strategy_get_first_usage_date(info, date_buf);
+		if (val)
+			return val;
 		count = scnprintf(buf, PAGE_SIZE, "%s\n", date_buf);
 		break;
 	}
@@ -580,8 +586,12 @@ void strategy_fg_record_volt_mean(struct strategy_fg *fg)
 
 	ktime_get_boottime_ts64(&ts);
 	if (!is_zero_speed && fg->chg_status == POWER_SUPPLY_STATUS_CHARGING &&
-	    (u64)ts.tv_sec < 120)
-		get_smem_battery_info(&is_zero_speed);
+	    (u64)ts.tv_sec < 120) {
+		int zero_speed = mca_qcom_smem_is_zero_speed();
+
+		if (zero_speed >= 0)
+			is_zero_speed = zero_speed;
+	}
 	if (fg->chg_status == POWER_SUPPLY_STATUS_CHARGING && is_zero_speed &&
 	    (u64)ts.tv_sec < 120) {
 		mca_log_err(
@@ -1620,7 +1630,8 @@ static void strategy_fg_update_qbg_chg_data(struct strategy_fg *fg)
 	fg->qbg_chg_data.chg_status = fg->chg_status;
 	fg->qbg_chg_data.charging =
 		quick_charge_status == MCA_QUICK_CHG_STS_CHARGING;
-	platform_fg_ops_qbg_send_chg_data(FG_IC_MASTER);
+	if (platform_fg_ops_qbg_send_chg_data(FG_IC_MASTER))
+		mca_log_err("QBG charge-data provider failed\n");
 }
 
 static int strategy_fg_check_parallel_termination(struct strategy_fg *fg)
@@ -2777,14 +2788,20 @@ static void strategy_nvt1000_ota_monitor_work(struct work_struct *work)
 		return;
 	}
 
-	platform_fg_ops_get_ota_update_flag(FG_IC_MASTER, &ota_flag);
+	if (platform_fg_ops_get_ota_update_flag(FG_IC_MASTER, &ota_flag)) {
+		update_count = 0;
+		return;
+	}
 	if (ota_flag != NVT1000_OTA_UPDATE_FLAG) {
 		mca_log_err("already ota update done\n");
 		update_count = 0;
 		return;
 	}
 
-	platform_fg_ops_get_average_current(FG_IC_MASTER, &average_current);
+	if (platform_fg_ops_get_average_current(FG_IC_MASTER, &average_current)) {
+		update_count = 0;
+		return;
+	}
 	protocol_class_pd_get_cid_status(FG_IC_MASTER, &cid_status);
 
 	if (fg->batt_rsoc > NVT1000_OTA_SOC_THR &&
@@ -2801,15 +2818,20 @@ static void strategy_nvt1000_ota_monitor_work(struct work_struct *work)
 		average_current, update_count);
 
 	if (update_count >= NVT1000_OTA_TRIGGER_COUNT) {
+		int ret;
+
 		mca_log_err("start nvt1000 ota\n");
 		event_val = 1;
 		mca_event_block_notify(MCA_EVENT_CHARGE_STATUS,
 				       MCA_EVENT_FG_OTA_PROCESS, &event_val);
-		platform_fg_ops_ota_update_check(FG_IC_MASTER);
+		ret = platform_fg_ops_ota_update_check(FG_IC_MASTER);
 		event_val = 0;
 		mca_event_block_notify(MCA_EVENT_CHARGE_STATUS,
 				       MCA_EVENT_FG_OTA_PROCESS, &event_val);
-		mca_log_err("end nvt1000 ota\n");
+		if (ret)
+			mca_log_err("nvt1000 ota failed: %d\n", ret);
+		else
+			mca_log_err("end nvt1000 ota\n");
 		return;
 	}
 
@@ -3658,7 +3680,7 @@ int strategy_fg_ops_get_pack_vendor_id(void *data, int *vendor_id)
 	if (!fg || !fg->fg_init_flag)
 		return -1;
 
-	return platform_fg_ops_get_pack_vendor(FG_IC_MASTER, vendor_id);
+	return platform_fg_ops_get_pack_vendor_checked(FG_IC_MASTER, vendor_id);
 }
 
 static int strategy_fg_ops_get_first_termiation(void *data, int *value)
@@ -3710,78 +3732,74 @@ static int strategy_fg_get_status(int status, void *value, void *data)
 	}
 }
 
-static void mca_strategy_get_manufacturing_date(struct strategy_fg *fg,
-						char *date)
+static int mca_strategy_get_manufacturing_date(struct strategy_fg *fg, char *date)
 {
-	char date_master[9] = { 0 };
-	char date_slave[9] = { 0 };
+	u8 master[MCA_FG_DATE_LEN], slave[MCA_FG_DATE_LEN];
+	int ret;
 
 	if (!fg->support_battery_date)
-		return;
-
+		return -EOPNOTSUPP;
+	ret = platform_fg_ops_get_manufacturing_date(FG_IC_MASTER, master);
+	if (ret)
+		return ret;
 	if (fg->cfg.fg_type > MCA_FG_TYPE_SINGLE_NUM_MAX) {
-		platform_fg_ops_get_manufacturing_date(FG_IC_MASTER,
-						       (u8 *)date_master);
-		platform_fg_ops_get_manufacturing_date(FG_IC_SLAVE,
-						       (u8 *)date_slave);
-		mca_log_err("manufacturing_date master:%s, slave:%s\n",
-			    date_master, date_slave);
-
-		if (date_slave[0] && memcmp(date_slave, date_master, 8) > 0)
-			memcpy(date, date_slave, 8);
-		else
-			memcpy(date, date_master, 8);
-	} else {
-		platform_fg_ops_get_manufacturing_date(FG_IC_MASTER, (u8 *)date);
+		ret = platform_fg_ops_get_manufacturing_date(FG_IC_SLAVE, slave);
+		if (ret)
+			return ret;
+		if (memcmp(slave, master, sizeof(master)) > 0)
+			memcpy(master, slave, sizeof(master));
 	}
+	memcpy(date, master, sizeof(master));
+	return 0;
 }
 
-static void mca_strategy_get_first_usage_date(struct strategy_fg *fg,
-					      char *date)
+static int mca_strategy_get_first_usage_date(struct strategy_fg *fg, char *date)
 {
-	char date_master[9] = { 0 };
-	char date_slave[9] = { 0 };
-	bool master_valid, slave_valid;
+	u8 master[MCA_FG_DATE_LEN], slave[MCA_FG_DATE_LEN];
+	int ret;
 
 	if (!fg->support_battery_date)
-		return;
-
+		return -EOPNOTSUPP;
+	ret = platform_fg_ops_get_first_usage_date(FG_IC_MASTER, master);
+	if (ret)
+		return ret;
 	if (fg->cfg.fg_type > MCA_FG_TYPE_SINGLE_NUM_MAX) {
-		platform_fg_ops_get_first_usage_date(FG_IC_MASTER,
-						     (u8 *)date_master);
-		platform_fg_ops_get_first_usage_date(FG_IC_SLAVE,
-						     (u8 *)date_slave);
-
-		master_valid = strncmp(date_master, "99999999", 8) != 0;
-		slave_valid = strncmp(date_slave, "99999999", 8) != 0;
-
-		if (master_valid && slave_valid)
-			memcpy(date,
-			       memcmp(date_slave, date_master, 8) > 0 ?
-				       date_slave :
-				       date_master,
-			       8);
-		else if (slave_valid)
-			memcpy(date, date_slave, 8);
-		else
-			memcpy(date, date_master, 8);
-	} else {
-		platform_fg_ops_get_first_usage_date(FG_IC_MASTER, (u8 *)date);
+		ret = platform_fg_ops_get_first_usage_date(FG_IC_SLAVE, slave);
+		if (ret)
+			return ret;
+		if (memcmp(slave, master, sizeof(master)) > 0)
+			memcpy(master, slave, sizeof(master));
 	}
+	memcpy(date, master, sizeof(master));
+	return 0;
 }
 
-static void mca_strategy_set_first_usage_date(struct strategy_fg *fg,
-					      const char *date)
+static int mca_strategy_set_first_usage_date(struct strategy_fg *fg, const char *date)
 {
-	if (!fg->support_battery_date)
-		return;
+	int ret;
 
+	if (!fg->support_battery_date)
+		return -EOPNOTSUPP;
+	if (fg->cfg.fg_type != MCA_FG_TYPE_SINGLE &&
+	    fg->cfg.fg_type != MCA_FG_TYPE_PARALLEL)
+		return -EOPNOTSUPP;
+	/* Validate every requested role before the first persistent write. */
+	ret = platform_fg_ops_has_optional_op(FG_IC_MASTER,
+					    MCA_FG_OP_SET_FIRST_USAGE_DATE);
+	if (ret != 1)
+		return ret < 0 ? ret : -EOPNOTSUPP;
 	if (fg->cfg.fg_type == MCA_FG_TYPE_PARALLEL) {
-		platform_fg_ops_set_first_usage_date(FG_IC_MASTER, date);
-		platform_fg_ops_set_first_usage_date(FG_IC_SLAVE, date);
-	} else if (fg->cfg.fg_type == MCA_FG_TYPE_SINGLE) {
-		platform_fg_ops_set_first_usage_date(FG_IC_MASTER, date);
+		ret = platform_fg_ops_has_optional_op(FG_IC_SLAVE,
+						    MCA_FG_OP_SET_FIRST_USAGE_DATE);
+		if (ret != 1)
+			return ret < 0 ? ret : -EOPNOTSUPP;
 	}
+	ret = platform_fg_ops_set_first_usage_date(FG_IC_MASTER, date);
+	if (ret)
+		return ret;
+	if (fg->cfg.fg_type == MCA_FG_TYPE_PARALLEL)
+		return platform_fg_ops_set_first_usage_date(FG_IC_SLAVE, date);
+	return 0;
 }
 
 static int mca_strategy_fg_shutdown_cb(struct notifier_block *nb,
@@ -3802,14 +3820,14 @@ static void strategy_batt_abnormal_dfx_work(struct work_struct *work)
 	struct strategy_fg *fg = container_of(to_delayed_work(work),
 					      struct strategy_fg,
 					      batt_abnormal_dfx_work);
-	int info[10] = { 0 };
+	struct mca_fg_abnormal_counts info;
 	u32 last_ocd = 0, last_hocd = 0;
 	u32 last_cuv = 0, last_hcuv = 0;
 	u32 last_hscd = 0;
 	int report[7];
 
 	/* A failed measurement or persisted read is not a zero counter. */
-	if (platform_fg_ops_get_batt_abnormal_info(FG_IC_MASTER, info) ||
+	if (platform_fg_ops_get_abnormal_counts(FG_IC_MASTER, &info) ||
 	    charger_partition_read_ocd_count(&last_ocd, &last_hocd) ||
 	    charger_partition_read_cuv_count(&last_cuv, &last_hcuv) ||
 	    charger_partition_read_hscd_count(&last_hscd)) {
@@ -3818,43 +3836,43 @@ static void strategy_batt_abnormal_dfx_work(struct work_struct *work)
 	}
 
 	mca_log_info(
-		"last_ocd_count:%d, last_hocd_count:%d, last_cuv_count:%d, last_hcuv_count:%d, last_hscd_count:%d\n",
+		"last_ocd_count:%u, last_hocd_count:%u, last_cuv_count:%u, last_hcuv_count:%u, last_hscd_count:%u\n",
 		last_ocd, last_hocd, last_cuv, last_hcuv, last_hscd);
 	mca_log_info(
-		"ocd_count:%d, hocd_count:%d, cuv_count:%d, hcuv_count:%d, hscd_count:%d\n",
-		info[0], info[2], info[4], info[6], info[8]);
+		"ocd_count:%u, hocd_count:%u, cuv_count:%u, hcuv_count:%u, hscd_count:%u\n",
+		info.ocd_count, info.hocd_count, info.cuv_count, info.hcuv_count, info.hscd_count);
 
-	if (last_ocd != info[0] || last_hocd != info[2]) {
-		report[0] = info[0];
-		report[1] = info[1];
-		report[2] = info[2];
-		report[3] = info[3];
+	if (last_ocd != info.ocd_count || last_hocd != info.hocd_count) {
+		report[0] = info.ocd_count;
+		report[1] = info.ocd_last_cycle;
+		report[2] = info.hocd_count;
+		report[3] = info.hocd_last_cycle;
 		report[4] = fg->batt_ui_soc;
 		report[5] = fg->batt_voltage;
 		report[6] = fg->batt_temperature;
 		mca_charge_mievent_report(CHARGE_DFX_BATTERY_OCD, report, 7);
-		if (charger_partition_write_ocd_count(info[0], info[2]))
+		if (charger_partition_write_ocd_count(info.ocd_count, info.hocd_count))
 			mca_log_err("abnormal counter persistence failed\n");
 	}
 
-	if (last_cuv != info[4] || last_hcuv != info[6]) {
-		report[0] = info[4];
-		report[1] = info[5];
-		report[2] = info[6];
-		report[3] = info[7];
+	if (last_cuv != info.cuv_count || last_hcuv != info.hcuv_count) {
+		report[0] = info.cuv_count;
+		report[1] = info.cuv_last_cycle;
+		report[2] = info.hcuv_count;
+		report[3] = info.hcuv_last_cycle;
 		report[4] = fg->batt_ui_soc;
 		report[5] = fg->batt_voltage;
 		report[6] = fg->batt_temperature;
 		mca_charge_mievent_report(CHARGE_DFX_BATTERY_CUV, report, 7);
-		if (charger_partition_write_cuv_count(info[4], info[6]))
+		if (charger_partition_write_cuv_count(info.cuv_count, info.hcuv_count))
 			mca_log_err("abnormal counter persistence failed\n");
 	}
 
-	if (last_hscd != info[8]) {
-		report[0] = info[8];
-		report[1] = info[9];
+	if (last_hscd != info.hscd_count) {
+		report[0] = info.hscd_count;
+		report[1] = info.hscd_last_cycle;
 		mca_charge_mievent_report(CHARGE_DFX_BATTERY_HSCD, report, 2);
-		if (charger_partition_write_hcsd_count(info[8]))
+		if (charger_partition_write_hcsd_count(info.hscd_count))
 			mca_log_err("abnormal counter persistence failed\n");
 	}
 }
@@ -4073,6 +4091,39 @@ static int strategy_fg_thermal_notifier_cb(struct notifier_block *nb,
 	return NOTIFY_DONE;
 }
 
+static int strategy_fg_require_optional_op(struct strategy_fg *fg,
+					  enum mca_fg_optional_op op)
+{
+	int ret = platform_fg_ops_has_optional_op(FG_IC_MASTER, op);
+
+	if (ret == 1)
+		return 0;
+	if (!ret)
+		ret = -EOPNOTSUPP;
+	return dev_err_probe(fg->dev, ret,
+		"requested FG optional operation %u is unavailable\n", op);
+}
+
+static int strategy_fg_check_optional_ops(struct strategy_fg *fg)
+{
+	int ret;
+
+	if (fg->cfg.support_nvt1000_ota) {
+		ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_OTA_FLAG);
+		if (ret)
+			return ret;
+		ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_AVERAGE_CURRENT);
+		if (ret)
+			return ret;
+		ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_OTA_UPDATE);
+		if (ret)
+			return ret;
+	}
+	if (fg->cfg.support_qbg)
+		return strategy_fg_require_optional_op(fg, MCA_FG_OP_QBG_CHG_DATA);
+	return 0;
+}
+
 static int strategy_fg_probe(struct platform_device *pdev)
 {
 	struct strategy_fg *fg;
@@ -4093,6 +4144,10 @@ static int strategy_fg_probe(struct platform_device *pdev)
 		mca_log_err("fg device found: %d\n", ret);
 		return ret;
 	}
+
+	ret = strategy_fg_check_optional_ops(fg);
+	if (ret)
+		return ret;
 
 	ret = charger_partition_get_eu_model(&fg->is_eu_model);
 	if (ret)

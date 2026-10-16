@@ -104,7 +104,10 @@ reverted=reverted.replace('\tif (myron_readonly_diag)\n\t\treturn bq_myron_diag_
 assert reverted.count('\tif (myron_readonly_diag)\n\t\treturn 0;\n')==2
 reverted=reverted.replace('\tif (myron_readonly_diag)\n\t\treturn 0;\n','')
 reverted=reverted.replace('\tif (myron_readonly_diag) {\n\t\treturn;\n\t}\n\n','',1)
-assert reverted==before, 'Unintended legacy path change'
+# The reviewed FG source port intentionally changes the normal path. Keep an
+# independent exact hash after stripping only the unchanged diagnostic hooks.
+REVIEWED_FG_NORMAL_SHA256 = '4463caa21567a659e455df8d4f1574b088631eb4f1d6d16dbb36c1d955a10024'
+assert hashlib.sha256(reverted.encode()).hexdigest() == REVIEWED_FG_NORMAL_SHA256, 'Unreviewed normal FG path change'
 probe=candidate[candidate.index('static int bq_fg_probe('):candidate.index('static int bq_fg_suspend(')]
 assert probe.index('return bq_myron_diag_probe(client)')<probe.index('devm_kzalloc(')<probe.index('bq_parse_dt(bq)')
 remove=candidate[candidate.index('static void bq_fg_remove('):candidate.index('static void bq_fg_shutdown(')]
@@ -113,7 +116,8 @@ assert 'devm_device_remove_group' not in remove
 result['old_undefined_remove_API_mutant_rejected']=True
 result['actual_remove_body_compiled_and_exercised']=True
 result['remove_function_sha256']=hashlib.sha256(remove.encode()).hexdigest()
-result['legacy_path_byte_preservation']=True
+result['normal_path_matches_reviewed_FG_source_port']=True
+result['reviewed_normal_source_sha256']=REVIEWED_FG_NORMAL_SHA256
 result['probe_branch_before_all_normal_allocation_and_hardware_setup']=True
 result['remove_branch_before_normal_cleanup']=True
 result['actual_register_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()

@@ -80,6 +80,9 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_camera_candidate.py > "$WORKSPACE_DIR/integration-reports/r61-host-camera.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_mca_compat.py > "$WORKSPACE_DIR/integration-reports/r61-host-mca-compat.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_hwid_compat.py > "$WORKSPACE_DIR/integration-reports/r61-host-hwid-compat.json"
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_provider_source_port.py > "$WORKSPACE_DIR/integration-reports/r61-host-provider-port.json"
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_fg_source_port.py > "$WORKSPACE_DIR/integration-reports/r61-host-fg-source-port.json"
+          PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_policy_api_port.py > "$WORKSPACE_DIR/integration-reports/r61-host-policy-port.json"
           PYTHONDONTWRITEBYTECODE=1 python3 r61-build-route/test_diagnostic_preservation.py > "$WORKSPACE_DIR/integration-reports/r61-host-diagnostic-preservation.log" 2>&1
           python3 r61-build-route/test_sync_with_retry.py
           python3 r61-build-route/sync_with_retry.py \

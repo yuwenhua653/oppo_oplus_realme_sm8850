@@ -79,7 +79,7 @@ def declared_outputs(graph):
     return {artifacts[str(i)] for a in graph.get('actions', []) for i in a.get('outputIds', [])}
 
 
-def collect_outputs(root, output, contract, modules, candidates, r18, generated_files=(), diagnostic=False):
+def collect_outputs(root, output, contract, modules, candidates, r18, generated_files=(), diagnostic=False, auxiliary=()):
     """Share output checks; only a fully checked subset gets an upload manifest."""
     # The generated private header must remain exact bytes from the pinned core.
     generated_reviews = []
@@ -90,8 +90,9 @@ def collect_outputs(root, output, contract, modules, candidates, r18, generated_
                                   'sha256': sha(original.read_bytes())})
     if not diagnostic:
         write(root / 'integration-reports/r61-targeted-generated-inputs.json', generated_reviews)
-    required = {row['output'] for row in modules} | {CORE + name for name in CORE_REQUIRED}
-    required.update(row['symvers'] for row in modules)
+    selected = list(modules) + list(auxiliary)
+    required = {row['output'] for row in selected} | {CORE + name for name in CORE_REQUIRED}
+    required.update(row['symvers'] for row in selected)
     required.update(row['output'] for row in generated_files)
     records = []
     output.mkdir(parents=True)
@@ -107,7 +108,9 @@ def collect_outputs(root, output, contract, modules, candidates, r18, generated_
         target.write_bytes(data)
         records.append({'file': 'objects/' + name, 'source': name, 'bytes': len(data), 'sha256': sha(data)})
     missing = required - {row['source'] for row in records}
-    manifest = {'schema': 1, 'files': records, 'missing': sorted(missing), 'flashable': False}
+    manifest = {'schema': 1, 'files': records, 'missing': sorted(missing), 'flashable': False,
+                'auxiliary_provider_names': [row['module_name'] for row in auxiliary],
+                'source_abi_policy': 'Compile only. Source ABI providers must not be mixed with old CP/buck/FG modules.'}
     if not diagnostic:
         write(output / 'artifact-manifest.json', manifest)
     require(not missing, 'Required compiler output missing')
@@ -118,13 +121,16 @@ def collect_outputs(root, output, contract, modules, candidates, r18, generated_
     sys.path.insert(0, str(r18 / 'stage-builder'))
     from elf_contract import parse_elf
     identities = []
-    for row in modules:
+    for row in selected:
         data = (output / 'objects' / row['output']).read_bytes()
         elf = parse_elf(data)
         require(elf['name'] == row['module_name'], 'Wrong compiled module name')
         require(elf['info']['vermagic'][0].split()[0] == release, 'Wrong module release')
         identities.append({'name': elf['name'], 'sha256': sha(data), 'vermagic': elf['info']['vermagic'][0]})
-    write(output / 'module-identity.json', {'modules': identities, 'runtime_abi_compatible': 'NOT_YET_VALIDATED'})
+    write(output / 'module-identity.json', {
+        'modules': [row for row in identities if row['name'] in {m['module_name'] for m in modules}],
+        'auxiliary_providers': [row for row in identities if row['name'] in {m['module_name'] for m in auxiliary}],
+        'runtime_abi_compatible': 'NOT_YET_VALIDATED'})
     if diagnostic:
         manifest.update(scope='diagnostic_subset', partial=True, selected_module_names=[row['module_name'] for row in modules],
                         full_module_count=len(contract['modules']), compiled=True, compile_only=True,
@@ -170,6 +176,7 @@ def main():
         status['prerequisite_contract_sha256'] = sha(prior_contract_path.read_bytes())
         status['candidate_module_names'] = [row['module_name'] for row in contract['modules']]
         status['candidate_module_count'] = len(contract['modules'])
+        status['auxiliary_provider_names'] = [row['module_name'] for row in contract.get('auxiliary_providers', [])]
         status['integration_sequence'] = ['unchanged_R13_apply_and_verify', 'unchanged_R60_apply_and_check', 'R61_apply_and_check']
         require(1 <= args.jobs <= 8 and args.ram_mb >= 2048, 'Invalid resources')
         old = load('r61_r18', r18 / 'boot_build.py')
@@ -192,6 +199,8 @@ def main():
         locked_workspace(root, contract['workspace_files'])
         runner.build_targets(root, 'soc')  # Emit release filegroup, ignore aggregate labels.
         modules = contract['modules']
+        auxiliary = contract.get('auxiliary_providers', [])
+        diagnostic_auxiliary = [row for row in auxiliary if row['module_name'] in contract.get('diagnostic_auxiliary_providers', [])]
         targets = [row['target'] for row in modules] + ['//common:kernel_aarch64', '//myron_artifact_metadata:kernel_release']
         require(len(targets) == len(set(targets)), 'Duplicate build targets')
         status.update(phase='analyze_explicit_targets', explicit_build_targets=targets)
@@ -207,11 +216,11 @@ def main():
         (reports / 'r61-targeted-aquery.log').write_text(result.stderr)
         require(result.returncode == 0, 'aquery analysis failed before build')
         graph = json.loads(result.stdout)
-        required_analysis_outputs = {row[key] for row in modules for key in ('output', 'symvers')}
+        required_analysis_outputs = {row[key] for row in modules + auxiliary for key in ('output', 'symvers')}
         required_analysis_outputs.update(row['output'] for row in contract.get('generated_files', []))
         missing_analysis_outputs = required_analysis_outputs - declared_outputs(graph)
         require(not missing_analysis_outputs, 'Expected KO/symvers not declared before compile: ' + str(sorted(missing_analysis_outputs)))
-        for index, row in enumerate(modules):
+        for index, row in enumerate(modules + auxiliary):
             required_inputs = row['expected_sources'] + row.get('generated_inputs', [])
             write(reports / f'r61-targeted-action-{index}.json', action_chain(graph, required_inputs, row['output']))
         # Preserve the two diagnostic KOs before unrelated MCA targets can fail.
@@ -230,7 +239,7 @@ def main():
         (reports / 'r61-targeted-diagnostic-cquery.log').write_text(result.stderr)
         require(result.returncode == 0, 'Diagnostic cquery failed')
         locked_workspace(root, contract['workspace_files'])
-        collect_outputs(root, diagnostic_output, contract, diagnostic_modules, result.stdout.splitlines(), r18, diagnostic=True)
+        collect_outputs(root, diagnostic_output, contract, diagnostic_modules, result.stdout.splitlines(), r18, diagnostic=True, auxiliary=diagnostic_auxiliary)
         status['diagnostic_subset_verified'] = True
         status['phase'] = 'compile_explicit_battery_targets'
         write(status_path, status)
@@ -243,7 +252,7 @@ def main():
         locked_workspace(root, contract['workspace_files'])
         output_owned = True
         status.update(collect_outputs(root, output, contract, modules, result.stdout.splitlines(), r18,
-                                      contract.get('generated_files', [])))
+                                      contract.get('generated_files', []), auxiliary=auxiliary))
         status.update(success=True, phase='compiled_and_source_bound', limitation='Actual installed-kernel import CRC/namespace/signature checks and device tests remain mandatory.')
     except Exception as error:
         status['error'] = str(error)
@@ -267,7 +276,7 @@ def main():
                     shutil.copy2(p, dest / p.name)
             shutil.copy2(args.contract, directory / 'battery-contract.json')
             write(directory / 'artifact-lock.json', {'schema': 1, 'success': status['success'],
-                'scope': 'diagnostic_subset' if diagnostic else 'full_13', 'compile_only': True,
+                'scope': 'diagnostic_subset' if diagnostic else 'full_candidates', 'compile_only': True,
                 'full_build_not_passed': not status['success'], 'files': [
                 {'file': str(p.relative_to(directory)), 'sha256': sha(p.read_bytes()), 'bytes': p.stat().st_size}
                 for p in sorted(directory.rglob('*')) if p.is_file() and p.name != 'artifact-lock.json']})

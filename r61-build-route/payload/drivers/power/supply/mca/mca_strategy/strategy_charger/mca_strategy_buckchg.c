@@ -402,7 +402,10 @@ static int strategy_buckchg_input_limit(struct mca_votable *votable, void *data,
 
 	ktime_get_boottime_ts64(&ts);
 	if ((u64)ts.tv_sec < 60) {
-		get_smem_battery_info(&is_zero_speed);
+		int zero_speed = mca_qcom_smem_is_zero_speed();
+
+		if (zero_speed >= 0)
+			is_zero_speed = zero_speed;
 		if (is_zero_speed && effective_result) {
 			result = effective_result < 1500 ? 1500 :
 							   effective_result;
@@ -928,8 +931,11 @@ strategy_buckchg_process_online_change(int value,
 		if (info->base_flip_same) {
 			bool cp_enabled = false;
 
-			(void)platform_class_cp_set_busovp(
+			int ret = platform_class_cp_set_busovp(
 				CP_ROLE_MASTER, CP_BUSOVP_DEFAULT_MV);
+
+			if (ret)
+				mca_log_err("restore CP bus OVP failed: %d\n", ret);
 			(void)platform_class_cp_get_charging_enabled(
 				CP_ROLE_MASTER, &cp_enabled);
 			mca_log_info("cp_enabled = %d in discharging\n",
@@ -1199,7 +1205,7 @@ strategy_buckchg_cp_revert_handler(int auth_pos,
 	bool otg_present = false;
 	int otg_boost_disable;
 	int otg_enable;
-	int pos;
+	int pos, ret;
 
 	otg_boost_disable = (auth_pos >> 24) & 0xff;
 	info->cp_revert_auth = (auth_pos >> 16) & 0xff;
@@ -1241,6 +1247,22 @@ strategy_buckchg_cp_revert_handler(int auth_pos,
 		return;
 	}
 
+	/* Check optional chip capabilities before any reverse-mode writes. */
+	ret = platform_class_cp_get_chip_vendor(CP_ROLE_MASTER,
+					      &info->cp_chip_vendor);
+	if (ret) {
+		mca_log_err("cannot identify reverse CP: %d\n", ret);
+		return;
+	}
+	if ((info->cp_chip_vendor == CP_CHIP_VENDOR_BQ25960 &&
+	     !platform_class_cp_has_cp_reverse_mode(CP_ROLE_MASTER)) ||
+	    (info->cp_chip_vendor == CP_CHIP_VENDOR_SC8541 &&
+	     !platform_class_cp_has_manual_revchg_mode(CP_ROLE_MASTER))) {
+		mca_log_err("reverse mode unsupported for CP vendor %d\n",
+			    info->cp_chip_vendor);
+		return;
+	}
+
 	if ((last_otg_present != otg_present) && otg_present)
 		schedule_delayed_work(
 			&info->source_status_monitor_work,
@@ -1248,12 +1270,7 @@ strategy_buckchg_cp_revert_handler(int auth_pos,
 	else if ((last_otg_present != otg_present) && !otg_present)
 		cancel_delayed_work_sync(&info->source_status_monitor_work);
 
-	last_otg_present = otg_present;
-	last_pos = pos;
-
 	if (otg_present) {
-		(void)platform_class_cp_get_chip_vendor(CP_ROLE_MASTER,
-							&info->cp_chip_vendor);
 
 		if (pos == 1 && info->otg_boost_src) {
 			mca_log_err("start external boost");
@@ -1279,8 +1296,12 @@ strategy_buckchg_cp_revert_handler(int auth_pos,
 			if (info->cp_chip_vendor == CP_CHIP_VENDOR_BQ25960 &&
 			    !bq_revchg_switch_flag) {
 				mca_log_err("entry bq25960 1_2 cp reverse mode");
-				platform_class_cp_set_cp_reverse_mode(
+				ret = platform_class_cp_set_cp_reverse_mode(
 					CP_ROLE_MASTER, true);
+				if (ret) {
+					mca_log_err("CP cp_reverse_mode failed: %d\n", ret);
+					return;
+				}
 				bq_revchg_switch_flag = 1;
 			} else {
 				// enable revert cp boost
@@ -1299,8 +1320,12 @@ strategy_buckchg_cp_revert_handler(int auth_pos,
 				    CP_CHIP_VENDOR_SC8541) {
 					mca_log_err(
 						"entry sc8541 1_2 cp manual mode");
-					platform_class_cp_set_manual_revchg_mode(
+					ret = platform_class_cp_set_manual_revchg_mode(
 						CP_ROLE_MASTER, true);
+					if (ret) {
+						mca_log_err("CP manual_revchg_mode failed: %d\n", ret);
+						return;
+					}
 				}
 				platform_class_cp_set_charging_enable(
 					CP_ROLE_MASTER, true);
@@ -1321,14 +1346,22 @@ strategy_buckchg_cp_revert_handler(int auth_pos,
 				CP_ROLE_MASTER, CP_REVCHG_EXIT_TIMEOUT);
 			if (info->cp_chip_vendor == CP_CHIP_VENDOR_SC8541) {
 				mca_log_err("exit sc8541 1_2 cp manual mode");
-				platform_class_cp_set_manual_revchg_mode(
+				ret = platform_class_cp_set_manual_revchg_mode(
 					CP_ROLE_MASTER, false);
+				if (ret) {
+					mca_log_err("CP manual_revchg_mode failed: %d\n", ret);
+					return;
+				}
 			}
 			if (info->cp_chip_vendor == CP_CHIP_VENDOR_BQ25960 &&
 			    bq_revchg_switch_flag == 1) {
 				mca_log_err("exit bq25960 1_2 cp reverse mode");
-				platform_class_cp_set_cp_reverse_mode(
+				ret = platform_class_cp_set_cp_reverse_mode(
 					CP_ROLE_MASTER, false);
+				if (ret) {
+					mca_log_err("CP cp_reverse_mode failed: %d\n", ret);
+					return;
+				}
 				bq_revchg_switch_flag = 0;
 			}
 		} else {
@@ -1352,6 +1385,10 @@ strategy_buckchg_cp_revert_handler(int auth_pos,
 		last_otg_present = false;
 		last_pos = 1;
 		info->source_boost_status = 0;
+	}
+	if (otg_present) {
+		last_otg_present = otg_present;
+		last_pos = pos;
 	}
 	platform_class_cp_dump_register(CP_ROLE_MASTER);
 }
@@ -1768,8 +1805,11 @@ strategy_buckchg_select_charg_para(struct strategy_buckchg_dev *info)
 	if (info->base_flip_same && real_type == XM_CHARGER_TYPE_FLOAT) {
 		bool cp_enabled = false;
 
-		(void)platform_class_cp_set_busovp(CP_ROLE_MASTER,
+		int ret = platform_class_cp_set_busovp(CP_ROLE_MASTER,
 						   CP_BUSOVP_FLOAT_MV);
+
+		if (ret)
+			mca_log_err("set CP bus OVP failed: %d\n", ret);
 		(void)platform_class_cp_get_charging_enabled(CP_ROLE_MASTER,
 							     &cp_enabled);
 		mca_log_info("cp_enabled = %d \n", cp_enabled);
@@ -2513,21 +2553,25 @@ static void strategy_buckchg_monitor_workfunc(struct work_struct *work)
 	if (system_soc <= ALLOW_QUICK_CHG_SOC_THR) {
 		if (info->support_low_voltage_high_current_keep_buck_chg) {
 			bool adc_enabled = false;
-			u32 cp_vout = 0;
+			u32 cp_vout;
+			int ret;
 
-			(void)platform_class_cp_get_adc_enabled(CP_ROLE_MASTER,
-								&adc_enabled);
-			if (!adc_enabled) {
-				(void)platform_class_cp_enable_adc(
-					CP_ROLE_MASTER, true);
-				mdelay(CP_ADC_SETTLE_MS);
+			ret = platform_class_cp_get_adc_enabled(CP_ROLE_MASTER,
+							&adc_enabled);
+			if (!ret && !adc_enabled) {
+				ret = platform_class_cp_enable_adc(CP_ROLE_MASTER, true);
+				if (!ret)
+					mdelay(CP_ADC_SETTLE_MS);
 			}
-			(void)platform_class_cp_get_battery_vout(CP_ROLE_MASTER,
+			if (!ret)
+				ret = platform_class_cp_get_battery_vout(CP_ROLE_MASTER,
 								 &cp_vout);
-			if (cp_vout <= CP_KEEP_BUCK_VBAT_THR) {
+			if (ret) {
+				mca_log_err("CP VOUT unavailable: %d\n", ret);
+			} else if (cp_vout <= CP_KEEP_BUCK_VBAT_THR) {
 				mca_log_err(
-					"vout is: %d less than 3.4V, keep buck charge action\n",
-					(int)cp_vout);
+					"vout is: %u less than 3.4V, keep buck charge action\n",
+					cp_vout);
 				goto qc_status;
 			}
 		}

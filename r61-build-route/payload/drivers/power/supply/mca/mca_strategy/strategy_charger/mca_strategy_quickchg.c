@@ -107,11 +107,11 @@ static int mca_quick_charge_update_vbat(struct mca_quick_charge_info *info)
 
 	if (info->batt_type > MCA_BATTERY_TYPE_SINGLE_NUM_MAX) {
 		ret = platform_fg_ops_get_volt(
-			FG_IC_MASTER, &info->proc_data.parall_vbat[FG_IC_BASE]);
+			FG_IC_MASTER, &info->proc_data.parall_vbat[FG_IC_MASTER]);
 		if (ret)
 			return -1;
 		ret = platform_fg_ops_get_volt(
-			FG_IC_SLAVE, &info->proc_data.parall_vbat[FG_IC_FLIP]);
+			FG_IC_SLAVE, &info->proc_data.parall_vbat[FG_IC_SLAVE]);
 		if (ret)
 			return -1;
 	}
@@ -129,21 +129,21 @@ static int mca_quick_charge_update_ibat(struct mca_quick_charge_info *info)
 
 	if (info->batt_type > MCA_BATTERY_TYPE_SINGLE_NUM_MAX) {
 		ret = platform_fg_ops_get_curr(
-			FG_IC_MASTER, &info->proc_data.parall_ibat[FG_IC_BASE]);
+			FG_IC_MASTER, &info->proc_data.parall_ibat[FG_IC_MASTER]);
 		if (ret)
 			return -1;
 		ret = platform_fg_ops_get_curr(
-			FG_IC_SLAVE, &info->proc_data.parall_ibat[FG_IC_FLIP]);
+			FG_IC_SLAVE, &info->proc_data.parall_ibat[FG_IC_SLAVE]);
 		if (ret)
 			return -1;
 	}
 
 	info->proc_data.ibat[FG_IC_MASTER] =
 		-1 * info->proc_data.ibat[FG_IC_MASTER] / 1000;
-	info->proc_data.parall_ibat[FG_IC_BASE] =
-		-1 * info->proc_data.parall_ibat[FG_IC_BASE] / 1000;
-	info->proc_data.parall_ibat[FG_IC_FLIP] =
-		-1 * info->proc_data.parall_ibat[FG_IC_FLIP] / 1000;
+	info->proc_data.parall_ibat[FG_IC_MASTER] =
+		-1 * info->proc_data.parall_ibat[FG_IC_MASTER] / 1000;
+	info->proc_data.parall_ibat[FG_IC_SLAVE] =
+		-1 * info->proc_data.parall_ibat[FG_IC_SLAVE] / 1000;
 	info->proc_data.ibat_total = info->proc_data.ibat[FG_IC_MASTER];
 	return 0;
 }
@@ -1115,8 +1115,8 @@ static int
 mca_quick_charge_select_parallel_volt_para(struct mca_quick_charge_info *info)
 {
 	bool init = info->parall_init_volt_para;
-	int flip = mca_quick_get_parallel_volt_para(info, FG_IC_FLIP, init);
-	int base = mca_quick_get_parallel_volt_para(info, FG_IC_BASE, init);
+	int flip = mca_quick_get_parallel_volt_para(info, FG_IC_SLAVE, init);
+	int base = mca_quick_get_parallel_volt_para(info, FG_IC_MASTER, init);
 
 	if (init && info->proc_data.adp_type == XM_CHARGER_TYPE_PPS) {
 		info->parall_init_volt_para = false;
@@ -1128,8 +1128,8 @@ mca_quick_charge_select_parallel_volt_para(struct mca_quick_charge_info *info)
 
 static int mca_quick_charge_parallel_judge_temp(struct mca_quick_charge_info *info)
 {
-	int flip = mca_quick_get_parallel_volt_para(info, FG_IC_FLIP, true);
-	int base = mca_quick_get_parallel_volt_para(info, FG_IC_BASE, true);
+	int flip = mca_quick_get_parallel_volt_para(info, FG_IC_SLAVE, true);
+	int base = mca_quick_get_parallel_volt_para(info, FG_IC_MASTER, true);
 
 	return flip | base;
 }
@@ -1139,17 +1139,17 @@ mca_quick_charger_get_base_limit_cur(struct mca_quick_charge_info *info,
 				     int cur_max)
 {
 	struct mca_quick_charge_process_data *proc_data = &(info->proc_data);
-	int cur_stage = proc_data->parall_cur_stage[FG_IC_BASE];
-	int ibat = info->proc_data.parall_ibat[FG_IC_BASE];
-	int vbat = info->proc_data.parall_vbat[FG_IC_BASE];
+	int cur_stage = proc_data->parall_cur_stage[FG_IC_MASTER];
+	int ibat = info->proc_data.parall_ibat[FG_IC_MASTER];
+	int vbat = info->proc_data.parall_vbat[FG_IC_MASTER];
 	int base_cur_max;
 	int final_curr = cur_max;
 	static int over_curr_count;
 	static bool runSwOcp;
 
-	if (!proc_data->cur_volt_paraller[FG_IC_BASE]->volt_para)
+	if (!proc_data->cur_volt_paraller[FG_IC_MASTER]->volt_para)
 		return 0;
-	base_cur_max = proc_data->cur_volt_paraller[FG_IC_BASE]
+	base_cur_max = proc_data->cur_volt_paraller[FG_IC_MASTER]
 			       ->volt_para[cur_stage / 2]
 			       .current_max;
 	if (ibat >= base_cur_max)
@@ -1174,14 +1174,14 @@ mca_quick_charger_get_base_limit_cur(struct mca_quick_charge_info *info,
 static int mca_quick_charger_set_flip_cur(struct mca_quick_charge_info *info)
 {
 	struct mca_quick_charge_process_data *proc_data = &(info->proc_data);
-	int cur_stage = proc_data->parall_cur_stage[FG_IC_FLIP];
-	int ibat = info->proc_data.parall_ibat[FG_IC_FLIP];
-	int vbat = info->proc_data.parall_vbat[FG_IC_FLIP];
+	int cur_stage = proc_data->parall_cur_stage[FG_IC_SLAVE];
+	int ibat = info->proc_data.parall_ibat[FG_IC_SLAVE];
+	int vbat = info->proc_data.parall_vbat[FG_IC_SLAVE];
 	int flip_curr_max = 0;
 
-	if (!proc_data->cur_volt_paraller[FG_IC_FLIP]->volt_para)
+	if (!proc_data->cur_volt_paraller[FG_IC_SLAVE]->volt_para)
 		return 0;
-	flip_curr_max = proc_data->cur_volt_paraller[FG_IC_FLIP]
+	flip_curr_max = proc_data->cur_volt_paraller[FG_IC_SLAVE]
 				->volt_para[cur_stage / 2]
 				.current_max;
 	platform_class_loadsw_set_ibat_limit(LOADSW_ROLE_MASTER, flip_curr_max);
@@ -2964,17 +2964,21 @@ static int mca_quick_charge_regulation(struct mca_quick_charge_info *info)
 
 	if (info->en_buck_parallel_chg) {
 		int master_ibus = 0, slave_ibus = 0;
-		int ibus_buck = 0, aicl_status = 0;
+		int ibus_buck = 0, aicl_status;
+		int aicl_rc;
 
 		platform_class_cp_get_bus_current(CP_ROLE_MASTER, &master_ibus);
 		platform_class_cp_get_bus_current(CP_ROLE_SLAVE, &slave_ibus);
 		platform_class_buckchg_ops_get_bus_curr(MAIN_BUCK_CHARGER,
 							&ibus_buck);
-		platform_class_buckchg_ops_get_aicl_status(MAIN_BUCK_CHARGER,
-							   &aicl_status);
-		mca_log_info(
-			"ibus_buck :%d, aicl_status :%d, master_ibus :%d, slave_ibus :%d\n",
-			ibus_buck, aicl_status, master_ibus, slave_ibus);
+		aicl_rc = platform_class_buckchg_ops_get_aicl_status(
+			MAIN_BUCK_CHARGER, &aicl_status);
+		if (aicl_rc)
+			mca_log_err("AICL status unavailable: %d\n", aicl_rc);
+		else
+			mca_log_info(
+				"ibus_buck :%d, aicl_status :%d, master_ibus :%d, slave_ibus :%d\n",
+				ibus_buck, aicl_status, master_ibus, slave_ibus);
 	}
 
 	/*
@@ -3524,8 +3528,8 @@ static int mca_quick_charge_process_event(int event, int value, void *data)
 		update_ret = mca_quick_charge_can_tbat_do_charge(FG_IC_MASTER,
 								 info, true);
 		if (info->support_base_flip) {
-			info->parall_force_normal_volt_para[FG_IC_FLIP] = true;
-			info->parall_force_normal_volt_para[FG_IC_BASE] = true;
+			info->parall_force_normal_volt_para[FG_IC_SLAVE] = true;
+			info->parall_force_normal_volt_para[FG_IC_MASTER] = true;
 			update_ret = mca_quick_charge_parallel_judge_temp(info);
 		}
 		if (update_ret)

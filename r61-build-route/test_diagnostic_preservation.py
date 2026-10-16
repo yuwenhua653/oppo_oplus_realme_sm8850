@@ -2,7 +2,7 @@
 """Offline regression of the actual build main() and artifact collector.
 
 Only external preparation/build programs and ELF decoding are substituted.
-The real source-contract checker, integrated source locks, 13-module aquery
+The real source-contract checker, integrated source locks, 15-module aquery
 provenance, collector, manifests, and exit status run against temporary files.
 No kernel build, ABI compatibility, or device behavior is claimed.
 """
@@ -30,9 +30,11 @@ NAMES = [
     'charger_partition', 'mca_basic_wireless', 'mca_buckchg_jeita',
     'mca_business_charger_comp', 'mca_charger_thermal', 'mca_qcom_sysfs',
     'mca_quick_wireless', 'mca_smart_charge', 'mca_strategy_buckchg',
-    'mca_strategy_fg_comp', 'mca_strategy_quickchg', 'bq27z561', 'camera',
+    'mca_strategy_fg_comp', 'mca_strategy_quickchg', 'bq27z561', 'camera', 'sc8581', 'mca_qcom_subpmic_proxy',
 ]
 DIAGNOSTIC_NAMES = {'bq27z561', 'camera'}
+AUXILIARY_NAMES = ['mca_platform_cp_class', 'mca_platform_buckchg_class', 'mca_platform_fg_ic_ops']
+DIAGNOSTIC_AUXILIARY = {'mca_platform_fg_ic_ops'}
 RELEASE = '6.12.81-android16-6-maybe-dirty-4k'
 BASELINE_IMAGE_SHA = '2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7'
 BIN = 'bazel-out/aarch64-fastbuild/bin/'
@@ -77,9 +79,10 @@ class BuildFixture:
         self.builds = []
         self.locked = []
         self.modules = []
+        self.auxiliary = []
         self.integrated = []
         writes = []
-        for name in NAMES:
+        for name in NAMES + AUXILIARY_NAMES:
             source = 'vendor/fixture/' + name + '.c'
             data = ('/* reviewed source: ' + name + ' */\n').encode()
             self.write_workspace(source, data)
@@ -93,7 +96,7 @@ class BuildFixture:
                    'output': BIN + 'vendor/fixture/' + name + '/' + name + '.ko',
                    'symvers': BIN + 'vendor/fixture/' + name + '/Module.symvers',
                    'expected_sources': [source]}
-            self.modules.append(row)
+            (self.modules if name in NAMES else self.auxiliary).append(row)
         self.generated = {'source': 'common/drivers/scsi/sd.h',
                           'output': BIN + 'vendor/fixture/drivers/scsi/sd.h'}
         self.modules[0]['generated_inputs'] = [self.generated['output']]
@@ -105,7 +108,7 @@ class BuildFixture:
         prior = {'schema': 1, 'integration': {'script': 'prior/apply.py'},
                  'workspace_files': [{'path': 'vendor/prior.c', 'sha256': sha(prior_data)}]}
         self.lock_file('prior/contract.json', json.dumps(prior).encode())
-        self.lock_file('reviewed-scope.json', json.dumps({'reviewed_module_names': NAMES}).encode())
+        self.lock_file('reviewed-scope.json', json.dumps({'reviewed_module_names': NAMES, 'reviewed_auxiliary_provider_names': AUXILIARY_NAMES, 'diagnostic_auxiliary_provider_names': sorted(DIAGNOSTIC_AUXILIARY)}).encode())
         self.lock_file('apply.py', b'# external integration fixture\n')
         write_lock = {'schema': 1, 'git_heads': {'common': 'fixture-pinned-revision'},
                       'writes': writes, 'upstream_files': [
@@ -121,6 +124,7 @@ class BuildFixture:
             'integration': {'script': 'apply.py', 'lock': 'write-lock.json'},
             'scope_manifest': 'reviewed-scope.json', 'locked_files': self.locked,
             'workspace_files': self.integrated, 'modules': self.modules,
+            'auxiliary_providers': self.auxiliary, 'diagnostic_auxiliary_providers': sorted(DIAGNOSTIC_AUXILIARY),
             'generated_files': [self.generated],
         }
         self.contract_path = self.repo / 'battery-contract.json'
@@ -157,7 +161,7 @@ class BuildFixture:
                 graph['artifacts'].append({'id': ids[name], 'execPath': name})
             return ids[name]
 
-        for index, row in enumerate(self.modules, 1):
+        for index, row in enumerate(self.modules + self.auxiliary, 1):
             inputs = row['expected_sources'] + row.get('generated_inputs', [])
             graph['depSetOfFiles'].append({'id': str(index),
                                           'directArtifactIds': [artifact(n) for n in inputs]})
@@ -192,12 +196,13 @@ class BuildFixture:
 
     def assert_analysis_complete(self):
         actions = sorted(self.reports.glob('r61-targeted-action-*.json'))
-        assert len(actions) == 13, 'Build started before all 13 action guards'
+        assert len(actions) == len(NAMES) + len(AUXILIARY_NAMES), 'Build started before all 15 target and 3 provider action guards'
         assert all(json.loads(path.read_text())['status'] == 'PASS' for path in actions)
-        assert self.events.index('aquery-13') < len(self.events)
+        assert self.events.index('aquery-15') < len(self.events)
 
     def produce(self, modules, full):
-        for row in modules:
+        selected_auxiliary = [row for row in self.auxiliary if full or row['module_name'] in DIAGNOSTIC_AUXILIARY]
+        for row in modules + selected_auxiliary:
             # Decoding alone is stubbed: copied bytes and SHA records stay real.
             self.write_workspace(row['output'], ('ELF-FIXTURE:' + row['module_name']).encode())
             self.write_workspace(row['symvers'], ('symvers:' + row['module_name'] + '\n').encode())
@@ -238,13 +243,16 @@ class BuildFixture:
         assert kwargs['cwd'] == self.workspace
         if argv[1] == 'aquery':
             assert {row['module_name'] for row in self.selected(argv)} == set(NAMES)
-            self.events.append('aquery-13')
+            self.events.append('aquery-15')
             stdout = json.dumps(self.graph)
         elif argv[1] == 'cquery':
             selected = self.selected(argv)
-            full = len(selected) == 13
+            full = len(selected) == len(NAMES)
             self.events.append('cquery-full' if full else 'cquery-diagnostic')
-            candidates = [row[key] for row in selected for key in ('output', 'symvers')]
+            selected_auxiliary = [row for row in self.auxiliary if full or row['module_name'] in DIAGNOSTIC_AUXILIARY]
+            candidates = [row[key] for row in selected + selected_auxiliary for key in ('output', 'symvers')]
+            if self.failure == 'missing_auxiliary' and not full:
+                candidates.remove(selected_auxiliary[0]['output'])
             candidates += [self.impl.CORE + name for name in sorted(self.impl.CORE_REQUIRED)]
             candidates += [DEPENDENCY, UNRELATED_KO, DEPENDENCY]
             if not full and self.failure == 'missing_core':
@@ -313,7 +321,7 @@ class DiagnosticPreservationTests(unittest.TestCase):
         self.assertTrue(manifest['validated_subset'])
         self.assertFalse(manifest['hardware_tested'])
         self.assertEqual(manifest['runtime_abi_compatible'], 'NOT_YET_VALIDATED')
-        self.assertEqual(manifest['full_module_count'], 13)
+        self.assertEqual(manifest['full_module_count'], len(NAMES))
         self.assertEqual(manifest['built_image_sha256'],
                          sha((fixture.diagnostic / 'objects' / self.impl.CORE / 'Image').read_bytes()))
         self.assertFalse(manifest['built_image_matches_runtime_baseline'])
@@ -322,6 +330,8 @@ class DiagnosticPreservationTests(unittest.TestCase):
         sources = {row['source'] for row in manifest['files']}
         expected = {row[key] for row in fixture.modules if row['module_name'] in DIAGNOSTIC_NAMES
                     for key in ('output', 'symvers')}
+        expected |= {row[key] for row in fixture.auxiliary if row['module_name'] in DIAGNOSTIC_AUXILIARY for key in ('output', 'symvers')}
+        self.assertEqual(set(manifest['auxiliary_provider_names']), DIAGNOSTIC_AUXILIARY)
         expected |= {self.impl.CORE + name for name in self.impl.CORE_REQUIRED} | {DEPENDENCY}
         self.assertEqual(sources, expected)
         self.assert_records(fixture.diagnostic, manifest['files'])
@@ -329,6 +339,7 @@ class DiagnosticPreservationTests(unittest.TestCase):
         self.assertNotIn(UNRELATED_KO, sources)
         identities = json.loads((fixture.diagnostic / 'module-identity.json').read_text())
         self.assertEqual({row['name'] for row in identities['modules']}, DIAGNOSTIC_NAMES)
+        self.assertEqual({row['name'] for row in identities['auxiliary_providers']}, DIAGNOSTIC_AUXILIARY)
         self.assertEqual(identities['runtime_abi_compatible'], 'NOT_YET_VALIDATED')
         lock = json.loads((fixture.diagnostic / 'artifact-lock.json').read_text())
         self.assertEqual(lock['scope'], 'diagnostic_subset')
@@ -357,6 +368,7 @@ class DiagnosticPreservationTests(unittest.TestCase):
         self.assertTrue(status['compiled'])
         full = json.loads((fixture.output / 'module-identity.json').read_text())
         self.assertEqual({row['name'] for row in full['modules']}, set(NAMES))
+        self.assertEqual({row['name'] for row in full['auxiliary_providers']}, set(AUXILIARY_NAMES))
         artifacts = json.loads((fixture.output / 'artifact-manifest.json').read_text())
         self.assertIn(fixture.generated['output'], {row['source'] for row in artifacts['files']})
         self.assert_records(fixture.output, artifacts['files'])
@@ -406,6 +418,22 @@ class DiagnosticPreservationTests(unittest.TestCase):
         self.assertFalse(status.get('diagnostic_subset_verified', False))
         self.assertIn('Required compiler output missing', status['error'])
 
+    def test_diagnostic_missing_provider_has_no_publishable_manifest(self):
+        fixture = self.fixture('missing_auxiliary')
+        self.assertEqual(fixture.run(), 1)
+        self.assertEqual(fixture.builds, [DIAGNOSTIC_NAMES])
+        self.assertFalse((fixture.diagnostic / 'diagnostic-manifest.json').exists())
+        self.assertFalse((fixture.diagnostic / 'diagnostic-complete.json').exists())
+        status = json.loads((fixture.reports / 'r61-targeted-status.json').read_text())
+        self.assertIn('Required compiler output missing', status['error'])
+
+    def test_auxiliary_source_chain_guard_blocks_diagnostic(self):
+        fixture = self.fixture()
+        fixture.graph['depSetOfFiles'][-1]['directArtifactIds'] = []
+        self.assertEqual(fixture.run(), 1)
+        self.assertEqual(fixture.builds, [])
+        self.assertFalse((fixture.diagnostic / 'diagnostic-complete.json').exists())
+
     def test_final_copy_failure_never_publishes_completion_marker(self):
         fixture = self.fixture('full')
         fixture.fail_finalization = True
@@ -424,7 +452,7 @@ class DiagnosticPreservationTests(unittest.TestCase):
         (fixture.repo / 'payload/camera.c').write_text('unreviewed bytes\n')
         self.assertEqual(fixture.run(), 1)
         self.assertEqual(fixture.builds, [])
-        self.assertNotIn('aquery-13', fixture.events)
+        self.assertNotIn('aquery-15', fixture.events)
         self.assertFalse((fixture.diagnostic / 'diagnostic-manifest.json').exists())
         status = json.loads((fixture.reports / 'r61-targeted-status.json').read_text())
         self.assertIn('Source bytes/SHA mismatch', status['error'])

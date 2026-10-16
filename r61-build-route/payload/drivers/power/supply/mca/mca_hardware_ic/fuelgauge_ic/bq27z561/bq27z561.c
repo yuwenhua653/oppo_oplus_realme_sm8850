@@ -507,6 +507,56 @@ out:
 	return ret;
 }
 
+
+/* Checked MAC reads for the optional source ABI. Reject partial transfers,
+ * malformed frame lengths, wrong command echoes and checksum failures before
+ * publishing any payload. Existing opaque/cached callbacks are not reused. */
+static int fg_mac_read_block_checked(struct bq_fg_chip *bq, u16 cmd,
+				     u8 *buf, u8 len)
+{
+	u8 frame[36] = { 0 };
+	u8 frame_len;
+	int ret;
+
+	if (!buf || !len || len > 32)
+		return -EINVAL;
+	if (atomic_read(&bq->pm_suspend))
+		return -EAGAIN;
+	frame[0] = (u8)cmd;
+	frame[1] = (u8)(cmd >> 8);
+	mutex_lock(&bq->data_lock);
+	mutex_lock(&bq->i2c_rw_lock);
+	ret = __fg_write_block(bq->client, bq->regs[BQ_FG_REG_ALT_MAC],
+			       frame, 2);
+	if (ret != 1) {
+		ret = ret < 0 ? ret : -EIO;
+		goto out;
+	}
+	usleep_range(4000, 4100);
+	ret = __fg_read_block(bq->client, bq->regs[BQ_FG_REG_ALT_MAC],
+			      frame, sizeof(frame));
+	if (ret != 2) {
+		ret = ret < 0 ? ret : -EIO;
+		goto out;
+	}
+	frame_len = frame[35];
+	if (frame_len < len + 4 || frame_len > sizeof(frame) ||
+	    frame[0] != (u8)cmd || frame[1] != (u8)(cmd >> 8)) {
+		ret = -EPROTO;
+		goto out;
+	}
+	if (checksum(frame, frame_len - 2) != frame[34]) {
+		ret = -EBADMSG;
+		goto out;
+	}
+	memcpy(buf, frame + 2, len);
+	ret = 0;
+out:
+	mutex_unlock(&bq->i2c_rw_lock);
+	mutex_unlock(&bq->data_lock);
+	return ret;
+}
+
 static int fg_mac_write_block(struct bq_fg_chip *bq, u16 cmd, u8 *data, u8 len)
 {
 	int ret;
@@ -2262,7 +2312,7 @@ static int fg_read_manufacturing_date(struct bq_fg_chip *bq, u8 *buf)
 	int ret, i, len;
 	char manufacturing_date[8] = {'2', '0', '2', '0', '0', '0', '0', '0'};
 
-	ret = fg_mac_read_block(bq, FG_MAC_CMD_BATT_SN, t_buf, 32);
+	ret = fg_mac_read_block_checked(bq, FG_MAC_CMD_BATT_SN, t_buf, 32);
 	if (ret < 0) {
 		mca_log_info("failed to get BATT_SN\n");
 		return ret;
@@ -2309,9 +2359,8 @@ static int fg_read_first_usage_date(struct bq_fg_chip *bq, u8 *buf)
 	int ret, i, len;
 	char first_usage_date[9] = {'0', '0', '0', '0', '0', '0', '0', '0', '\0'};
 
-	ret = fg_mac_read_block(bq, FG_MAC_CMD_UI_SOH, t_buf, 32);
-	if (ret < 0) {// read error, show 9999999
-		memcpy(buf,"99999999",8);
+	ret = fg_mac_read_block_checked(bq, FG_MAC_CMD_UI_SOH, t_buf, 32);
+	if (ret < 0) {
 		mca_log_info("failed to get first_usage_date\n");
 		return ret;
 	}
@@ -2346,10 +2395,9 @@ static int fg_read_first_usage_date(struct bq_fg_chip *bq, u8 *buf)
 		for (i = 0; i < 8; i++) {
 			if (first_usage_date[i] < '0' ||
 			    first_usage_date[i] > '9') {
-				memcpy(buf, "99999999", 8);
 				mca_log_info("usage data has invalid char [%s]\n",
 					     first_usage_date);
-				return 0;
+				return -EBADMSG;
 			}
 		}
 		mca_log_err("read successs = %s\n", first_usage_date);
@@ -2467,27 +2515,22 @@ static void fg_write_first_usage_date(struct bq_fg_chip *bq, const char *buf, si
 	}
 }
 
-static int __maybe_unused fg_get_one_first_usage_date(void *data, u8 *buf)
+static int fg_get_one_first_usage_date(void *data, u8 *buf)
 {
 	struct bq_fg_chip *bq = (struct bq_fg_chip *)data;
 
 	return fg_read_first_usage_date(bq, buf);
 }
 
-static int __maybe_unused fg_get_one_manufacturing_date(void *data, u8 *buf)
+static int fg_get_one_manufacturing_date(void *data, u8 *buf)
 {
 	struct bq_fg_chip *bq = (struct bq_fg_chip *)data;
 
 	return fg_read_manufacturing_date(bq, buf);
 }
 
-static int __maybe_unused fg_set_one_first_usage_date(void *data, const char *date)
-{
-	struct bq_fg_chip *bq = (struct bq_fg_chip *)data;
-
-	fg_write_first_usage_date(bq, date, strlen(date));
-	return 0;
-}
+/* First-use-date writes have no checked provider callback yet. The optional
+ * API reports -EOPNOTSUPP; do not wrap the legacy void writer as success. */
 
 static int fg_read_tte(struct bq_fg_chip *bq, int *tte)
 {
@@ -5281,27 +5324,6 @@ static void fg_get_hscd_last_cycle(struct bq_fg_chip *bq)
 		bq->hscd_last_cycle = fg_convert_u8_to_u16(t_buf[18], t_buf[19]);
 }
 
-/*
- * Snapshot the cached abnormal-event counters into the DFX buffer. Order is
- * ABI: ocd, hocd, cuv, hcuv, hscd (count then last-cycle within each pair).
- * The counters are refreshed by their fg_get_* readers (sysfs / periodic path).
- */
-static void fg_get_batt_abnormal_info(void *data, void *output)
-{
-	int *info = output;
-	struct bq_fg_chip *bq = (struct bq_fg_chip *)data;
-
-	info[0] = bq->ocd_count;
-	info[1] = bq->ocd_last_cycle;
-	info[2] = bq->hocd_count;
-	info[3] = bq->hocd_last_cycle;
-	info[4] = bq->cuv_count;
-	info[5] = bq->cuv_last_cycle;
-	info[6] = bq->hcuv_count;
-	info[7] = bq->hcuv_last_cycle;
-	info[8] = bq->hscd_count;
-	info[9] = bq->hscd_last_cycle;
-}
 
 static void fg_read_co_status(struct bq_fg_chip *bq, u32 *co_status)
 {
@@ -6226,11 +6248,73 @@ static void fg_get_pack_vendor(void *data, int *vendor)
 	*vendor = info->pack_vendor;
 }
 
-static int __maybe_unused fg_get_one_average_current(void *data, int *val)
+static int fg_get_one_average_current(void *data, int *val)
 {
-	struct bq_fg_chip *info = (struct bq_fg_chip *)data;
+	struct bq_fg_chip *bq = data;
+	u16 raw;
+	int ret;
 
-	*val = fg_get_average_current(info);
+	if (bq->regs[NVT_FG_AVE_CUR] == INVALID_REG_ADDR)
+		return -EOPNOTSUPP;
+	if (atomic_read(&bq->pm_suspend))
+		return -EAGAIN;
+	ret = fg_read_word(bq, bq->regs[NVT_FG_AVE_CUR], &raw);
+	if (ret < 0)
+		return ret;
+	*val = -(int)(s16)raw;
+	return 0;
+}
+
+static int fg_get_pack_vendor_checked(void *data, int *vendor)
+{
+	struct bq_fg_chip *bq = data;
+	u8 raw[4];
+	int result, ret;
+
+	ret = fg_mac_read_block_checked(bq, FG_MAC_CMD_CHEM_NAME, raw, sizeof(raw));
+	if (ret)
+		return ret;
+	switch (raw[2]) {
+	case 'B': result = PACK_SUPPLIER_BYD; break;
+	case 'C': result = PACK_SUPPLIER_COSLIGHT; break;
+	case 'S': result = PACK_SUPPLIER_SUNWODA; break;
+	case 'N': result = PACK_SUPPLIER_NVT; break;
+	case 'U': result = PACK_SUPPLIER_SCUD; break;
+	case 'T': result = PACK_SUPPLIER_TWS; break;
+	case 'I': result = PACK_SUPPLIER_LISHEN; break;
+	case 'K': result = PACK_SUPPLIER_DESAY; break;
+	default: return -ENODATA;
+	}
+	*vendor = result;
+	return 0;
+}
+
+static int fg_get_abnormal_counts(void *data, struct mca_fg_abnormal_counts *out)
+{
+	struct bq_fg_chip *bq = data;
+	struct mca_fg_abnormal_counts result;
+	u8 cuv_ocd[32], hardware[32];
+	int ret;
+
+	ret = fg_mac_read_block_checked(bq, FG_MAC_CMD_CUV_OCD,
+					cuv_ocd, sizeof(cuv_ocd));
+	if (ret)
+		return ret;
+	ret = fg_mac_read_block_checked(bq, FG_MAC_CMD_HCUV_HOCD,
+					hardware, sizeof(hardware));
+	if (ret)
+		return ret;
+	result.ocd_count = fg_convert_u8_to_u16(cuv_ocd[28], cuv_ocd[29]);
+	result.ocd_last_cycle = fg_convert_u8_to_u16(cuv_ocd[30], cuv_ocd[31]);
+	result.hocd_count = fg_convert_u8_to_u16(hardware[12], hardware[13]);
+	result.hocd_last_cycle = fg_convert_u8_to_u16(hardware[14], hardware[15]);
+	result.cuv_count = fg_convert_u8_to_u16(cuv_ocd[16], cuv_ocd[17]);
+	result.cuv_last_cycle = fg_convert_u8_to_u16(cuv_ocd[18], cuv_ocd[19]);
+	result.hcuv_count = fg_convert_u8_to_u16(hardware[0], hardware[1]);
+	result.hcuv_last_cycle = fg_convert_u8_to_u16(hardware[2], hardware[3]);
+	result.hscd_count = fg_convert_u8_to_u16(hardware[16], hardware[17]);
+	result.hscd_last_cycle = fg_convert_u8_to_u16(hardware[18], hardware[19]);
+	*out = result;
 	return 0;
 }
 
@@ -6274,7 +6358,9 @@ static struct fuelguage_ic_ops g_bq_fg_ops = {
 	.fg_ic_get_count_lowtemp = fg_get_one_count_lowtemp,
 	.fg_ic_get_adapt_power = fg_get_one_adapt_power,
 	.fg_ic_get_pack_vendor = fg_get_pack_vendor,
-	/* Onyx-only slot fg_ic_get_average_current: not in the preserved Myron FG ABI. */
+	.fg_ic_get_average_current = fg_get_one_average_current,
+	.fg_ic_get_pack_vendor_checked = fg_get_pack_vendor_checked,
+	.fg_ic_get_abnormal_counts = fg_get_abnormal_counts,
 	.fg_ic_get_aged_flag = fg_get_aged_flag,
 	.fg_ic_get_isc_alert_level = fg_get_one_isc_alert_level,
 	.fg_ic_get_soa_alert_level = fg_get_one_soa_alert_level,
@@ -6286,17 +6372,17 @@ static struct fuelguage_ic_ops g_bq_fg_ops = {
 	.fg_ic_set_clear_count_data = fg_set_one_clear_count_data,
 	.fg_ic_get_fc = fg_read_one_fc,
 	.fg_ic_set_co = fg_set_one_co,
-	/* Onyx-only slot fg_ic_get_ota_update_flag: not in the preserved Myron FG ABI. */
+	/* No verified OTA flag producer, OTA executor or QBG provider. */
 	.fg_ic_get_calibration_ffc_iterm = fg_get_one_calibration_ffc_iterm,
 	.fg_ic_get_real_supplement_energy = fg_get_one_real_supplement_energy,
 	.fg_ic_get_calibration_charge_energy = fg_get_one_calibration_charge_energy,
 	.fg_ic_fl4p0_enable_check = fg_fl4p0_enable_check,
 	.fg_ic_get_ui_soh = fg_get_ui_soh,
 	.fg_ic_get_calc_rvalue = fg_get_one_calc_rvalue,
-	.fg_ic_get_batt_abnormal_info = fg_get_batt_abnormal_info,
-	/* Onyx-only slot fg_ic_get_first_usage_date: not in the preserved Myron FG ABI. */
-	/* Onyx-only slot fg_ic_get_manufacturing_date: not in the preserved Myron FG ABI. */
-	/* Onyx-only slot fg_ic_set_first_usage_date: not in the preserved Myron FG ABI. */
+	/* Stock opaque abnormal buffer unsupported; use typed checked tail API. */
+	.fg_ic_get_first_usage_date = fg_get_one_first_usage_date,
+	.fg_ic_get_manufacturing_date = fg_get_one_manufacturing_date,
+	/* No checked date writer: absence is reported as -EOPNOTSUPP. */
 };
 
 static int bq27z561_dump_log_head(void *data, char *buf, int size)
@@ -6543,7 +6629,8 @@ static int bq_fg_probe(struct i2c_client *client, const struct i2c_device_id *id
 	fg_read_eeprom_version(bq);
 	nfg1000_boot_app_judge(bq);
 
-	ret = platform_fg_ic_ops_register(bq->dev_role, bq, &g_bq_fg_ops);
+	ret = platform_fg_ic_ops_register_v2(bq->dev_role, bq, &g_bq_fg_ops,
+				     sizeof(g_bq_fg_ops));
 	if (ret) {
 		mca_log_err("reg ops fail, role = %u\n", bq->dev_role);
 		goto out;

@@ -186,7 +186,10 @@ static void mca_charger_thermal_flip_handle_limit(
 
 	ktime_get_boottime_ts64(&ts);
 	if ((u64)ts.tv_sec < 60) {
-		get_smem_battery_info(&is_zero_speed);
+		int zero_speed = mca_qcom_smem_is_zero_speed();
+
+		if (zero_speed >= 0)
+			is_zero_speed = zero_speed;
 		if (is_zero_speed) {
 			mca_log_err("is_zero_speed = %d, ignore thermal...\n",
 				    is_zero_speed);
@@ -226,7 +229,10 @@ static void mca_wireless_charger_thermal_flip_handle_limit(
 
 	ktime_get_boottime_ts64(&ts);
 	if ((u64)ts.tv_sec < 60) {
-		get_smem_battery_info(&is_zero_speed);
+		int zero_speed = mca_qcom_smem_is_zero_speed();
+
+		if (zero_speed >= 0)
+			is_zero_speed = zero_speed;
 		if (is_zero_speed) {
 			mca_log_err("is_zero_speed = %d, ignore thermal...\n",
 				    is_zero_speed);
@@ -271,7 +277,10 @@ static void mca_charger_thermal_handle_limit(struct mca_thermal_ctrl_info *ctrl,
 
 	ktime_get_boottime_ts64(&ts);
 	if ((u64)ts.tv_sec < 60) {
-		get_smem_battery_info(&is_zero_speed);
+		int zero_speed = mca_qcom_smem_is_zero_speed();
+
+		if (zero_speed >= 0)
+			is_zero_speed = zero_speed;
 		if (is_zero_speed) {
 			mca_log_err("is_zero_speed = %d, ignore thermal...\n",
 				    is_zero_speed);

@@ -13,15 +13,27 @@
     "mca_strategy_fg_comp",
     "mca_strategy_quickchg",
     "bq27z561",
-    "camera"
+    "camera",
+    "sc8581",
+    "mca_qcom_subpmic_proxy"
   ],
-  "target_count": 13,
+  "target_count": 15,
   "source_scope": {
     "mca_complete_services": 11,
     "bq_diagnostic_default_disabled": 1,
-    "camera_session_8_12_compatibility_with_R60_SH11_preserved": 1
+    "camera_session_8_12_compatibility_with_R60_SH11_preserved": 1,
+    "hardware_provider_end_to_end_compile": 2
   },
   "flashable": false,
   "compiled": false,
-  "hardware_tested": false
+  "hardware_tested": false,
+  "source_abi_policy": "CP/buck/FG source extensions require rebuilding registrars and consumers together. Never mix new source ABI providers with old CP/buck/FG modules. Frozen commit 2b7ff84 diagnostic 8-module package is separate and unchanged.",
+  "reviewed_auxiliary_provider_names": [
+    "mca_platform_cp_class",
+    "mca_platform_buckchg_class",
+    "mca_platform_fg_ic_ops"
+  ],
+  "diagnostic_auxiliary_provider_names": [
+    "mca_platform_fg_ic_ops"
+  ]
 }

@@ -50,14 +50,20 @@ def check(root, contract):
     require(names and len(names) == len(set(names)), 'Empty/duplicate reviewed scope')
     require(len(modules) == len(names) and {r['module_name'] for r in modules} == set(names), 'Targets differ from reviewed module scope')
     generated = {r['output']: r for r in contract.get('generated_files', [])}
-    for row in modules:
+    auxiliary = contract.get('auxiliary_providers', [])
+    aux_names = [row['module_name'] for row in auxiliary]
+    require(len(aux_names) == len(set(aux_names)) and not set(aux_names) & set(names), 'Duplicate auxiliary scope')
+    require(set(aux_names) == set(scope.get('reviewed_auxiliary_provider_names', [])), 'Unreviewed auxiliary provider')
+    require(contract.get('diagnostic_auxiliary_providers', []) == scope.get('diagnostic_auxiliary_provider_names', []), 'Unreviewed diagnostic provider')
+    require(set(contract.get('diagnostic_auxiliary_providers', [])) <= set(aux_names), 'Unknown diagnostic provider')
+    for row in modules + auxiliary:
         require(re.fullmatch(r'//[A-Za-z0-9_./+-]+:[A-Za-z0-9_./+-]+', row['target']), 'Invalid target')
         for key, ending in [('output', '.ko'), ('symvers', '.symvers')]:
             p = PurePosixPath(row[key])
             require(not p.is_absolute() and '..' not in p.parts and row[key].startswith('bazel-out/') and row[key].endswith(ending), 'Invalid output')
         require(row.get('expected_sources') and set(row['expected_sources']) <= paths, 'Unlocked module source')
         require(set(row.get('generated_inputs', [])) <= set(generated), 'Unpinned generated module input')
-    require(len({r['target'] for r in modules}) == len(modules), 'Duplicate target')
+    require(len({r['target'] for r in modules + auxiliary}) == len(modules + auxiliary), 'Duplicate target')
     for key in ('script', 'lock'):
         require(contract['integration'][key] in locked, 'Unpinned integration ' + key)
     write_lock = json.loads(safe(root, contract['integration']['lock']).read_text())
@@ -82,6 +88,7 @@ def check(root, contract):
             require(row.get('preimage') in locked and locked[row['preimage']]['sha256'] == row['before_sha256'], 'Unpinned exact preimage bytes')
     return {'schema': 1, 'status': 'PASS', 'compile_only': True, 'locked_files': len(locked),
             'writes': len(destinations), 'targets': [r['target'] for r in modules],
+            'auxiliary_providers': aux_names,
             'scope': 'Input readiness only; kernel compile, ABI and device behavior are not claimed.'}
 
 

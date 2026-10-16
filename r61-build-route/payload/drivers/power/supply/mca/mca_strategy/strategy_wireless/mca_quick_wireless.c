@@ -226,12 +226,12 @@ static int mca_wireless_quick_charge_update_vbat(
 	if (ret)
 		return -1;
 	ret = platform_fg_ops_get_volt(
-		FG_IC_MASTER, &info->proc_data.parall_vbat[FG_IC_BASE]);
+		FG_IC_MASTER, &info->proc_data.parall_vbat[FG_IC_MASTER]);
 	if (ret)
 		return -1;
 	if (info->batt_type > MCA_BATTERY_TYPE_SINGLE) {
 		ret = platform_fg_ops_get_volt(
-			FG_IC_SLAVE, &info->proc_data.parall_vbat[FG_IC_FLIP]);
+			FG_IC_SLAVE, &info->proc_data.parall_vbat[FG_IC_SLAVE]);
 		if (ret)
 			return -1;
 	}
@@ -248,21 +248,21 @@ static int mca_wireless_quick_charge_update_ibat(
 	if (ret)
 		return -1;
 	ret = platform_fg_ops_get_curr(
-		FG_IC_MASTER, &info->proc_data.parall_ibat[FG_IC_BASE]);
+		FG_IC_MASTER, &info->proc_data.parall_ibat[FG_IC_MASTER]);
 	if (ret)
 		return -1;
 	if (info->batt_type > MCA_BATTERY_TYPE_SINGLE) {
 		ret = platform_fg_ops_get_curr(
-			FG_IC_SLAVE, &info->proc_data.parall_ibat[FG_IC_FLIP]);
+			FG_IC_SLAVE, &info->proc_data.parall_ibat[FG_IC_SLAVE]);
 		if (ret)
 			return -1;
 	}
 	info->proc_data.ibat[FG_IC_MASTER] =
 		-1 * info->proc_data.ibat[FG_IC_MASTER] / 1000;
-	info->proc_data.parall_ibat[FG_IC_BASE] =
-		-1 * info->proc_data.parall_ibat[FG_IC_BASE] / 1000;
-	info->proc_data.parall_ibat[FG_IC_FLIP] =
-		-1 * info->proc_data.parall_ibat[FG_IC_FLIP] / 1000;
+	info->proc_data.parall_ibat[FG_IC_MASTER] =
+		-1 * info->proc_data.parall_ibat[FG_IC_MASTER] / 1000;
+	info->proc_data.parall_ibat[FG_IC_SLAVE] =
+		-1 * info->proc_data.parall_ibat[FG_IC_SLAVE] / 1000;
 	info->proc_data.ibat_total = info->proc_data.ibat[FG_IC_MASTER];
 	return 0;
 }
@@ -576,17 +576,17 @@ static int mca_wireless_quick_charger_get_base_limit_cur(
 {
 	struct mca_wireless_quick_charge_process_data *proc_data =
 		&(info->proc_data);
-	int cur_stage = proc_data->cur_stage[FG_IC_BASE];
-	int ibat = info->proc_data.parall_ibat[FG_IC_BASE];
+	int cur_stage = proc_data->cur_stage[FG_IC_MASTER];
+	int ibat = info->proc_data.parall_ibat[FG_IC_MASTER];
 	int base_cur_max;
 	int final_curr = cur_max;
 	static int over_curr_count;
 	static bool runSwOcp;
 
-	if (!proc_data->cur_volt_paraller[FG_IC_BASE]->volt_para)
+	if (!proc_data->cur_volt_paraller[FG_IC_MASTER]->volt_para)
 		return 0;
 
-	base_cur_max = proc_data->cur_volt_paraller[FG_IC_BASE]
+	base_cur_max = proc_data->cur_volt_paraller[FG_IC_MASTER]
 			       ->volt_para[cur_stage / 2]
 			       .current_max;
 	if (ibat >= base_cur_max)
@@ -613,13 +613,13 @@ static int mca_wireless_quick_charger_set_flip_cur(
 {
 	struct mca_wireless_quick_charge_process_data *proc_data =
 		&(info->proc_data);
-	int cur_stage = proc_data->parall_cur_stage[FG_IC_FLIP];
-	int ibat = info->proc_data.parall_ibat[FG_IC_FLIP];
+	int cur_stage = proc_data->parall_cur_stage[FG_IC_SLAVE];
+	int ibat = info->proc_data.parall_ibat[FG_IC_SLAVE];
 	int flip_curr_max = 0;
 
-	if (!proc_data->cur_volt_paraller[FG_IC_FLIP]->volt_para)
+	if (!proc_data->cur_volt_paraller[FG_IC_SLAVE]->volt_para)
 		return 0;
-	flip_curr_max = proc_data->cur_volt_paraller[FG_IC_FLIP]
+	flip_curr_max = proc_data->cur_volt_paraller[FG_IC_SLAVE]
 				->volt_para[cur_stage / 2]
 				.current_max;
 	platform_class_loadsw_set_ibat_limit(LOADSW_ROLE_MASTER, flip_curr_max);
@@ -684,8 +684,8 @@ static int mca_wireless_quick_charge_select_max_ibat(
 	cur_max = min(cur_max, tx_adapter_max);
 	cur_max = min(cur_max, info->proc_data.sw_qc_ichg);
 	if (info->support_base_flip) {
-		mca_wireless_quick_get_parallel_volt_para(info, FG_IC_BASE);
-		mca_wireless_quick_get_parallel_volt_para(info, FG_IC_FLIP);
+		mca_wireless_quick_get_parallel_volt_para(info, FG_IC_MASTER);
+		mca_wireless_quick_get_parallel_volt_para(info, FG_IC_SLAVE);
 		base_limit_curr = mca_wireless_quick_charger_get_base_limit_cur(
 			info, cur_max);
 		if (base_limit_curr)

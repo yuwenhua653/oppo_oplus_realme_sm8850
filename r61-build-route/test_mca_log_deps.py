@@ -17,7 +17,7 @@ for user in result['users']:
     rejected = inspect(ROOT, mutant)
     assert rejected['status'] == 'FAIL' and rejected['missing_direct_provider'] == [user['module']]
     cases.append(user['module'])
-assert len(cases) == 12
+assert len(cases) == 14
 print(json.dumps({'schema': 1, 'status': 'PASS', 'missing_provider_mutants_rejected': len(cases),
                   'modules': cases, 'kernel_compiled': False,
                   'scope': 'Actual candidate C macro calls with one dependency removed per fixture.'}, indent=2))
