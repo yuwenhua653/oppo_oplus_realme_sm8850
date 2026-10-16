@@ -1,6 +1,10 @@
 #ifndef MYRON_TEST_FAKE_KERNEL_H
 #define MYRON_TEST_FAKE_KERNEL_H
 #include <assert.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <sys/types.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <limits.h>
@@ -25,7 +29,15 @@
 #define ERR_PTR(e) ((void *)(intptr_t)(e))
 #define PTR_ERR(p) ((int)(intptr_t)(p))
 #define IS_ERR(p) ((uintptr_t)(p)>=(uintptr_t)-4095)
+typedef int16_t s16;
 struct device { void *of_node; };
+struct attribute { const char *name; unsigned int mode; };
+struct device_attribute { struct attribute attr;ssize_t (*show)(struct device *,struct device_attribute *,char *);void *store; };
+struct attribute_group { const char *name;struct attribute **attrs; };
+#define DEVICE_ATTR_RO(name) struct device_attribute dev_attr_##name = { .attr={#name,0444}, .show=name##_show, .store=NULL }
+#define to_power_supply(d) ((struct power_supply *)((char *)(d)-offsetof(struct power_supply,dev)))
+static int sysfs_emit(char *buf,const char *fmt,...){va_list ap;va_start(ap,fmt);int n=vsnprintf(buf,4096,fmt,ap);va_end(ap);return n;}
+
 struct i2c_client { struct device dev; unsigned int addr; void *adapter; };
 struct of_device_id { const char *compatible; };
 struct i2c_driver { struct { const char *name; const struct of_device_id *of_match_table; } driver;int (*probe)(struct i2c_client *); };
@@ -38,11 +50,11 @@ enum { POWER_SUPPLY_STATUS_UNKNOWN=0,POWER_SUPPLY_HEALTH_UNKNOWN=0,POWER_SUPPLY_
 union power_supply_propval { int intval; };
 struct power_supply;
 struct power_supply_desc { const char *name;int type;enum power_supply_property *properties;size_t num_properties;int (*get_property)(struct power_supply *,enum power_supply_property,union power_supply_propval *);void *set_property,*property_is_writeable;bool no_thermal; };
-struct power_supply_config { void *drv_data,*of_node; };
-struct power_supply { void *drv_data;const struct power_supply_desc *desc; };
+struct power_supply_config { void *drv_data,*of_node; const struct attribute_group **attr_grp; };
+struct power_supply { struct device dev;void *drv_data;const struct power_supply_desc *desc;const struct attribute_group **groups; };
 struct resource { void *ptr;int type; };
 static struct resource resources[8];static int nr;
-static int values[3],reads,ports[128],fail_at,read_error;
+static int values[5],reads,ports[128],fail_at,read_error;
 static bool compatible,capable,alloc_fail,existing_psy,auto_attach;
 static int monitored_form,register_error,refs,registrations,unregistrations,driver_adds,driver_dels,driver_error,probe_attempts,owner;
 static int release_order[8],release_count;
@@ -50,7 +62,7 @@ static struct power_supply *active_psy;static struct power_supply prior_psy;
 static struct i2c_driver *registered_driver;
 static struct i2c_client client={.dev={.of_node=(void *)1},.addr=0x55,.adapter=(void *)1};
 static int i2c_smbus_read_word_data(struct i2c_client *c,unsigned char reg){
- assert(c==&client);int i=reg==0x2c?0:reg==0x08?1:reg==0x06?2:-1;assert(i>=0);assert(reads<128);ports[reads++]=reg;
+ assert(c==&client);int i=reg==0x2c?0:reg==0x08?1:reg==0x06?2:reg==0x0c?3:reg==0x0a?4:-1;assert(i>=0);assert(reads<128);ports[reads++]=reg;
  if(reads==fail_at)return read_error;return values[i];
 }
 static bool of_device_is_compatible(void *node,const char *name){assert(!strcmp(name,"ti,bq27z561_master"));return compatible;}
@@ -62,7 +74,7 @@ static void power_supply_put(struct power_supply *p){assert(p==&prior_psy&&refs=
 static void *power_supply_get_drvdata(struct power_supply *p){return p->drv_data;}
 static struct power_supply *devm_power_supply_register(struct device *d,const struct power_supply_desc *desc,const struct power_supply_config *cfg){
  assert(!cfg->of_node);assert(!active_psy);if(register_error)return ERR_PTR(register_error);
- struct power_supply *p=calloc(1,sizeof(*p));assert(p);p->drv_data=cfg->drv_data;p->desc=desc;
+ struct power_supply *p=calloc(1,sizeof(*p));assert(p);p->drv_data=cfg->drv_data;p->desc=desc;p->groups=cfg->attr_grp;
  /* Driver context must already be valid for registration-time callbacks. */
  union power_supply_propval v={.intval=-999};int ret=desc->get_property(p,POWER_SUPPLY_PROP_TEMP,&v);if(ret){free(p);return ERR_PTR(ret);}
  resources[nr++]=(struct resource){p,2};active_psy=p;registrations++;return p;

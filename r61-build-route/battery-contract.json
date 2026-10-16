@@ -507,7 +507,7 @@
     },
     {
       "path": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",
-      "sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52"
+      "sha256": "6b546907c6d24f164519b14e5e22ccfa78a7ff704c4cb969656b6ef42590b1f9"
     },
     {
       "path": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
@@ -704,7 +704,7 @@
     },
     {
       "path": "r61-build-route/battery-write-lock.json",
-      "sha256": "ca00c0309f16fd0e0bd1f95d9ca28bff44dfb7f956581af007d8feaea26d928e",
+      "sha256": "217b4c22d30caa823e6b78f38a83b983852a0668917fda08b10f851cbbab8d73",
       "bytes": 17134
     },
     {
@@ -884,8 +884,8 @@
     },
     {
       "path": "r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
-      "sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52",
-      "bytes": 6395
+      "sha256": "6b546907c6d24f164519b14e5e22ccfa78a7ff704c4cb969656b6ef42590b1f9",
+      "bytes": 9785
     },
     {
       "path": "r61-build-route/payload/drivers/xiaomi/myron/Kconfig",
@@ -1044,8 +1044,8 @@
     },
     {
       "path": "r61-build-route/reviews/standalone-gauge-integration.json",
-      "sha256": "8c12324be72a34461399c1f2bbcdebbddf02eea26f14836b244e663f64ac9a10",
-      "bytes": 3565
+      "sha256": "130986d72b146e14e9d061e2374858c68acb6e0812f19711e8b743b1e2b7ab74",
+      "bytes": 5603
     },
     {
       "path": "r61-build-route/runtime-closure-scope.json",
@@ -1079,18 +1079,18 @@
     },
     {
       "path": "r61-build-route/test-inputs/standalone-gauge/cases.c",
-      "sha256": "93aa0e6287b9390c602b83b860cce6c949c7ec7ddc782995834e297dc495ce1b",
-      "bytes": 7631
+      "sha256": "c01c5375c7acb75fdff4b2d103e87ffa22a630fac8b36af04c03288427d0e9a4",
+      "bytes": 13304
     },
     {
       "path": "r61-build-route/test-inputs/standalone-gauge/fake_kernel.h",
-      "sha256": "7c0588c4149e4db269322ffabda86dd7c59f28592b1924e9225bae509f969587",
-      "bytes": 5286
+      "sha256": "082dc889e51f90e693282b8c3ad9c37380ed2edcda720150bf35a7cfb2f15352",
+      "bytes": 6139
     },
     {
       "path": "r61-build-route/test-inputs/standalone-gauge/test_myron_bq_readonly.py",
-      "sha256": "4ad8546b9c9ee3f1943c14c6203e2f43dd26665cd19a1a05d3c4b122af752088",
-      "bytes": 2764
+      "sha256": "ae271c1736d2e633f244cee5409e09a390a86ade4150e6a9ba164a35f898e6b0",
+      "bytes": 3179
     },
     {
       "path": "r61-build-route/test_battery_preimages.py",

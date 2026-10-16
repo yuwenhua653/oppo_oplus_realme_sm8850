@@ -3,6 +3,7 @@
  * Minimal opt-in battery telemetry. No charging, authentication, firmware,
  * manufacturer commands or persistent storage operations are implemented.
  */
+#include <linux/device.h>
 #include <linux/err.h>
 #include <linux/errno.h>
 #include <linux/i2c.h>
@@ -13,22 +14,35 @@
 #include <linux/power_supply.h>
 #include <linux/property.h>
 #include <linux/slab.h>
+#include <linux/sysfs.h>
 
 /* Public TI SLUUBO7 standard commands (13.1.4, 13.1.5, 13.1.18).
- * These three SMBus word commands are the entire hardware access surface.
+ * The original three commands remain independent of optional extended reads.
  */
 #define MYRON_REG_SOC		0x2c
 #define MYRON_REG_VOLTAGE	0x08
 #define MYRON_REG_TEMPERATURE	0x06
+/* Public SLUUBO7 13.1.6/7 and SLUUC54C 12.1.6/7: read-only words. */
+#define MYRON_REG_BATTERY_STATUS	0x0a
+#define MYRON_REG_CURRENT	0x0c
 
 static bool enable_readonly;
 module_param(enable_readonly, bool, 0444);
 MODULE_PARM_DESC(enable_readonly,
 	"Explicitly enable read-only gauge telemetry; disabled by default");
 
+/* Separate opt-in preserves the original three-command behavior by default.
+ * No automatic mapping from raw flags to STATUS/HEALTH/ONLINE is made.
+ */
+static bool enable_extended_readonly;
+module_param(enable_extended_readonly, bool, 0444);
+MODULE_PARM_DESC(enable_extended_readonly,
+	"Opt in to current and raw BatteryStatus reads; requires enable_readonly");
+
 struct myron_readonly_gauge {
 	struct i2c_client *client;
 	struct mutex lock;
+	bool extended_readonly;
 };
 
 struct myron_readonly_sample {
@@ -88,6 +102,58 @@ out:
 	return ret;
 }
 
+/* Keep new reads separate: their failures cannot invalidate original SOC/V/T.
+ * This helper has only two admitted command codes, never a userspace address.
+ */
+static int myron_readonly_extended_word(struct myron_readonly_gauge *gauge,
+				       unsigned char command)
+{
+	int ret;
+
+	if (!gauge->extended_readonly)
+		return -EOPNOTSUPP;
+	if (command != MYRON_REG_CURRENT && command != MYRON_REG_BATTERY_STATUS)
+		return -EINVAL;
+	mutex_lock(&gauge->lock);
+	ret = i2c_smbus_read_word_data(gauge->client, command);
+	mutex_unlock(&gauge->lock);
+	/* Preserve negative errno before any signed-word conversion. */
+	if (ret > 0xffff)
+		return -ERANGE;
+	return ret;
+}
+
+static ssize_t battery_status_raw_show(struct device *dev,
+				      struct device_attribute *attr, char *buf)
+{
+	struct myron_readonly_gauge *gauge =
+		power_supply_get_drvdata(to_power_supply(dev));
+	int raw;
+
+	(void)attr;
+	raw = myron_readonly_extended_word(gauge, MYRON_REG_BATTERY_STATUS);
+	if (raw < 0)
+		return raw;
+	/* Raw flags, including reserved bits, are evidence, not a health decision.
+	 * In particular DSG can mean RELAX as well as DISCHARGE.
+	 */
+	return sysfs_emit(buf, "0x%04x\n", (unsigned int)raw);
+}
+static DEVICE_ATTR_RO(battery_status_raw);
+
+static struct attribute *myron_readonly_diag_attrs[] = {
+	&dev_attr_battery_status_raw.attr,
+	NULL,
+};
+static const struct attribute_group myron_readonly_diag_group = {
+	.name = "myron_readonly_diag",
+	.attrs = myron_readonly_diag_attrs,
+};
+static const struct attribute_group *myron_readonly_diag_groups[] = {
+	&myron_readonly_diag_group,
+	NULL,
+};
+
 static int myron_readonly_get_property(struct power_supply *psy,
 				      enum power_supply_property prop,
 				      union power_supply_propval *value)
@@ -97,6 +163,17 @@ static int myron_readonly_get_property(struct power_supply *psy,
 	int ret;
 
 	switch (prop) {
+	case POWER_SUPPLY_PROP_CURRENT_NOW:
+		if (!gauge->extended_readonly)
+			return -EINVAL;
+		ret = myron_readonly_extended_word(gauge, MYRON_REG_CURRENT);
+		if (ret < 0)
+			return ret;
+		/* Signed 16-bit mA -> uA, same positive-charge/negative-discharge
+		 * convention as Linux. Full range fits the signed int result.
+		 */
+		value->intval = (s16)ret * 1000;
+		return 0;
 	case POWER_SUPPLY_PROP_STATUS:
 		value->intval = POWER_SUPPLY_STATUS_UNKNOWN;
 		return 0;
@@ -147,12 +224,30 @@ static const struct power_supply_desc myron_readonly_desc = {
 	.no_thermal = true,
 };
 
+static enum power_supply_property myron_readonly_extended_properties[] = {
+	POWER_SUPPLY_PROP_STATUS,
+	POWER_SUPPLY_PROP_HEALTH,
+	POWER_SUPPLY_PROP_CAPACITY,
+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+	POWER_SUPPLY_PROP_TEMP,
+	POWER_SUPPLY_PROP_CURRENT_NOW,
+};
+static const struct power_supply_desc myron_readonly_extended_desc = {
+	.name = "battery",
+	.type = POWER_SUPPLY_TYPE_BATTERY,
+	.properties = myron_readonly_extended_properties,
+	.num_properties = ARRAY_SIZE(myron_readonly_extended_properties),
+	.get_property = myron_readonly_get_property,
+	.no_thermal = true,
+};
+
 static int myron_readonly_probe(struct i2c_client *client)
 {
 	struct power_supply_config cfg = {};
 	struct myron_readonly_gauge *gauge;
 	struct myron_readonly_sample sample;
 	struct power_supply *existing, *psy;
+	const struct power_supply_desc *desc;
 	int ret;
 
 	if (!enable_readonly)
@@ -177,17 +272,24 @@ static int myron_readonly_probe(struct i2c_client *client)
 	if (!gauge)
 		return -ENOMEM;
 	gauge->client = client;
+	gauge->extended_readonly = enable_extended_readonly;
 	mutex_init(&gauge->lock);
 	ret = myron_readonly_sample(gauge, &sample);
 	if (ret)
 		return dev_err_probe(&client->dev, ret,
 			"read-only telemetry sample unavailable\n");
 	cfg.drv_data = gauge;
+	desc = &myron_readonly_desc;
+	if (gauge->extended_readonly) {
+		desc = &myron_readonly_extended_desc;
+		/* Core device groups share the managed supply's lifetime. */
+		cfg.attr_grp = myron_readonly_diag_groups;
+	}
 	/* Context is ready for register-time callbacks. Devres unregisters
 	 * this supply and cancels the core's work before freeing the context.
 	 * A racing same-name registration is rejected by the device core.
 	 */
-	psy = devm_power_supply_register(&client->dev, &myron_readonly_desc, &cfg);
+	psy = devm_power_supply_register(&client->dev, desc, &cfg);
 	if (IS_ERR(psy))
 		return dev_err_probe(&client->dev, PTR_ERR(psy),
 			"read-only telemetry registration failed\n");

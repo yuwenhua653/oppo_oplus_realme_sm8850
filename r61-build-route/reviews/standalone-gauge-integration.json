@@ -1,9 +1,9 @@
 {
   "schema": 1,
-  "status": "SOURCE_READY_FOR_COMPILE_ONLY",
+  "status": "R69_EXTENDED_READONLY_SOURCE_READY_FOR_COMPILE_ONLY",
   "compile_only": true,
   "flashable": false,
-  "baseline_commit": "bdee59b93d40fbfb71d0479d359bcc57f6924bac",
+  "baseline_commit": "aac903ca4964204f7f49943a59b0cbdcc168b1f9",
   "new_module": {
     "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/myron_bq_readonly",
     "module_name": "myron_bq_readonly",
@@ -14,7 +14,7 @@
     ]
   },
   "new_payload": "r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
-  "new_source_sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52",
+  "new_source_sha256": "6b546907c6d24f164519b14e5e22ccfa78a7ff704c4cb969656b6ef42590b1f9",
   "registry": {
     "path": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
     "baseline_sha256": "4ad9cc47ab235f904e9f34549e0dc5e8b58eb710734cd84f7e20b3d88556fb24",
@@ -45,40 +45,88 @@
   "runtime_defaults": {
     "kconfig_default": "n",
     "compile_only_overlay": "m",
-    "module_enable_readonly_default": false
+    "module_enable_readonly_default": false,
+    "module_enable_extended_readonly_default": false
   },
   "runtime_validation": "NOT_PERFORMED",
   "old_BQ_source_changed": false,
   "old_BQ_test_changed": false,
-  "new_source_bytes": 6395,
+  "new_source_bytes": 9785,
   "frozen_source_and_fixture_files": [
     {
       "path": "r61-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
-      "sha256": "f2ffd51c215c274f362150b70291ee317a68003ae09fc33eabb268f9c8150e52",
-      "bytes": 6395
-    },
-    {
-      "path": "r61-build-route/test-inputs/standalone-gauge/test_myron_bq_readonly.py",
-      "sha256": "4ad8546b9c9ee3f1943c14c6203e2f43dd26665cd19a1a05d3c4b122af752088",
-      "bytes": 2764
-    },
-    {
-      "path": "r61-build-route/test-inputs/standalone-gauge/fake_kernel.h",
-      "sha256": "7c0588c4149e4db269322ffabda86dd7c59f28592b1924e9225bae509f969587",
-      "bytes": 5286
+      "sha256": "6b546907c6d24f164519b14e5e22ccfa78a7ff704c4cb969656b6ef42590b1f9",
+      "bytes": 9785
     },
     {
       "path": "r61-build-route/test-inputs/standalone-gauge/cases.c",
-      "sha256": "93aa0e6287b9390c602b83b860cce6c949c7ec7ddc782995834e297dc495ce1b",
-      "bytes": 7631
+      "sha256": "c01c5375c7acb75fdff4b2d103e87ffa22a630fac8b36af04c03288427d0e9a4",
+      "bytes": 13304
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/fake_kernel.h",
+      "sha256": "082dc889e51f90e693282b8c3ad9c37380ed2edcda720150bf35a7cfb2f15352",
+      "bytes": 6139
+    },
+    {
+      "path": "r61-build-route/test-inputs/standalone-gauge/test_myron_bq_readonly.py",
+      "sha256": "ae271c1736d2e633f244cee5409e09a390a86ade4150e6a9ba164a35f898e6b0",
+      "bytes": 3179
     }
   ],
-  "source_author_manifest_sha256": "1d5688d589eeb722dba179e2a5a8e15db09380244b30d489a063aaba3d1c434a",
-  "host_test_fixture_groups": 29,
+  "source_author_manifest_sha256": "307fd8fe0ee0ed0068a044bf873a4c0fb0db08f4535c41be3d63c29c992c0636",
+  "host_test_fixture_groups": 44,
   "host_test_entire_translation_unit": true,
   "host_test_sanitizers": [
     "address",
     "undefined"
   ],
-  "kernel_compiled": false
+  "kernel_compiled": false,
+  "r69_change": {
+    "original_sample_function_byte_identical": true,
+    "original_29_fixture_groups_retained": true,
+    "extended_opt_in": "enable_readonly=1 enable_extended_readonly=1",
+    "module_parameter_modes": "0444 (immutable after insertion)",
+    "current": "SMBus read-word 0x0c; preserve negative errno then signed16 mA *1000 to microamps",
+    "raw_status": "SMBus read-word 0x0a; battery/myron_readonly_diag/battery_status_raw, read-only hexadecimal",
+    "status_health": "UNKNOWN; no guessed charging, present, health or USB online",
+    "no_hardware_write_or_control": true,
+    "original_five_properties_and_three_commands_when_extended_off": true,
+    "new_read_errors_do_not_invalidate_original_sample_path": true,
+    "managed_attribute_groups_share_supply_lifetime": true,
+    "protocol_primary_sources": [
+      {
+        "url": "https://www.ti.com/lit/ug/sluubo7/sluubo7.pdf",
+        "document": "SLUUBO7 June 2018",
+        "sections": [
+          "2.2 p8",
+          "4.3 pp14-16",
+          "13.1.6/13.1.7 pp56-57"
+        ]
+      },
+      {
+        "url": "https://www.ti.com/lit/ug/sluuc54c/sluuc54c.pdf",
+        "document": "SLUUC54C revised March 2024",
+        "sections": [
+          "2.2 p11",
+          "12.1.6/12.1.7 p78"
+        ]
+      },
+      {
+        "url": "https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-power",
+        "sections": [
+          "current_now",
+          "status",
+          "health",
+          "online"
+        ]
+      }
+    ],
+    "runtime_limits": [
+      "Current and raw flags have not been read on target; interpret after same-boot plug/unplug evidence.",
+      "DSG includes RELAX; it cannot alone supply charging/discharging or USB online.",
+      "The R68 native contract rejects current_now and pins its old module SHA; a future reviewed image/helper is required.",
+      "This compile candidate does not load MCA, enable charging or restore fast charging."
+    ]
+  }
 }
