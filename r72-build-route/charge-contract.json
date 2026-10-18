@@ -1,0 +1,290 @@
+{
+  "schema": 1,
+  "source_review": "PASS",
+  "compile_only": true,
+  "flashable": false,
+  "base_commit": "2e4598d9f996d2b84a0c95f8c0a80fd841038b68",
+  "base_contract": "r61-build-route/battery-contract.json",
+  "base_contract_sha256": "f78f8e0bdaf21461235d41c554fdda9fb60d2e59afdaecefd0dfce73ac8982ba",
+  "sources_lock_sha256": "ef3d806f679ac8e0bf1371e6ab6dfc173118a32e3a66f44f684116bc0b52e756",
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "build/kernel": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "prebuilts/clang/host/linux-x86": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04"
+  },
+  "core_targets": [
+    "//common:kernel_aarch64",
+    "//myron_artifact_metadata:kernel_release"
+  ],
+  "locked_files": [
+    {
+      "path": "r72-build-route/README.md",
+      "bytes": 3404,
+      "sha256": "b3f01641607d6f5128c3eaee26486d21b9bccfff1763a998d7ebc55e875da073"
+    },
+    {
+      "path": "r72-build-route/apply_charge.py",
+      "bytes": 2591,
+      "sha256": "d21d30153d51aebe5a38ea8c691d1aacdadf66d1d89e0522d8bb62e7a8d51030"
+    },
+    {
+      "path": "r72-build-route/build_charge.py",
+      "bytes": 9729,
+      "sha256": "244244195dccd40663078da1ff8ce6996248753d69faac0cf390db04c6ec7e46"
+    },
+    {
+      "path": "r72-build-route/check_charge_inputs.py",
+      "bytes": 12327,
+      "sha256": "2dbc81ddd40fee8a06e59fa6bd3261e6a084f65fb15423a163e7e6c991435e86"
+    },
+    {
+      "path": "r72-build-route/fragments/Kconfig",
+      "bytes": 395,
+      "sha256": "43436d65be9dc3083d2f71dbc8ff87be476d4cd05d71630a95c096cd9f67a96e"
+    },
+    {
+      "path": "r72-build-route/fragments/canoe_perf.bzl",
+      "bytes": 131,
+      "sha256": "ba6c3d0d431c439a72cd09f884e76f242e850f0e156a7a2974d5ab2a287605dc"
+    },
+    {
+      "path": "r72-build-route/fragments/modules.bzl",
+      "bytes": 516,
+      "sha256": "f21326b5adc6b2de616d740aa832dad10e46db7aac1f1b67eec2ade8e2429e64"
+    },
+    {
+      "path": "r72-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+      "bytes": 12621,
+      "sha256": "b2402e6cdd49ecf7c8603437eb387a434663251ab6e177e2278fe937c1792b89"
+    },
+    {
+      "path": "r72-build-route/payload/drivers/soc/qcom/qti_pmic_glink.c",
+      "bytes": 25870,
+      "sha256": "e766099f52c4905cef5b79e9b8203afbd33aaf303f60c6856d75fb9fb3299999"
+    },
+    {
+      "path": "r72-build-route/payload/include/linux/soc/qcom/qti_pmic_glink.h",
+      "bytes": 2788,
+      "sha256": "b12e923464df2b0f46a872d7be168856adaac0e00b2d7c83c123fc18f5418baa"
+    },
+    {
+      "path": "r72-build-route/reference/qti_pmic_glink.h",
+      "bytes": 1973,
+      "sha256": "a1d6a70007391059ed6c9f42c9279256d1dfadb36ab807715a72393d00dd13a9"
+    },
+    {
+      "path": "r72-build-route/run_host_tests.py",
+      "bytes": 2191,
+      "sha256": "e425c1bb84bcd480d618cd9b8881c325c90da83387cb0211e72a5325c4b70c34"
+    },
+    {
+      "path": "r72-build-route/test_integration.py",
+      "bytes": 7173,
+      "sha256": "e9111e099b218f9327b629e2915be5dca14fc623864f0662de3f516b81962a60"
+    },
+    {
+      "path": "r72-build-route/tests/client/fake_kernel.h",
+      "bytes": 5117,
+      "sha256": "8409be0030667d2b210c155f1fa8ec3d3aa694a33cd8f3d9e1517b7976d0aadf"
+    },
+    {
+      "path": "r72-build-route/tests/client/qti_pmic_glink.h",
+      "bytes": 2788,
+      "sha256": "b12e923464df2b0f46a872d7be168856adaac0e00b2d7c83c123fc18f5418baa"
+    },
+    {
+      "path": "r72-build-route/tests/client/run_tests.py",
+      "bytes": 2805,
+      "sha256": "56e218a5328c176858a3333296c98d234acb4bd5f497d87cf8f160f648b5134b"
+    },
+    {
+      "path": "r72-build-route/tests/client/test_client.c",
+      "bytes": 12731,
+      "sha256": "b225b48cb3a2aefe5817eb5fcafe1a65e1e3beebcd07c380d0965a6a7ac8bc38"
+    },
+    {
+      "path": "r72-build-route/tests/transport/fake_kernel.h",
+      "bytes": 5743,
+      "sha256": "073806c3451b454c111f4feca4a7b413c267df94bda3811de9f48fe281a5b087"
+    },
+    {
+      "path": "r72-build-route/tests/transport/run_tests.py",
+      "bytes": 3811,
+      "sha256": "a7d803162b43c2333b0c7860de7e7e6a42b4e0383c9f2c6284fcbc594a23550b"
+    },
+    {
+      "path": "r72-build-route/tests/transport/test_transport.c",
+      "bytes": 8671,
+      "sha256": "37dff63436b7e98253c296f4c16fda038d60a8bbb9e1657e54a001a8d4fbc687"
+    },
+    {
+      "path": "r55-source/ci/extract_inputs.py",
+      "bytes": 3464,
+      "sha256": "ba825bdbbb50bd7ad2b765b4b9b0bd5263243c72c58adfddd4fb3ceb123d8cde"
+    },
+    {
+      "path": "r55-source/ci/legacy-preparation-lock.json",
+      "bytes": 1883,
+      "sha256": "8ba70d2fc697f4ac2b6643388d512d0a909d8180a3d1353b82430ff05fc6ed22"
+    },
+    {
+      "path": "r55-source/ci/prepare_legacy.py",
+      "bytes": 1216,
+      "sha256": "16a7dc4a37912a2e5791b949b93d2ba8cfda4aea6930d03b5c127b32715a22f1"
+    },
+    {
+      "path": "r60-build-route/check_hardware_inputs.py",
+      "bytes": 3774,
+      "sha256": "52c32f0238a8b62a2e06553395c26bea12c0d3080f5cfad6aa7dbdbe484ee1d6"
+    },
+    {
+      "path": "r60-build-route/hardware-contract.json",
+      "bytes": 5867,
+      "sha256": "d9c7afaf4a33c76e8c7ec64e064c24ec1bfa21b501118d093b4e884fe941c10d"
+    },
+    {
+      "path": "r61-build-route/action_chain.py",
+      "bytes": 4667,
+      "sha256": "ffede0974d3a2c46416f9096373a8b214305a4a1227ed62b94ebb83d33882eef"
+    },
+    {
+      "path": "r61-build-route/apply_battery.py",
+      "bytes": 4691,
+      "sha256": "1ca48301e795592cde24bda824954603b945bb7ac342ee3aa306d454260b7071"
+    },
+    {
+      "path": "r61-build-route/battery-contract.json",
+      "bytes": 84543,
+      "sha256": "f78f8e0bdaf21461235d41c554fdda9fb60d2e59afdaecefd0dfce73ac8982ba"
+    },
+    {
+      "path": "r61-build-route/check_battery_inputs.py",
+      "bytes": 8238,
+      "sha256": "c803876305a1c552b25628a4cdde48d3f42af3c2ce254c0e369f32e688bfc573"
+    },
+    {
+      "path": "r61-build-route/payload/configs/canoe_perf.bzl",
+      "bytes": 17521,
+      "sha256": "31aa95071a54879611199830566a66cdaff09c3c164df7ad8fe6a94f39fe5ded"
+    },
+    {
+      "path": "r61-build-route/payload/drivers/xiaomi/myron/Kconfig",
+      "bytes": 4304,
+      "sha256": "904f7597f77d0f0b2d272a6f6fba6e53b0186f2ff2150faafa7c65e1fe85e0e5"
+    },
+    {
+      "path": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
+      "bytes": 173915,
+      "sha256": "bb126e8e33348cf4bac4b99372025933f2ba95aea247af650a146bd77c95561b"
+    },
+    {
+      "path": "r61-build-route/sync_with_retry.py",
+      "bytes": 8601,
+      "sha256": "6d34d04e90fde257a2278dacf7afec663a133a6c120cba284eae752cee3e7f90"
+    },
+    {
+      "path": "r61-build-route/targeted_battery_build.py",
+      "bytes": 21259,
+      "sha256": "01a5f8dbc23e28fd53b282e3229cd7d9606be4a6f0467958d75836ea1a058554"
+    }
+  ],
+  "writes": [
+    {
+      "destination": "vendor/qcom/sm8850/drivers/soc/qcom/qti_pmic_glink.c",
+      "source": "r72-build-route/payload/drivers/soc/qcom/qti_pmic_glink.c",
+      "mode": "replace",
+      "before_sha256": "ec6c7a174c6ab5ed32e39968bb3fdd0c254c5428349411b1630a86bb84ec7e46",
+      "after_sha256": "e766099f52c4905cef5b79e9b8203afbd33aaf303f60c6856d75fb9fb3299999",
+      "bytes": 25870
+    },
+    {
+      "destination": "vendor/qcom/sm8850/include/linux/soc/qcom/qti_pmic_glink.h",
+      "source": "r72-build-route/payload/include/linux/soc/qcom/qti_pmic_glink.h",
+      "mode": "replace",
+      "before_sha256": "a1d6a70007391059ed6c9f42c9279256d1dfadb36ab807715a72393d00dd13a9",
+      "after_sha256": "b12e923464df2b0f46a872d7be168856adaac0e00b2d7c83c123fc18f5418baa",
+      "bytes": 2788
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+      "source": "r72-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+      "mode": "replace",
+      "before_sha256": null,
+      "after_sha256": "b2402e6cdd49ecf7c8603437eb387a434663251ab6e177e2278fe937c1792b89",
+      "bytes": 12621
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
+      "source": "r72-build-route/fragments/modules.bzl",
+      "mode": "append",
+      "preimage": "r61-build-route/payload/drivers/xiaomi/myron/modules.bzl",
+      "before_sha256": "bb126e8e33348cf4bac4b99372025933f2ba95aea247af650a146bd77c95561b",
+      "after_sha256": "1b00f245ea5cce6461cbeefd8b8a3a0a6448f0f1408161ae151a985724f1a5eb",
+      "bytes": 174431
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
+      "source": "r72-build-route/fragments/Kconfig",
+      "mode": "append",
+      "preimage": "r61-build-route/payload/drivers/xiaomi/myron/Kconfig",
+      "before_sha256": "904f7597f77d0f0b2d272a6f6fba6e53b0186f2ff2150faafa7c65e1fe85e0e5",
+      "after_sha256": "e13738ecee18a03aa6d32258a771014a6ca5070e6ca4cdf724b5a2535fa4155b",
+      "bytes": 4699
+    },
+    {
+      "destination": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
+      "source": "r72-build-route/fragments/canoe_perf.bzl",
+      "mode": "append",
+      "preimage": "r61-build-route/payload/configs/canoe_perf.bzl",
+      "before_sha256": "31aa95071a54879611199830566a66cdaff09c3c164df7ad8fe6a94f39fe5ded",
+      "after_sha256": "462b36eaf80ee15d8334275b5e0801f01a2ef545f73754b42e8fd0dcd25260aa",
+      "bytes": 17652
+    }
+  ],
+  "modules": [
+    {
+      "module_name": "qti_pmic_glink",
+      "stem": "drivers/soc/qcom/qti_pmic_glink",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/soc/qcom/qti_pmic_glink",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qti_pmic_glink/qti_pmic_glink.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qti_pmic_glink/canoe_perf/drivers/soc/qcom/qti_pmic_glink_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/soc/qcom/qti_pmic_glink.c",
+        "vendor/qcom/sm8850/include/linux/soc/qcom/qti_pmic_glink.h"
+      ]
+    },
+    {
+      "module_name": "myron_mca_readonly",
+      "stem": "drivers/power/supply/myron_mca_readonly/myron_mca_readonly",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/myron_mca_readonly/myron_mca_readonly",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_mca_readonly/myron_mca_readonly/myron_mca_readonly.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_mca_readonly/myron_mca_readonly/canoe_perf/drivers/power/supply/myron_mca_readonly/myron_mca_readonly_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+        "vendor/qcom/sm8850/include/linux/soc/qcom/qti_pmic_glink.h"
+      ]
+    }
+  ],
+  "host_tests": [
+    {
+      "name": "transport",
+      "script": "r72-build-route/tests/transport/run_tests.py",
+      "source": "r72-build-route/payload/drivers/soc/qcom/qti_pmic_glink.c",
+      "header": "r72-build-route/payload/include/linux/soc/qcom/qti_pmic_glink.h",
+      "result_file": "RESULT.json"
+    },
+    {
+      "name": "client",
+      "script": "r72-build-route/tests/client/run_tests.py",
+      "source": "r72-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+      "header": "r72-build-route/payload/include/linux/soc/qcom/qti_pmic_glink.h",
+      "result_file": "RESULT.json"
+    }
+  ],
+  "runtime_abi_compatible": "NOT_YET_VALIDATED",
+  "limits": "Compile-only two-module pair. Original Image, all exports/imports, retained QTI consumers, signature/namespace/CFI and runtime load/protocol behavior need separate review."
+}
