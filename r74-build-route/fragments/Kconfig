@@ -1,0 +1,8 @@
+config MYRON_MCA_READONLY
+    tristate "Myron independent read-only MCA telemetry (compile qualification only)"
+    depends on OF && SYSFS && POWER_SUPPLY && QTI_PMIC_GLINK
+    default n
+    help
+      Compile an independent opt-in GET-only client with a fixed property
+      allowlist and optional read-only USB power_supply reporting. This
+      does not enable charging policies or install any module on a device.
