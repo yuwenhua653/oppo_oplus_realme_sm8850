@@ -44,7 +44,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo '6fdefffaffcc74b83f0388d71f2698a5807fcf7eebddae7c113c2aec2fcfca5c  r77-build-route/thermal-contract.json' | sha256sum --check --strict
+          echo '0b3ef93711b68d6db422d5b0f1d86974985b31bc7034c8c36fa59a012c86498f  r77-build-route/thermal-contract.json' | sha256sum --check --strict
           python3 r77-build-route/thermal_inputs.py --root "$GITHUB_WORKSPACE"
           python3 r77-build-route/test_integration.py
           python3 r77-build-route/run_host_tests.py --root "$GITHUB_WORKSPACE" \

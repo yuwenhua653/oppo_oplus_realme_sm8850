@@ -72,8 +72,8 @@
       "destination": "vendor/qcom/sm8850/drivers/thermal/myron_buck_thermal.c",
       "source": "r77-build-route/payload/drivers/thermal/myron_buck_thermal.c",
       "before_sha256": null,
-      "after_sha256": "0856788f154eb4f4e770bbfd1093b0c8c571cc10cacd094dc8671019aa28eb65",
-      "bytes": 9653
+      "after_sha256": "b4a54111dac86447b527859f96a57aa4cc5b83ada2f49472c9d37b4803eb9be5",
+      "bytes": 9685
     }
   ],
   "modules": [
@@ -413,8 +413,8 @@
     },
     {
       "path": "r77-build-route/README.md",
-      "bytes": 6891,
-      "sha256": "d5775130c795d0d082c686333762e3aa69369d1f3506b59ced59d3265547be45"
+      "bytes": 7231,
+      "sha256": "0a9b6da6cdf5a98aaa6ebe9819f32ed37421c29e556c2ac718485dd07f1230e0"
     },
     {
       "path": "r77-build-route/apply_thermal.py",
@@ -443,13 +443,13 @@
     },
     {
       "path": "r77-build-route/payload/drivers/thermal/myron_buck_thermal.c",
-      "bytes": 9653,
-      "sha256": "0856788f154eb4f4e770bbfd1093b0c8c571cc10cacd094dc8671019aa28eb65"
+      "bytes": 9685,
+      "sha256": "b4a54111dac86447b527859f96a57aa4cc5b83ada2f49472c9d37b4803eb9be5"
     },
     {
       "path": "r77-build-route/receiver-contract.json",
-      "bytes": 4369,
-      "sha256": "4c01cf539cc8de980da1cbae72b29ad9a7b56db5b381510b78f2574da6570a31"
+      "bytes": 4365,
+      "sha256": "552a725a1e3b617de89705abc2c18e9f6c2d20bcc898df48cc61100ee4beefa0"
     },
     {
       "path": "r77-build-route/run_host_tests.py",
@@ -463,8 +463,8 @@
     },
     {
       "path": "r77-build-route/tests/fake_kernel.h",
-      "bytes": 5244,
-      "sha256": "0d59d14fddacf746f02f72e0e742dac577a83ccd696da5a330e5c2577b404c7a"
+      "bytes": 5470,
+      "sha256": "81340216698e2efca150113e99cdb3194430f53b7020ebf4b0951dd39eb53cb8"
     },
     {
       "path": "r77-build-route/tests/run_tests.py",
@@ -473,13 +473,13 @@
     },
     {
       "path": "r77-build-route/tests/test_receiver.c",
-      "bytes": 12797,
-      "sha256": "1bff253b23aba53256ada77de0d7eb8b984897344735f4de52c2d499dd18ea7f"
+      "bytes": 12845,
+      "sha256": "ad8ace888089a65e92befb9b2bf40db95582ea37e3cdfee0a65c09447ca5a780"
     },
     {
       "path": "r77-build-route/thermal_inputs.py",
       "bytes": 9903,
-      "sha256": "655e485210fd93046eee0d41885d014b2242e38307df652c736ef52409171051"
+      "sha256": "1878e8cbbe962f50003de9f589833aabe5e302dfa6562c11d9468a1d2097be16"
     }
   ]
 }

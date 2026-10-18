@@ -316,13 +316,13 @@ static struct platform_driver mt_driver = {
 	},
 };
 
-static int __init mt_init(void)
+static int __init myron_buck_thermal_init(void)
 {
 	if (!enable_observer)
 		return -EPERM;
 	return platform_driver_register(&mt_driver);
 }
-module_init(mt_init);
+module_init(myron_buck_thermal_init);
 
 static void __exit mt_exit(void)
 {

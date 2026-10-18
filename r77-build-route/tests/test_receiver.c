@@ -57,13 +57,13 @@ static void rejected(struct platform_device *pdev, unsigned int id, const char *
 static void test_disabled(void)
 {
  struct platform_device pdev; struct device_node node; make_device(&pdev, &node);
- CHECK(!enable_observer); CHECK(mt_init() == -EPERM); CHECK(mt_probe(&pdev) == -EPERM);
+ CHECK(!enable_observer); CHECK(myron_buck_thermal_init() == -EPERM); CHECK(mt_probe(&pdev) == -EPERM);
  CHECK(!test_registers && !test_adds && !test_allocations);
  CHECK(!strcmp(test_parameter_name, "enable_observer"));
  CHECK(!strcmp(test_parameter_type, "bool")); CHECK(test_parameter_mode == 0444);
  enable_observer = true; test_register_error = -EBUSY;
- CHECK(mt_init() == -EBUSY); CHECK(test_registers == 1);
- test_register_error = 0; CHECK(mt_init() == 0); CHECK(test_registers == 2);
+ CHECK(myron_buck_thermal_init() == -EBUSY); CHECK(test_registers == 1);
+ test_register_error = 0; CHECK(myron_buck_thermal_init() == 0); CHECK(test_registers == 2);
  mt_exit(); CHECK(test_unregisters == 1); PASS("default-disabled-and-registration-error");
 }
 static void test_dt(void)

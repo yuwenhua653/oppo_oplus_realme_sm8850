@@ -113,7 +113,7 @@ def check(root,c,inherited=True):
     check_fragments(*(safe(root,'r77-build-route/fragments/'+n).read_text() for n in ('Kconfig','modules.bzl','canoe_perf.bzl')))
     tokens=checker.header_tokens(safe(root,SOURCE).read_bytes())
     receiver=safe(root,'r77-build-route/receiver-contract.json')
-    need(sha(receiver.read_bytes())=='4c01cf539cc8de980da1cbae72b29ad9a7b56db5b381510b78f2574da6570a31','Frozen receiver behavior contract changed')
+    need(sha(receiver.read_bytes())=='552a725a1e3b617de89705abc2c18e9f6c2d20bcc898df48cc61100ee4beefa0','Frozen receiver behavior contract changed')
     behavior=json.loads(receiver.read_text())
     need(behavior['production_source']['sha256']==sha(safe(root,SOURCE).read_bytes()) and
          behavior['compile_only'] is True and behavior['runtime_loading_approved'] is False,'Receiver behavior/source mismatch')

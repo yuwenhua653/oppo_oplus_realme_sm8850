@@ -22,11 +22,16 @@ identity remain authoritative. The R76 source and all earlier routes are unchang
 
 The new production source is
 `payload/drivers/thermal/myron_buck_thermal.c`, SHA256
-`0856788f154eb4f4e770bbfd1093b0c8c571cc10cacd094dc8671019aa28eb65`.
-The source, three host-test files and `receiver-contract.json` are exact copies
-of the implementation owner's frozen inputs. Paths inside the receiver contract
-record the original preparation/evidence locations; the CI source mapping and
-published file inventory are defined by `thermal-contract.json`.
+`b4a54111dac86447b527859f96a57aa4cc5b83ada2f49472c9d37b4803eb9be5`.
+FIX1 renames only the module initialization function to
+`myron_buck_thermal_init`, avoiding the real kernel Maple Tree `mt_init` API.
+Its three test calls use the new name; the host shim now declares the real
+`mt_init(struct maple_tree *)` signature so the original source fails with the
+same conflicting-types error and the corrected source passes all eight groups.
+Receiver behavior, the original independent specification and API evidence
+remain unchanged. `receiver-contract.json` binds the corrected repository source
+and this revision's passing host result. `thermal-contract.json` defines the
+CI source mapping and published inventory.
 
 ## Actual build wiring and output scope
 

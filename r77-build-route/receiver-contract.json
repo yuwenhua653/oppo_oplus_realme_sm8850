@@ -9,9 +9,9 @@
     "mca_charger_thermal"
   ],
   "production_source": {
-    "path": "r77-work/thermal-receiver/source/myron_buck_thermal.c",
-    "bytes": 9653,
-    "sha256": "0856788f154eb4f4e770bbfd1093b0c8c571cc10cacd094dc8671019aa28eb65"
+    "path": "r77-build-route/payload/drivers/thermal/myron_buck_thermal.c",
+    "bytes": 9685,
+    "sha256": "b4a54111dac86447b527859f96a57aa4cc5b83ada2f49472c9d37b4803eb9be5"
   },
   "module_parameters": [
     {
@@ -123,9 +123,9 @@
     "hardware_writes": false
   },
   "tests": {
-    "path": "r77-work/thermal-receiver/test-output-final/RESULT.json",
-    "bytes": 2241,
-    "sha256": "a6d70f1be37fb9b57cfb54376f96b94fd438346c0504101f9392748806e764ee"
+    "path": "r77-work/fix1/green-fixed-source/RESULT.json",
+    "bytes": 2213,
+    "sha256": "6a11aa504905b518af0a8ea54a12d7194dfeb117b384ed4b1d08bdf02f90faf1"
   },
   "test_groups": 8,
   "sanitizers": [

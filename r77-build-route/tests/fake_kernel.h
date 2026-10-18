@@ -34,6 +34,11 @@ typedef uint64_t u64;
 #define module_init(a)
 #define module_exit(a)
 
+/* Signature collision guard from common/include/linux/maple_tree.h.
+ * This stub checks namespace compatibility, not maple-tree behavior. */
+struct maple_tree;
+static inline void mt_init(struct maple_tree *mt) { (void)mt; }
+
 struct mutex { pthread_mutex_t value; };
 static void mutex_init(struct mutex *lock) { assert(!pthread_mutex_init(&lock->value, NULL)); }
 static void mutex_lock(struct mutex *lock) { assert(!pthread_mutex_lock(&lock->value)); }
