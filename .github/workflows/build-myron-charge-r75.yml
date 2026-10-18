@@ -1,0 +1,125 @@
+name: Myron R75 compile-only faster read-only charge reporting
+
+on:
+  push:
+    branches:
+      - codex/myron-r61-battery
+    paths:
+      - .github/workflows/build-myron-charge-r75.yml
+      - r75-build-route/**
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Parallel build jobs
+        type: choice
+        required: true
+        default: '2'
+        options: ['2', '4']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-r75-charge-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CCACHE_NODEBUG: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r1
+      PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
+      BUILD_JOBS: ${{ inputs.jobs || '2' }}
+    steps:
+      - name: Checkout integration files
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Verify frozen inputs and run source tests before sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'd191be88cb0fb978e54becb894cceaa27a0c02962eafe99ddbe5711862d34d56  r75-build-route/charge-contract.json' | sha256sum --check --strict
+          python3 r75-build-route/check_charge_inputs.py --root "$GITHUB_WORKSPACE"
+          python3 r75-build-route/test_integration.py
+          python3 r75-build-route/run_host_tests.py --root "$GITHUB_WORKSPACE" \
+            --reports "$WORKSPACE_DIR/integration-reports"
+
+      - name: Extract the unchanged pinned source preparation bundles
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r55-source/ci/extract_inputs.py --root "$GITHUB_WORKSPACE"
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/fastcheck_r12.py" \
+            --reports "$GITHUB_WORKSPACE/myron-fastchecks"
+
+      - name: Prepare hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config
+          df -h .
+          free -h
+
+      - name: Sync locked source and toolchain revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r61-build-route/sync_with_retry.py \
+            --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR" --jobs 4
+
+      - name: Apply unchanged R18 preparation hooks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r55-source/ci/prepare_legacy.py
+
+      - name: Build three reviewed charging targets and core ABI evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset CCACHE_DEBUG
+          python3 r75-build-route/build_charge.py \
+            --workspace "$WORKSPACE_DIR" --package "$PACKAGE_DIR" \
+            --baseline "$GITHUB_WORKSPACE/myron-adaptation-r12" \
+            --r18 "$GITHUB_WORKSPACE/myron-boot-r18" \
+            --repo-root "$GITHUB_WORKSPACE" --jobs "$BUILD_JOBS"
+
+      - name: Upload R75 source and diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-r75-charge-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r75-*.json
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r75-*.log
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r75-*.txt
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r75-host-*/RESULT.json
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r75-host-*/compile.log
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r75-host-*/run.log
+            ${{ env.WORKSPACE_DIR }}/integration-reports/sync.json
+            ${{ env.WORKSPACE_DIR }}/integration-reports/sync-retries/**/summary.json
+            ${{ env.PACKAGE_DIR }}/sources.lock.json
+            ${{ github.workspace }}/r75-build-route/
+            ${{ github.workspace }}/.github/workflows/build-myron-charge-r75.yml
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload verified three-module compile-only output
+        if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r75-targeted-charge/candidate-complete.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: myron-r75-charge-output-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-artifacts/r75-targeted-charge/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7

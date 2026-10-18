@@ -1,0 +1,10 @@
+"""R75 candidate only. Image/native identity must be finalized from measured reviewed inputs."""
+PRODUCT = 'myron'
+KERNEL = '6.12.81-android16-6-maybe-dirty-4k'
+BASE_BUILD = 'R74-READONLY-STATUS-20261018-01'
+TEST_BUILD = 'R75-READONLY-PD-DIAG-20261018-01'
+PARTITION_BYTES = 100663296
+BASE_SHA = 'edff07856a15c1ea53bcdff4456b6c0d29e41dd49310783c39f240c7f3926a84'
+TEST_SHA = ''
+NATIVE_SHA = ''
+SOURCE_BUILDS = ('R74-READONLY-STATUS-20261018-01',)
