@@ -1,0 +1,9 @@
+
+config MYRON_BUCK_THERMAL
+    tristate "Myron independent buck thermal observer (compile qualification only)"
+    depends on OF && SYSFS
+    default n
+    help
+      Compile a default-off observer of board thermal-limit input. The module
+      reports received limits without MCA, GLINK, voting or charger writes.
+      Compilation does not install, load or enable the observer on a device.

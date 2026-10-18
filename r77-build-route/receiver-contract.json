@@ -1,0 +1,159 @@
+{
+  "schema": "r77-thermal-receiver-contract-v1",
+  "status": "HOST_TESTS_PASS_PENDING_ACTUAL_CI",
+  "compile_only": true,
+  "runtime_loading_approved": false,
+  "module": "myron_buck_thermal",
+  "driver_name": "myron_buck_thermal",
+  "of_match": [
+    "mca_charger_thermal"
+  ],
+  "production_source": {
+    "path": "r77-work/thermal-receiver/source/myron_buck_thermal.c",
+    "bytes": 9653,
+    "sha256": "0856788f154eb4f4e770bbfd1093b0c8c571cc10cacd094dc8671019aa28eb65"
+  },
+  "module_parameters": [
+    {
+      "name": "enable_observer",
+      "type": "bool",
+      "mode": "0444",
+      "default": false
+    }
+  ],
+  "disabled_init_errno": "EPERM",
+  "disabled_probe_errno": "EPERM",
+  "dt": {
+    "property": "wired_thermal",
+    "bytes": 600,
+    "shape": [
+      15,
+      10
+    ],
+    "big_endian_u32": true,
+    "sha256": "6539e46407caa74c604290577741c36f730ee0051c1c5bb27698c0422f714bca",
+    "scope": "probe_snapshot",
+    "exact_every_cell": true,
+    "model_or_whole_dtbo_verification": false
+  },
+  "group": {
+    "name": "myron_buck_thermal",
+    "inputs": [
+      {
+        "name": "wired_ctrl_limit",
+        "mode": "0600",
+        "range": [
+          0,
+          15
+        ],
+        "units": "level",
+        "zero": "no_table_selection"
+      },
+      {
+        "name": "wired_chg_curr",
+        "mode": "0600",
+        "range": [
+          0,
+          2147483647
+        ],
+        "units": "uA",
+        "zero": "raw_zero_observed"
+      },
+      {
+        "name": "wired_chg_curr2",
+        "mode": "0600",
+        "range": [
+          0,
+          2147483647
+        ],
+        "units": "uA",
+        "zero": "raw_zero_observed"
+      },
+      {
+        "name": "wired_thermal_remove",
+        "mode": "0600",
+        "range": [
+          0,
+          1
+        ],
+        "units": "flag",
+        "one": "removal_requested"
+      }
+    ],
+    "output": {
+      "name": "snapshot",
+      "mode": "0444",
+      "schema": 1
+    },
+    "unseen_scalar_errno": "ENODATA",
+    "legacy_daemon_compatibility_claimed": false
+  },
+  "reporting": {
+    "constant_claims": {
+      "source_verified": 0,
+      "eligible_for_control": 0,
+      "hardware_applied": 0,
+      "active_mode_selected": 0
+    },
+    "initial_seen": false,
+    "initial_raw": "unknown",
+    "accepted_ingress": "sysfs_unverified",
+    "clock": "BOOTTIME nanoseconds",
+    "timestamp_scope": "request_receipt_not_sensor_sample",
+    "ttl": "undefined",
+    "current_channel_selection": "unknown",
+    "sequence": "global_u64_each_accepted_write_per_scalar_receipt",
+    "counter_overflow": "EOVERFLOW_without_mutation",
+    "snapshot": "one_mutex_consistent_memory_view_not_atomic_four_input_transaction",
+    "table_display": "all10cells_of_observed_level_minus1_no_active_mode_selection",
+    "removal": "preserve_other_raw_observations_never_unlimited"
+  },
+  "lifetime": {
+    "publication": "sysfs_create_group_after_context_and_DT_gate",
+    "remove": "sysfs_remove_group_without_mutex_then_clear_drvdata_then_devres_context_free",
+    "background_work": false
+  },
+  "external_interfaces": {
+    "new_exports": [],
+    "module_dependencies": [],
+    "power_supply": false,
+    "cooling_device": false,
+    "aliases": false,
+    "MCA_GLINK": false,
+    "hardware_writes": false
+  },
+  "tests": {
+    "path": "r77-work/thermal-receiver/test-output-final/RESULT.json",
+    "bytes": 2241,
+    "sha256": "a6d70f1be37fb9b57cfb54376f96b94fd438346c0504101f9392748806e764ee"
+  },
+  "test_groups": 8,
+  "sanitizers": [
+    "ASan",
+    "UBSan"
+  ],
+  "lsan": false,
+  "independent_spec": {
+    "path": "r77-work/api-review/SPEC.json",
+    "bytes": 15944,
+    "sha256": "05a539980fd257a4536896d3b6fcd8576ed6ae07373dae3bc211756dec6fc27d"
+  },
+  "independent_api": {
+    "path": "r77-work/api-review/API-EXPORTS.json",
+    "bytes": 15634,
+    "sha256": "b47959765cee12097553c38b28183640b5eeb5f194aab168aa2732f9f1d821c8"
+  },
+  "copy_allowlist": [
+    "source/myron_buck_thermal.c",
+    "tests/run_tests.py",
+    "tests/fake_kernel.h",
+    "tests/test_receiver.c",
+    "README.md",
+    "contract.json"
+  ],
+  "limits": [
+    "Compile-only, no automatic load/image/device action.",
+    "Host shim is not real kernel lifetime testing; actual CI/API/module evidence required.",
+    "No verified thermal origin, sensor freshness, active mode, or electrical control is established."
+  ]
+}
