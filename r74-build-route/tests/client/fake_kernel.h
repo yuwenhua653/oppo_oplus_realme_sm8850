@@ -13,6 +13,11 @@
 #include <time.h>
 #include <stdatomic.h>
 #include <limits.h>
+/* Linux arm64 asm/current.h exposes current as this function-like expansion.
+ * Model that namespace even though host tests never inspect a kernel task. */
+struct task_struct;
+static inline struct task_struct *get_current(void){return NULL;}
+#define current get_current()
 typedef uint32_t u32; typedef uint64_t u64; typedef uint8_t u8;
 #define U32_MAX UINT32_MAX
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))

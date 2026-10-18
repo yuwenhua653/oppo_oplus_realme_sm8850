@@ -138,8 +138,8 @@
     },
     {
       "path": "r74-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
-      "bytes": 20833,
-      "sha256": "7fa42f3666074426da6fc3db7aec498a3305c882dccd1b3ac7f83a0c1024eb6e"
+      "bytes": 20861,
+      "sha256": "5ff906f674130a4219136e81352afc7abcd20d3a71be162b58300105f7b2ab29"
     },
     {
       "path": "r74-build-route/payload/drivers/soc/qcom/qti_pmic_glink.c",
@@ -168,8 +168,8 @@
     },
     {
       "path": "r74-build-route/tests/client/fake_kernel.h",
-      "bytes": 6804,
-      "sha256": "cab9ce5d76978e34c1178ca855a183b61f3ca2b826f96c7d665bd413cb6965c8"
+      "bytes": 7077,
+      "sha256": "b2ff40686a8150d3d4f99e99cb82b283c5fc7932999c8f3c3a2fd5dcb9e65d63"
     },
     {
       "path": "r74-build-route/tests/client/qti_pmic_glink.h",
@@ -178,13 +178,13 @@
     },
     {
       "path": "r74-build-route/tests/client/run_tests.py",
-      "bytes": 2805,
-      "sha256": "56e218a5328c176858a3333296c98d234acb4bd5f497d87cf8f160f648b5134b"
+      "bytes": 2827,
+      "sha256": "dd6f9516a37ab7a5c2f97a9531a7ecfca2737c7ea2ad6d016a8da3ea943eb955"
     },
     {
       "path": "r74-build-route/tests/client/test_client.c",
-      "bytes": 26828,
-      "sha256": "68b7bbec206ef8898998e6ca0311c553a02cafe41f48d73465392e41976a5f52"
+      "bytes": 26918,
+      "sha256": "3e4ed5b7753ffe4693c2e2df87d83332a11cf7afaf2d1f68df1cc80eb4b87bdf"
     },
     {
       "path": "r74-build-route/tests/gauge/fake_kernel.h",
@@ -239,8 +239,8 @@
       "source": "r74-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
       "mode": "replace",
       "before_sha256": null,
-      "after_sha256": "7fa42f3666074426da6fc3db7aec498a3305c882dccd1b3ac7f83a0c1024eb6e",
-      "bytes": 20833
+      "after_sha256": "5ff906f674130a4219136e81352afc7abcd20d3a71be162b58300105f7b2ab29",
+      "bytes": 20861
     },
     {
       "destination": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",

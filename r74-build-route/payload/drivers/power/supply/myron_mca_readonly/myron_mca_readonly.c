@@ -244,7 +244,7 @@ static void mr_publish(struct mr_device *m, const struct mr_cache *cache,
 	u64 now = mr_now_ms();
 	u32 online = cache->samples[0].raw;
 	u32 voltage = cache->samples[1].raw;
-	u32 current = cache->samples[2].raw;
+	u32 bus_current_ua = cache->samples[2].raw;
 	u32 status = cache->samples[4].raw;
 	unsigned int i;
 
@@ -253,7 +253,7 @@ static void mr_publish(struct mr_device *m, const struct mr_cache *cache,
 	if (m->stopping || m->finished || !m->link_up ||
 	    generation != m->generation || online > 1 ||
 	    voltage > MR_MAX_BUS_UV || voltage > INT_MAX ||
-	    current > MR_MAX_BUS_UA || current > INT_MAX ||
+	    bus_current_ua > MR_MAX_BUS_UA || bus_current_ua > INT_MAX ||
 	    (online && voltage < 1000000U) ||
 	    (!online && status != 6 && status != 7) ||
 	    start > now || now - start >= MR_FRESH_MS)
@@ -271,7 +271,7 @@ static void mr_publish(struct mr_device *m, const struct mr_cache *cache,
 		goto invalid;
 	next.online = online;
 	next.voltage_uv = voltage;
-	next.current_ua = current;
+	next.current_ua = bus_current_ua;
 	next.status = mr_status(online, status);
 	if (!m->supply.valid || next.online != m->supply.online ||
 	    next.voltage_uv != m->supply.voltage_uv ||

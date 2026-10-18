@@ -1,4 +1,7 @@
 #include "fake_kernel.h"
+#ifndef current
+#error "The host kernel surface must retain Linux's current macro"
+#endif
 #include "production_under_test.c"
 
 struct pmic_glink_client { struct pmic_glink_client_data cb; pthread_mutex_t lock;pthread_cond_t cv;bool detached;unsigned callbacks; };

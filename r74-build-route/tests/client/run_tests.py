@@ -14,7 +14,7 @@ for inc in re.findall(r'^#include <([^>]+)>',source.read_text(),re.M):
 (stubs/'linux/types.h').write_text('#include "fake_kernel.h"\n')
 (out/'production_under_test.c').write_bytes(source.read_bytes())
 cc=shutil.which('gcc');assert cc
-flags=['-std=gnu11','-O1','-g','-pthread','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-fsanitize=address,undefined','-fno-omit-frame-pointer']
+flags=['-std=gnu11','-O1','-g','-pthread','-Wall','-Wextra','-Werror','-Wstrict-prototypes','-Wno-unused-parameter','-fsanitize=address,undefined','-fno-omit-frame-pointer']
 cmd=[cc,*flags,'-I'+str(stubs),'-I'+str(HERE),'-I'+str(out),str(HERE/'test_client.c'),'-o',str(out/'test_client')]
 build=subprocess.run(cmd,text=True,capture_output=True);(out/'compile.log').write_text(build.stdout+build.stderr)
 if build.returncode:print(build.stdout+build.stderr);raise SystemExit(build.returncode)

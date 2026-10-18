@@ -44,7 +44,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo 'f834108cb02ab131d98dcb0e8218dda3ce3a6752e2874cdd3eb2e53ac6e57f59  r74-build-route/charge-contract.json' | sha256sum --check --strict
+          echo 'b5a372bea382a839a18ddfe4f7cb9098a15f210b58f14994c92ef014e5bf2f6d  r74-build-route/charge-contract.json' | sha256sum --check --strict
           python3 r74-build-route/check_charge_inputs.py --root "$GITHUB_WORKSPACE"
           python3 r74-build-route/test_integration.py
           python3 r74-build-route/run_host_tests.py --root "$GITHUB_WORKSPACE" \
