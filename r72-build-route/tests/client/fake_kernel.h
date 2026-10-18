@@ -28,6 +28,8 @@ typedef uint32_t u32; typedef uint64_t u64; typedef uint8_t u8;
 #define module_exit(a)
 #define PAGE_SIZE 4096
 struct device_node { const char *full_name; };
+struct device_node *of_find_node_by_path(const char *path);
+void of_node_put(struct device_node *node);
 struct kobject { int unused; };
 struct device { void *data; struct device *parent; struct device_node *of_node; struct kobject kobj; };
 struct platform_device { struct device dev; };

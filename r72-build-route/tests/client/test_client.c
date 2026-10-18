@@ -74,15 +74,28 @@ int sysfs_emit_at(char *buf,int at,const char *fmt,...){va_list ap;va_start(ap,f
 int sysfs_emit(char *buf,const char *fmt,...){va_list ap;va_start(ap,fmt);int n=vsnprintf(buf,PAGE_SIZE,fmt,ap);va_end(ap);assert(n>=0 && n<PAGE_SIZE);return n;}
 int platform_driver_register(struct platform_driver *d){assert(d==&mr_driver);platform_registrations++;return 0;}
 void platform_driver_unregister(struct platform_driver *d){assert(d==&mr_driver);}
-static struct device_node node={MR_NODE};
+/* Match pinned Linux OF unflattening: full_name is the node basename. */
+static struct device_node node={"mca,adsp_glink"};
+static struct device_node *lookup_node=&node;
+static unsigned node_lookups,node_puts,node_refs;
+struct device_node *of_find_node_by_path(const char *path)
+{
+ assert(!strcmp(path,"/soc/pmic-glink/mca,adsp_glink"));node_lookups++;
+ if(lookup_node)node_refs++;
+ return lookup_node;
+}
+void of_node_put(struct device_node *np)
+{
+ if(np){assert(np==lookup_node&&node_refs);node_refs--;node_puts++;}
+}
 static struct device parent;
 static struct platform_device *probe_new(void)
 {
- struct platform_device *p=calloc(1,sizeof(*p));assert(p);p->dev.parent=&parent;p->dev.of_node=&node;assert(!mr_probe(p));return p;
+ struct platform_device *p=calloc(1,sizeof(*p));assert(p);p->dev.parent=&parent;p->dev.of_node=&node;assert(!mr_probe(p));assert(!node_refs);return p;
 }
 static void reset(void)
 {
- assert(!registered);registration_error=create_error=0;early_down=group_present=false;mode=OK;raw_value=0x81234567U;remote_error=0xffffffffU;tx_count=0;enable_readonly=true;
+ assert(!registered&&!node_refs);lookup_node=&node;node_lookups=node_puts=0;registration_error=create_error=0;early_down=group_present=false;mode=OK;raw_value=0x81234567U;remote_error=0xffffffffU;tx_count=0;enable_readonly=true;
  send_entered=release_send=callback_entered=release_callback=show_entered=release_show=unregister_entered=false;active_shows=0;
 }
 static void destroy(struct platform_device *p){mr_remove(p);assert(!p->dev.data);free(p);}
@@ -109,6 +122,25 @@ int main(void)
 {
  _Static_assert(sizeof(struct mr_request)==276,"request wire size");_Static_assert(sizeof(struct mr_response)==280,"response wire size");
  reset();enable_readonly=false;assert(mr_init()==-EPERM&&!platform_registrations);enable_readonly=true;assert(!mr_init());mr_exit();groups++;
+ reset();struct platform_device *exact=probe_new();
+ assert(node_lookups==1&&node_puts==1&&!node_refs&&!tx_count);
+ destroy(exact);groups++;
+ /* Exact DT identity: same basename elsewhere, absent node/path and a forged
+  * full-path string cannot pass; lookup references are balanced on rejection. */
+ for(unsigned failure=0;failure<5;failure++){
+  reset();struct device_node other={failure==3?MR_NODE:"mca,adsp_glink"};
+  struct platform_device invalid={.dev={.parent=&parent,.of_node=&node}};
+  unsigned f=frees,u=unregisters;
+  if(failure==0)invalid.dev.of_node=NULL;
+  else if(failure==1)lookup_node=NULL;
+  else if(failure==4)enable_readonly=false;
+  else invalid.dev.of_node=&other;
+  assert(mr_probe(&invalid)==(failure==4?-EPERM:-ENODEV));
+  assert(!invalid.dev.data&&!registered&&!group_present&&!tx_count);
+  assert(frees==f&&unregisters==u&&!node_refs);
+  assert(node_lookups==(failure==4?0:1));
+  assert(node_puts==((failure==1||failure==4)?0:1));groups++;
+ }
  for(unsigned failure=0;failure<2;failure++){
   reset();struct platform_device p={.dev={.parent=&parent,.of_node=&node}};unsigned f=frees,u=unregisters;if(failure)create_error=-ENOMEM;else registration_error=-ENOSPC;
   assert(mr_probe(&p)==(failure?-ENOMEM:-ENOSPC));assert(!p.dev.data&&!registered&&frees==f+1&&unregisters==u+failure);groups++;

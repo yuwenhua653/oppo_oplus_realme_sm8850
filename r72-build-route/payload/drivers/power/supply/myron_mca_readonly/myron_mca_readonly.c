@@ -358,14 +358,19 @@ static void mr_stop(struct mr_device *m)
 static int mr_probe(struct platform_device *pdev)
 {
 	struct pmic_glink_client_data client_data = { 0 };
+	struct device_node *expected;
 	struct mr_device *m;
 	unsigned int i;
 	int ret;
 
 	if (!enable_readonly)
 		return -EPERM;
-	if (!pdev->dev.of_node || strcmp(pdev->dev.of_node->full_name, MR_NODE))
-		return -ENODEV;
+	/* OF full_name stores a node component, not its absolute DT path. */
+	expected = of_find_node_by_path(MR_NODE);
+	ret = expected && pdev->dev.of_node == expected ? 0 : -ENODEV;
+	of_node_put(expected);
+	if (ret)
+		return ret;
 	m = kzalloc(sizeof(*m), GFP_KERNEL);
 	if (!m)
 		return -ENOMEM;

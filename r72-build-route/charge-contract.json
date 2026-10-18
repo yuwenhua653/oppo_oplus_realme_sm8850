@@ -23,8 +23,8 @@
   "locked_files": [
     {
       "path": "r72-build-route/README.md",
-      "bytes": 3404,
-      "sha256": "b3f01641607d6f5128c3eaee26486d21b9bccfff1763a998d7ebc55e875da073"
+      "bytes": 4287,
+      "sha256": "b52e74ff464efa5cbdc73ecd1b85cdaf9949930825e55246eaafdf0ecf309343"
     },
     {
       "path": "r72-build-route/apply_charge.py",
@@ -58,8 +58,8 @@
     },
     {
       "path": "r72-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
-      "bytes": 12621,
-      "sha256": "b2402e6cdd49ecf7c8603437eb387a434663251ab6e177e2278fe937c1792b89"
+      "bytes": 12786,
+      "sha256": "cac52613ff592d01cfe0d606a1cd014470c79b02fc175d44cf4fd4f24d8f573e"
     },
     {
       "path": "r72-build-route/payload/drivers/soc/qcom/qti_pmic_glink.c",
@@ -88,8 +88,8 @@
     },
     {
       "path": "r72-build-route/tests/client/fake_kernel.h",
-      "bytes": 5117,
-      "sha256": "8409be0030667d2b210c155f1fa8ec3d3aa694a33cd8f3d9e1517b7976d0aadf"
+      "bytes": 5221,
+      "sha256": "b7974076b21bdc43267c37a16362235361b684f79b6ca6650671b198d6e91feb"
     },
     {
       "path": "r72-build-route/tests/client/qti_pmic_glink.h",
@@ -103,8 +103,8 @@
     },
     {
       "path": "r72-build-route/tests/client/test_client.c",
-      "bytes": 12731,
-      "sha256": "b225b48cb3a2aefe5817eb5fcafe1a65e1e3beebcd07c380d0965a6a7ac8bc38"
+      "bytes": 14255,
+      "sha256": "30dd28412f6380ac5e88d7def139bd574be65d4acdc90a2fa4cf903b4d909704"
     },
     {
       "path": "r72-build-route/tests/transport/fake_kernel.h",
@@ -214,8 +214,8 @@
       "source": "r72-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
       "mode": "replace",
       "before_sha256": null,
-      "after_sha256": "b2402e6cdd49ecf7c8603437eb387a434663251ab6e177e2278fe937c1792b89",
-      "bytes": 12621
+      "after_sha256": "cac52613ff592d01cfe0d606a1cd014470c79b02fc175d44cf4fd4f24d8f573e",
+      "bytes": 12786
     },
     {
       "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",

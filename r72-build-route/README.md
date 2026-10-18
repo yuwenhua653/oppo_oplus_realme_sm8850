@@ -16,6 +16,22 @@ BQ module or camera. Only the two requested KOs are collected; prerequisite
 symvers and the common Image/config/release metadata are retained as evidence.
 The newly built Image is never substituted for the device's original Image.
 
+## R72 fix1: exact device-tree node identity
+
+The R72 capture showed successful module insertion followed by a failed bind.
+The client compared `device_node.full_name` with an absolute DT path, but the
+pinned kernel stores the node basename in that field. The old host fixture
+incorrectly supplied an absolute name and missed this failure.
+
+The fix resolves `/soc/pmic-glink/mca,adsp_glink` with
+`of_find_node_by_path()`, requires that exact node pointer, and releases the
+lookup reference. The fixture now uses real basename-style names and checks
+rejection of missing or different nodes, including an identically named node
+at another path. The QTI transport, six GET properties, request limits and
+read-only loading policy are unchanged. A successful build still requires
+actual module ABI review and a new device capture before claiming a working
+bind or firmware GET response.
+
 ## Reproducible preparation
 
 The workflow validates its exact contract digest, all new input hashes and the
