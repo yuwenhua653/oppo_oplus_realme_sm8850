@@ -1,0 +1,12 @@
+--- a/src/tfa98xx.h
++++ b/src/tfa98xx.h
+@@ -113,6 +113,9 @@
+ 	int power_gpio;
+ 	int irq_gpio;
+ 	int spk_sw_gpio;
++	struct pinctrl *rcv_pinctrl;
++	struct pinctrl_state *rcv_gpio_high;
++	struct pinctrl_state *rcv_gpio_low;
+ 	int spk_sw_level;
+ 	enum tfa_reset_polarity reset_polarity; 
+ 	struct list_head list;

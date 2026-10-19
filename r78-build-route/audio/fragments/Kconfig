@@ -1,0 +1,2 @@
+
+source "drivers/xiaomi/myron_tfa98xx/Kconfig"

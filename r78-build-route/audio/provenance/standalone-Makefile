@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Standalone build wrapper. Kbuild is used by the kernel/DDK.
+.PHONY: modules clean
+modules clean:
+	@test -n "$(KERNEL_SRC)" || { echo "Set KERNEL_SRC to the prepared exact target kernel tree" >&2; exit 2; }
+	$(MAKE) -C "$(KERNEL_SRC)" M="$(CURDIR)" $@

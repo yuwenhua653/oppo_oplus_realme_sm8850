@@ -1,0 +1,1502 @@
+{
+  "schema": 1,
+  "status": "SOURCE_DELTA_READY_FOR_AQUERY_AND_COMPILATION",
+  "compile_only": true,
+  "runtime_loading_approved": false,
+  "compiled": false,
+  "hardware_tested": false,
+  "base_commit": "01845c8dcdbc7a5c42f8037f4839e4b12e61137f",
+  "upstream": {
+    "repository": "MiCode/vendor_qcom_opensource_audio-kernel",
+    "commit": "e5ba38a941f1065f0eb984412dfe702e6b0add90",
+    "subtree": "asoc/codecs/tfa986x",
+    "same_device_source_proven": false,
+    "driver_version": "v6.13._xiaomi"
+  },
+  "registration": {
+    "name": "drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+    "out": "tfa98xx_dlkm.ko",
+    "config": "CONFIG_MYRON_TFA98XX",
+    "srcs": [
+      "drivers/xiaomi/myron_tfa98xx/inc/config.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+      "drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+      "drivers/xiaomi/myron_tfa98xx/src/config.h",
+      "drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+      "drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+      "drivers/xiaomi/myron_tfa98xx/src/versions.h"
+    ],
+    "includes": [
+      "drivers/xiaomi/myron_tfa98xx/inc"
+    ],
+    "deps": []
+  },
+  "module": {
+    "module_name": "tfa98xx_dlkm",
+    "stem": "drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+    "target": "//vendor/qcom/sm8850:canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+    "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm/tfa98xx_dlkm.ko",
+    "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm_Module.symvers",
+    "expected_sources": [
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/config.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/config.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+      "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/versions.h"
+    ]
+  },
+  "writes": [
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/Kconfig",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/Kconfig",
+      "before_sha256": null,
+      "after_sha256": "71463371f9c4153aee687a495afbcbfe4bcc511a84b463aec5868f766bcba524",
+      "bytes": 330
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/config.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/config.h",
+      "before_sha256": null,
+      "after_sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b",
+      "bytes": 933
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+      "before_sha256": null,
+      "after_sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36",
+      "bytes": 5984
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+      "before_sha256": null,
+      "after_sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19",
+      "bytes": 1257
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96",
+      "bytes": 79044
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+      "before_sha256": null,
+      "after_sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c",
+      "bytes": 136258
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc",
+      "bytes": 84290
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+      "before_sha256": null,
+      "after_sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767",
+      "bytes": 77984
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931",
+      "bytes": 90572
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde",
+      "bytes": 93001
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+      "before_sha256": null,
+      "after_sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485",
+      "bytes": 7066
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899",
+      "bytes": 109294
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a",
+      "bytes": 86299
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+      "before_sha256": null,
+      "after_sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817",
+      "bytes": 86842
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078",
+      "bytes": 76894
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993",
+      "bytes": 88513
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+      "before_sha256": null,
+      "after_sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b",
+      "bytes": 88795
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a",
+      "bytes": 91147
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558",
+      "bytes": 5072
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c",
+      "bytes": 6413
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+      "before_sha256": null,
+      "after_sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc",
+      "bytes": 41818
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b",
+      "bytes": 46703
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280",
+      "bytes": 99839
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+      "before_sha256": null,
+      "after_sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115",
+      "bytes": 106052
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6",
+      "bytes": 80955
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+      "before_sha256": null,
+      "after_sha256": "620c0a22bdc9054e88db42d0da3d233c3a8bfffe225d1cd7b98ae9408313810d",
+      "bytes": 3603
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+      "before_sha256": null,
+      "after_sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a",
+      "bytes": 147050
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+      "before_sha256": null,
+      "after_sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca",
+      "bytes": 18293
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9",
+      "bytes": 4505
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+      "before_sha256": null,
+      "after_sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea",
+      "bytes": 12102
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987",
+      "bytes": 158842
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+      "before_sha256": null,
+      "after_sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd",
+      "bytes": 11350
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+      "before_sha256": null,
+      "after_sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122",
+      "bytes": 13972
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+      "before_sha256": null,
+      "after_sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664",
+      "bytes": 5712
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+      "before_sha256": null,
+      "after_sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1",
+      "bytes": 1864
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+      "before_sha256": null,
+      "after_sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8",
+      "bytes": 34271
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/config.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/config.h",
+      "before_sha256": null,
+      "after_sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b",
+      "bytes": 933
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+      "before_sha256": null,
+      "after_sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36",
+      "bytes": 5984
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+      "before_sha256": null,
+      "after_sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19",
+      "bytes": 1257
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96",
+      "bytes": 79044
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+      "before_sha256": null,
+      "after_sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c",
+      "bytes": 136258
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc",
+      "bytes": 84290
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+      "before_sha256": null,
+      "after_sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767",
+      "bytes": 77984
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931",
+      "bytes": 90572
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde",
+      "bytes": 93001
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+      "before_sha256": null,
+      "after_sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485",
+      "bytes": 7066
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899",
+      "bytes": 109294
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a",
+      "bytes": 86299
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+      "before_sha256": null,
+      "after_sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817",
+      "bytes": 86842
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078",
+      "bytes": 76894
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993",
+      "bytes": 88513
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+      "before_sha256": null,
+      "after_sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b",
+      "bytes": 88795
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a",
+      "bytes": 91147
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558",
+      "bytes": 5072
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c",
+      "bytes": 6413
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+      "before_sha256": null,
+      "after_sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc",
+      "bytes": 41818
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b",
+      "bytes": 46703
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280",
+      "bytes": 99839
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+      "before_sha256": null,
+      "after_sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115",
+      "bytes": 106052
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6",
+      "bytes": 80955
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+      "before_sha256": null,
+      "after_sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68",
+      "bytes": 98888
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+      "before_sha256": null,
+      "after_sha256": "f7fed4942c9c7494de39666938de5f58b9dd849c864e07f87f717e404a53a3d5",
+      "bytes": 3745
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+      "before_sha256": null,
+      "after_sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a",
+      "bytes": 147050
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+      "before_sha256": null,
+      "after_sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca",
+      "bytes": 18293
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9",
+      "bytes": 4505
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+      "before_sha256": null,
+      "after_sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea",
+      "bytes": 12102
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+      "before_sha256": null,
+      "after_sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987",
+      "bytes": 158842
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+      "before_sha256": null,
+      "after_sha256": "33f87ce6af7cfd33ca65605cfdf0c61983fd7a5aad9114090aa67eddcad91bdd",
+      "bytes": 66830
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+      "before_sha256": null,
+      "after_sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd",
+      "bytes": 11350
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+      "before_sha256": null,
+      "after_sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122",
+      "bytes": 13972
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+      "before_sha256": null,
+      "after_sha256": "380319dd0b2021f6da015ae2729debb8a3dda24023315c8a24a39d0d395d837a",
+      "bytes": 118833
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+      "before_sha256": null,
+      "after_sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664",
+      "bytes": 5712
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+      "before_sha256": null,
+      "after_sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1",
+      "bytes": 1864
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+      "before_sha256": null,
+      "after_sha256": "f4f5dbde1504a3389a3b2ee96b02dd7bd208922686eb89a721b4488dd7cd518e",
+      "bytes": 96354
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+      "before_sha256": null,
+      "after_sha256": "8ae9bbddaa368c0356c80089792fd056633c5a903c061136a46d853aed9ef00e",
+      "bytes": 1109
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+      "before_sha256": null,
+      "after_sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8",
+      "bytes": 34271
+    },
+    {
+      "mode": "new",
+      "source": "payload/drivers/xiaomi/myron_tfa98xx/src/versions.h",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/versions.h",
+      "before_sha256": null,
+      "after_sha256": "a1aab449831d366426e83c639924b21962633abd9d9e44b32ff9990df40f8c28",
+      "bytes": 99
+    },
+    {
+      "mode": "append",
+      "source": "fragments/Kconfig",
+      "preimage": "preimage/drivers/xiaomi/myron/Kconfig",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
+      "before_sha256": "171f594cd5baea78a87d587a33149c252c80c021058218ab6834c27be12e83a2",
+      "after_sha256": "948b6cc6e64ed63663180ceeadf19cfd68876ea976b66029683dd3ba9c5b419c",
+      "bytes": 5160
+    },
+    {
+      "mode": "append",
+      "source": "fragments/modules.bzl",
+      "preimage": "preimage/drivers/xiaomi/myron/modules.bzl",
+      "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/modules.bzl",
+      "before_sha256": "5ff2c3024aef9ec727305499625ffcc1e40b2398e3b44a253c4633449195b962",
+      "after_sha256": "b9472f15988805e6150c395f418e3a5b2a7a0c02668c5eddf8f1a7f9215153b8",
+      "bytes": 180893
+    },
+    {
+      "mode": "append",
+      "source": "fragments/canoe_perf.bzl",
+      "preimage": "preimage/configs/canoe_perf.bzl",
+      "destination": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
+      "before_sha256": "0896e5b917a8ac92f2be6acf34a46afecd445cf6d9334689504737820d50503a",
+      "after_sha256": "73e51362e61cf75c15c0ed9f026cc1b36ed72eedafc826405fb70f2c6ed7b6c3",
+      "bytes": 17895
+    },
+    {
+      "mode": "replace",
+      "source": "payload-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c",
+      "preimage": "preimage-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c",
+      "before_sha256": "4e6e3495cf85db60470f5a1623ef2fdf97f59f42a0aca80f74d675bacbc0d613",
+      "after_sha256": "6f8448bc782c020e65896aa64e6bea50acea22c75d349ed353b157e4d8d7246e",
+      "bytes": 86307
+    }
+  ],
+  "DDK_makefile": "The actual DDK action generates its Makefile from srcs; standalone wrappers are reference-only and never copied into the workspace. Require one DdkMakefiles producer and verify all four C source units and declared headers before build.",
+  "runtime_changes": [],
+  "gaps": [
+    "Phone ODM hashes not yet matched to the pinned reference files",
+    "Actual silicon raw revision/OTP type, supply/reset readiness and audio clocks still require runtime evidence",
+    "Real kernel compiler/modpost/CRC/CFI and retained provider closure pending",
+    "Full Myron audio behavior, mute/unmute/feedback and teardown untested"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4255,
+      "sha256": "e8a523119ad9ab4de63a04d6e25e88fd7666c911e054976c189d3428ca110d3a"
+    },
+    {
+      "path": "apply.py",
+      "bytes": 8445,
+      "sha256": "7b0558abfa708d880009735f2e970382077bac28f133880684a08fce305d4438"
+    },
+    {
+      "path": "fragments/Kconfig",
+      "bytes": 47,
+      "sha256": "698a37a4fcc56fd562cff0aa81663951e38b9ef3f804b8baf3ecd746794c9817"
+    },
+    {
+      "path": "fragments/canoe_perf.bzl",
+      "bytes": 121,
+      "sha256": "5d75c52ce47a5640163f4e50c8b11071bc97d1b73fec2a24915d9e039755fbdd"
+    },
+    {
+      "path": "fragments/modules.bzl",
+      "bytes": 6139,
+      "sha256": "024896350bb5db79d3aad4d730769a193def7f3e300f218ff37e1f6140c13bc0"
+    },
+    {
+      "path": "hardware-evidence.json",
+      "bytes": 4103,
+      "sha256": "39e2193b2d13b6d4de857dbcf831da19f6d918c1f3d29de0bebcae67f6eeb823"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/Kconfig",
+      "bytes": 330,
+      "sha256": "71463371f9c4153aee687a495afbcbfe4bcc511a84b463aec5868f766bcba524"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/config.h",
+      "bytes": 933,
+      "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+      "bytes": 5984,
+      "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+      "bytes": 1257,
+      "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+      "bytes": 79044,
+      "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+      "bytes": 136258,
+      "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+      "bytes": 84290,
+      "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+      "bytes": 77984,
+      "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+      "bytes": 90572,
+      "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+      "bytes": 93001,
+      "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+      "bytes": 7066,
+      "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+      "bytes": 109294,
+      "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+      "bytes": 86299,
+      "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+      "bytes": 86842,
+      "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+      "bytes": 76894,
+      "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+      "bytes": 88513,
+      "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+      "bytes": 88795,
+      "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+      "bytes": 91147,
+      "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+      "bytes": 5072,
+      "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+      "bytes": 6413,
+      "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+      "bytes": 41818,
+      "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+      "bytes": 46703,
+      "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+      "bytes": 99839,
+      "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+      "bytes": 106052,
+      "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+      "bytes": 80955,
+      "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+      "bytes": 3603,
+      "sha256": "620c0a22bdc9054e88db42d0da3d233c3a8bfffe225d1cd7b98ae9408313810d"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+      "bytes": 147050,
+      "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+      "bytes": 18293,
+      "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+      "bytes": 4505,
+      "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+      "bytes": 12102,
+      "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+      "bytes": 158842,
+      "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+      "bytes": 11350,
+      "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+      "bytes": 13972,
+      "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+      "bytes": 5712,
+      "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+      "bytes": 1864,
+      "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+      "bytes": 34271,
+      "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/config.h",
+      "bytes": 933,
+      "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+      "bytes": 5984,
+      "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+      "bytes": 1257,
+      "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+      "bytes": 79044,
+      "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+      "bytes": 136258,
+      "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+      "bytes": 84290,
+      "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+      "bytes": 77984,
+      "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+      "bytes": 90572,
+      "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+      "bytes": 93001,
+      "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+      "bytes": 7066,
+      "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+      "bytes": 109294,
+      "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+      "bytes": 86299,
+      "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+      "bytes": 86842,
+      "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+      "bytes": 76894,
+      "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+      "bytes": 88513,
+      "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+      "bytes": 88795,
+      "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+      "bytes": 91147,
+      "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+      "bytes": 5072,
+      "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+      "bytes": 6413,
+      "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+      "bytes": 41818,
+      "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+      "bytes": 46703,
+      "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+      "bytes": 99839,
+      "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+      "bytes": 106052,
+      "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+      "bytes": 80955,
+      "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+      "bytes": 98888,
+      "sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+      "bytes": 3745,
+      "sha256": "f7fed4942c9c7494de39666938de5f58b9dd849c864e07f87f717e404a53a3d5"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+      "bytes": 147050,
+      "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+      "bytes": 18293,
+      "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+      "bytes": 4505,
+      "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+      "bytes": 12102,
+      "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+      "bytes": 158842,
+      "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+      "bytes": 66830,
+      "sha256": "33f87ce6af7cfd33ca65605cfdf0c61983fd7a5aad9114090aa67eddcad91bdd"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+      "bytes": 11350,
+      "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+      "bytes": 13972,
+      "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+      "bytes": 118833,
+      "sha256": "380319dd0b2021f6da015ae2729debb8a3dda24023315c8a24a39d0d395d837a"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+      "bytes": 5712,
+      "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+      "bytes": 1864,
+      "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+      "bytes": 96354,
+      "sha256": "f4f5dbde1504a3389a3b2ee96b02dd7bd208922686eb89a721b4488dd7cd518e"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+      "bytes": 1109,
+      "sha256": "8ae9bbddaa368c0356c80089792fd056633c5a903c061136a46d853aed9ef00e"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+      "bytes": 34271,
+      "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8"
+    },
+    {
+      "path": "payload/drivers/xiaomi/myron_tfa98xx/src/versions.h",
+      "bytes": 99,
+      "sha256": "a1aab449831d366426e83c639924b21962633abd9d9e44b32ff9990df40f8c28"
+    },
+    {
+      "path": "payload-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c",
+      "bytes": 86307,
+      "sha256": "6f8448bc782c020e65896aa64e6bea50acea22c75d349ed353b157e4d8d7246e"
+    },
+    {
+      "path": "preimage/configs/canoe_perf.bzl",
+      "bytes": 17774,
+      "sha256": "0896e5b917a8ac92f2be6acf34a46afecd445cf6d9334689504737820d50503a"
+    },
+    {
+      "path": "preimage/drivers/xiaomi/myron/Kconfig",
+      "bytes": 5113,
+      "sha256": "171f594cd5baea78a87d587a33149c252c80c021058218ab6834c27be12e83a2"
+    },
+    {
+      "path": "preimage/drivers/xiaomi/myron/modules.bzl",
+      "bytes": 174754,
+      "sha256": "5ff2c3024aef9ec727305499625ffcc1e40b2398e3b44a253c4633449195b962"
+    },
+    {
+      "path": "preimage-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c",
+      "bytes": 83508,
+      "sha256": "4e6e3495cf85db60470f5a1623ef2fdf97f59f42a0aca80f74d675bacbc0d613"
+    },
+    {
+      "path": "provenance/0001-linux-6.12-drop-removed-SLAB_MEM_SPREAD.patch",
+      "bytes": 512,
+      "sha256": "8398f871e89eaa61ff0f7ce538890d4d029c55c3cab44e5b3c6ff63f1734ebae"
+    },
+    {
+      "path": "provenance/delta-src-tfa98xx.c.patch",
+      "bytes": 6845,
+      "sha256": "7d1efd1ad9a6bd7a9990cec685a568904034cfab256b6ce0e4f8d4b7cd0e21dc"
+    },
+    {
+      "path": "provenance/delta-src-tfa98xx.h.patch",
+      "bytes": 309,
+      "sha256": "11032239264ed22bf883508ce4565c58d9943ec061ee05b784fd5225bab93c16"
+    },
+    {
+      "path": "provenance/delta-src-tfa_init.c.patch",
+      "bytes": 1982,
+      "sha256": "f4f5932151cfcced81851cd4aa77bf5dcdf478da2816092147bbf84b45073a28"
+    },
+    {
+      "path": "provenance/goodix-tfa_init.c",
+      "bytes": 111540,
+      "sha256": "d584fe6c31bc049d17c62c0299175971db9db5b0eab8e43d84119ab7715f2886"
+    },
+    {
+      "path": "provenance/machine-dai-links.patch",
+      "bytes": 3481,
+      "sha256": "141d0cfd64342cebc753db8073820c23cea68875eb28f5c07788b1cb7c48739b"
+    },
+    {
+      "path": "provenance/onyx-before/inc/tfa98xx.h",
+      "bytes": 3603,
+      "sha256": "620c0a22bdc9054e88db42d0da3d233c3a8bfffe225d1cd7b98ae9408313810d"
+    },
+    {
+      "path": "provenance/onyx-before/src/tfa98xx.c",
+      "bytes": 97560,
+      "sha256": "e704a83bc2955217e4dfe5ff14f04adff8e190a1f005fdc3d1acac9cdb41c49a"
+    },
+    {
+      "path": "provenance/onyx-before/src/tfa98xx.h",
+      "bytes": 3640,
+      "sha256": "6bf8186944f20686fa7f12d1cdc1f4cd05d5df37d2f8d5dc26c304254b64918f"
+    },
+    {
+      "path": "provenance/onyx-before/src/tfa_init.c",
+      "bytes": 95124,
+      "sha256": "dbd930a510da94d884ce8f1a4e062f50725ced2fa99e188cd6f8fffcc09bc41a"
+    },
+    {
+      "path": "provenance/standalone-Kbuild",
+      "bytes": 249,
+      "sha256": "d7b5b9a8838cd2b26403dfa67e9ad473719390a58d3c636c9439aa8626aea52a"
+    },
+    {
+      "path": "provenance/standalone-Makefile",
+      "bytes": 293,
+      "sha256": "750caa40da0c9188a713d686b5905a6bd09ea409b8cdf0475fc439ab1b799f25"
+    },
+    {
+      "path": "provenance/upstream-source-lock.json",
+      "bytes": 20309,
+      "sha256": "911b7c23be393707928d0f5ea69c4a157ec81390c39f8d0c28fdd91f07225c63"
+    },
+    {
+      "path": "test_audio.py",
+      "bytes": 11783,
+      "sha256": "02b5fb86a05f36b8dd882fda899437675a58eacc6c2bfccb94db1d5f0e0251af"
+    }
+  ],
+  "modified_sources": [
+    {
+      "relative": "src/tfa98xx.c",
+      "before_path": "provenance/onyx-before/src/tfa98xx.c",
+      "patch": "provenance/delta-src-tfa98xx.c.patch",
+      "before_sha256": "e704a83bc2955217e4dfe5ff14f04adff8e190a1f005fdc3d1acac9cdb41c49a",
+      "after_sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68"
+    },
+    {
+      "relative": "src/tfa_init.c",
+      "before_path": "provenance/onyx-before/src/tfa_init.c",
+      "patch": "provenance/delta-src-tfa_init.c.patch",
+      "before_sha256": "dbd930a510da94d884ce8f1a4e062f50725ced2fa99e188cd6f8fffcc09bc41a",
+      "after_sha256": "f4f5dbde1504a3389a3b2ee96b02dd7bd208922686eb89a721b4488dd7cd518e"
+    },
+    {
+      "relative": "src/tfa98xx.h",
+      "before_path": "provenance/onyx-before/src/tfa98xx.h",
+      "patch": "provenance/delta-src-tfa98xx.h.patch",
+      "before_sha256": "6bf8186944f20686fa7f12d1cdc1f4cd05d5df37d2f8d5dc26c304254b64918f",
+      "after_sha256": "f7fed4942c9c7494de39666938de5f58b9dd849c864e07f87f717e404a53a3d5"
+    }
+  ],
+  "modules": [
+    {
+      "module_name": "tfa98xx_dlkm",
+      "stem": "drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm/tfa98xx_dlkm.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/config.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/config.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/versions.h"
+      ]
+    },
+    {
+      "module_name": "machine_dlkm",
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel:canoe_perf_machine_dlkm",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_machine_dlkm/machine_dlkm.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_machine_dlkm/canoe_perf_machine_dlkm_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/asoc/msm_common.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c"
+      ]
+    }
+  ],
+  "goodix_backport": {
+    "repository": "Goodix-vas/tfa98xx",
+    "commit": "9ae7cc60b4f5a8d4e4e68a65a813758ed669dc16",
+    "path": "src/tfa_init.c",
+    "git_blob": "47589567cea1b9a4a8934bd07ad2efa6630b9575",
+    "sha256": "d584fe6c31bc049d17c62c0299175971db9db5b0eab8e43d84119ab7715f2886",
+    "changes": [
+      "Use original tfa->rev for TFA986x type-bit check",
+      "Exact upstream case 0x110b65 MN2B0, twenty register writes only reached for identified revision"
+    ],
+    "additional_error_fix": "Keep tfa_wait4manstate return in int, not unsigned short, so negative timeout/error still aborts."
+  },
+  "source_changes": [
+    "Standalone four-C TFA DDK integration and Linux6.12 slab flag compatibility",
+    "Goodix MN2B0 revision/type recognition and exact initialization case",
+    "S32_LE default matching Myron ODM 48kHz/3-channel primary TDM",
+    "DT-named receiver pinctrl states with error propagation and no inferred GPIO",
+    "Default-disabled machine myron_tfa_links parameter routes three DT/I2C clients to primary TDM RX and TX"
+  ],
+  "hardware_evidence": "hardware-evidence.json"
+}

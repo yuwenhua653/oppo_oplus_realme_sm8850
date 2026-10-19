@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "classification": "Public source references, hashes and derived facts only; no proprietary file bodies",
+  "reference_repository": "Evolution-X-Devices/vendor_xiaomi_myron",
+  "reference_commit": "df7a2a6cfe693b5918982e29fe5cb791e3a9e637",
+  "phone_reference_hash_match": false,
+  "reference_files": [
+    {
+      "phone_path": "/odm/firmware/tfa98xx.cnt",
+      "repository_path": "proprietary/odm/firmware/tfa98xx.cnt",
+      "bytes": 2071,
+      "git_blob": "69e616ebb50f49165c3e6b67d72a27f7cb3f210d",
+      "sha256": "910a42ae094a1eadc5bfc9f82db936f09dc25a5793da88f275897ca03a64c04e"
+    },
+    {
+      "phone_path": "/odm/etc/audio/sku_canoe/mixer_paths_canoe_mtp.xml",
+      "repository_path": "proprietary/odm/etc/audio/sku_canoe/mixer_paths_canoe_mtp.xml",
+      "bytes": 43271,
+      "git_blob": "83256c6a87d0b903cd30047ce6ee16997ba83154",
+      "sha256": "c033fcc3e4d8baf861485b3ebad0676c76632fd59f3c5bbf92ba12aa2b137bbe"
+    },
+    {
+      "phone_path": "/odm/etc/audio/sku_canoe/resourcemanager_canoe_mtp.xml",
+      "repository_path": "proprietary/odm/etc/audio/sku_canoe/resourcemanager_canoe_mtp.xml",
+      "bytes": 115944,
+      "git_blob": "77d48f125d343ee9e256cd824b76b6d8fa27421a",
+      "sha256": "cee47aad5a6030e800807181987311c1faa3d126e329a12b6744948a5e89051b"
+    }
+  ],
+  "container_structure": {
+    "format": "PM3_ / subversion 01",
+    "crc32": "745872ea",
+    "crc_valid": true,
+    "devices_in_container_order": [
+      {"index": 0, "address": "0x36", "name": "P", "revision_descriptor": "0x110b65", "receiver_control_owner": true},
+      {"index": 1, "address": "0x35", "name": "Q", "revision_descriptor": "0x110b65"},
+      {"index": 2, "address": "0x34", "name": "T", "revision_descriptor": "0x110b65"}
+    ],
+    "profile_references_per_device": 7,
+    "unique_profile_structures": 10,
+    "profile_structure_id": "0x1234",
+    "embedded_patches": {
+      "count": 3,
+      "name": "TFA9865MN2B0_dummy.patch",
+      "bytes_each": 42,
+      "header_bytes": 36,
+      "patch_header_hex": "66ffff00000b",
+      "inner_crc32": "28c11d64",
+      "inner_crc_valid": true,
+      "dsp_payload_blocks": 0,
+      "external_patch_reference": false
+    },
+    "unique_bitfields": 48,
+    "bitfield_map": "tfa986xn2",
+    "all_bitfield_ids_present_and_values_fit": true,
+    "limitation": "No external file is required by these descriptors; this does not establish actual silicon, calibration state, clocking or runtime readiness."
+  },
+  "derived_routes": {
+    "speaker_and_handset": "Primary TDM RX, 48000 Hz, three channels, S32_LE",
+    "vi_feedback": "Primary TDM TX, 48000 Hz, three channels, S32_LE",
+    "receiver_switch_values": [0, 1],
+    "generic_vendor_wsa_route_is_not_used_as_myron_odm_evidence": true
+  },
+  "reused_stock_dt_evidence": {
+    "source": "Previously collected stock dtbo_a image",
+    "bytes": 33554432,
+    "sha256": "da72c9d42cd128b2cd6cf104a743b90d421d242b2d2d9b4371555ac99e86af41",
+    "enabled_tfa_addresses": ["0x34", "0x35", "0x36"],
+    "tfa_compatible": "tfa,tfa98xx",
+    "receiver_states_only_at": "0x36",
+    "receiver_states": ["rcv_gpio_high", "rcv_gpio_low"],
+    "sound_compatible": "qcom,canoe-asoc-snd",
+    "sound_model": "canoe-mtp-snd-card",
+    "tdm_max_slots": 4,
+    "tfa_present_in_stock_asoc_codec_list": false,
+    "reset_irq_and_supply_references_present": true
+  },
+  "reused_runtime_evidence": {
+    "round": "R65",
+    "enabled_unbound_tfa_clients": ["13-0034", "13-0035", "13-0036"],
+    "speaker_backend": "TDM-LPAIF-RX-PRIMARY",
+    "format": "48000 Hz / three channels / S32",
+    "framework_hal_playback_frames_advanced": true,
+    "repeat_playback_capture_required_for_source_preparation": false
+  },
+  "machine_source": {
+    "repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+    "commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "path": "qcom/opensource/audio-kernel/asoc/audio_machine.c",
+    "git_blob": "24e04ea994fb801fca665a05d4d8e695146c4281",
+    "bytes": 83508,
+    "existing_config": "CONFIG_SND_SOC_CANOE",
+    "existing_target": "canoe_perf_machine_dlkm"
+  }
+}

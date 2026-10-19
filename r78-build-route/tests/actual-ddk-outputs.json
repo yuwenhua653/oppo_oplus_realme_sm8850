@@ -1,0 +1,204 @@
+{
+  "provenance": {
+    "run_id": 39128482064,
+    "source": "actual R77 successful aquery; only exact observer target output declarations retained"
+  },
+  "targets": [
+    {
+      "id": 2,
+      "label": "//vendor/qcom/sm8850:canoe_perf/drivers/thermal/myron_buck_thermal",
+      "ruleClassId": 1
+    }
+  ],
+  "actions": [
+    {
+      "mnemonic": "FileWrite",
+      "targetId": 2,
+      "outputIds": [
+        25334
+      ]
+    },
+    {
+      "mnemonic": "KernelModule",
+      "targetId": 2,
+      "outputIds": [
+        25338,
+        25339,
+        25340,
+        25341,
+        25342,
+        25343,
+        25344,
+        25345
+      ]
+    },
+    {
+      "mnemonic": "KernelModuleCpOutputs",
+      "targetId": 2,
+      "outputIds": [
+        25346
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 25334,
+      "pathFragmentId": 29629
+    },
+    {
+      "id": 25338,
+      "pathFragmentId": 29641
+    },
+    {
+      "id": 25339,
+      "pathFragmentId": 29645
+    },
+    {
+      "id": 25340,
+      "pathFragmentId": 29646,
+      "isTreeArtifact": true
+    },
+    {
+      "id": 25341,
+      "pathFragmentId": 29647
+    },
+    {
+      "id": 25342,
+      "pathFragmentId": 29648,
+      "isTreeArtifact": true
+    },
+    {
+      "id": 25343,
+      "pathFragmentId": 29649
+    },
+    {
+      "id": 25344,
+      "pathFragmentId": 29650,
+      "isTreeArtifact": true
+    },
+    {
+      "id": 25345,
+      "pathFragmentId": 29651
+    },
+    {
+      "id": 25346,
+      "pathFragmentId": 29652
+    }
+  ],
+  "pathFragments": [
+    {
+      "id": 12,
+      "label": "bazel-out"
+    },
+    {
+      "id": 11,
+      "label": "aarch64-fastbuild",
+      "parentId": 12
+    },
+    {
+      "id": 10,
+      "label": "bin",
+      "parentId": 11
+    },
+    {
+      "id": 9,
+      "label": "vendor",
+      "parentId": 10
+    },
+    {
+      "id": 8,
+      "label": "qcom",
+      "parentId": 9
+    },
+    {
+      "id": 7,
+      "label": "sm8850",
+      "parentId": 8
+    },
+    {
+      "id": 6,
+      "label": "canoe_perf",
+      "parentId": 7
+    },
+    {
+      "id": 5,
+      "label": "drivers",
+      "parentId": 6
+    },
+    {
+      "id": 29631,
+      "label": "thermal",
+      "parentId": 5
+    },
+    {
+      "id": 29630,
+      "label": "myron_buck_thermal",
+      "parentId": 29631
+    },
+    {
+      "id": 29629,
+      "label": "all_module_names.txt",
+      "parentId": 29630
+    },
+    {
+      "id": 29644,
+      "label": "canoe_perf",
+      "parentId": 29630
+    },
+    {
+      "id": 29643,
+      "label": "drivers",
+      "parentId": 29644
+    },
+    {
+      "id": 29642,
+      "label": "thermal",
+      "parentId": 29643
+    },
+    {
+      "id": 29641,
+      "label": "myron_buck_thermal_Module.symvers",
+      "parentId": 29642
+    },
+    {
+      "id": 29645,
+      "label": "myron_buck_thermal.check_no_remaining",
+      "parentId": 29642
+    },
+    {
+      "id": 29646,
+      "label": "staging",
+      "parentId": 29630
+    },
+    {
+      "id": 29647,
+      "label": "staging.structure.txt",
+      "parentId": 29630
+    },
+    {
+      "id": 29648,
+      "label": "kernel-uapi-headers.tar.gz_staging",
+      "parentId": 29630
+    },
+    {
+      "id": 29649,
+      "label": "kernel-uapi-headers.tar.gz_staging.structure.txt",
+      "parentId": 29630
+    },
+    {
+      "id": 29650,
+      "label": "unstripped",
+      "parentId": 29630
+    },
+    {
+      "id": 29651,
+      "label": "modules.order",
+      "parentId": 29630
+    },
+    {
+      "id": 29652,
+      "label": "myron_buck_thermal.ko",
+      "parentId": 29630
+    }
+  ]
+}

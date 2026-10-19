@@ -1,0 +1,552 @@
+{
+  "repository": "MiCode/vendor_qcom_opensource_audio-kernel",
+  "commit": "e5ba38a941f1065f0eb984412dfe702e6b0add90",
+  "files": [
+    {
+      "path": "asoc/codecs/tfa986x/Kbuild",
+      "git_blob": "2b781631b641a08c0d8475bf61597bb2b4d29d5a",
+      "sha256": "3988a0f1e404d7fd22b43e736d97e447cdf1c41815c3df26d07cc5c640338ba6",
+      "bytes": 3770,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/Makefile",
+      "git_blob": "8c8764922589f1db6434155dca5ecae09fd64314",
+      "sha256": "ee91455eceb5f9e98a9e117f5d0d21643ee8f56f08a11d90a48510de0bf65404",
+      "bytes": 190,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/config.h",
+      "git_blob": "9cda6a49c56fd7fc8caed4f0bfe49866958a3347",
+      "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b",
+      "bytes": 933,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/dbgprint.h",
+      "git_blob": "36ac83cb7d558595237ff06d45ee2dc8d00a1f44",
+      "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36",
+      "bytes": 5984,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa.h",
+      "git_blob": "d0f0a1bdad7ef132afed37437aca5e7ee9e6d4b4",
+      "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19",
+      "bytes": 1257,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa1_tfafieldnames.h",
+      "git_blob": "d8f50c5acfea12400c1dd03b436eb6257864aa8d",
+      "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96",
+      "bytes": 79044,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa2_tfafieldnames_N1C.h",
+      "git_blob": "0cbb51e1196cded9f789f896de9f55978f899d43",
+      "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c",
+      "bytes": 136258,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9865_tfafieldnames.h",
+      "git_blob": "3edf83ef0112a1830ec7aec77d22c1a6d51eb0f0",
+      "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc",
+      "bytes": 84290,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9865_tfafieldnames_A2.h",
+      "git_blob": "7f1975365d9e63f1203a6355d70c7ba64f93703e",
+      "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767",
+      "bytes": 77984,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa986x_tfafieldnames.h",
+      "git_blob": "b9ba1a69715f803b2d5d5d95005229e4cdfef70d",
+      "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931",
+      "bytes": 90572,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa986xn2_tfafieldnames.h",
+      "git_blob": "86959ac80ac419b36581e054993d59b41cd5088b",
+      "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde",
+      "bytes": 93001,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9872_device_genregs_POR.h",
+      "git_blob": "90020f96e8c06f56e80d20c2872b29437602883d",
+      "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485",
+      "bytes": 7066,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9872_tfafieldnames.h",
+      "git_blob": "2faa3403e6f217a4c890b7ba782ab2b53c4fd547",
+      "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899",
+      "bytes": 109294,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9873_tfafieldnames.h",
+      "git_blob": "726ffe066a86d6b3c284e797573c0b6f8069cb2e",
+      "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a",
+      "bytes": 86299,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9873_tfafieldnames_B0.h",
+      "git_blob": "7bd0a99256da9784dbfe0dfc4c846b5fb97c27ef",
+      "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817",
+      "bytes": 86842,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9874_tfafieldnames.h",
+      "git_blob": "bc03418e025eca41a7dfb10ef034b73ab35dda16",
+      "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078",
+      "bytes": 76894,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9875_tfafieldnames.h",
+      "git_blob": "6f053bf48e623d957e5e2660ed857913286d4b96",
+      "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993",
+      "bytes": 88513,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9875_tfafieldnames_A1.h",
+      "git_blob": "03f50ff288cd4eeccde7fc81550df760d21f7c71",
+      "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b",
+      "bytes": 88795,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9878_tfafieldnames.h",
+      "git_blob": "f015fe7ca6f65f0a521bf780f6a55526d5bd0d76",
+      "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a",
+      "bytes": 91147,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9887_tfafieldnames.h",
+      "git_blob": "4fccb302c3f40472d28fac7edeaa730a3e2aed5f",
+      "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558",
+      "bytes": 5072,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9890_tfafieldnames.h",
+      "git_blob": "f834e6fd33e1061ad5b61ba85a61449bac68a898",
+      "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c",
+      "bytes": 6413,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9891_genregs.h",
+      "git_blob": "92efbbdaae4cb9679fecb67178687beb643c005e",
+      "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc",
+      "bytes": 41818,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9891_tfafieldnames.h",
+      "git_blob": "befdf692f56061d9ac26584ca937640c1dddfac9",
+      "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b",
+      "bytes": 46703,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9894_tfafieldnames.h",
+      "git_blob": "4d42b1ef1db737c8c69cf095977aadc2c5cb06df",
+      "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280",
+      "bytes": 99839,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9894_tfafieldnames_N2.h",
+      "git_blob": "85b5136457b94640688a675c5e103139e76fd442",
+      "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115",
+      "bytes": 106052,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9896_tfafieldnames.h",
+      "git_blob": "3bbcc369893742e10e39e27375308ad8e8652e7c",
+      "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6",
+      "bytes": 80955,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa98xx.h",
+      "git_blob": "41d484d3d2f668c1d45f6b17b94efb24a94856cf",
+      "sha256": "620c0a22bdc9054e88db42d0da3d233c3a8bfffe225d1cd7b98ae9408313810d",
+      "bytes": 3603,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa98xx_genregs_N1C.h",
+      "git_blob": "fb38b21fbc86e5913b156daba778c101774925de",
+      "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a",
+      "bytes": 147050,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa98xx_parameters.h",
+      "git_blob": "4847e483d38c170620151e23cc4c0a151fe47669",
+      "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca",
+      "bytes": 18293,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa98xx_tfafieldnames.h",
+      "git_blob": "8e13bb05ad3d68a6856a542f6bdea944eef7c9ee",
+      "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9",
+      "bytes": 4505,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9912_device_genregs.h",
+      "git_blob": "fcf2b69ae71b32541512a3d654e490797fadf68b",
+      "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea",
+      "bytes": 12102,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa9912_tfafieldnames.h",
+      "git_blob": "13936cec29a1e1637eb715a4830bfacf97de901c",
+      "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987",
+      "bytes": 158842,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa_container.h",
+      "git_blob": "ae6a0aba035c66f4facf19cdb6139a9a80a77d81",
+      "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd",
+      "bytes": 11350,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa_device.h",
+      "git_blob": "c7ddd94db9a45056f29571743afa25a4e9516dcd",
+      "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122",
+      "bytes": 13972,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa_dsp_fw.h",
+      "git_blob": "314bfbcfa66648d03760e5509740f9ad2363d407",
+      "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664",
+      "bytes": 5712,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa_ext.h",
+      "git_blob": "8f32eb47af575f5f46c7b3cd3c5a93977b614821",
+      "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1",
+      "bytes": 1864,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/inc/tfa_service.h",
+      "git_blob": "7a61a44dd58eb6e7005ff4783f45071f0dfddf42",
+      "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8",
+      "bytes": 34271,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/config.h",
+      "git_blob": "9cda6a49c56fd7fc8caed4f0bfe49866958a3347",
+      "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b",
+      "bytes": 933,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/dbgprint.h",
+      "git_blob": "36ac83cb7d558595237ff06d45ee2dc8d00a1f44",
+      "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36",
+      "bytes": 5984,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa.h",
+      "git_blob": "d0f0a1bdad7ef132afed37437aca5e7ee9e6d4b4",
+      "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19",
+      "bytes": 1257,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa1_tfafieldnames.h",
+      "git_blob": "d8f50c5acfea12400c1dd03b436eb6257864aa8d",
+      "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96",
+      "bytes": 79044,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa2_tfafieldnames_N1C.h",
+      "git_blob": "0cbb51e1196cded9f789f896de9f55978f899d43",
+      "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c",
+      "bytes": 136258,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9865_tfafieldnames.h",
+      "git_blob": "3edf83ef0112a1830ec7aec77d22c1a6d51eb0f0",
+      "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc",
+      "bytes": 84290,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9865_tfafieldnames_A2.h",
+      "git_blob": "7f1975365d9e63f1203a6355d70c7ba64f93703e",
+      "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767",
+      "bytes": 77984,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa986x_tfafieldnames.h",
+      "git_blob": "b9ba1a69715f803b2d5d5d95005229e4cdfef70d",
+      "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931",
+      "bytes": 90572,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa986xn2_tfafieldnames.h",
+      "git_blob": "86959ac80ac419b36581e054993d59b41cd5088b",
+      "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde",
+      "bytes": 93001,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9872_device_genregs_POR.h",
+      "git_blob": "90020f96e8c06f56e80d20c2872b29437602883d",
+      "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485",
+      "bytes": 7066,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9872_tfafieldnames.h",
+      "git_blob": "2faa3403e6f217a4c890b7ba782ab2b53c4fd547",
+      "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899",
+      "bytes": 109294,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9873_tfafieldnames.h",
+      "git_blob": "726ffe066a86d6b3c284e797573c0b6f8069cb2e",
+      "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a",
+      "bytes": 86299,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9873_tfafieldnames_B0.h",
+      "git_blob": "7bd0a99256da9784dbfe0dfc4c846b5fb97c27ef",
+      "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817",
+      "bytes": 86842,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9874_tfafieldnames.h",
+      "git_blob": "bc03418e025eca41a7dfb10ef034b73ab35dda16",
+      "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078",
+      "bytes": 76894,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9875_tfafieldnames.h",
+      "git_blob": "6f053bf48e623d957e5e2660ed857913286d4b96",
+      "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993",
+      "bytes": 88513,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9875_tfafieldnames_A1.h",
+      "git_blob": "03f50ff288cd4eeccde7fc81550df760d21f7c71",
+      "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b",
+      "bytes": 88795,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9878_tfafieldnames.h",
+      "git_blob": "f015fe7ca6f65f0a521bf780f6a55526d5bd0d76",
+      "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a",
+      "bytes": 91147,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9887_tfafieldnames.h",
+      "git_blob": "4fccb302c3f40472d28fac7edeaa730a3e2aed5f",
+      "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558",
+      "bytes": 5072,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9890_tfafieldnames.h",
+      "git_blob": "f834e6fd33e1061ad5b61ba85a61449bac68a898",
+      "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c",
+      "bytes": 6413,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9891_genregs.h",
+      "git_blob": "92efbbdaae4cb9679fecb67178687beb643c005e",
+      "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc",
+      "bytes": 41818,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9891_tfafieldnames.h",
+      "git_blob": "befdf692f56061d9ac26584ca937640c1dddfac9",
+      "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b",
+      "bytes": 46703,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9894_tfafieldnames.h",
+      "git_blob": "4d42b1ef1db737c8c69cf095977aadc2c5cb06df",
+      "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280",
+      "bytes": 99839,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9894_tfafieldnames_N2.h",
+      "git_blob": "85b5136457b94640688a675c5e103139e76fd442",
+      "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115",
+      "bytes": 106052,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9896_tfafieldnames.h",
+      "git_blob": "3bbcc369893742e10e39e27375308ad8e8652e7c",
+      "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6",
+      "bytes": 80955,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa98xx.c",
+      "git_blob": "0fddae2e3f752323abc16400d592c8fd26b43237",
+      "sha256": "e704a83bc2955217e4dfe5ff14f04adff8e190a1f005fdc3d1acac9cdb41c49a",
+      "bytes": 97560,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa98xx.h",
+      "git_blob": "f1a1e162116be0c14a38a2683a333760d9310aaa",
+      "sha256": "6bf8186944f20686fa7f12d1cdc1f4cd05d5df37d2f8d5dc26c304254b64918f",
+      "bytes": 3640,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa98xx_genregs_N1C.h",
+      "git_blob": "fb38b21fbc86e5913b156daba778c101774925de",
+      "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a",
+      "bytes": 147050,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa98xx_parameters.h",
+      "git_blob": "4847e483d38c170620151e23cc4c0a151fe47669",
+      "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca",
+      "bytes": 18293,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa98xx_tfafieldnames.h",
+      "git_blob": "8e13bb05ad3d68a6856a542f6bdea944eef7c9ee",
+      "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9",
+      "bytes": 4505,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9912_device_genregs.h",
+      "git_blob": "fcf2b69ae71b32541512a3d654e490797fadf68b",
+      "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea",
+      "bytes": 12102,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa9912_tfafieldnames.h",
+      "git_blob": "13936cec29a1e1637eb715a4830bfacf97de901c",
+      "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987",
+      "bytes": 158842,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_container.c",
+      "git_blob": "eec0d77cabaa43dc4db8503b7331b88cc37cb0b7",
+      "sha256": "33f87ce6af7cfd33ca65605cfdf0c61983fd7a5aad9114090aa67eddcad91bdd",
+      "bytes": 66830,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_container.h",
+      "git_blob": "ae6a0aba035c66f4facf19cdb6139a9a80a77d81",
+      "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd",
+      "bytes": 11350,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_device.h",
+      "git_blob": "c7ddd94db9a45056f29571743afa25a4e9516dcd",
+      "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122",
+      "bytes": 13972,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_dsp.c",
+      "git_blob": "0bcbb4a532f284250d5443e1de331fcc29edfaaf",
+      "sha256": "380319dd0b2021f6da015ae2729debb8a3dda24023315c8a24a39d0d395d837a",
+      "bytes": 118833,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_dsp_fw.h",
+      "git_blob": "314bfbcfa66648d03760e5509740f9ad2363d407",
+      "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664",
+      "bytes": 5712,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_ext.h",
+      "git_blob": "8f32eb47af575f5f46c7b3cd3c5a93977b614821",
+      "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1",
+      "bytes": 1864,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_init.c",
+      "git_blob": "17c28b32d36ae64c3c25b519a6f6ed85a1bd3d0a",
+      "sha256": "dbd930a510da94d884ce8f1a4e062f50725ced2fa99e188cd6f8fffcc09bc41a",
+      "bytes": 95124,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_internal.h",
+      "git_blob": "5d63a2adcb82c4af1acdd1ab6bed5ff4e7fbd30b",
+      "sha256": "8ae9bbddaa368c0356c80089792fd056633c5a903c061136a46d853aed9ef00e",
+      "bytes": 1109,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/tfa_service.h",
+      "git_blob": "7a61a44dd58eb6e7005ff4783f45071f0dfddf42",
+      "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8",
+      "bytes": 34271,
+      "ok": true
+    },
+    {
+      "path": "asoc/codecs/tfa986x/src/versions.h",
+      "git_blob": "05e728cdc14b2e4a15031b412f2007d3e4ad6482",
+      "sha256": "a1aab449831d366426e83c639924b21962633abd9d9e44b32ff9990df40f8c28",
+      "bytes": 99,
+      "ok": true
+    }
+  ]
+}

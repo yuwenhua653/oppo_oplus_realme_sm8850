@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Review draft; not integrated into R59. Use a prepared, exact target kernel.
+obj-m += tfa98xx_dlkm.o
+tfa98xx_dlkm-y := src/tfa98xx.o src/tfa_container.o src/tfa_dsp.o src/tfa_init.o
+ccflags-y += -I$(src)/inc

@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "reference/mi_disp.h",
+      "repository": "MiCode/vendor_opensource_display-drivers",
+      "commit": "6def61b29a39710078287416afd3b62f43729c37",
+      "upstream_path": "include/uapi/display/drm/mi_disp.h",
+      "bytes": 27264,
+      "sha256": "b91785afd5de4096ebcd6ff5503a5fe3d7a2a6a08bb88ec9f09d2feaf60cf78b"
+    },
+    {
+      "path": "reference/mi_disp_file.c",
+      "repository": "MiCode/vendor_opensource_display-drivers",
+      "commit": "6def61b29a39710078287416afd3b62f43729c37",
+      "upstream_path": "msm/mi_disp/mi_disp_file.c",
+      "bytes": 30378,
+      "sha256": "ae542f105fa97d03d4340241e4f3c98ff3786d34b30a516b75a12a917b808cc2"
+    },
+    {
+      "path": "reference/mi_disp_feature.c",
+      "repository": "MiCode/vendor_opensource_display-drivers",
+      "commit": "6def61b29a39710078287416afd3b62f43729c37",
+      "upstream_path": "msm/mi_disp/mi_disp_feature.c",
+      "bytes": 10725,
+      "sha256": "f4465987b037aa28d5521ef04bb0cea87a964e237c18d64b8f5e56cd6d5d1ea3"
+    },
+    {
+      "path": "reference/mi_disp_parser.c",
+      "repository": "MiCode/vendor_opensource_display-drivers",
+      "commit": "6def61b29a39710078287416afd3b62f43729c37",
+      "upstream_path": "msm/mi_disp/mi_disp_parser.c",
+      "bytes": 11298,
+      "sha256": "c5d4e7d25c7cfb107e4defbd2ad62c41f95593dcde7cd20c075c75c87c00101d"
+    },
+    {
+      "path": "reference/mi_disp_sysfs.c",
+      "repository": "MiCode/vendor_opensource_display-drivers",
+      "commit": "6def61b29a39710078287416afd3b62f43729c37",
+      "upstream_path": "msm/mi_disp/mi_disp_sysfs.c",
+      "bytes": 12593,
+      "sha256": "3d0b488d7d3693142a51477176bfcb94ad10f51ad4dcaa7ca79433b3ded831c6"
+    }
+  ],
+  "r28_archive": {
+    "repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+    "commit": "01845c8dcdbc7a5c42f8037f4839e4b12e61137f",
+    "path": "myron-display-r28.zip",
+    "bytes": 7878881,
+    "sha256": "043664f23eda6481e367485f0ced1b70f9e2e2b420e214c8e92eba70657d37be",
+    "git_blob_sha1": "e8cbbc4e091a1113e9c08fd4f396b2c594f9f75a",
+    "all_nine_before_and_after_verified": true
+  }
+}

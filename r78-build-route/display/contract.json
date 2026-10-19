@@ -1,0 +1,349 @@
+{
+  "schema": "myron.r78.display-delta.v1",
+  "status": "SOURCE_READY_FOR_COMPILE_ONLY_CI",
+  "repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+  "commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "module": {
+    "module_name": "msm_drm",
+    "target": "//vendor/qcom/sm8850-modules/qcom/opensource/display-drivers:canoe_perf_msm_drm",
+    "expected_sources": [
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_rm.c"
+    ],
+    "output_policy": "Use actual target aquery outputs; require one msm_drm.ko and real corresponding Module.symvers. Never guess generated path."
+  },
+  "writes": [
+    {
+      "path": "qcom/opensource/display-drivers/display_modules.bzl",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/display_modules.bzl",
+      "before_sha256": "8bf6390d79d481c8ae952dc672176a5d4af701659461b341640dc049d59d3dca",
+      "after_sha256": "19a6639a60621cd9284b4c7d35b16710293e743f68a4773b0f422f4adfe79b03",
+      "bytes": 9383
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "before_sha256": "1aeaa4c242145c5890c4eb1daed77b009ebd89af2482d89d6ada7926e8aca943",
+      "after_sha256": "fe049856ab69cd6c9f3626e40c4acf7b2f165fcdba0cb18dcba95730b58ac9d6",
+      "bytes": 112937,
+      "r28_sha256": "fe049856ab69cd6c9f3626e40c4acf7b2f165fcdba0cb18dcba95730b58ac9d6"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "before_sha256": "0e6ed90f7264ab170d19ac543dbbda091951e8c6e266a52247d2c56b39405c43",
+      "after_sha256": "b20aada36b38f65645e04a08612f6b118c40040f21bc68f7122218911ae5fe72",
+      "bytes": 270301,
+      "r28_sha256": "1e6e591f76ceff40c9739176da7e658112f37c9ba91569a888aef3e31b871850"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "before_sha256": "7db988606264375f06f274ad0ad7be04c75afeaa784a7bf1286975120d8528b2",
+      "after_sha256": "98f030119d8fb031efba190b8b0f8a3d0d644cbb1d11175160653f6fe264c1ca",
+      "bytes": 55416,
+      "r28_sha256": "98f030119d8fb031efba190b8b0f8a3d0d644cbb1d11175160653f6fe264c1ca"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "before_sha256": "bb69a8428cf21b900bf4314bc084f9798061e7e490de4c32f997d547707cd055",
+      "after_sha256": "1151b2bbabc4dc9f646e092c074b94d65440f88be048aeba7207aa62f8901271",
+      "bytes": 169629,
+      "r28_sha256": "1151b2bbabc4dc9f646e092c074b94d65440f88be048aeba7207aa62f8901271"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+      "before_sha256": null,
+      "after_sha256": "17a548e8f7db29ca1f7515bdc39eb45596a7c0ba4ef15318618acac23fad7e7b",
+      "bytes": 11119
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
+      "before_sha256": null,
+      "after_sha256": "4f5f0ce8bbc5c90d640f565283b6aa9265e4ac30e6168a3ad766511992088f4c",
+      "bytes": 1392
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "before_sha256": "a177d6c6a30f43ab889570b7e5722abb0018b08bdc267f851732e78b85f42ff7",
+      "after_sha256": "ceef0addc000f88197dd8620295186f3d464f7dfd90beabd6804c513d6756f4b",
+      "bytes": 138070,
+      "r28_sha256": "ceef0addc000f88197dd8620295186f3d464f7dfd90beabd6804c513d6756f4b"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "before_sha256": "52dc2509f7a11537dd3e04f715ad7681b3d5379efe03c659821399edf919cdec",
+      "after_sha256": "1e0d9d60bae9325c87fd67b945f7c06836f6d97f45ffd818f39332ef52ebccd6",
+      "bytes": 43097,
+      "r28_sha256": "1e0d9d60bae9325c87fd67b945f7c06836f6d97f45ffd818f39332ef52ebccd6"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "before_sha256": "6860da1019e5f6a0a0552bc8ad3e7cf7ffe44597c27958bddf8d196718fc475b",
+      "after_sha256": "89ea69a4bbf44324d0d1a1a294db31914be72851c7c298551ab243f556e20e5c",
+      "bytes": 25093,
+      "r28_sha256": "89ea69a4bbf44324d0d1a1a294db31914be72851c7c298551ab243f556e20e5c"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "before_sha256": "51967a5e3e4aa26c1247024a4e194215ac988ad1b47a69a2ee14e98486672585",
+      "after_sha256": "cc9a30fa0c18daf9d39400b58a39670d15fedec016c2819cbb3915340e0f2d80",
+      "bytes": 188174,
+      "r28_sha256": "cc9a30fa0c18daf9d39400b58a39670d15fedec016c2819cbb3915340e0f2d80"
+    },
+    {
+      "path": "qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "before_sha256": "c0692446a6024bc11bddb8a7e827d7b267deae9452def4ec161275d737e71c9d",
+      "after_sha256": "9d122b7dd51bff2f37b8a6d2dc24fcf8490a4f2bd58c0eb9b8560c2b1f56b981",
+      "bytes": 94089,
+      "r28_sha256": "9d122b7dd51bff2f37b8a6d2dc24fcf8490a4f2bd58c0eb9b8560c2b1f56b981"
+    }
+  ],
+  "files": [
+    {
+      "path": "README.zh-CN.txt",
+      "bytes": 3378,
+      "sha256": "7f57de3c37969c6683b33564fbe06603b44d75ed56e688849f4266b9bc298ad7"
+    },
+    {
+      "path": "apply.py",
+      "bytes": 4694,
+      "sha256": "837e0d985d25e0c52226384debe84cc738c722efcc034183511e425bd3e2d526"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/display_modules.bzl",
+      "bytes": 9383,
+      "sha256": "19a6639a60621cd9284b4c7d35b16710293e743f68a4773b0f422f4adfe79b03"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "bytes": 112937,
+      "sha256": "fe049856ab69cd6c9f3626e40c4acf7b2f165fcdba0cb18dcba95730b58ac9d6"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "bytes": 270301,
+      "sha256": "b20aada36b38f65645e04a08612f6b118c40040f21bc68f7122218911ae5fe72"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "bytes": 55416,
+      "sha256": "98f030119d8fb031efba190b8b0f8a3d0d644cbb1d11175160653f6fe264c1ca"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "bytes": 169629,
+      "sha256": "1151b2bbabc4dc9f646e092c074b94d65440f88be048aeba7207aa62f8901271"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+      "bytes": 11119,
+      "sha256": "17a548e8f7db29ca1f7515bdc39eb45596a7c0ba4ef15318618acac23fad7e7b"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
+      "bytes": 1392,
+      "sha256": "4f5f0ce8bbc5c90d640f565283b6aa9265e4ac30e6168a3ad766511992088f4c"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "bytes": 138070,
+      "sha256": "ceef0addc000f88197dd8620295186f3d464f7dfd90beabd6804c513d6756f4b"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "bytes": 43097,
+      "sha256": "1e0d9d60bae9325c87fd67b945f7c06836f6d97f45ffd818f39332ef52ebccd6"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "bytes": 25093,
+      "sha256": "89ea69a4bbf44324d0d1a1a294db31914be72851c7c298551ab243f556e20e5c"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "bytes": 188174,
+      "sha256": "cc9a30fa0c18daf9d39400b58a39670d15fedec016c2819cbb3915340e0f2d80"
+    },
+    {
+      "path": "payload/qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "bytes": 94089,
+      "sha256": "9d122b7dd51bff2f37b8a6d2dc24fcf8490a4f2bd58c0eb9b8560c2b1f56b981"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/display_modules.bzl",
+      "bytes": 9343,
+      "sha256": "8bf6390d79d481c8ae952dc672176a5d4af701659461b341640dc049d59d3dca"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "bytes": 112746,
+      "sha256": "1aeaa4c242145c5890c4eb1daed77b009ebd89af2482d89d6ada7926e8aca943"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "bytes": 266242,
+      "sha256": "0e6ed90f7264ab170d19ac543dbbda091951e8c6e266a52247d2c56b39405c43"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "bytes": 53381,
+      "sha256": "7db988606264375f06f274ad0ad7be04c75afeaa784a7bf1286975120d8528b2"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "bytes": 167343,
+      "sha256": "bb69a8428cf21b900bf4314bc084f9798061e7e490de4c32f997d547707cd055"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "bytes": 131838,
+      "sha256": "a177d6c6a30f43ab889570b7e5722abb0018b08bdc267f851732e78b85f42ff7"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "bytes": 43139,
+      "sha256": "52dc2509f7a11537dd3e04f715ad7681b3d5379efe03c659821399edf919cdec"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "bytes": 24682,
+      "sha256": "6860da1019e5f6a0a0552bc8ad3e7cf7ffe44597c27958bddf8d196718fc475b"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "bytes": 176115,
+      "sha256": "51967a5e3e4aa26c1247024a4e194215ac988ad1b47a69a2ee14e98486672585"
+    },
+    {
+      "path": "preimage/qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "bytes": 90607,
+      "sha256": "c0692446a6024bc11bddb8a7e827d7b267deae9452def4ec161275d737e71c9d"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "bytes": 112937,
+      "sha256": "fe049856ab69cd6c9f3626e40c4acf7b2f165fcdba0cb18dcba95730b58ac9d6"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "bytes": 269799,
+      "sha256": "1e6e591f76ceff40c9739176da7e658112f37c9ba91569a888aef3e31b871850"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "bytes": 55416,
+      "sha256": "98f030119d8fb031efba190b8b0f8a3d0d644cbb1d11175160653f6fe264c1ca"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "bytes": 169629,
+      "sha256": "1151b2bbabc4dc9f646e092c074b94d65440f88be048aeba7207aa62f8901271"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "bytes": 138070,
+      "sha256": "ceef0addc000f88197dd8620295186f3d464f7dfd90beabd6804c513d6756f4b"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "bytes": 43097,
+      "sha256": "1e0d9d60bae9325c87fd67b945f7c06836f6d97f45ffd818f39332ef52ebccd6"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "bytes": 25093,
+      "sha256": "89ea69a4bbf44324d0d1a1a294db31914be72851c7c298551ab243f556e20e5c"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "bytes": 188174,
+      "sha256": "cc9a30fa0c18daf9d39400b58a39670d15fedec016c2819cbb3915340e0f2d80"
+    },
+    {
+      "path": "r28-effective/qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "bytes": 94089,
+      "sha256": "9d122b7dd51bff2f37b8a6d2dc24fcf8490a4f2bd58c0eb9b8560c2b1f56b981"
+    },
+    {
+      "path": "reference/SOURCE-LOCK.json",
+      "bytes": 2128,
+      "sha256": "98102352ba3f03088c320b35e397eff197898efe9cd7c0c45ed859db48e1c894"
+    },
+    {
+      "path": "reference/mi_disp.h",
+      "bytes": 27264,
+      "sha256": "b91785afd5de4096ebcd6ff5503a5fe3d7a2a6a08bb88ec9f09d2feaf60cf78b"
+    },
+    {
+      "path": "reference/mi_disp_feature.c",
+      "bytes": 10725,
+      "sha256": "f4465987b037aa28d5521ef04bb0cea87a964e237c18d64b8f5e56cd6d5d1ea3"
+    },
+    {
+      "path": "reference/mi_disp_file.c",
+      "bytes": 30378,
+      "sha256": "ae542f105fa97d03d4340241e4f3c98ff3786d34b30a516b75a12a917b808cc2"
+    },
+    {
+      "path": "reference/mi_disp_parser.c",
+      "bytes": 11298,
+      "sha256": "c5d4e7d25c7cfb107e4defbd2ad62c41f95593dcde7cd20c075c75c87c00101d"
+    },
+    {
+      "path": "reference/mi_disp_sysfs.c",
+      "bytes": 12593,
+      "sha256": "3d0b488d7d3693142a51477176bfcb94ad10f51ad4dcaa7ca79433b3ded831c6"
+    },
+    {
+      "path": "reference/r28-manifest.json",
+      "bytes": 74706,
+      "sha256": "76e8cacb9de01bf11a89d1130e8480b5d556ef439e6b09c3ad0d9e3de958c125"
+    },
+    {
+      "path": "tests/fake_kernel.h",
+      "bytes": 5711,
+      "sha256": "f2fa7bf8768d4f658b2119efc16419780ab263b528627c63272abc0c89af8517"
+    },
+    {
+      "path": "tests/run_tests.py",
+      "bytes": 1092,
+      "sha256": "eef6979d479928c4509eaefde1c91cf723e2fe78701d62440927050cbf948abc"
+    },
+    {
+      "path": "tests/test_apply.py",
+      "bytes": 1703,
+      "sha256": "c0e41c46d2afa389c99623a3d2bbf1a17bf586b48edbabb5a7fbe4e14ee77cf3"
+    },
+    {
+      "path": "tests/test_clone.c",
+      "bytes": 5423,
+      "sha256": "1f44bd1053a58df3928e966f330c72baf21e41cb12f356f204ff897aaa5c34f4"
+    }
+  ],
+  "scope": {
+    "hardware_writes_added": false,
+    "standard_backlight_path_changed": false,
+    "default_clone_domain": 16383,
+    "default_provenance": "MiCode official same-SoC compatibility contract, not explicit Myron DT override",
+    "real_kernel_compiled": false,
+    "device_tested": false
+  }
+}

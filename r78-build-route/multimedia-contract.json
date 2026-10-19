@@ -1,0 +1,921 @@
+{
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "sources_lock_sha256": "ef3d806f679ac8e0bf1371e6ab6dfc173118a32e3a66f44f684116bc0b52e756",
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "build/kernel": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "prebuilts/clang/host/linux-x86": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04"
+  },
+  "core_targets": [
+    "//common:kernel_aarch64",
+    "//myron_artifact_metadata:kernel_release"
+  ],
+  "schema": 1,
+  "source_review": "PASS",
+  "base_commit": "01845c8dcdbc7a5c42f8037f4839e4b12e61137f",
+  "compile_only": true,
+  "flashable": false,
+  "runtime_changes": [],
+  "parent_contract": "r77-build-route/thermal-contract.json",
+  "parent_contract_sha256": "0b3ef93711b68d6db422d5b0f1d86974985b31bc7034c8c36fa59a012c86498f",
+  "modules": [
+    {
+      "module_name": "tfa98xx_dlkm",
+      "stem": "drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm/tfa98xx_dlkm.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/config.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/config.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+        "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/versions.h"
+      ]
+    },
+    {
+      "module_name": "machine_dlkm",
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel:canoe_perf_machine_dlkm",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_machine_dlkm/machine_dlkm.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_machine_dlkm/canoe_perf_machine_dlkm_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/asoc/msm_common.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c"
+      ]
+    },
+    {
+      "module_name": "msm_drm",
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/display-drivers:canoe_perf_msm_drm",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/sde/sde_rm.c"
+      ],
+      "output_policy": "Use actual target aquery outputs; require one msm_drm.ko and real corresponding Module.symvers. Never guess generated path."
+    }
+  ],
+  "selected_module_names": [
+    "tfa98xx_dlkm",
+    "machine_dlkm",
+    "msm_drm"
+  ],
+  "locked_files": [
+    {
+      "path": "r78-build-route/README.md",
+      "bytes": 2097,
+      "sha256": "47c94bc230cccbae3cd432d8ede132051e1de2fd097b02d9b2f6754e959d0d24"
+    },
+    {
+      "path": "r78-build-route/apply_multimedia.py",
+      "bytes": 3031,
+      "sha256": "abe32f8443339bb893713b3417f06523502c8a7ff898767786272f8306877079"
+    },
+    {
+      "path": "r78-build-route/audio/README.md",
+      "bytes": 4255,
+      "sha256": "e8a523119ad9ab4de63a04d6e25e88fd7666c911e054976c189d3428ca110d3a"
+    },
+    {
+      "path": "r78-build-route/audio/apply.py",
+      "bytes": 8445,
+      "sha256": "7b0558abfa708d880009735f2e970382077bac28f133880684a08fce305d4438"
+    },
+    {
+      "path": "r78-build-route/audio/contract.json",
+      "bytes": 70631,
+      "sha256": "5c6a146ba7bbdae1eb52325badf9f6d4a11cd4ca70d113c839062b2120679e73"
+    },
+    {
+      "path": "r78-build-route/audio/fragments/Kconfig",
+      "bytes": 47,
+      "sha256": "698a37a4fcc56fd562cff0aa81663951e38b9ef3f804b8baf3ecd746794c9817"
+    },
+    {
+      "path": "r78-build-route/audio/fragments/canoe_perf.bzl",
+      "bytes": 121,
+      "sha256": "5d75c52ce47a5640163f4e50c8b11071bc97d1b73fec2a24915d9e039755fbdd"
+    },
+    {
+      "path": "r78-build-route/audio/fragments/modules.bzl",
+      "bytes": 6139,
+      "sha256": "024896350bb5db79d3aad4d730769a193def7f3e300f218ff37e1f6140c13bc0"
+    },
+    {
+      "path": "r78-build-route/audio/hardware-evidence.json",
+      "bytes": 4103,
+      "sha256": "39e2193b2d13b6d4de857dbcf831da19f6d918c1f3d29de0bebcae67f6eeb823"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/Kconfig",
+      "bytes": 330,
+      "sha256": "71463371f9c4153aee687a495afbcbfe4bcc511a84b463aec5868f766bcba524"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/config.h",
+      "bytes": 933,
+      "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+      "bytes": 5984,
+      "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+      "bytes": 1257,
+      "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+      "bytes": 79044,
+      "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+      "bytes": 136258,
+      "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+      "bytes": 84290,
+      "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+      "bytes": 77984,
+      "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+      "bytes": 90572,
+      "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+      "bytes": 93001,
+      "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+      "bytes": 7066,
+      "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+      "bytes": 109294,
+      "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+      "bytes": 86299,
+      "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+      "bytes": 86842,
+      "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+      "bytes": 76894,
+      "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+      "bytes": 88513,
+      "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+      "bytes": 88795,
+      "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+      "bytes": 91147,
+      "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+      "bytes": 5072,
+      "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+      "bytes": 6413,
+      "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+      "bytes": 41818,
+      "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+      "bytes": 46703,
+      "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+      "bytes": 99839,
+      "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+      "bytes": 106052,
+      "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+      "bytes": 80955,
+      "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+      "bytes": 3603,
+      "sha256": "620c0a22bdc9054e88db42d0da3d233c3a8bfffe225d1cd7b98ae9408313810d"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+      "bytes": 147050,
+      "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+      "bytes": 18293,
+      "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+      "bytes": 4505,
+      "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+      "bytes": 12102,
+      "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+      "bytes": 158842,
+      "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+      "bytes": 11350,
+      "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+      "bytes": 13972,
+      "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+      "bytes": 5712,
+      "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+      "bytes": 1864,
+      "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+      "bytes": 34271,
+      "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/config.h",
+      "bytes": 933,
+      "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+      "bytes": 5984,
+      "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+      "bytes": 1257,
+      "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+      "bytes": 79044,
+      "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+      "bytes": 136258,
+      "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+      "bytes": 84290,
+      "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+      "bytes": 77984,
+      "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+      "bytes": 90572,
+      "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+      "bytes": 93001,
+      "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+      "bytes": 7066,
+      "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+      "bytes": 109294,
+      "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+      "bytes": 86299,
+      "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+      "bytes": 86842,
+      "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+      "bytes": 76894,
+      "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+      "bytes": 88513,
+      "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+      "bytes": 88795,
+      "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+      "bytes": 91147,
+      "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+      "bytes": 5072,
+      "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+      "bytes": 6413,
+      "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+      "bytes": 41818,
+      "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+      "bytes": 46703,
+      "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+      "bytes": 99839,
+      "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+      "bytes": 106052,
+      "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+      "bytes": 80955,
+      "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+      "bytes": 98888,
+      "sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+      "bytes": 3745,
+      "sha256": "f7fed4942c9c7494de39666938de5f58b9dd849c864e07f87f717e404a53a3d5"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+      "bytes": 147050,
+      "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+      "bytes": 18293,
+      "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+      "bytes": 4505,
+      "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+      "bytes": 12102,
+      "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+      "bytes": 158842,
+      "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+      "bytes": 66830,
+      "sha256": "33f87ce6af7cfd33ca65605cfdf0c61983fd7a5aad9114090aa67eddcad91bdd"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+      "bytes": 11350,
+      "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+      "bytes": 13972,
+      "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+      "bytes": 118833,
+      "sha256": "380319dd0b2021f6da015ae2729debb8a3dda24023315c8a24a39d0d395d837a"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+      "bytes": 5712,
+      "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+      "bytes": 1864,
+      "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+      "bytes": 96354,
+      "sha256": "f4f5dbde1504a3389a3b2ee96b02dd7bd208922686eb89a721b4488dd7cd518e"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+      "bytes": 1109,
+      "sha256": "8ae9bbddaa368c0356c80089792fd056633c5a903c061136a46d853aed9ef00e"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+      "bytes": 34271,
+      "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8"
+    },
+    {
+      "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/versions.h",
+      "bytes": 99,
+      "sha256": "a1aab449831d366426e83c639924b21962633abd9d9e44b32ff9990df40f8c28"
+    },
+    {
+      "path": "r78-build-route/audio/payload-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c",
+      "bytes": 86307,
+      "sha256": "6f8448bc782c020e65896aa64e6bea50acea22c75d349ed353b157e4d8d7246e"
+    },
+    {
+      "path": "r78-build-route/audio/preimage/configs/canoe_perf.bzl",
+      "bytes": 17774,
+      "sha256": "0896e5b917a8ac92f2be6acf34a46afecd445cf6d9334689504737820d50503a"
+    },
+    {
+      "path": "r78-build-route/audio/preimage/drivers/xiaomi/myron/Kconfig",
+      "bytes": 5113,
+      "sha256": "171f594cd5baea78a87d587a33149c252c80c021058218ab6834c27be12e83a2"
+    },
+    {
+      "path": "r78-build-route/audio/preimage/drivers/xiaomi/myron/modules.bzl",
+      "bytes": 174754,
+      "sha256": "5ff2c3024aef9ec727305499625ffcc1e40b2398e3b44a253c4633449195b962"
+    },
+    {
+      "path": "r78-build-route/audio/preimage-modules/qcom/opensource/audio-kernel/asoc/audio_machine.c",
+      "bytes": 83508,
+      "sha256": "4e6e3495cf85db60470f5a1623ef2fdf97f59f42a0aca80f74d675bacbc0d613"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/0001-linux-6.12-drop-removed-SLAB_MEM_SPREAD.patch",
+      "bytes": 512,
+      "sha256": "8398f871e89eaa61ff0f7ce538890d4d029c55c3cab44e5b3c6ff63f1734ebae"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/delta-src-tfa98xx.c.patch",
+      "bytes": 6845,
+      "sha256": "7d1efd1ad9a6bd7a9990cec685a568904034cfab256b6ce0e4f8d4b7cd0e21dc"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/delta-src-tfa98xx.h.patch",
+      "bytes": 309,
+      "sha256": "11032239264ed22bf883508ce4565c58d9943ec061ee05b784fd5225bab93c16"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/delta-src-tfa_init.c.patch",
+      "bytes": 1982,
+      "sha256": "f4f5932151cfcced81851cd4aa77bf5dcdf478da2816092147bbf84b45073a28"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/goodix-tfa_init.c",
+      "bytes": 111540,
+      "sha256": "d584fe6c31bc049d17c62c0299175971db9db5b0eab8e43d84119ab7715f2886"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/machine-dai-links.patch",
+      "bytes": 3481,
+      "sha256": "141d0cfd64342cebc753db8073820c23cea68875eb28f5c07788b1cb7c48739b"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/onyx-before/inc/tfa98xx.h",
+      "bytes": 3603,
+      "sha256": "620c0a22bdc9054e88db42d0da3d233c3a8bfffe225d1cd7b98ae9408313810d"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/onyx-before/src/tfa98xx.c",
+      "bytes": 97560,
+      "sha256": "e704a83bc2955217e4dfe5ff14f04adff8e190a1f005fdc3d1acac9cdb41c49a"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/onyx-before/src/tfa98xx.h",
+      "bytes": 3640,
+      "sha256": "6bf8186944f20686fa7f12d1cdc1f4cd05d5df37d2f8d5dc26c304254b64918f"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/onyx-before/src/tfa_init.c",
+      "bytes": 95124,
+      "sha256": "dbd930a510da94d884ce8f1a4e062f50725ced2fa99e188cd6f8fffcc09bc41a"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/standalone-Kbuild",
+      "bytes": 249,
+      "sha256": "d7b5b9a8838cd2b26403dfa67e9ad473719390a58d3c636c9439aa8626aea52a"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/standalone-Makefile",
+      "bytes": 293,
+      "sha256": "750caa40da0c9188a713d686b5905a6bd09ea409b8cdf0475fc439ab1b799f25"
+    },
+    {
+      "path": "r78-build-route/audio/provenance/upstream-source-lock.json",
+      "bytes": 20309,
+      "sha256": "911b7c23be393707928d0f5ea69c4a157ec81390c39f8d0c28fdd91f07225c63"
+    },
+    {
+      "path": "r78-build-route/audio/test_audio.py",
+      "bytes": 11783,
+      "sha256": "02b5fb86a05f36b8dd882fda899437675a58eacc6c2bfccb94db1d5f0e0251af"
+    },
+    {
+      "path": "r78-build-route/build_multimedia.py",
+      "bytes": 7390,
+      "sha256": "84f0b63875fa276b01d6731d3a2bf46c98bd535ffeb0312877c4c8b36bdbdb22"
+    },
+    {
+      "path": "r78-build-route/display/README.zh-CN.txt",
+      "bytes": 3378,
+      "sha256": "7f57de3c37969c6683b33564fbe06603b44d75ed56e688849f4266b9bc298ad7"
+    },
+    {
+      "path": "r78-build-route/display/apply.py",
+      "bytes": 4694,
+      "sha256": "837e0d985d25e0c52226384debe84cc738c722efcc034183511e425bd3e2d526"
+    },
+    {
+      "path": "r78-build-route/display/contract.json",
+      "bytes": 15386,
+      "sha256": "72bc8563202e3fee7a45917cf1408e1b470e71c9142c8ac1d1dc6087b22233c4"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/display_modules.bzl",
+      "bytes": 9383,
+      "sha256": "19a6639a60621cd9284b4c7d35b16710293e743f68a4773b0f422f4adfe79b03"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "bytes": 112937,
+      "sha256": "fe049856ab69cd6c9f3626e40c4acf7b2f165fcdba0cb18dcba95730b58ac9d6"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "bytes": 270301,
+      "sha256": "b20aada36b38f65645e04a08612f6b118c40040f21bc68f7122218911ae5fe72"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "bytes": 55416,
+      "sha256": "98f030119d8fb031efba190b8b0f8a3d0d644cbb1d11175160653f6fe264c1ca"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "bytes": 169629,
+      "sha256": "1151b2bbabc4dc9f646e092c074b94d65440f88be048aeba7207aa62f8901271"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+      "bytes": 11119,
+      "sha256": "17a548e8f7db29ca1f7515bdc39eb45596a7c0ba4ef15318618acac23fad7e7b"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
+      "bytes": 1392,
+      "sha256": "4f5f0ce8bbc5c90d640f565283b6aa9265e4ac30e6168a3ad766511992088f4c"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "bytes": 138070,
+      "sha256": "ceef0addc000f88197dd8620295186f3d464f7dfd90beabd6804c513d6756f4b"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "bytes": 43097,
+      "sha256": "1e0d9d60bae9325c87fd67b945f7c06836f6d97f45ffd818f39332ef52ebccd6"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "bytes": 25093,
+      "sha256": "89ea69a4bbf44324d0d1a1a294db31914be72851c7c298551ab243f556e20e5c"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "bytes": 188174,
+      "sha256": "cc9a30fa0c18daf9d39400b58a39670d15fedec016c2819cbb3915340e0f2d80"
+    },
+    {
+      "path": "r78-build-route/display/payload/qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "bytes": 94089,
+      "sha256": "9d122b7dd51bff2f37b8a6d2dc24fcf8490a4f2bd58c0eb9b8560c2b1f56b981"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/display_modules.bzl",
+      "bytes": 9343,
+      "sha256": "8bf6390d79d481c8ae952dc672176a5d4af701659461b341640dc049d59d3dca"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "bytes": 112746,
+      "sha256": "1aeaa4c242145c5890c4eb1daed77b009ebd89af2482d89d6ada7926e8aca943"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "bytes": 266242,
+      "sha256": "0e6ed90f7264ab170d19ac543dbbda091951e8c6e266a52247d2c56b39405c43"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "bytes": 53381,
+      "sha256": "7db988606264375f06f274ad0ad7be04c75afeaa784a7bf1286975120d8528b2"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "bytes": 167343,
+      "sha256": "bb69a8428cf21b900bf4314bc084f9798061e7e490de4c32f997d547707cd055"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "bytes": 131838,
+      "sha256": "a177d6c6a30f43ab889570b7e5722abb0018b08bdc267f851732e78b85f42ff7"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "bytes": 43139,
+      "sha256": "52dc2509f7a11537dd3e04f715ad7681b3d5379efe03c659821399edf919cdec"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "bytes": 24682,
+      "sha256": "6860da1019e5f6a0a0552bc8ad3e7cf7ffe44597c27958bddf8d196718fc475b"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "bytes": 176115,
+      "sha256": "51967a5e3e4aa26c1247024a4e194215ac988ad1b47a69a2ee14e98486672585"
+    },
+    {
+      "path": "r78-build-route/display/preimage/qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "bytes": 90607,
+      "sha256": "c0692446a6024bc11bddb8a7e827d7b267deae9452def4ec161275d737e71c9d"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/dp/dp_display.c",
+      "bytes": 112937,
+      "sha256": "fe049856ab69cd6c9f3626e40c4acf7b2f165fcdba0cb18dcba95730b58ac9d6"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "bytes": 269799,
+      "sha256": "1e6e591f76ceff40c9739176da7e658112f37c9ba91569a888aef3e31b871850"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+      "bytes": 55416,
+      "sha256": "98f030119d8fb031efba190b8b0f8a3d0d644cbb1d11175160653f6fe264c1ca"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+      "bytes": 169629,
+      "sha256": "1151b2bbabc4dc9f646e092c074b94d65440f88be048aeba7207aa62f8901271"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+      "bytes": 138070,
+      "sha256": "ceef0addc000f88197dd8620295186f3d464f7dfd90beabd6804c513d6756f4b"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+      "bytes": 43097,
+      "sha256": "1e0d9d60bae9325c87fd67b945f7c06836f6d97f45ffd818f39332ef52ebccd6"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+      "bytes": 25093,
+      "sha256": "89ea69a4bbf44324d0d1a1a294db31914be72851c7c298551ab243f556e20e5c"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+      "bytes": 188174,
+      "sha256": "cc9a30fa0c18daf9d39400b58a39670d15fedec016c2819cbb3915340e0f2d80"
+    },
+    {
+      "path": "r78-build-route/display/r28-effective/qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+      "bytes": 94089,
+      "sha256": "9d122b7dd51bff2f37b8a6d2dc24fcf8490a4f2bd58c0eb9b8560c2b1f56b981"
+    },
+    {
+      "path": "r78-build-route/display/reference/SOURCE-LOCK.json",
+      "bytes": 2128,
+      "sha256": "98102352ba3f03088c320b35e397eff197898efe9cd7c0c45ed859db48e1c894"
+    },
+    {
+      "path": "r78-build-route/display/reference/mi_disp.h",
+      "bytes": 27264,
+      "sha256": "b91785afd5de4096ebcd6ff5503a5fe3d7a2a6a08bb88ec9f09d2feaf60cf78b"
+    },
+    {
+      "path": "r78-build-route/display/reference/mi_disp_feature.c",
+      "bytes": 10725,
+      "sha256": "f4465987b037aa28d5521ef04bb0cea87a964e237c18d64b8f5e56cd6d5d1ea3"
+    },
+    {
+      "path": "r78-build-route/display/reference/mi_disp_file.c",
+      "bytes": 30378,
+      "sha256": "ae542f105fa97d03d4340241e4f3c98ff3786d34b30a516b75a12a917b808cc2"
+    },
+    {
+      "path": "r78-build-route/display/reference/mi_disp_parser.c",
+      "bytes": 11298,
+      "sha256": "c5d4e7d25c7cfb107e4defbd2ad62c41f95593dcde7cd20c075c75c87c00101d"
+    },
+    {
+      "path": "r78-build-route/display/reference/mi_disp_sysfs.c",
+      "bytes": 12593,
+      "sha256": "3d0b488d7d3693142a51477176bfcb94ad10f51ad4dcaa7ca79433b3ded831c6"
+    },
+    {
+      "path": "r78-build-route/display/reference/r28-manifest.json",
+      "bytes": 74706,
+      "sha256": "76e8cacb9de01bf11a89d1130e8480b5d556ef439e6b09c3ad0d9e3de958c125"
+    },
+    {
+      "path": "r78-build-route/display/tests/fake_kernel.h",
+      "bytes": 5711,
+      "sha256": "f2fa7bf8768d4f658b2119efc16419780ab263b528627c63272abc0c89af8517"
+    },
+    {
+      "path": "r78-build-route/display/tests/run_tests.py",
+      "bytes": 1092,
+      "sha256": "eef6979d479928c4509eaefde1c91cf723e2fe78701d62440927050cbf948abc"
+    },
+    {
+      "path": "r78-build-route/display/tests/test_apply.py",
+      "bytes": 1703,
+      "sha256": "c0e41c46d2afa389c99623a3d2bbf1a17bf586b48edbabb5a7fbe4e14ee77cf3"
+    },
+    {
+      "path": "r78-build-route/display/tests/test_clone.c",
+      "bytes": 5423,
+      "sha256": "1f44bd1053a58df3928e966f330c72baf21e41cb12f356f204ff897aaa5c34f4"
+    },
+    {
+      "path": "r78-build-route/r78_inputs.py",
+      "bytes": 3868,
+      "sha256": "c63ac2399dc202aa902a724f7bb36586586890b2a2e9e5f62d84a69d61911f5f"
+    },
+    {
+      "path": "r78-build-route/resolve_outputs.py",
+      "bytes": 1615,
+      "sha256": "387a249fb589c87b9e93ef646e02957063df865e8d011564d285b415db293f6d"
+    },
+    {
+      "path": "r78-build-route/test_integration.py",
+      "bytes": 2144,
+      "sha256": "1e628482fe129b8450f42fae664882da83ea5191fbebdde4577c42a30356322c"
+    },
+    {
+      "path": "r78-build-route/tests/actual-ddk-outputs.json",
+      "bytes": 3526,
+      "sha256": "3fbc17153c672437ff43b5f81ae5a3b74c1a2e40993d614b9a27f2a06a27f6bd"
+    }
+  ]
+}

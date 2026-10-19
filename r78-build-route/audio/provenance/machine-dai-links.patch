@@ -1,0 +1,127 @@
+--- a/qcom/opensource/audio-kernel/asoc/audio_machine.c
++++ b/qcom/opensource/audio-kernel/asoc/audio_machine.c
+@@ -13,6 +13,7 @@
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/input.h>
++#include <linux/i2c.h>
+ #include <soc/qcom/socinfo.h>
+ #include <linux/version.h>
+ #include <linux/of_device.h>
+@@ -1589,6 +1590,105 @@
+ 			ARRAY_SIZE(wsa885x_tdm_dai_links)];
+ 
+ 
++/*
++ * Myron has three TFA codecs on primary TDM RX and primary TDM VI feedback.
++ * This is an explicit qualification option, not an automatic board probe.
++ * Firmware/revision and the complete runtime module closure must be reviewed
++ * before enabling it. No mixer, clock, calibration or amplifier write here.
++ */
++static bool myron_tfa_links;
++module_param(myron_tfa_links, bool, 0444);
++MODULE_PARM_DESC(myron_tfa_links, "Opt in to Myron three-codec primary TDM links");
++
++static void myron_tfa_put_node(void *node)
++{
++	of_node_put(node);
++}
++
++static int myron_tfa_configure_links(struct snd_soc_card *card)
++{
++	struct snd_soc_dai_link_component *codecs;
++	struct snd_soc_dai_link *rx = NULL, *tx = NULL;
++	struct device_node *node;
++	struct i2c_client *client;
++	unsigned int seen = 0;
++	u32 address;
++	int i, index, adapter = -1, ret;
++
++	if (!myron_tfa_links)
++		return 0;
++	if (!of_device_is_compatible(card->dev->of_node, "qcom,canoe-asoc-snd"))
++		return -ENODEV;
++	for (i = 0; i < card->num_links; i++) {
++		if (!strcmp(card->dai_link[i].name, LPASS_BE_PRI_TDM_RX_0)) {
++			if (rx)
++				return -EINVAL;
++			rx = &card->dai_link[i];
++		}
++		if (!strcmp(card->dai_link[i].name, LPASS_BE_PRI_TDM_TX_0)) {
++			if (tx)
++				return -EINVAL;
++			tx = &card->dai_link[i];
++		}
++	}
++	if (!rx || !tx)
++		return -EINVAL;
++	codecs = devm_kcalloc(card->dev, 3, sizeof(*codecs), GFP_KERNEL);
++	if (!codecs)
++		return -ENOMEM;
++	for_each_compatible_node(node, NULL, "tfa,tfa98xx") {
++		if (!of_device_is_available(node))
++			continue;
++		ret = of_property_read_u32(node, "reg", &address);
++		if (ret || address < 0x34 || address > 0x36) {
++			ret = -EINVAL;
++			goto put_node;
++		}
++		index = address - 0x34;
++		if (seen & BIT(index)) {
++			ret = -EINVAL;
++			goto put_node;
++		}
++		client = of_find_i2c_device_by_node(node);
++		if (!client) {
++			ret = -EPROBE_DEFER;
++			goto put_node;
++		}
++		if (client->addr != address ||
++		    (adapter >= 0 && client->adapter->nr != adapter)) {
++			put_device(&client->dev);
++			ret = -EINVAL;
++			goto put_node;
++		}
++		adapter = client->adapter->nr;
++		codecs[index].dai_name = devm_kasprintf(card->dev, GFP_KERNEL,
++				"tfa98xx-aif-%x-%x", adapter, address);
++		put_device(&client->dev);
++		if (!codecs[index].dai_name) {
++			ret = -ENOMEM;
++			goto put_node;
++		}
++		codecs[index].of_node = of_node_get(node);
++		ret = devm_add_action_or_reset(card->dev, myron_tfa_put_node,
++					      codecs[index].of_node);
++		if (ret)
++			goto put_node;
++		seen |= BIT(index);
++	}
++	if (seen != (BIT(0) | BIT(1) | BIT(2)))
++		return -ENODEV;
++	/* Commit both links only after all three codec identities are present. */
++	rx->codecs = codecs;
++	rx->num_codecs = 3;
++	tx->codecs = codecs;
++	tx->num_codecs = 3;
++	return 0;
++
++put_node:
++	of_node_put(node);
++	return ret;
++}
++
+ static int msm_populate_dai_link_component_of_node(
+ 					struct snd_soc_card *card)
+ {
+@@ -2803,6 +2903,10 @@
+ 		}
+ 	}
+ 
++	ret = myron_tfa_configure_links(card);
++	if (ret)
++		goto err;
++
+ 	ret = msm_populate_dai_link_component_of_node(card);
+ 	if (ret) {
+ 		ret = -EPROBE_DEFER;

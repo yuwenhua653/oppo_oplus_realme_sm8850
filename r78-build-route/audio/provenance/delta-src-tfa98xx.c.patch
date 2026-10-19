@@ -1,0 +1,204 @@
+--- a/src/tfa98xx.c
++++ b/src/tfa98xx.c
+@@ -27,6 +27,7 @@
+ #include <linux/debugfs.h>
+ #include <linux/version.h>
+ #include <linux/input.h>
++#include <linux/pinctrl/consumer.h>
+ #include "config.h"
+ #include "tfa98xx.h"
+ #include "tfa.h"
+@@ -88,7 +89,8 @@
+ module_param(no_reset, int, S_IRUGO);
+ MODULE_PARM_DESC(no_reset, "do not use the reset line; for debugging via user\n");
+ 
+-static int pcm_sample_format = 0; /*Be carefull:  setting pcm_sample_format to 3 means TDM settings will be dynamically adapted, please do not set the
++/* Myron ODM primary TDM RX/TX: 48 kHz, three channels, S32_LE. */
++static int pcm_sample_format = 2; /*Be carefull:  setting pcm_sample_format to 3 means TDM settings will be dynamically adapted, please do not set the
+ HW TDM Setting in the container file in case of dynamic sample format seletcion*/
+ module_param(pcm_sample_format, int, S_IRUGO);
+ MODULE_PARM_DESC(pcm_sample_format, "PCM sample format: 0=S16_LE, 1=S24_LE, 2=S32_LE, 3=dynamic\n");
+@@ -1600,24 +1602,46 @@
+ 	return 1;
+ }
+ 
++/* Select only DT-declared receiver states; never infer a GPIO number. */
++static int tfa98xx_set_spksw(struct tfa98xx *tfa98xx, int level)
++{
++	int ret;
++
++	if (level != 0 && level != 1)
++		return -EINVAL;
++	mutex_lock(&tfa98xx->dsp_lock);
++	if (tfa98xx->rcv_pinctrl)
++		ret = pinctrl_select_state(tfa98xx->rcv_pinctrl,
++			level ? tfa98xx->rcv_gpio_high : tfa98xx->rcv_gpio_low);
++	else if (gpio_is_valid(tfa98xx->spk_sw_gpio))
++		ret = gpio_direction_output(tfa98xx->spk_sw_gpio, level);
++	else
++		ret = -ENODEV;
++	if (!ret)
++		tfa98xx->spk_sw_level = level;
++	mutex_unlock(&tfa98xx->dsp_lock);
++	return ret;
++}
++
+ static int tfa98xx_spksw_gpio_get(struct snd_kcontrol *kcontrol,
+ 				    struct snd_ctl_elem_value *ucontrol)
+ {
+ 	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+ 	struct tfa98xx *tfa98xx = snd_soc_component_get_drvdata(codec);
+-
+-	int current_level = gpio_get_value_cansleep(tfa98xx->spk_sw_gpio);
+-	dev_info(&tfa98xx->i2c->dev, "spk_sw level cached = %d, actual = %d\n",
+-					tfa98xx->spk_sw_level, current_level);
+-
+-	if (current_level < 0) {
+-		// failed to read the actual value, fallback to cached value
+-		ucontrol->value.enumerated.item[0] = tfa98xx->spk_sw_level;
+-	} else {
+-		ucontrol->value.enumerated.item[0] = current_level;
+-		tfa98xx->spk_sw_level = current_level;
+-	}
+-
++	int level;
++
++	mutex_lock(&tfa98xx->dsp_lock);
++	/* Pinctrl exposes no generic electrical readback: report last success. */
++	if (tfa98xx->rcv_pinctrl)
++		level = tfa98xx->spk_sw_level;
++	else if (gpio_is_valid(tfa98xx->spk_sw_gpio))
++		level = gpio_get_value_cansleep(tfa98xx->spk_sw_gpio);
++	else
++		level = -ENODEV;
++	mutex_unlock(&tfa98xx->dsp_lock);
++	if (level < 0)
++		return level;
++	ucontrol->value.enumerated.item[0] = level;
+ 	return 0;
+ }
+ 
+@@ -1626,17 +1650,14 @@
+ {
+ 	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
+ 	struct tfa98xx *tfa98xx = snd_soc_component_get_drvdata(codec);
+-	int spk_sw_gpio = ucontrol->value.enumerated.item[0];
+-
+-	dev_info(&tfa98xx->i2c->dev, "spk_sw = %d\n", spk_sw_gpio);
+-
+-	gpio_set_value_cansleep(tfa98xx->spk_sw_gpio, !!spk_sw_gpio);
+-
+-	return 0;
++	int level = ucontrol->value.enumerated.item[0];
++	int ret = tfa98xx_set_spksw(tfa98xx, level);
++
++	return ret ? ret : 1;
+ }
+ 
+ static const struct snd_kcontrol_new tfa98xx_spksw_controls[] = {
+-	SOC_SINGLE_EXT("tfa98xx_spksw_gpio_switch", SND_SOC_NOPM, 0, 0x3, 0,
++	SOC_SINGLE_EXT("tfa98xx_spksw_gpio_switch", SND_SOC_NOPM, 0, 1, 0,
+ 		tfa98xx_spksw_gpio_get, tfa98xx_spksw_gpio_put)
+ };
+ 
+@@ -2746,6 +2767,8 @@
+ 	struct snd_soc_codec *codec = dai->codec;
+ 	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec);
+ #endif
++	int ret = 0;
++
+ 	dev_info(&tfa98xx->i2c->dev, "%s: state: %d\n", __func__, mute);
+ 
+ 	if (no_start) {
+@@ -2759,13 +2782,12 @@
+ 		 */
+ 		if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
+ 			tfa98xx->pstream = 0;
+-			if(gpio_is_valid(tfa98xx->spk_sw_gpio)){
+-				gpio_direction_output(tfa98xx->spk_sw_gpio, 0);
+-			}
++			if (tfa98xx->rcv_pinctrl || gpio_is_valid(tfa98xx->spk_sw_gpio))
++				ret = tfa98xx_set_spksw(tfa98xx, 0);
+ 		} else
+ 			tfa98xx->cstream = 0;
+ 		if (tfa98xx->pstream != 0 || tfa98xx->cstream != 0)
+-			return 0;
++			return ret;
+ 
+ 		mutex_lock(&tfa98xx_mutex);
+ 		tfa98xx_sync_count = 0;
+@@ -2776,7 +2798,7 @@
+ 		cancel_delayed_work_sync(&tfa98xx->init_work);
+ 		if (tfa98xx->dsp_fw_state != TFA98XX_DSP_FW_OK ||
+ 			 tfa98xx->dsp_init == TFA98XX_DSP_INIT_STOPPED)
+-			return 0;
++			return ret;
+ 		mutex_lock(&tfa98xx->dsp_lock);
+ 		tfa_dev_stop(tfa98xx->tfa);
+ 		tfa98xx->dsp_init = TFA98XX_DSP_INIT_STOPPED;
+@@ -2786,16 +2808,13 @@
+ 	}
+ 	else {
+ 		if (stream == SNDRV_PCM_STREAM_PLAYBACK){
++			if (tfa98xx->rcv_pinctrl || gpio_is_valid(tfa98xx->spk_sw_gpio)) {
++				/* Profile 1 is handset in the pinned Myron container. */
++				ret = tfa98xx_set_spksw(tfa98xx, tfa98xx_mixer_profile == 1);
++				if (ret)
++					return ret;
++			}
+ 			tfa98xx->pstream = 1;
+-			if(1 == tfa98xx_mixer_profile){
+-				if(gpio_is_valid(tfa98xx->spk_sw_gpio)){
+-					gpio_direction_output(tfa98xx->spk_sw_gpio, 1);
+-				}
+-			} else {
+-				if(gpio_is_valid(tfa98xx->spk_sw_gpio)){
+-					gpio_direction_output(tfa98xx->spk_sw_gpio, 0);
+-				}
+-			}
+ 		}
+ 		else{
+ 				tfa98xx->cstream = 1;
+@@ -2819,7 +2838,7 @@
+ 						0);	
+ 	}
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static const struct snd_soc_dai_ops tfa98xx_dai_ops = {
+@@ -3041,6 +3060,23 @@
+ 	tfa98xx->spk_sw_gpio = of_get_named_gpio(np, "spk-sw-gpio", 0);
+ 	if (tfa98xx->spk_sw_gpio < 0)
+ 		dev_info(dev, "No spk_sw_gpio GPIO provided\n");
++	if (of_property_match_string(np, "pinctrl-names", "rcv_gpio_high") >= 0 ||
++	    of_property_match_string(np, "pinctrl-names", "rcv_gpio_low") >= 0) {
++		tfa98xx->rcv_pinctrl = devm_pinctrl_get(dev);
++		if (IS_ERR(tfa98xx->rcv_pinctrl))
++			return PTR_ERR(tfa98xx->rcv_pinctrl);
++		tfa98xx->rcv_gpio_high = pinctrl_lookup_state(tfa98xx->rcv_pinctrl,
++							     "rcv_gpio_high");
++		if (IS_ERR(tfa98xx->rcv_gpio_high))
++			return PTR_ERR(tfa98xx->rcv_gpio_high);
++		tfa98xx->rcv_gpio_low = pinctrl_lookup_state(tfa98xx->rcv_pinctrl,
++							    "rcv_gpio_low");
++		if (IS_ERR(tfa98xx->rcv_gpio_low))
++			return PTR_ERR(tfa98xx->rcv_gpio_low);
++		/* No guessed hardware readback before the first successful request. */
++		tfa98xx->spk_sw_level = -ENODATA;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -3515,8 +3551,7 @@
+ 	tfa98xx_cache = kmem_cache_create("tfa98xx_cache", /* Cache name /proc/slabinfo */
+ 		PAGE_SIZE, /* Structure size, we should fit in single page */
+ 		0, /* Structure alignment */
+-		(SLAB_HWCACHE_ALIGN | SLAB_RECLAIM_ACCOUNT |
+-			SLAB_MEM_SPREAD), /* Cache property */
++		(SLAB_HWCACHE_ALIGN | SLAB_RECLAIM_ACCOUNT), /* Cache property */
+ 		NULL); /* Object constructor */
+ 	if (!tfa98xx_cache) {
+ 		pr_err("tfa98xx can't create memory pool\n");
