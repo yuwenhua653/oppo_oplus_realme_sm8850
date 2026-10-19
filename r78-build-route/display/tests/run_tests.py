@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import os,pathlib,subprocess,tempfile
+import os,pathlib,subprocess,sys,tempfile
 root=pathlib.Path(__file__).resolve().parent.parent
+subprocess.run([sys.executable,str(root/'tests/test_fs_compat.py')],check=True)
 src=root/'payload/qcom/opensource/display-drivers/msm/dsi'
 with tempfile.TemporaryDirectory(prefix='r78-clone-test-') as d:
  p=pathlib.Path(d)

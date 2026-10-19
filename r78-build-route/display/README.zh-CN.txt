@@ -21,4 +21,10 @@ R78 显示亮度源码候选
 
 运行权限已有精确vendor参考：composer-service.rc在post-fs-data对两个clone节点chown system:system并chmod0664，composer服务user system；兼容层在早期bind提供相同虚拟拓扑，不额外修改权限。该参考rc尚未证明与手机当前rc字节一致，最终仍在合并实机验证中确认。
 
-当前状态：源码候选，尚未运行内核CI、未生成可刷镜像、未操作手机；无需root。不重复R65采集。
+R78 fix3：内核CI已进入显示模块编译，发现旧no_llseek符号在锁定6.12内核中不存在。
+生产file_operations改用NULL，保持原有不可seek语义；不使用返回假成功的noop_llseek。
+删除宿主替身中掩盖错误的no_llseek宏，并把llseek字段恢复为函数指针类型。
+新增回归读取锁定内核原始声明与VFS实现，检查旧初始化器编译失败、当前初始化器通过及seek返回-ESPIPE。
+该回归仍为局部宿主验证，完整内核编译、ABI与实机结果以相应后续验证为准。
+
+当前状态：源码候选，内核CI修复中、未生成可刷镜像、未操作手机；无需root。不重复R65采集。

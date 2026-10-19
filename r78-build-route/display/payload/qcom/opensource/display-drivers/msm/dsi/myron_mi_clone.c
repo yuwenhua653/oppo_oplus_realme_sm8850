@@ -263,7 +263,7 @@ static const struct file_operations myron_clone_fops = {
 #endif
 	.poll = myron_clone_poll,
 	.read = myron_clone_read,
-	.llseek = no_llseek,
+	.llseek = NULL, /* Event queue: reject seeking with -ESPIPE. */
 };
 
 int myron_mi_clone_attach(struct dsi_display *display)

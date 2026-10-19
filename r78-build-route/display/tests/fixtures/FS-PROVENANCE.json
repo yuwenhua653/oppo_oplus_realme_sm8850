@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "repository": "https://android.googlesource.com/kernel/common",
+  "commit": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+  "retrieval": "Gitiles base64 TEXT decoded unchanged",
+  "fixtures": [
+    {
+      "path": "include/linux/fs.h",
+      "fixture": "fs.h",
+      "url": "https://android.googlesource.com/kernel/common/+/41a2024a9e2eb66ab0643a865d74943b4ee3cff8/include/linux/fs.h?format=TEXT",
+      "sha256": "438f98b25cdf0f71eb877a54224c63fe2d2bb9c6177933844b8133c2bbf0ed1a",
+      "bytes": 127212
+    },
+    {
+      "path": "fs/read_write.c",
+      "fixture": "read_write.c",
+      "url": "https://android.googlesource.com/kernel/common/+/41a2024a9e2eb66ab0643a865d74943b4ee3cff8/fs/read_write.c?format=TEXT",
+      "sha256": "c7a599e96c6b3dc5d933df7fc65597b7789c1cf53e34f38c6a25a7b51d7154c5",
+      "bytes": 45333
+    }
+  ],
+  "purpose": "Focused host C compatibility regression for the real brightness clone file_operations initializer and the locked vfs_llseek implementation",
+  "limitations": [
+    "Not full kernel/module compilation",
+    "External kernel structures/functions are opaque host test declarations and fake callback bodies",
+    "VFS open initialization is represented by the documented FMODE_LSEEK clearing for NULL llseek; full do_dentry_open is not compiled",
+    "No driver open/read/poll/ioctl behavior is changed or claimed validated by this focused test"
+  ]
+}

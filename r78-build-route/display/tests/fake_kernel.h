@@ -51,8 +51,7 @@ static void wake_up_interruptible(wait_queue_head_t*w){w->wakes++;}
 struct cdev;
 struct inode{struct cdev*i_cdev;};
 struct file{void*private_data;int f_flags;};
-struct file_operations{void*owner;int(*open)(struct inode*,struct file*);int(*release)(struct inode*,struct file*);long(*unlocked_ioctl)(struct file*,unsigned int,unsigned long);long(*compat_ioctl)(struct file*,unsigned int,unsigned long);__poll_t(*poll)(struct file*,poll_table*);ssize_t(*read)(struct file*,char*,size_t,loff_t*);void*llseek;};
-#define no_llseek NULL
+struct file_operations{void*owner;int(*open)(struct inode*,struct file*);int(*release)(struct inode*,struct file*);long(*unlocked_ioctl)(struct file*,unsigned int,unsigned long);long(*compat_ioctl)(struct file*,unsigned int,unsigned long);__poll_t(*poll)(struct file*,poll_table*);ssize_t(*read)(struct file*,char*,size_t,loff_t*);loff_t(*llseek)(struct file*,loff_t,int);};
 static void poll_wait(struct file*f,wait_queue_head_t*w,poll_table*p){}
 static void*compat_ptr(unsigned long x){return (void*)x;}
 static int bad_copy;

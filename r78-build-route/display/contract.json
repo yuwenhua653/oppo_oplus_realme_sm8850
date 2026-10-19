@@ -65,8 +65,8 @@
       "path": "qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
       "destination": "vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
       "before_sha256": null,
-      "after_sha256": "17a548e8f7db29ca1f7515bdc39eb45596a7c0ba4ef15318618acac23fad7e7b",
-      "bytes": 11119
+      "after_sha256": "2dcbd0f80b97c23c78cc3d6778b0f1292abe89a900537132fe518d2bebfed072",
+      "bytes": 11162
     },
     {
       "path": "qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
@@ -119,8 +119,8 @@
   "files": [
     {
       "path": "README.zh-CN.txt",
-      "bytes": 3378,
-      "sha256": "7f57de3c37969c6683b33564fbe06603b44d75ed56e688849f4266b9bc298ad7"
+      "bytes": 3938,
+      "sha256": "4b9aaa3785129317e6047a764b68560354be9115ce9ec28729f4503ba1fdbdc5"
     },
     {
       "path": "apply.py",
@@ -154,8 +154,8 @@
     },
     {
       "path": "payload/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
-      "bytes": 11119,
-      "sha256": "17a548e8f7db29ca1f7515bdc39eb45596a7c0ba4ef15318618acac23fad7e7b"
+      "bytes": 11162,
+      "sha256": "2dcbd0f80b97c23c78cc3d6778b0f1292abe89a900537132fe518d2bebfed072"
     },
     {
       "path": "payload/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
@@ -319,13 +319,28 @@
     },
     {
       "path": "tests/fake_kernel.h",
-      "bytes": 5711,
-      "sha256": "f2fa7bf8768d4f658b2119efc16419780ab263b528627c63272abc0c89af8517"
+      "bytes": 5717,
+      "sha256": "350901e46aa96373ebd7bf227d049c13e6d0c6329a49e22530093fc928e8e2c7"
+    },
+    {
+      "path": "tests/fixtures/FS-PROVENANCE.json",
+      "bytes": 1412,
+      "sha256": "9522561397d5e24dbb3cc76ff8f82da5c7c4720729faf5df424b8d42c7e88aaf"
+    },
+    {
+      "path": "tests/fixtures/fs.h",
+      "bytes": 127212,
+      "sha256": "438f98b25cdf0f71eb877a54224c63fe2d2bb9c6177933844b8133c2bbf0ed1a"
+    },
+    {
+      "path": "tests/fixtures/read_write.c",
+      "bytes": 45333,
+      "sha256": "c7a599e96c6b3dc5d933df7fc65597b7789c1cf53e34f38c6a25a7b51d7154c5"
     },
     {
       "path": "tests/run_tests.py",
-      "bytes": 1092,
-      "sha256": "eef6979d479928c4509eaefde1c91cf723e2fe78701d62440927050cbf948abc"
+      "bytes": 1176,
+      "sha256": "6be0f36ec0e8abfd3779fa6d3af47cdf9eb0583a560224a3257ef57af6ec7a75"
     },
     {
       "path": "tests/test_apply.py",
@@ -336,6 +351,11 @@
       "path": "tests/test_clone.c",
       "bytes": 5423,
       "sha256": "1f44bd1053a58df3928e966f330c72baf21e41cb12f356f204ff897aaa5c34f4"
+    },
+    {
+      "path": "tests/test_fs_compat.py",
+      "bytes": 8033,
+      "sha256": "695c6abc0f0569b8c5bf7eb8aed950afbaed7c896ac7816d34704146c1eee2d3"
     }
   ],
   "scope": {
