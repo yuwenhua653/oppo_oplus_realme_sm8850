@@ -671,8 +671,8 @@
       "source": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
       "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
       "before_sha256": null,
-      "after_sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68",
-      "bytes": 98888
+      "after_sha256": "5a3e03dfb391dd9a4c980355d56ad1ecbaed3e50e0aa94f1d0c75feb17b91402",
+      "bytes": 98908
     },
     {
       "mode": "new",
@@ -850,8 +850,8 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 4255,
-      "sha256": "e8a523119ad9ab4de63a04d6e25e88fd7666c911e054976c189d3428ca110d3a"
+      "bytes": 4705,
+      "sha256": "f2c5b91b889ddfbf8f6baa4deafcd0726c8cd54432f16499853b89213a5163d6"
     },
     {
       "path": "apply.py",
@@ -1180,8 +1180,8 @@
     },
     {
       "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
-      "bytes": 98888,
-      "sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68"
+      "bytes": 98908,
+      "sha256": "5a3e03dfb391dd9a4c980355d56ad1ecbaed3e50e0aa94f1d0c75feb17b91402"
     },
     {
       "path": "payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
@@ -1295,8 +1295,8 @@
     },
     {
       "path": "provenance/delta-src-tfa98xx.c.patch",
-      "bytes": 6845,
-      "sha256": "7d1efd1ad9a6bd7a9990cec685a568904034cfab256b6ce0e4f8d4b7cd0e21dc"
+      "bytes": 7260,
+      "sha256": "6682aa6cfbfb315736244ed8c71d18279a8bb73043c84477f8ac4e71bf52715a"
     },
     {
       "path": "provenance/delta-src-tfa98xx.h.patch",
@@ -1365,7 +1365,7 @@
       "before_path": "provenance/onyx-before/src/tfa98xx.c",
       "patch": "provenance/delta-src-tfa98xx.c.patch",
       "before_sha256": "e704a83bc2955217e4dfe5ff14f04adff8e190a1f005fdc3d1acac9cdb41c49a",
-      "after_sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68"
+      "after_sha256": "5a3e03dfb391dd9a4c980355d56ad1ecbaed3e50e0aa94f1d0c75feb17b91402"
     },
     {
       "relative": "src/tfa_init.c",
@@ -1496,7 +1496,8 @@
     "Goodix MN2B0 revision/type recognition and exact initialization case",
     "S32_LE default matching Myron ODM 48kHz/3-channel primary TDM",
     "DT-named receiver pinctrl states with error propagation and no inferred GPIO",
-    "Default-disabled machine myron_tfa_links parameter routes three DT/I2C clients to primary TDM RX and TX"
+    "Default-disabled machine myron_tfa_links parameter routes three DT/I2C clients to primary TDM RX and TX",
+    "Use GPIOF_IN from the pinned common GPIO API for the IRQ request; preserve reset and speaker output flags"
   ],
   "hardware_evidence": "hardware-evidence.json"
 }

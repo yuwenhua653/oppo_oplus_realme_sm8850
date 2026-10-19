@@ -27,6 +27,13 @@ python3 apply.py --package-dir . --workspace /path/to/prepared/workspace --check
 
 The import API is `check(package_dir)` and `apply(workspace, package_dir, verify=False)`. Module targets, predicted output paths and exact expected source lists are in `contract.json`.
 
+R78 fix2 uses the public `GPIOF_IN` flag for the legacy integer-GPIO IRQ request
+and includes its defining header explicitly. The pinned 6.12 common header does
+not define `GPIOF_DIR_IN`. GPIO descriptor flags are not substituted into this
+legacy request API. The regression test compiles the actual three request blocks
+against declarations and flag definitions from that exact header; it does not
+claim a complete kernel build or a hardware test.
+
 The focused local control-flow verification is:
 
 ```sh

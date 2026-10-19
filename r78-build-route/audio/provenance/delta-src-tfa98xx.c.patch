@@ -1,6 +1,13 @@
 --- a/src/tfa98xx.c
 +++ b/src/tfa98xx.c
-@@ -27,6 +27,7 @@
+@@ -21,12 +21,14 @@
+ #include <sound/pcm_params.h>
+ #include <sound/soc.h>
+ #include <linux/of_gpio.h>
++#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/firmware.h>
  #include <linux/debugfs.h>
  #include <linux/version.h>
  #include <linux/input.h>
@@ -8,7 +15,7 @@
  #include "config.h"
  #include "tfa98xx.h"
  #include "tfa.h"
-@@ -88,7 +89,8 @@
+@@ -88,7 +90,8 @@
  module_param(no_reset, int, S_IRUGO);
  MODULE_PARM_DESC(no_reset, "do not use the reset line; for debugging via user\n");
  
@@ -18,7 +25,7 @@
  HW TDM Setting in the container file in case of dynamic sample format seletcion*/
  module_param(pcm_sample_format, int, S_IRUGO);
  MODULE_PARM_DESC(pcm_sample_format, "PCM sample format: 0=S16_LE, 1=S24_LE, 2=S32_LE, 3=dynamic\n");
-@@ -1600,24 +1602,46 @@
+@@ -1600,24 +1603,46 @@
  	return 1;
  }
  
@@ -78,7 +85,7 @@
  	return 0;
  }
  
-@@ -1626,17 +1650,14 @@
+@@ -1626,17 +1651,14 @@
  {
  	struct snd_soc_component *codec = snd_soc_kcontrol_component(kcontrol);
  	struct tfa98xx *tfa98xx = snd_soc_component_get_drvdata(codec);
@@ -101,7 +108,7 @@
  		tfa98xx_spksw_gpio_get, tfa98xx_spksw_gpio_put)
  };
  
-@@ -2746,6 +2767,8 @@
+@@ -2746,6 +2768,8 @@
  	struct snd_soc_codec *codec = dai->codec;
  	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec);
  #endif
@@ -110,7 +117,7 @@
  	dev_info(&tfa98xx->i2c->dev, "%s: state: %d\n", __func__, mute);
  
  	if (no_start) {
-@@ -2759,13 +2782,12 @@
+@@ -2759,13 +2783,12 @@
  		 */
  		if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
  			tfa98xx->pstream = 0;
@@ -127,7 +134,7 @@
  
  		mutex_lock(&tfa98xx_mutex);
  		tfa98xx_sync_count = 0;
-@@ -2776,7 +2798,7 @@
+@@ -2776,7 +2799,7 @@
  		cancel_delayed_work_sync(&tfa98xx->init_work);
  		if (tfa98xx->dsp_fw_state != TFA98XX_DSP_FW_OK ||
  			 tfa98xx->dsp_init == TFA98XX_DSP_INIT_STOPPED)
@@ -136,7 +143,7 @@
  		mutex_lock(&tfa98xx->dsp_lock);
  		tfa_dev_stop(tfa98xx->tfa);
  		tfa98xx->dsp_init = TFA98XX_DSP_INIT_STOPPED;
-@@ -2786,16 +2808,13 @@
+@@ -2786,16 +2809,13 @@
  	}
  	else {
  		if (stream == SNDRV_PCM_STREAM_PLAYBACK){
@@ -159,7 +166,7 @@
  		}
  		else{
  				tfa98xx->cstream = 1;
-@@ -2819,7 +2838,7 @@
+@@ -2819,7 +2839,7 @@
  						0);	
  	}
  
@@ -168,7 +175,7 @@
  }
  
  static const struct snd_soc_dai_ops tfa98xx_dai_ops = {
-@@ -3041,6 +3060,23 @@
+@@ -3041,6 +3061,23 @@
  	tfa98xx->spk_sw_gpio = of_get_named_gpio(np, "spk-sw-gpio", 0);
  	if (tfa98xx->spk_sw_gpio < 0)
  		dev_info(dev, "No spk_sw_gpio GPIO provided\n");
@@ -192,7 +199,16 @@
  	return 0;
  }
  
-@@ -3515,8 +3551,7 @@
+@@ -3219,7 +3256,7 @@
+ 
+ 	if (gpio_is_valid(tfa98xx->irq_gpio)) {
+ 		ret = devm_gpio_request_one(&i2c->dev, tfa98xx->irq_gpio,
+-			GPIOF_DIR_IN, "TFA98XX_INT");
++			GPIOF_IN, "TFA98XX_INT");
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -3515,8 +3552,7 @@
  	tfa98xx_cache = kmem_cache_create("tfa98xx_cache", /* Cache name /proc/slabinfo */
  		PAGE_SIZE, /* Structure size, we should fit in single page */
  		0, /* Structure alignment */

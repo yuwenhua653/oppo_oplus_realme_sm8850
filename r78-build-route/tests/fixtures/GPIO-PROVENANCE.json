@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "purpose": "Locked common GPIO header fixture for focused TFA legacy GPIO compatibility and probe control-flow regression; not a full kernel/module build.",
+  "repository": "https://android.googlesource.com/kernel/common",
+  "commit": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+  "path": "include/linux/gpio.h",
+  "url": "https://android.googlesource.com/kernel/common/+/41a2024a9e2eb66ab0643a865d74943b4ee3cff8/include/linux/gpio.h?format=TEXT",
+  "retrieval": "Gitiles base64 TEXT response decoded unchanged",
+  "fixture": "common-gpio.h",
+  "sha256": "336caf6fab45f863814963d09b9d5d0983fdbb0e389121e9d472aaa748f21688",
+  "source_lock": "myron-qcom-platform-r1/sources.lock.json projects[path=common]",
+  "used_header_sections": [
+    "public GPIOF_* macro declarations",
+    "CONFIG_GPIOLIB gpio_is_valid implementation",
+    "devm_gpio_request_one declaration"
+  ],
+  "coverage": [
+    "Old GPIOF_DIR_IN call must fail host C compilation against pinned header declarations",
+    "Current three production GPIO request blocks compile against pinned header declarations",
+    "All 8 valid/invalid GPIO combinations preserve reset/IRQ/speaker request order and flags",
+    "Each reached request failing with -EIO or -EPROBE_DEFER is returned unchanged and prevents later requests/reset"
+  ],
+  "limitations": [
+    "Host C test extracts a narrow real production sequence; does not compile the entire driver",
+    "Fake request implementation records calls; it does not validate kernel GPIO allocation, device-managed release, pin hardware or runtime audio"
+  ]
+}

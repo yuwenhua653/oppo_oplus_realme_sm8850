@@ -21,6 +21,7 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 #include <linux/of_gpio.h>
+#include <linux/gpio.h>
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/firmware.h>
@@ -3255,7 +3256,7 @@ static int tfa98xx_i2c_probe(struct i2c_client *i2c) //modify for kernel6.X
 
 	if (gpio_is_valid(tfa98xx->irq_gpio)) {
 		ret = devm_gpio_request_one(&i2c->dev, tfa98xx->irq_gpio,
-			GPIOF_DIR_IN, "TFA98XX_INT");
+			GPIOF_IN, "TFA98XX_INT");
 		if (ret)
 			return ret;
 	}

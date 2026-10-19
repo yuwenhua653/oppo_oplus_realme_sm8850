@@ -154,8 +154,8 @@
     },
     {
       "path": "r78-build-route/audio/README.md",
-      "bytes": 4255,
-      "sha256": "e8a523119ad9ab4de63a04d6e25e88fd7666c911e054976c189d3428ca110d3a"
+      "bytes": 4705,
+      "sha256": "f2c5b91b889ddfbf8f6baa4deafcd0726c8cd54432f16499853b89213a5163d6"
     },
     {
       "path": "r78-build-route/audio/apply.py",
@@ -164,8 +164,8 @@
     },
     {
       "path": "r78-build-route/audio/contract.json",
-      "bytes": 70631,
-      "sha256": "845efcc618a752e42ead514d728dd355508be18e3646086235c09d75e12915ea"
+      "bytes": 70744,
+      "sha256": "447ce4e0b2bf942acc12cd798f9455c6c04570331ce7e1e68cadf11a84ed241e"
     },
     {
       "path": "r78-build-route/audio/fragments/Kconfig",
@@ -489,8 +489,8 @@
     },
     {
       "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
-      "bytes": 98888,
-      "sha256": "25a344437449c311d7bea5d710f1d69418da41f9a5aee9e44058535b714e9a68"
+      "bytes": 98908,
+      "sha256": "5a3e03dfb391dd9a4c980355d56ad1ecbaed3e50e0aa94f1d0c75feb17b91402"
     },
     {
       "path": "r78-build-route/audio/payload/drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
@@ -604,8 +604,8 @@
     },
     {
       "path": "r78-build-route/audio/provenance/delta-src-tfa98xx.c.patch",
-      "bytes": 6845,
-      "sha256": "7d1efd1ad9a6bd7a9990cec685a568904034cfab256b6ce0e4f8d4b7cd0e21dc"
+      "bytes": 7260,
+      "sha256": "6682aa6cfbfb315736244ed8c71d18279a8bb73043c84477f8ac4e71bf52715a"
     },
     {
       "path": "r78-build-route/audio/provenance/delta-src-tfa98xx.h.patch",
@@ -918,14 +918,29 @@
       "sha256": "3fbc17153c672437ff43b5f81ae5a3b74c1a2e40993d614b9a27f2a06a27f6bd"
     },
     {
+      "path": "r78-build-route/tests/fixtures/GPIO-PROVENANCE.json",
+      "bytes": 1584,
+      "sha256": "2a2944b9b4a2b1027f0342425c577f6b308bded23b05bc46087006756bfa0fd0"
+    },
+    {
       "path": "r78-build-route/tests/fixtures/PROVENANCE.json",
       "bytes": 487,
       "sha256": "ec4618c3100b5a69d1a1eb7b9c69b5de0017783819f77178721a877398eb1b55"
     },
     {
+      "path": "r78-build-route/tests/fixtures/common-gpio.h",
+      "bytes": 5198,
+      "sha256": "336caf6fab45f863814963d09b9d5d0983fdbb0e389121e9d472aaa748f21688"
+    },
+    {
       "path": "r78-build-route/tests/fixtures/flatten_kconfig.sh",
       "bytes": 365,
       "sha256": "2b0f46acc97fbb9759a904cb4257b90316a9e8df4440e8c9f8aff597e790eb1c"
+    },
+    {
+      "path": "r78-build-route/tests/test_gpio_flags.py",
+      "bytes": 7274,
+      "sha256": "c35a82ec1237561301ffe91d994fbc6e19b462fba09b997b73de51c8f41c3bf2"
     },
     {
       "path": "r78-build-route/tests/test_kconfig.py",
