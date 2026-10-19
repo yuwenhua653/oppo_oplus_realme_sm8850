@@ -36,3 +36,9 @@ The workflow is `.github/workflows/build-myron-multimedia-r78.yml`. Its output i
 compile-only. On-device audio/brightness behavior still requires validation of
 the resulting artifacts and one combined installation package. No `su` or
 `adb root` test is included.
+
+R78 fix1 corrects the external TFA Kconfig source to use `KCONFIG_EXT_PREFIX`.
+The regression test executes the pinned upstream flatten script from the Bazel
+workspace layout and reproduces the original missing-file error. CI builds the
+Kconfig genrule on its own before starting the kernel/module build, and overrides
+the inherited keep-going option so later failures stop further build work.

@@ -44,9 +44,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo '48ba76b2703366dccb68fe8c90173e7898712a2e1b3953aa898d4fef81a99b69  r78-build-route/multimedia-contract.json' | sha256sum --check --strict
+          echo '338aa37bf5181d915857b5ae933d4613693cc846aa5bb0cd8aa5cd728025309a  r78-build-route/multimedia-contract.json' | sha256sum --check --strict
           python3 r78-build-route/r78_inputs.py --root "$GITHUB_WORKSPACE"
           python3 r78-build-route/test_integration.py
+          python3 r78-build-route/tests/test_kconfig.py
           mkdir -p "$WORKSPACE_DIR/integration-reports"
           python3 r78-build-route/audio/test_audio.py 2>&1 | tee "$WORKSPACE_DIR/integration-reports/r78-audio-source-tests.log"
           python3 r78-build-route/display/tests/run_tests.py 2>&1 | tee "$WORKSPACE_DIR/integration-reports/r78-display-source-tests.log"

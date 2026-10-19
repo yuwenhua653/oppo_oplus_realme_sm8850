@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "repository": "LineageOS/android_kernel_qcom_sm8850",
+  "commit": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+  "path": "flatten_kconfig.sh",
+  "url": "https://raw.githubusercontent.com/LineageOS/android_kernel_qcom_sm8850/557159b6a0d06f1c6f07ec4c1f22bc9309a113e4/flatten_kconfig.sh",
+  "bytes": 365,
+  "sha256": "2b0f46acc97fbb9759a904cb4257b90316a9e8df4440e8c9f8aff597e790eb1c",
+  "git_blob_sha1": "1be80d05e67db781abb805cb0fe0dd6911969816",
+  "modifications": []
+}

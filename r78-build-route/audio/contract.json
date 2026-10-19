@@ -808,8 +808,8 @@
       "preimage": "preimage/drivers/xiaomi/myron/Kconfig",
       "destination": "vendor/qcom/sm8850/drivers/xiaomi/myron/Kconfig",
       "before_sha256": "171f594cd5baea78a87d587a33149c252c80c021058218ab6834c27be12e83a2",
-      "after_sha256": "948b6cc6e64ed63663180ceeadf19cfd68876ea976b66029683dd3ba9c5b419c",
-      "bytes": 5160
+      "after_sha256": "2d1ff3da5a4ec586c19b5c573b5c47370b19a01fd55cdf3d6dfba5515b7fe5c0",
+      "bytes": 5181
     },
     {
       "mode": "append",
@@ -860,8 +860,8 @@
     },
     {
       "path": "fragments/Kconfig",
-      "bytes": 47,
-      "sha256": "698a37a4fcc56fd562cff0aa81663951e38b9ef3f804b8baf3ecd746794c9817"
+      "bytes": 68,
+      "sha256": "904c2e9e89a585b81a9a9d7f5c7956495b8efb07bc2011ef27fe628acad5ff85"
     },
     {
       "path": "fragments/canoe_perf.bzl",

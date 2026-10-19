@@ -144,8 +144,8 @@
   "locked_files": [
     {
       "path": "r78-build-route/README.md",
-      "bytes": 2097,
-      "sha256": "47c94bc230cccbae3cd432d8ede132051e1de2fd097b02d9b2f6754e959d0d24"
+      "bytes": 2492,
+      "sha256": "b3a602393bad6d540163bedd120109e575a7fa98a22ee45b5169754360e07c1b"
     },
     {
       "path": "r78-build-route/apply_multimedia.py",
@@ -165,12 +165,12 @@
     {
       "path": "r78-build-route/audio/contract.json",
       "bytes": 70631,
-      "sha256": "5c6a146ba7bbdae1eb52325badf9f6d4a11cd4ca70d113c839062b2120679e73"
+      "sha256": "845efcc618a752e42ead514d728dd355508be18e3646086235c09d75e12915ea"
     },
     {
       "path": "r78-build-route/audio/fragments/Kconfig",
-      "bytes": 47,
-      "sha256": "698a37a4fcc56fd562cff0aa81663951e38b9ef3f804b8baf3ecd746794c9817"
+      "bytes": 68,
+      "sha256": "904c2e9e89a585b81a9a9d7f5c7956495b8efb07bc2011ef27fe628acad5ff85"
     },
     {
       "path": "r78-build-route/audio/fragments/canoe_perf.bzl",
@@ -669,8 +669,8 @@
     },
     {
       "path": "r78-build-route/build_multimedia.py",
-      "bytes": 7390,
-      "sha256": "84f0b63875fa276b01d6731d3a2bf46c98bd535ffeb0312877c4c8b36bdbdb22"
+      "bytes": 7883,
+      "sha256": "f7541830d465ea53be3ae5cdd51a26e7daa6eb7af037003302ba9e1e2599be54"
     },
     {
       "path": "r78-build-route/display/README.zh-CN.txt",
@@ -916,6 +916,21 @@
       "path": "r78-build-route/tests/actual-ddk-outputs.json",
       "bytes": 3526,
       "sha256": "3fbc17153c672437ff43b5f81ae5a3b74c1a2e40993d614b9a27f2a06a27f6bd"
+    },
+    {
+      "path": "r78-build-route/tests/fixtures/PROVENANCE.json",
+      "bytes": 487,
+      "sha256": "ec4618c3100b5a69d1a1eb7b9c69b5de0017783819f77178721a877398eb1b55"
+    },
+    {
+      "path": "r78-build-route/tests/fixtures/flatten_kconfig.sh",
+      "bytes": 365,
+      "sha256": "2b0f46acc97fbb9759a904cb4257b90316a9e8df4440e8c9f8aff597e790eb1c"
+    },
+    {
+      "path": "r78-build-route/tests/test_kconfig.py",
+      "bytes": 3740,
+      "sha256": "64e47e587aacdc3b786d2fc5bf9307a3ef15ad00ff4a030eaa76427cc2b8f1e9"
     }
   ]
 }
