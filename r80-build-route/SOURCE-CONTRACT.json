@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "kind": "R80_MYRON_2G_STA_NSS1_COMPATIBILITY_TRIAL",
+  "source_repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+  "source_commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "baseline_runtime_module": {
+    "name": "qca_cld3_peach_v2",
+    "bytes": 21435448,
+    "sha256": "45c568e254060ce3573c81eda5c2512f9ed6fa0f4beb500fe6e473d42d680ced"
+  },
+  "patch": {
+    "path": "0001-myron-sta-2g-nss1-trial.patch",
+    "bytes": 2164,
+    "sha256": "9cc364fa24e423ff0a74ab0817b2192ec156242e43cb692f3b70190716f3c81d"
+  },
+  "writes": [
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/sme/src/common/sme_api.c",
+      "before": {
+        "bytes": 520234,
+        "sha256": "9e7942bf1e04e3053ef2d328802fcf6b71d76acab6b49a515b17815e0c975077"
+      },
+      "after": {
+        "bytes": 520655,
+        "sha256": "3e2f5c3f44b9dd4424bad08132e23e7a026e8cc731c810cf698006b5270fe974"
+      },
+      "upstream_git_blob": "e7eeae7956c4da512b5bc531bc8e06ed6653f394",
+      "source_url": "https://github.com/LineageOS/android_kernel_qcom_sm8850-modules/blob/f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322/qcom/opensource/wlan/qcacld-3.0/core/sme/src/common/sme_api.c"
+    },
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c",
+      "before": {
+        "bytes": 410303,
+        "sha256": "6e07736515afe41e42f74b58a228a1507fc996af57cf8d478ed62d321de9280c"
+      },
+      "after": {
+        "bytes": 410509,
+        "sha256": "2d87f31cbe2f4f15361b32911fab9417f09a282cd84c27aff1d079157c3454bb"
+      },
+      "upstream_git_blob": "89cf540b8747868951a1b07e61974608638d5b6b",
+      "source_url": "https://github.com/LineageOS/android_kernel_qcom_sm8850-modules/blob/f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c"
+    }
+  ],
+  "constraints": [
+    "2.4 GHz STA TX/RX NSS ceiling 1; adaptive rates remain enabled.",
+    "5 GHz NSS remains selected by existing INI, firmware and coexistence rules.",
+    "No physical chain-mask, chain-count, BTC, bandwidth, power, NUD, roaming policy or firmware-path edits.",
+    "STA capability table is also consumed by the existing PASSTHRU alias; SAP/P2P/NDI entries are unchanged.",
+    "Recompile exact WLAN target and audit installed-kernel ABI before image assembly; this source bundle is not flashable."
+  ],
+  "hardware_tested": false,
+  "stability_fix_proven": false
+}

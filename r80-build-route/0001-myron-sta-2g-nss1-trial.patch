@@ -1,0 +1,51 @@
+--- a/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/sme/src/common/sme_api.c
++++ b/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/sme/src/common/sme_api.c
+@@ -4633,6 +4633,13 @@
+ 	     btc_chain_mode == WLAN_COEX_BTC_CHAIN_MODE_HYBRID))
+ 		max_supported_nss = NSS_1x1_MODE;
+ 
++	/*
++	 * Myron 2.4 GHz STA compatibility trial: cap spatial streams only.
++	 * Keep physical chains, other interface types and the 5 GHz cap intact.
++	 */
++	if (device_mode == QDF_STA_MODE && band == NSS_CHAINS_BAND_2GHZ)
++		max_supported_nss = NSS_1x1_MODE;
++
+ 	/* If the fw doesn't support two chains, num rf chains can max be 1 */
+ 	vdev_ini_cfg->num_rx_chains[band] =
+ 		QDF_MIN(GET_VDEV_NSS_CHAIN(
+@@ -13452,6 +13459,9 @@
+ 						nss_chains_ini_cfg->
+ 							rx_nss[band],
+ 						STA_NSS_CHAINS_SHIFT));
++	/* Keep 2.4 GHz STA association capabilities within the trial NSS cap. */
++	if (band == NSS_CHAINS_BAND_2GHZ)
++		vdev_nss->sta = QDF_MIN(vdev_nss->sta, NSS_1x1_MODE);
+ 	vdev_nss->sap = QDF_MIN(max_supp_nss, GET_VDEV_NSS_CHAIN(
+ 						nss_chains_ini_cfg->
+ 							rx_nss[band],
+--- a/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c
++++ b/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c
+@@ -6058,11 +6058,13 @@
+ 	tHtCaps *p_ht_cap = (tHtCaps *)(&ht_caps[2]);
+ 	QDF_STATUS status_5g, status_2g;
+ 	bool nan_beamforming_supported;
++	uint8_t supported_mcs_8_15;
+ 
+ 	ht_caps[0] = DOT11F_EID_HTCAPS;
+ 	ht_caps[1] = DOT11F_IE_HTCAPS_MIN_LEN;
+ 	lim_set_ht_caps(mac_ctx, ht_caps,
+ 			DOT11F_IE_HTCAPS_MIN_LEN + 2);
++	supported_mcs_8_15 = p_ht_cap->supportedMCSSet[1];
+ 	/* Get LDPC and over write for 2G */
+ 	p_ht_cap->advCodingCap = lim_get_rx_ldpc(mac_ctx,
+ 						 CHAN_ENUM_2437);
+@@ -6102,6 +6104,8 @@
+ 		p_ht_cap->supportedChannelWidthSet = 0;
+ 		p_ht_cap->shortGI40MHz = 0;
+ 	}
++	/* The 2.4 GHz NSS mask must not restrict the 5 GHz HT capabilities. */
++	p_ht_cap->supportedMCSSet[1] = supported_mcs_8_15;
+ 	lim_populate_mcs_set_ht_per_vdev(mac_ctx, p_ht_cap, vdev_id,
+ 					 NSS_CHAINS_BAND_5GHZ);
+ 	status_5g = lim_send_ie(mac_ctx, vdev_id, DOT11F_EID_HTCAPS,

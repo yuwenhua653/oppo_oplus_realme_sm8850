@@ -1,0 +1,108 @@
+{
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "sources_lock_sha256": "ef3d806f679ac8e0bf1371e6ab6dfc173118a32e3a66f44f684116bc0b52e756",
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "build/kernel": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "prebuilts/clang/host/linux-x86": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04"
+  },
+  "core_targets": [
+    "//common:kernel_aarch64",
+    "//myron_artifact_metadata:kernel_release"
+  ],
+  "schema": 1,
+  "base_commit": "4dd0a9d7d89b2f290b2537c13b42244712e65f2b",
+  "parent_contract": "r79-build-route/repair-contract.json",
+  "parent_contract_sha256": "aabb37375d33dfe9ae1bf9a86e7a3ce4602bd67f06855709b046fa493d744cc2",
+  "compile_only": true,
+  "flashable": false,
+  "hardware_tested": false,
+  "experiment": "2.4 GHz station NSS compatibility candidate; retain 5 GHz and physical chain settings",
+  "runtime_candidate_module_names": [
+    "qca_cld3_peach_v2"
+  ],
+  "runtime_baseline": {
+    "vendor_boot_sha256": "2c42d9a918e67297f8e1513a28be1c8062a845777b2cacf48e75013e304814e6",
+    "wlan_module_sha256": "45c568e254060ce3573c81eda5c2512f9ed6fa0f4beb500fe6e473d42d680ced"
+  },
+  "modules": [
+    {
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0:canoe_perf_qca_cld_peach-v2",
+      "module_name": "qca_cld3_peach_v2",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/sme/src/common/sme_api.c"
+      ]
+    }
+  ],
+  "locked_files": [
+    {
+      "path": "r80-build-route/0001-myron-sta-2g-nss1-trial.patch",
+      "bytes": 2164,
+      "sha256": "9cc364fa24e423ff0a74ab0817b2192ec156242e43cb692f3b70190716f3c81d"
+    },
+    {
+      "path": "r80-build-route/README.md",
+      "bytes": 1590,
+      "sha256": "767b1c20ba307555186794e53cdb7b46c44ff510adc76ac4b2a3e4b32fde95fa"
+    },
+    {
+      "path": "r80-build-route/SOURCE-CONTRACT.json",
+      "bytes": 2471,
+      "sha256": "b3f254a37de124fde124076f28dfcc53879008e398e349689c91f03666ef105e"
+    },
+    {
+      "path": "r80-build-route/apply_wifi.py",
+      "bytes": 3253,
+      "sha256": "d5b3d791dbc412f6f8c472b1fa010d37e506edf2840c7b1ca6aa388c39806052"
+    },
+    {
+      "path": "r80-build-route/build_wifi.py",
+      "bytes": 13930,
+      "sha256": "f1d086daabc90662c36c27d9e4ce25295315ca7a6358141a3ee74217559becb0"
+    },
+    {
+      "path": "r80-build-route/target-provenance.json",
+      "bytes": 1277,
+      "sha256": "f201bc8291f0cdcf57af9d32bc6959fdc8eed2b479cde5af5e3a44fe88962316"
+    },
+    {
+      "path": "r80-build-route/test_wifi.py",
+      "bytes": 284,
+      "sha256": "09a1ccd5fe3bb9db9d42ef14140ed2e5ec2ac2f00580a207ff8287f70ba53f90"
+    },
+    {
+      "path": "r80-build-route/tests/fixtures/NSS-FIXTURE-PROVENANCE.json",
+      "bytes": 2802,
+      "sha256": "0a052428cb7108302329e2cbe9dee4a939ff8bc9a353612a33a771a8810caf72"
+    },
+    {
+      "path": "r80-build-route/tests/fixtures/payload-lim-functions.c",
+      "bytes": 3958,
+      "sha256": "7965191a32d6fd473b53f7a4a68e3f3b16deceb8fda862ba36a0a120374f375a"
+    },
+    {
+      "path": "r80-build-route/tests/fixtures/payload-sme-functions.c",
+      "bytes": 8866,
+      "sha256": "e5c197d418ccf6b1ecc0b087f6859074182bd169441786efa5cda45eb2e13dc4"
+    },
+    {
+      "path": "r80-build-route/tests/fixtures/preimage-lim-functions.c",
+      "bytes": 3752,
+      "sha256": "f2c47923bb7390635c5ea2b74bfe42fc641de364221b2956cfcd0e488f2cac13"
+    },
+    {
+      "path": "r80-build-route/tests/fixtures/preimage-sme-functions.c",
+      "bytes": 8445,
+      "sha256": "9e7f0b07f3c7b39b12778db47361649cc303f719183bcc717f769c0f3ff07d03"
+    },
+    {
+      "path": "r80-build-route/tests/test_nss_candidate.py",
+      "bytes": 18847,
+      "sha256": "17c857146ca321e173b1a88c24dd468cf675958f933e4ee422596a58fdc6d29b"
+    }
+  ]
+}
