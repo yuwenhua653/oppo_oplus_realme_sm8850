@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "source": "r78-fix3/artifacts/r75-build-route/tests/gauge/run_tests.py",
+      "source_sha256": "b053ba421c5d7f9f1fc13daae49ff5e1bfc7643cfdf0fe2c26f98ad5e9527cb9",
+      "destination": "r79-work-20261020/thermal/tests/gauge/run_tests.py",
+      "destination_sha256": "b053ba421c5d7f9f1fc13daae49ff5e1bfc7643cfdf0fe2c26f98ad5e9527cb9",
+      "change": "byte-identical"
+    },
+    {
+      "source": "r78-fix3/artifacts/r75-build-route/tests/gauge/fake_kernel.h",
+      "source_sha256": "74f57518f1881f1b49c264b951f292cf5db1b3e05b5ef8342069949dce5a946b",
+      "destination": "r79-work-20261020/thermal/tests/gauge/fake_kernel.h",
+      "destination_sha256": "74f57518f1881f1b49c264b951f292cf5db1b3e05b5ef8342069949dce5a946b",
+      "change": "byte-identical"
+    },
+    {
+      "source": "r78-fix3/artifacts/r75-build-route/tests/gauge/test_gauge.c",
+      "source_sha256": "203f5714863da9f7362a921f6307509e94ac1fbe63ef6e3d1bc82af551a59483",
+      "destination": "r79-work-20261020/thermal/tests/gauge/test_gauge.c",
+      "destination_sha256": "884024affa0fbce3840c3a81da7705ec1d62b1dc6e553188bccae927a352d5e0",
+      "change": "Only two descriptor expectation assertions inverted"
+    }
+  ]
+}

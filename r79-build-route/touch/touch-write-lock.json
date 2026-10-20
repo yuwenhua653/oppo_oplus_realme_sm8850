@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "baseline": "R18 embedded R13 adaptation, SHA256 64dbec4a01124317682f28e0fce61bd885247af1e05b5cac5e4990ad838111c1",
+  "writes": [
+    {
+      "destination": "vendor/qcom/sm8850/drivers/input/touchscreen/xiaomi/xiaomi_touch_core.c",
+      "source": "payload/drivers/input/touchscreen/xiaomi/xiaomi_touch_core.c",
+      "before_sha256": "abd5598ed064907a336730de1927cf67135474002e17acfce83f573200af043f",
+      "after_sha256": "6cf01618a24ef2ad9be96af39b7d9b83e541e01ed7f2219e42316cbd60c38c7d",
+      "bytes": 39480
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/input/touchscreen/xiaomi/xiaomi_touch_operations.c",
+      "source": "payload/drivers/input/touchscreen/xiaomi/xiaomi_touch_operations.c",
+      "before_sha256": "0dd503d5a43962880163623c1348e80b1e2906ba852bcce738a64476f1fec36d",
+      "after_sha256": "c09a6087e6da044cf320046ac6e8f6e8f23ed364473e17f999968d514efd659c",
+      "bytes": 12538
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/input/touchscreen/xiaomi/xiaomi_touch_mode.c",
+      "source": "payload/drivers/input/touchscreen/xiaomi/xiaomi_touch_mode.c",
+      "before_sha256": "f6fcff6c60a669d1a0b53c52563af26655ef0e57a1c2d42ee98ddd219391e165",
+      "after_sha256": "59a17a2ae145eb19561f7cd0ad10f2db44208f3e00d70c360c69b0d61e07052a",
+      "bytes": 31626
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/input/touchscreen/xiaomi/xiaomi_touch_sys.c",
+      "source": "payload/drivers/input/touchscreen/xiaomi/xiaomi_touch_sys.c",
+      "before_sha256": "276a92bb60d71d59a5d824a9e4f31f5affe40fc8fa989334e5395b9652345bbf",
+      "after_sha256": "f9d48b43f34cd9c28b82eb82be9aa58034b5afa9bc4296b0d8576f69525cc61a",
+      "bytes": 24281
+    },
+    {
+      "destination": "vendor/qcom/sm8850/drivers/input/touchscreen/xiaomi/xiaomi_touch_evdev.c",
+      "source": "payload/drivers/input/touchscreen/xiaomi/xiaomi_touch_evdev.c",
+      "before_sha256": "d588b70402766e55bd2fdb9fbb897f7335a1245f8605fcf3abd18efb303b52d6",
+      "after_sha256": "84e6acb5a06bd4892005489306eba7e62ff50f0978a4cd4cb3915c3dc3487326",
+      "bytes": 13084
+    }
+  ],
+  "runtime_enable": false,
+  "runtime_blocker": "No FT3683 THP backend registration/verified raw-mode protocol; patch is a prerequisite, not a complete /dev/xiaomi-touch feature repair."
+}

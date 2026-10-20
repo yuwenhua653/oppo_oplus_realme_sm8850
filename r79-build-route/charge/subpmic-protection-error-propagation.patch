@@ -1,0 +1,279 @@
+--- a/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c
++++ b/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c
+@@ -218,7 +218,9 @@
+ 	}
+ 
+ 	step = (real_type != XM_CHARGER_TYPE_HVDCP3P5) ? 800 : 500;
+-	mca_adsp_glink_read_prop(SUBPMIC_PROP_BUS_VOLT, &vbus, sizeof(vbus));
++	rc = mca_adsp_glink_read_prop(SUBPMIC_PROP_BUS_VOLT, &vbus, sizeof(vbus));
++	if (rc)
++		return rc;
+ 	vbus /= 1000;
+ 	delta = volt - vbus;
+ 	target = volt + ((delta == 0 || volt < vbus) ? step : -step);
+@@ -227,8 +229,9 @@
+ 
+ 	rc = mca_adsp_glink_write_prop(SUBPMIC_PROP_QC_VOLT, &volt_cmd,
+ 				       sizeof(volt_cmd));
+-	if (rc != 0 || sc->real_type == XM_CHARGER_TYPE_HVDCP2 ||
+-	    volt_cmd == 5000)
++	if (rc)
++		return rc;
++	if (sc->real_type == XM_CHARGER_TYPE_HVDCP2 || volt_cmd == 5000)
+ 		return 0;
+ 
+ 	if (abs(delta) < (int)settle_thd)
+@@ -237,8 +240,10 @@
+ 	step_count = settle_thd ? abs(delta) / settle_thd : 0;
+ 	do {
+ 		msleep(50);
+-		mca_adsp_glink_read_prop(SUBPMIC_PROP_BUS_VOLT, &vbus,
++		rc = mca_adsp_glink_read_prop(SUBPMIC_PROP_BUS_VOLT, &vbus,
+ 					 sizeof(vbus));
++		if (rc)
++			return rc;
+ 		vbus /= 1000;
+ 		mca_log_info("vbus: %d\n", vbus);
+ 		if (vbus < 4000 || sc->online == 0) {
+@@ -260,8 +265,7 @@
+ 	int val = cmd;
+ 
+ 	mca_log_info("set_qc_volt_cmd: %d\n", cmd);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_QC_VOLT_CMD, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_QC_VOLT_CMD, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_get_bus_volt(void *data, int *val)
+@@ -496,9 +500,8 @@
+ 	u8 val = en;
+ 
+ 	mca_log_info("set input suspend %d\n", en & 1);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_INPUT_SUSPEND, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_INPUT_SUSPEND, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_wireless_input_suspend(void *data, bool en)
+@@ -506,9 +509,8 @@
+ 	u8 val = en;
+ 
+ 	mca_log_info("set wls input suspend %d\n", en & 1);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_WLS_INPUT_SUSPEND, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_WLS_INPUT_SUSPEND, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_input_current_limit(void *data, int ma)
+@@ -523,18 +525,16 @@
+ {
+ 	int val = ma;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_WLS_INPUT_CURR_LIMIT, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_WLS_INPUT_CURR_LIMIT, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_input_volt_limit(void *data, int mv)
+ {
+ 	int val = mv;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_INPUT_VOLT_LIMIT, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_INPUT_VOLT_LIMIT, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_charge_current(void *data, int ma)
+@@ -559,8 +559,7 @@
+ 	int val = khz;
+ 
+ 	mca_log_info("set buck fsw: %d\n", khz);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_BUCK_FSW, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_BUCK_FSW, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_term_current(void *data, int ma)
+@@ -568,8 +567,7 @@
+ 	int val = ma;
+ 
+ 	mca_log_info("set iterm: %d\n", ma);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_TERM_CURRENT, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_TERM_CURRENT, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_term_volt(void *data, int mv)
+@@ -584,51 +582,45 @@
+ {
+ 	int val = mv;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_PRECHG_VOLT, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_PRECHG_VOLT, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_prechg_current(void *data, int ma)
+ {
+ 	int val = ma;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_PRECHG_CURRENT, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_PRECHG_CURRENT, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_usb_aicl_cont_thd(void *data, int mv)
+ {
+ 	int val = mv;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_USB_AICL_CONT_THD, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_USB_AICL_CONT_THD, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_opt_fws(void *data, int val_in)
+ {
+ 	int val = val_in;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_OPT_FWS, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_OPT_FWS, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_usb_adapter_allow_override(void *data, bool en)
+ {
+ 	u8 val = en;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_USB_ADAP_OVERRIDE, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_USB_ADAP_OVERRIDE, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_qc3_volt(void *data, int mv)
+ {
+ 	int val = mv;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_QC3_VOLT, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_QC3_VOLT, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_boost_enable(void *data, int src_enable)
+@@ -636,8 +628,7 @@
+ 	int val = src_enable;
+ 
+ 	mca_log_info("set otg enable: 0x%2x\n", src_enable);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_BOOST_ENABLE, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_BOOST_ENABLE, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_boost_voltage(void *data, int src_value)
+@@ -645,9 +636,8 @@
+ 	int val = src_value;
+ 
+ 	mca_log_info("set boost voltage: 0x%2x\n", src_value);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_BOOST_VOLTAGE, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_BOOST_VOLTAGE, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_aicl_enable(void *data, bool en)
+@@ -655,8 +645,7 @@
+ 	u8 val = en;
+ 
+ 	mca_log_info("set aicl enable: %d\n", en & 1);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_AICL_ENABLE, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_AICL_ENABLE, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_rerun_aicl(void *data, bool en)
+@@ -664,8 +653,7 @@
+ 	u8 val = en;
+ 
+ 	mca_log_info("set rerun aicl: %d\n", en & 1);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_RERUN_AICL, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_RERUN_AICL, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_restart_aicl(void *data, bool en)
+@@ -673,8 +661,7 @@
+ 	u8 val = en;
+ 
+ 	mca_log_info("set restart aicl: %d\n", en & 1);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_RESTART_AICL, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_RESTART_AICL, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_wls_vdd_flag(void *data, bool en)
+@@ -682,42 +669,37 @@
+ 	u8 val = en;
+ 
+ 	mca_log_info("set wls vdd flag: %d\n", en & 1);
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_WLS_VDD_FLAG, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_WLS_VDD_FLAG, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_lpd_sbu1(void *data, int val_in)
+ {
+ 	int val = val_in;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_LPD_SBU1, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_LPD_SBU1, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_lpd_control(void *data, int val_in)
+ {
+ 	int val = val_in;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_LPD_CONTROL, &val, sizeof(val));
+-	return 0;
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_LPD_CONTROL, &val, sizeof(val));
+ }
+ 
+ static int qcom_subpmic_set_lpd_uart_control(void *data, int val_in)
+ {
+ 	int val = val_in;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_LPD_UART_CONTROL, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_LPD_UART_CONTROL, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_too_hot_limit(void *data, int val_in)
+ {
+ 	int val = val_in;
+ 
+-	mca_adsp_glink_write_prop(SUBPMIC_PROP_TOO_HOT_LIMIT, &val,
++	return mca_adsp_glink_write_prop(SUBPMIC_PROP_TOO_HOT_LIMIT, &val,
+ 				  sizeof(val));
+-	return 0;
+ }
+ 
+ static int qcom_subpmic_set_ship_mode(void *data, bool en)
+@@ -737,8 +719,10 @@
+ 
+ 	rc = mca_adsp_glink_write_prop(SUBPMIC_PROP_EU_MODEL, &val,
+ 				       sizeof(val));
+-	if (rc < 0)
++	if (rc) {
+ 		mca_log_err("Failed to write eu model to adsp: %d\n", rc);
++		return rc;
++	}
+ 
+ 	sc->eu_model = val;
+ 	mca_log_info("set_eu_model = %d\n", sc->eu_model);

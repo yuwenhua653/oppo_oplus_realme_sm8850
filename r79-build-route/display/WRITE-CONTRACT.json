@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "status": "HOST_VERIFIED_SOURCE_CANDIDATE_PENDING_KERNEL_BUILD_AND_PHONE_VALIDATION",
+  "base": "R78 fix3 display payload, unchanged by runtime fix1",
+  "write_root": "vendor/qcom/sm8850-modules",
+  "files": [
+    {
+      "destination": "qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "before_sha256": "b20aada36b38f65645e04a08612f6b118c40040f21bc68f7122218911ae5fe72",
+      "after_sha256": "a864fd0c076aa68436627d1a61fdeaa2ad65f20551451d1ef55e866514e1f5b4",
+      "bytes": 270450,
+      "payload": "payload/qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+      "preimage": "preimage/qcom/opensource/display-drivers/msm/dsi/dsi_display.c"
+    },
+    {
+      "destination": "qcom/opensource/display-drivers/msm/dsi/myron_flatmode.h",
+      "before_sha256": null,
+      "after_sha256": "45fe8e5cd903f7e6687da01299b79297bf8179a59dbf3c025d7e636c371fce49",
+      "bytes": 9147,
+      "payload": "payload/qcom/opensource/display-drivers/msm/dsi/myron_flatmode.h",
+      "preimage": null
+    },
+    {
+      "destination": "qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+      "before_sha256": "2dcbd0f80b97c23c78cc3d6778b0f1292abe89a900537132fe518d2bebfed072",
+      "after_sha256": "87850477542f4aeb4a3640bd127c8363cf0468f6b897008b50af20dc7accb92a",
+      "bytes": 12187,
+      "payload": "payload/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+      "preimage": "preimage/qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c"
+    }
+  ],
+  "test_entrypoint": "python3 citsensor/tests/run_tests.py",
+  "test_working_directory": "r79-build-route",
+  "host_dependencies": [
+    "python3",
+    "cc with AddressSanitizer and UndefinedBehaviorSanitizer"
+  ],
+  "test_files": [
+    "tests/fake_display.h",
+    "tests/fixtures/fake_kernel_base.h",
+    "tests/fixtures/mi_disp.h",
+    "tests/fixtures/myron_mi_clone_state.h",
+    "tests/fixtures/test_clone_base.c",
+    "tests/run_tests.py",
+    "tests/test_flatmode.c"
+  ],
+  "external_downloads_required_for_host_tests": false,
+  "build_system_change_required": false,
+  "ddk_header_input": "target BUILD.bazel dsi_headers hdrs=glob([msm/dsi/*.h]); transitive display_drivers_headers",
+  "expected_action_sources_add": [
+    "qcom/opensource/display-drivers/msm/dsi/myron_flatmode.h"
+  ],
+  "hardware_validation_status": "NOT_RUN",
+  "limits": [
+    "Actual live DT property names and enabled bool confirmed; property value bytes unavailable. Bounded parser may return explicit error for unsupported configuration.",
+    "Sysfs returns the pinned upstream 0/1 validation ABI; zero means unconfirmed, including read/availability failure, not physical-mode-off.",
+    "This removes the proven absent-node initialization failure. It does not assert an entire closed service or sensor algorithm is now correct."
+  ]
+}

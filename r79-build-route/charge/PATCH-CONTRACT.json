@@ -1,0 +1,212 @@
+{
+  "schema": 1,
+  "base": "R76 precise postimage; preserves four existing R76 setter fixes",
+  "input": "r78-fix3/artifacts/r76-build-route/payload/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c",
+  "preimage_sha256": "721a6bd66e2e03c70673ae35298171667cc516006ffbfd3727a4d8bf1ae06e19",
+  "postimage_sha256": "0a6abfc0db98dcc572042c7ab91a11c16d684b381d0f845463a5f7351c3d2a99",
+  "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c",
+  "newly_fixed_wrappers": 23,
+  "all_wrappers_tested": [
+    {
+      "name": "qcom_subpmic_set_qc_volt_cmd",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_QC_VOLT_CMD",
+      "property_id": 8221,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_input_suspend",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_INPUT_SUSPEND",
+      "property_id": 8217,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_wireless_input_suspend",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_WLS_INPUT_SUSPEND",
+      "property_id": 4100,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_input_current_limit",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_INPUT_CURR_LIMIT",
+      "property_id": 8200,
+      "newly_fixed": false
+    },
+    {
+      "name": "qcom_subpmic_set_wls_input_current_limit",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_WLS_INPUT_CURR_LIMIT",
+      "property_id": 4099,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_input_volt_limit",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_INPUT_VOLT_LIMIT",
+      "property_id": 8201,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_charge_current",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_CHARGE_CURRENT",
+      "property_id": 8197,
+      "newly_fixed": false
+    },
+    {
+      "name": "qcom_subpmic_enable_charging",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_ENABLE_CHARGING",
+      "property_id": 8195,
+      "newly_fixed": false
+    },
+    {
+      "name": "qcom_subpmic_set_buck_fsw",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_BUCK_FSW",
+      "property_id": 8196,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_term_current",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_TERM_CURRENT",
+      "property_id": 8198,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_term_volt",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_TERM_VOLT",
+      "property_id": 8199,
+      "newly_fixed": false
+    },
+    {
+      "name": "qcom_subpmic_set_prechg_volt",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_PRECHG_VOLT",
+      "property_id": 8203,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_prechg_current",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_PRECHG_CURRENT",
+      "property_id": 8202,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_usb_aicl_cont_thd",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_USB_AICL_CONT_THD",
+      "property_id": 8213,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_opt_fws",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_OPT_FWS",
+      "property_id": 8214,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_usb_adapter_allow_override",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_USB_ADAP_OVERRIDE",
+      "property_id": 8215,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_qc3_volt",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_QC3_VOLT",
+      "property_id": 8216,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_boost_enable",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_BOOST_ENABLE",
+      "property_id": 8207,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_boost_voltage",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_BOOST_VOLTAGE",
+      "property_id": 8208,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_aicl_enable",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_AICL_ENABLE",
+      "property_id": 8210,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_rerun_aicl",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_RERUN_AICL",
+      "property_id": 8211,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_restart_aicl",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_RESTART_AICL",
+      "property_id": 8212,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_wls_vdd_flag",
+      "argument_type": "bool",
+      "property": "SUBPMIC_PROP_WLS_VDD_FLAG",
+      "property_id": 4108,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_lpd_sbu1",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_LPD_SBU1",
+      "property_id": 8222,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_lpd_control",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_LPD_CONTROL",
+      "property_id": 8228,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_lpd_uart_control",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_LPD_UART_CONTROL",
+      "property_id": 8229,
+      "newly_fixed": true
+    },
+    {
+      "name": "qcom_subpmic_set_too_hot_limit",
+      "argument_type": "int",
+      "property": "SUBPMIC_PROP_TOO_HOT_LIMIT",
+      "property_id": 7,
+      "newly_fixed": true
+    }
+  ],
+  "behavior": "Simple setters return existing transport result. QC voltage setter propagates initial/settling read errors and write errors, so failed initial read issues no SET. EU mode cache changes only after transport success. Success-path property IDs, widths, units, values, limits, settling schedule, call counts, registration and policy remain unchanged. No new WRITE operation.",
+  "runtime_enablement": false,
+  "remaining": "Original MCA full control chain remains unintegrated; this is not a PPS or charging power repair by itself.",
+  "compound_functions_tested": [
+    "qcom_subpmic_set_qc_volt",
+    "qcom_subpmic_set_eu_model"
+  ],
+  "other_write_owners": {
+    "qcom_subpmic_sync_cfg_work": "Existing bounded retry on nonzero rc retained; not a user setter.",
+    "qcom_subpmic_ship_mode": "Existing shutdown notifier returns NOTIFY_DONE, not setter status; logs rc.",
+    "qcom_subpmic_shutdown_cb": "Existing shutdown notifier returns NOTIFY_DONE, not setter status; logs rc."
+  }
+}

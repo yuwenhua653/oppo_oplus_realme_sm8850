@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "base_commit": "0758ab6737e71022c250afad539642c2b8aea399",
+  "base_route": "r61-build-route/payload",
+  "writes": [
+    {
+      "source": "payload/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c",
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c",
+      "preimage_sha256": "7e3066ca08df7d9815a8bf63330080aa7e4182daf578ec60adfc6fdbbe2f6e72",
+      "postimage_sha256": "adb660858a78786fd76e11e2518d9b8204f0a71eb005934acac7f7cd45e52b18"
+    },
+    {
+      "source": "payload/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+      "destination": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+      "preimage_sha256": "864bdfc9d8054c269615dde22e0c2448606277c8086cbe7e1c8e7fccbed136fe",
+      "postimage_sha256": "37ebfb0d733f680f96cb6539c9bb8f67a3c46d7cc7262027160fe039bc7610e0"
+    }
+  ],
+  "modules": [
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_comp",
+      "module_name": "mca_strategy_fg_comp",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_comp/mca_strategy_fg_comp.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_comp/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_comp_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c",
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c"
+      ]
+    },
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops",
+      "module_name": "mca_platform_fg_ic_ops",
+      "output": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops/mca_platform_fg_ic_ops.ko",
+      "symvers": "bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops_Module.symvers",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c"
+      ]
+    }
+  ],
+  "compile_only": true,
+  "runtime_enable": false,
+  "runtime_reason": "Original complete Myron fuelgauge/auth/termination + thermal control not closed; do not activate MCA stack based on these two bug fixes.",
+  "test": "python test_fg_errors.py",
+  "test_results": "test-results.json",
+  "no_header_or_export_signature_changes": true
+}

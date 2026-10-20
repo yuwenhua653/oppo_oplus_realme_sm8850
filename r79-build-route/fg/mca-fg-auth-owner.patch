@@ -1,0 +1,147 @@
+--- a/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c
++++ b/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c
+@@ -40,7 +40,7 @@
+ static int platform_fg_ic_ops_register_size(unsigned int ic_role, void *data,
+ 					    struct fuelguage_ic_ops *ops, size_t ops_size)
+ {
+-	struct fuelguage_info *entry, *old;
++	struct fuelguage_info *entry;
+ 
+ 	if (ic_role >= FG_IC_MAX || !data || !ops)
+ 		return -EOPNOTSUPP;
+@@ -51,11 +51,16 @@
+ 	entry->ops = ops;
+ 	entry->ops_size = ops_size;
+ 	mutex_lock(&platform_fg_lock);
+-	old = rcu_replace_pointer(g_fg_ic_ops[ic_role], entry,
+-				  lockdep_is_held(&platform_fg_lock));
++	/* One provider per hardware role. Never replace a live ops/data pair:
++	 * both providers may still own hardware or have pending callbacks.
++	 */
++	if (rcu_access_pointer(g_fg_ic_ops[ic_role])) {
++		mutex_unlock(&platform_fg_lock);
++		kfree(entry);
++		return -EBUSY;
++	}
++	rcu_assign_pointer(g_fg_ic_ops[ic_role], entry);
+ 	mutex_unlock(&platform_fg_lock);
+-	synchronize_srcu(&platform_fg_srcu);
+-	kfree(old);
+ 	return 0;
+ }
+ int platform_fg_ic_ops_register(unsigned int ic_role, void *data,
+@@ -87,7 +92,7 @@
+ 				       lockdep_is_held(&platform_fg_lock));
+ 	if (!old || old->ops != ops || old->data != data) {
+ 		mutex_unlock(&platform_fg_lock);
+-		/* A replacement can have detached a still-running old provider. */
++		/* Keep the existing reader-drain guarantee on a mismatched request. */
+ 		synchronize_srcu(&platform_fg_srcu);
+ 		return -ENOENT;
+ 	}
+--- a/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c
++++ b/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c
+@@ -280,7 +280,7 @@
+ {
+ 	struct strategy_fg *info = dev_get_drvdata(dev);
+ 	struct mca_sysfs_attr_info *attr_info;
+-	int val;
++	int val, ret;
+ 	int match = 0;
+ 
+ 	if (!info)
+@@ -296,9 +296,13 @@
+ 	case FG_PROP_MAIN_AUTH:
+ 		if (kstrtoint(buf, 10, &val))
+ 			return -EINVAL;
+-		platform_fg_ops_set_authentic(FG_IC_MASTER, val);
++		ret = platform_fg_ops_set_authentic(FG_IC_MASTER, val);
++		if (ret)
++			return ret;
+ 		info->batt_auth = val;
+-		strategy_fg_check_battery_adapt_power(info, &match);
++		ret = strategy_fg_check_battery_adapt_power(info, &match);
++		if (ret)
++			return ret;
+ 		if (val && info->cfg.fg_type <= MCA_FG_TYPE_SINGLE_NUM_MAX &&
+ 		    match)
+ 			mca_event_block_notify(MCA_EVENT_TYPE_HW_INFO,
+@@ -307,9 +311,13 @@
+ 	case FG_PROP_SLAVE_AUTH:
+ 		if (kstrtoint(buf, 10, &val))
+ 			return -EINVAL;
+-		platform_fg_ops_set_authentic(FG_IC_SLAVE, val);
++		ret = platform_fg_ops_set_authentic(FG_IC_SLAVE, val);
++		if (ret)
++			return ret;
+ 		info->batt_slave_auth = val;
+-		strategy_fg_check_battery_adapt_power(info, &match);
++		ret = strategy_fg_check_battery_adapt_power(info, &match);
++		if (ret)
++			return ret;
+ 		if (info->batt_auth && info->batt_slave_auth && match)
+ 			mca_event_block_notify(MCA_EVENT_TYPE_HW_INFO,
+ 					       MCA_EVENT_BATT_AUTH_PASS, NULL);
+@@ -320,8 +328,10 @@
+ 		info->batt_index = val;
+ 		break;
+ 	case FG_PROP_VERIFY_DIGEST:
+-		platform_fg_ops_set_verify_digest(info->batt_index,
++		ret = platform_fg_ops_set_verify_digest(info->batt_index,
+ 						  (char *)buf);
++		if (ret)
++			return ret;
+ 		break;
+ 	case FG_PROP_BATT_POWER_MATCH:
+ 		if (kstrtoint(buf, 10, &val))
+@@ -3497,6 +3507,7 @@
+ 	int ret = 0;
+ 	int adapt_power = 0, adapt_power_slave = 0;
+ 
++	*match = 0;
+ 	if (fg->fake_bap_match >= 0) {
+ 		*match = fg->fake_bap_match;
+ 	} else {
+@@ -3506,8 +3517,12 @@
+ 		} else {
+ 			ret = platform_fg_ops_get_adapt_power(FG_IC_MASTER,
+ 							      &adapt_power);
+-			ret |= platform_fg_ops_get_adapt_power(
++			if (ret)
++				return ret;
++			ret = platform_fg_ops_get_adapt_power(
+ 				FG_IC_SLAVE, &adapt_power_slave);
++			if (ret)
++				return ret;
+ 			if (fg->cfg.support_base_flip) {
+ 				if (adapt_power == 55 &&
+ 				    adapt_power_slave == 15)
+@@ -3517,6 +3532,8 @@
+ 					adapt_power = -1;
+ 			}
+ 		}
++		if (ret)
++			return ret;
+ 		mca_log_info("check battery adapt_power: %d, read value %d\n",
+ 			     fg->cfg.adapt_power, adapt_power);
+ 		*match = fg->cfg.adapt_power == adapt_power;
+@@ -3715,6 +3732,7 @@
+ {
+ 	struct strategy_fg *fg = (struct strategy_fg *)data;
+ 	int match = 0;
++	int ret;
+ 
+ 	if (!value || !fg)
+ 		return -1;
+@@ -3724,7 +3742,10 @@
+ 		*(int *)value = fg->first_termination;
+ 		return 0;
+ 	case STRATEGY_STATUS_TYPE_FG_BATT_MATCH:
+-		strategy_fg_check_battery_adapt_power(fg, &match);
++		*(int *)value = 0;
++		ret = strategy_fg_check_battery_adapt_power(fg, &match);
++		if (ret)
++			return ret;
+ 		*(int *)value = match & fg->batt_auth;
+ 		return 0;
+ 	default:

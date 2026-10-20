@@ -1,0 +1,367 @@
+--- a/drivers/input/touchscreen/xiaomi/xiaomi_touch_core.c
++++ b/drivers/input/touchscreen/xiaomi/xiaomi_touch_core.c
+@@ -189,6 +189,8 @@
+ 	if (!xiaomi_touch_data)
+ 		return;
+ 
++	if (length < 0 || length > CMD_DATA_BUF_SIZE || (length && !data))
++		return;
+ 	LOG_DEBUG("add touch id %d common mode: %d to buffer:%d", touch_id, mode, atomic_read(&xiaomi_touch_data->common_data_buf_index));
+ 	mutex_lock(&xiaomi_touch_data->common_data_buf_lock);
+ 	common_data = &xiaomi_touch_data->common_data_buf[atomic_read(&xiaomi_touch_data->common_data_buf_index)];
+@@ -196,7 +198,9 @@
+ 	common_data->cmd = cmd;
+ 	common_data->mode = mode;
+ 	common_data->data_len = length;
+-	memcpy(common_data->data_buf, data, length * sizeof(s32));
++	memset(common_data->data_buf, 0, sizeof(common_data->data_buf));
++	if (length)
++		memcpy(common_data->data_buf, data, length * sizeof(s32));
+ 
+ 	atomic_inc(&xiaomi_touch_data->common_data_buf_index);
+ 	if (atomic_read(&xiaomi_touch_data->common_data_buf_index) >= COMMON_DATA_BUF_SIZE)
+@@ -1002,26 +1006,21 @@
+ 	return 0;
+ }
+ 
+-static void xiaomi_register_power_supply_event(xiaomi_touch_t *xiaomi_touch)
+-{
+-	int retval = 0;
+-
+-	if (xiaomi_touch == NULL)
+-		return;
+-	xiaomi_touch->charging_status = -1;
+-	xiaomi_touch->power_supply_notifier.notifier_call = xiaomi_power_supply_notifier_callback;
+-	retval = power_supply_reg_notifier(&xiaomi_touch->power_supply_notifier);
+-	if (retval < 0) {
+-		LOG_ERROR("error:%d\n", retval);
+-		return;
+-	}
+-	INIT_WORK(&xiaomi_touch->power_supply_work, xiaomi_power_supply_work);
++static int xiaomi_register_power_supply_event(xiaomi_touch_t *touch)
++{
++	if (!touch)
++		return -EINVAL;
++	touch->charging_status = -1;
++	/* Notifiers can call us as soon as registration succeeds. */
++	INIT_WORK(&touch->power_supply_work, xiaomi_power_supply_work);
++	touch->power_supply_notifier.notifier_call = xiaomi_power_supply_notifier_callback;
++	return power_supply_reg_notifier(&touch->power_supply_notifier);
+ }
+ 
+ static void xiaomi_unregister_power_supply_event(void)
+ {
++	power_supply_unreg_notifier(&xiaomi_touch.power_supply_notifier);
+ 	cancel_work_sync(&xiaomi_touch.power_supply_work);
+-	power_supply_unreg_notifier(&xiaomi_touch.power_supply_notifier);
+ }
+ 
+ #if IS_ENABLED(CONFIG_MIEV)
+@@ -1087,19 +1086,48 @@
+ 
+ static int xiaomi_touch_probe(struct platform_device *pdev)
+ {
++	int ret;
++
+ 	LOG_ALWAYS("xiaomi_touch ver: %s", XIAOMI_TOUCH_VERSION);
+ #ifdef TOUCH_KNOCK_SUPPORT
+ 	knock_node_init();
+ #endif
+ 	memset(&xiaomi_touch, 0, sizeof(xiaomi_touch_t));
+-	xiaomi_touch_sys_init();
+-	xiaomi_touch_operation_init(&xiaomi_touch);
+-	xiaomi_register_power_supply_event(&xiaomi_touch);
+-	netlink_init();
+-	xiaomi_touch_evdev_init(&xiaomi_touch);
++	ret = xiaomi_touch_sys_init();
++	if (ret)
++		goto err_knock;
++	ret = xiaomi_register_power_supply_event(&xiaomi_touch);
++	if (ret)
++		goto err_sys;
++	ret = netlink_init();
++	if (ret) {
++		if (ret > 0)
++			ret = -ENOMEM;
++		goto err_power;
++	}
++	ret = xiaomi_touch_evdev_init(&xiaomi_touch);
++	if (ret)
++		goto err_netlink;
++	/* Publish userspace operations only after all their backing state is ready. */
++	ret = xiaomi_touch_operation_init(&xiaomi_touch);
++	if (ret)
++		goto err_evdev;
+ 	LOG_INFO("over");
+-
+ 	return 0;
++
++err_evdev:
++	xiaomi_touch_evdev_remove();
++err_netlink:
++	netlink_exit();
++err_power:
++	xiaomi_unregister_power_supply_event();
++err_sys:
++	xiaomi_touch_sys_remove();
++err_knock:
++#ifdef TOUCH_KNOCK_SUPPORT
++	knock_node_release();
++#endif
++	return ret;
+ }
+ 
+ static void xiaomi_touch_remove(struct platform_device *pdev)
+--- a/drivers/input/touchscreen/xiaomi/xiaomi_touch_operations.c
++++ b/drivers/input/touchscreen/xiaomi/xiaomi_touch_operations.c
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include <linux/miscdevice.h>
++#include <linux/mm.h>
+ #include <linux/poll.h>
+ #include <linux/dma-mapping.h>
+ 
+@@ -17,7 +18,11 @@
+ 
+ static int xiaomi_touch_dev_open(struct inode *inode, struct file *file)
+ {
+-	private_data_t *client_private_data = kzalloc_retry(sizeof(private_data_t), 3);
++	private_data_t *client_private_data;
++
++	if (!xiaomi_touch)
++		return -ENODEV;
++	client_private_data = kzalloc_retry(sizeof(private_data_t), 3);
+ 	if (!client_private_data) {
+ 		LOG_ERROR("alloc private memory failed!");
+ 		return -1;
+@@ -169,45 +174,49 @@
+ static int xiaomi_touch_dev_mmap(struct file *file, struct vm_area_struct *vma)
+ {
+ 	private_data_t *client_private_data = file->private_data;
+-	unsigned long start = vma->vm_start;
++	xiaomi_touch_data_t *data = get_xiaomi_touch_data(client_private_data->touch_id);
+ 	unsigned long size = vma->vm_end - vma->vm_start;
+-	unsigned long offset = vma->vm_pgoff << PAGE_SHIFT;
+-	unsigned long page;
+-	unsigned long pos;
+-	dma_addr_t temp_phy_bas = 0;
+-	xiaomi_touch_data_t *xiaomi_touch_data = get_xiaomi_touch_data(client_private_data->touch_id);
+-	if (!xiaomi_touch_data && client_private_data->mmap_area != 3) {
+-		LOG_ERROR("please select touch id first!");
+-		return -1;
+-	}
+-
+-	LOG_INFO("select mmap area %d", client_private_data->mmap_area);
+-	if (client_private_data->mmap_area == 1) {
+-		LOG_INFO("mmap frame data mmap");
+-		temp_phy_bas = xiaomi_touch_data->frame_data_mmap_phy_base;
+-	} else if (client_private_data->mmap_area == 2) {
+-		LOG_INFO("mmap raw data mmap");
+-		temp_phy_bas = xiaomi_touch_data->raw_data_mmap_phy_base;
+-	} else if (client_private_data->mmap_area == 3) {
+-		LOG_INFO("mmap input event buf mmap");
+-		temp_phy_bas = xiaomi_touch->input_event_time_line_phy_base;
+-	} else if (client_private_data->mmap_area == 4) {
+-		LOG_INFO("mmap report point buf mmap");
+-		temp_phy_bas = get_report_point_info_phy_addr();
+-	}
+-	if (!temp_phy_bas) {
+-		LOG_ERROR("phy bas is NULL, return!");
+-		return -1;
+-	}
+-	pos = (unsigned long)temp_phy_bas + offset;
+-	page = pos >> PAGE_SHIFT;
+-
+-	if(remap_pfn_range(vma, start, page, size, PAGE_SHARED)) {
+-		LOG_ERROR("remap_pfn_range %u, size:%ld failed\n", (unsigned int)page, size);
+-		return -1;
+-	}
+-	LOG_INFO("remap_pfn_range %u, size:%ld, success\n", (unsigned int)page, size);
+-	return 0;
++	unsigned long capacity = 0, offset;
++	dma_addr_t physical = 0;
++
++	/* Check the allocation, not just the existence of its first page. */
++	switch (client_private_data->mmap_area) {
++	case 1:
++		if (!data)
++			return -ENODEV;
++		physical = data->frame_data_mmap_phy_base;
++		capacity = (unsigned long)data->frame_data_size * data->frame_data_buf_size;
++		break;
++	case 2:
++		if (!data)
++			return -ENODEV;
++		physical = data->raw_data_mmap_phy_base;
++		capacity = (unsigned long)data->raw_data_size * data->raw_data_buf_size;
++		break;
++	case 3:
++		physical = xiaomi_touch->input_event_time_line_phy_base;
++		capacity = PAGE_SIZE * 45;
++		break;
++	case 4:
++		if (!data)
++			return -ENODEV;
++		physical = get_report_point_info_phy_addr();
++		capacity = PAGE_SIZE;
++		break;
++	default:
++		return -EINVAL;
++	}
++	if (!physical || !capacity)
++		return -ENODEV;
++	if (!size || vma->vm_end < vma->vm_start ||
++	    vma->vm_pgoff >= (capacity >> PAGE_SHIFT))
++		return -EINVAL;
++	offset = vma->vm_pgoff << PAGE_SHIFT;
++	if (size > capacity - offset)
++		return -EINVAL;
++	return remap_pfn_range(vma, vma->vm_start,
++			      (physical >> PAGE_SHIFT) + vma->vm_pgoff,
++			      size, vma->vm_page_prot);
+ }
+ 
+ static long xiaomi_touch_dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+@@ -261,6 +270,8 @@
+ 		return temp_index;
+ 
+ 	case SELECT_MMAP_CMD:
++		if (arg < 1 || arg > 4)
++			return -EINVAL;
+ 		LOG_INFO("select mmap area %lu", arg);
+ 		client_private_data->mmap_area = arg;
+ 		return 0;
+@@ -299,7 +310,7 @@
+ 				LOG_ERROR("get hardware info failed, please select touch id first");
+ 				return -1;
+ 			}
+-			return copy_to_user((void __user *)arg, &xiaomi_touch_driver_param->hardware_param, user_size);
++			return copy_to_user((void __user *)arg, &xiaomi_touch_driver_param->hardware_param, user_size) ? -EFAULT : 0;
+ 		}
+ 		return -1;
+ 	case COMMON_DATA_CMD:
+@@ -333,15 +344,17 @@
+ 
+ int xiaomi_touch_operation_init(xiaomi_touch_t *temp_xiaomi_touch)
+ {
+-	int ret = 0;
+-	if (!temp_xiaomi_touch) {
+-		LOG_ERROR("xiaomi touch is NULL, return!");
+-		return -1;
+-	}
++	int ret;
++
++	if (!temp_xiaomi_touch)
++		return -EINVAL;
++	/* misc_register publishes open(); its backing object must already exist. */
++	xiaomi_touch = temp_xiaomi_touch;
+ 	ret = misc_register(&misc_dev);
+-	xiaomi_touch = temp_xiaomi_touch;
+-	if (ret)
++	if (ret) {
++		xiaomi_touch = NULL;
+ 		LOG_ERROR("create misc device err:%d\n", ret);
++	}
+ 	return ret;
+ }
+ 
+--- a/drivers/input/touchscreen/xiaomi/xiaomi_touch_mode.c
++++ b/drivers/input/touchscreen/xiaomi/xiaomi_touch_mode.c
+@@ -656,6 +656,11 @@
+ 			return -1;
+ 		}
+ 
++		/* data_len is supplied by userspace and later reaches memcpy(). */
++		if (common_data.data_len > CMD_DATA_BUF_SIZE ||
++		    (common_data.cmd == SET_CUR_VALUE && !common_data.data_len))
++			return -EINVAL;
++
+ 		if (client_private_data->touch_id != common_data.touch_id) {
+ 			LOG_ERROR("client id is not equal common data id, please check it!");
+ 			return -1;
+@@ -675,8 +680,14 @@
+ 		mutex_lock(&ioctl_operation_mutex);
+ 		switch (common_data.cmd) {
+ 		case SET_THP_IC_CUR_VALUE:
+-			if (xiaomi_touch_driver_param->hardware_operation.htc_ic_setModeValue) {
+-				xiaomi_touch_driver_param->hardware_operation.htc_ic_setModeValue(&common_data);
++			if (!xiaomi_touch_driver_param->hardware_operation.htc_ic_setModeValue) {
++				mutex_unlock(&ioctl_operation_mutex);
++				return -EOPNOTSUPP;
++			}
++			copy_size = xiaomi_touch_driver_param->hardware_operation.htc_ic_setModeValue(&common_data);
++			if (copy_size) {
++				mutex_unlock(&ioctl_operation_mutex);
++				return copy_size;
+ 			}
+ 			break;
+ 		case GET_THP_IC_CUR_VALUE:
+--- a/drivers/input/touchscreen/xiaomi/xiaomi_touch_sys.c
++++ b/drivers/input/touchscreen/xiaomi/xiaomi_touch_sys.c
+@@ -707,26 +707,31 @@
+ 
+ int xiaomi_touch_sys_init(void)
+ {
+-	int ret = 0;
+-	LOG_ALWAYS("enter");
++	int ret;
++
+ 	xiaomi_touch_class = class_create("touch");
+-
+-	if (!xiaomi_touch_class) {
+-		LOG_ERROR("create device class err");
+-		return -1;
+-	}
+-
++	if (IS_ERR(xiaomi_touch_class)) {
++		ret = PTR_ERR(xiaomi_touch_class);
++		xiaomi_touch_class = NULL;
++		return ret;
++	}
+ 	xiaomi_touch_dev = device_create(xiaomi_touch_class, NULL, 'T', NULL, "touch_dev");
+-	if (!xiaomi_touch_dev) {
+-		LOG_ERROR("create device dev err");
+-		return -1;
+-	}
+-
++	if (IS_ERR(xiaomi_touch_dev)) {
++		ret = PTR_ERR(xiaomi_touch_dev);
++		xiaomi_touch_dev = NULL;
++		goto err_class;
++	}
+ 	xiaomi_touch_attrs.attrs = touch_attr_group;
+ 	ret = sysfs_create_group(&xiaomi_touch_dev->kobj, &xiaomi_touch_attrs);
+ 	if (ret)
+-		LOG_ERROR("ERROR: Cannot create sysfs structure!:%d", ret);
+-
++		goto err_device;
++	return 0;
++err_device:
++	device_destroy(xiaomi_touch_class, 'T');
++	xiaomi_touch_dev = NULL;
++err_class:
++	class_destroy(xiaomi_touch_class);
++	xiaomi_touch_class = NULL;
+ 	return ret;
+ }
+ 
+--- a/drivers/input/touchscreen/xiaomi/xiaomi_touch_evdev.c
++++ b/drivers/input/touchscreen/xiaomi/xiaomi_touch_evdev.c
+@@ -378,12 +378,15 @@
+ 	LOG_ALWAYS("enter");
+ 	xiaomi_touch = _xiaomi_touch;
+ 	ret = input_register_handler(&xiaomitouch_input_handler);
++	if (ret)
++		return ret;
+ 	/* create last_touch_events */
+ 	if (!last_touch_events_pde) {
+ 		last_touch_events_pde = proc_create_seq("last_touch_events", 0644, NULL, &last_touch_events_seq_ops);
+ 		if (!last_touch_events_pde) {
+ 			LOG_ERROR("last_touch_events_proc create has error, exit!");
+-			return -1;
++			input_unregister_handler(&xiaomitouch_input_handler);
++			return -ENOMEM;
+ 		}
+ 		memset(&last_touch_events, 0, sizeof(struct last_touch_event));
+ 	}

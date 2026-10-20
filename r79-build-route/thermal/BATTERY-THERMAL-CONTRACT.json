@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "source": "r78-fix3/artifacts/r75-build-route/payload/drivers/power/supply/myron_bq_readonly.c",
+  "destination": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",
+  "before_sha256": "92a90ae384cdd48410e5e48d4cef09731252b54e121a57b4bc892b13bd97bae1",
+  "after_sha256": "0c96a07732109f8dbfb5e00ca54e1ef80f4b2d7fd119f1a0f498baf9fc83e45d",
+  "changed": "All three existing opt-in descriptors expose actual battery TEMP via standard core tripless thermal zone; no threshold or write policy change.",
+  "core_source": {
+    "url": "https://android.googlesource.com/kernel/common/+/41a2024a9e2eb66ab0643a865d74943b4ee3cff8/drivers/power/supply/power_supply_core.c?format=TEXT",
+    "bytes": 52450,
+    "sha256": "8ecafa734747d9d4feeb2ce4c77a32080a38b4c859957625312011f6b2efcf0d"
+  },
+  "scope": "Restores missing battery input only. SKIN mapping and full original charging policy not proven."
+}

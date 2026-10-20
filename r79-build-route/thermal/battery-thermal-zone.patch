@@ -1,0 +1,39 @@
+--- a/drivers/power/supply/myron_bq_readonly.c
++++ b/drivers/power/supply/myron_bq_readonly.c
+@@ -280,13 +280,17 @@
+ 	POWER_SUPPLY_PROP_TEMP,
+ };
+ 
++/* Expose the verified battery TEMP through the core tripless thermal zone.
++ * The core converts deci-C to milli-C and unregisters it with this supply.
++ * No trip points or charging policy are created here.
++ */
+ static const struct power_supply_desc myron_readonly_desc = {
+ 	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = myron_readonly_properties,
+ 	.num_properties = ARRAY_SIZE(myron_readonly_properties),
+ 	.get_property = myron_readonly_get_property,
+-	.no_thermal = true,
++	.no_thermal = false,
+ };
+ 
+ static enum power_supply_property myron_readonly_extended_properties[] = {
+@@ -303,7 +307,7 @@
+ 	.properties = myron_readonly_extended_properties,
+ 	.num_properties = ARRAY_SIZE(myron_readonly_extended_properties),
+ 	.get_property = myron_readonly_get_property,
+-	.no_thermal = true,
++	.no_thermal = false,
+ };
+ 
+ /* Separate descriptor keeps original opt-ins free of event callbacks. */
+@@ -314,7 +318,7 @@
+ 	.num_properties = ARRAY_SIZE(myron_readonly_extended_properties),
+ 	.get_property = myron_readonly_get_property,
+ 	.external_power_changed = myron_readonly_external_power_changed,
+-	.no_thermal = true,
++	.no_thermal = false,
+ };
+ 
+ static int myron_readonly_probe(struct i2c_client *client)
