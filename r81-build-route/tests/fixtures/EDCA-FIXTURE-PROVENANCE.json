@@ -1,0 +1,50 @@
+{
+  "preimage": {
+    "qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/sch/sch_beacon_process.c": {
+      "source": {
+        "bytes": 53098,
+        "sha256": "8b860f15f6e8022b4a6c04badb06a7ade261c951b639e037a12061c3a3e1d5ba"
+      },
+      "fixture_file": "preimage-sch_beacon_process-functions.c",
+      "fixture": {
+        "bytes": 4521,
+        "sha256": "b6d8cb5d8711679ba4f9d715ffc615783784bab4881d8ebb77bfc24afad52bbe"
+      }
+    },
+    "qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c": {
+      "source": {
+        "bytes": 410303,
+        "sha256": "6e07736515afe41e42f74b58a228a1507fc996af57cf8d478ed62d321de9280c"
+      },
+      "fixture_file": "preimage-lim_utils-functions.c",
+      "fixture": {
+        "bytes": 2336,
+        "sha256": "242a83bd0f91588e96dcab7b3e307114a8cf6a8e8775275545007a840b7efcab"
+      }
+    }
+  },
+  "payload": {
+    "qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/sch/sch_beacon_process.c": {
+      "source": {
+        "bytes": 53489,
+        "sha256": "e12a9005617f8ff74170225f9291a1fb79925d59a6961abb4cc2870c4c15a020"
+      },
+      "fixture_file": "payload-sch_beacon_process-functions.c",
+      "fixture": {
+        "bytes": 4912,
+        "sha256": "826f41db53f87205665ebced025ccb9bf8e42f19d0c0995768ea6df94b1e1bd2"
+      }
+    },
+    "qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c": {
+      "source": {
+        "bytes": 410529,
+        "sha256": "38ad6d3ad157bd7a2943507293a5e76f986204bfe1302ffa151a3fe83a5f6c04"
+      },
+      "fixture_file": "payload-lim_utils-functions.c",
+      "fixture": {
+        "bytes": 2562,
+        "sha256": "8a628e62cf8596500269aab634779de97a9fb1b9a4a81eaadb4e3a931d1dce4a"
+      }
+    }
+  }
+}

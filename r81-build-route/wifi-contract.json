@@ -1,0 +1,108 @@
+{
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "sources_lock_sha256": "ef3d806f679ac8e0bf1371e6ab6dfc173118a32e3a66f44f684116bc0b52e756",
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "build/kernel": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "prebuilts/clang/host/linux-x86": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04"
+  },
+  "core_targets": [
+    "//common:kernel_aarch64",
+    "//myron_artifact_metadata:kernel_release"
+  ],
+  "schema": 1,
+  "base_commit": "ae2ca5dc0daff70c672a76aa34fd7e82f0a2c014",
+  "parent_contract": "r79-build-route/repair-contract.json",
+  "parent_contract_sha256": "aabb37375d33dfe9ae1bf9a86e7a3ce4602bd67f06855709b046fa493d744cc2",
+  "compile_only": true,
+  "flashable": false,
+  "hardware_tested": false,
+  "experiment": "2.4 GHz ordinary STA follows AP EDCA; retain original NSS, HT capabilities and other roles",
+  "runtime_candidate_module_names": [
+    "qca_cld3_peach_v2"
+  ],
+  "runtime_baseline": {
+    "vendor_boot_sha256": "2c42d9a918e67297f8e1513a28be1c8062a845777b2cacf48e75013e304814e6",
+    "wlan_module_sha256": "45c568e254060ce3573c81eda5c2512f9ed6fa0f4beb500fe6e473d42d680ced"
+  },
+  "modules": [
+    {
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0:canoe_perf_qca_cld_peach-v2",
+      "module_name": "qca_cld3_peach_v2",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c",
+        "vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/sch/sch_beacon_process.c"
+      ]
+    }
+  ],
+  "locked_files": [
+    {
+      "path": "r81-build-route/0001-myron-sta-2g-ap-edca.patch",
+      "bytes": 1423,
+      "sha256": "67caf7d3a9fe5ad9c3fe776f74f5cee30f65056e48dec0669637dde12286663f"
+    },
+    {
+      "path": "r81-build-route/README.md",
+      "bytes": 1415,
+      "sha256": "474db3c394d757a50cfe036375cc3596bf2eab5dfdf023af4af4c5b079d42022"
+    },
+    {
+      "path": "r81-build-route/SOURCE-CONTRACT.json",
+      "bytes": 3593,
+      "sha256": "13e73def8a74d13ce6c13484dea302d7b0ab1b162180ee3722211e383c272b3b"
+    },
+    {
+      "path": "r81-build-route/apply_wifi.py",
+      "bytes": 5136,
+      "sha256": "518a6bcc4c0a6b157d66b6fd3951ae041c6fca83b4864476ace1c6dc6d170aac"
+    },
+    {
+      "path": "r81-build-route/build_wifi.py",
+      "bytes": 13938,
+      "sha256": "7eba7e82bea5e6257b2dd440dcc387c212db15f7ee48d50aeb1ebfe285c319de"
+    },
+    {
+      "path": "r81-build-route/target-provenance.json",
+      "bytes": 1277,
+      "sha256": "f201bc8291f0cdcf57af9d32bc6959fdc8eed2b479cde5af5e3a44fe88962316"
+    },
+    {
+      "path": "r81-build-route/test_wifi.py",
+      "bytes": 291,
+      "sha256": "b03a5cb466122ca856309dfa582c42926cc811e04adaed930daffd1b1024f030"
+    },
+    {
+      "path": "r81-build-route/tests/fixtures/EDCA-FIXTURE-PROVENANCE.json",
+      "bytes": 1706,
+      "sha256": "b614d952e26d37addb463b8efc4b25b72de819fe32d27a2574b1cedfb32f0aed"
+    },
+    {
+      "path": "r81-build-route/tests/fixtures/payload-lim_utils-functions.c",
+      "bytes": 2562,
+      "sha256": "8a628e62cf8596500269aab634779de97a9fb1b9a4a81eaadb4e3a931d1dce4a"
+    },
+    {
+      "path": "r81-build-route/tests/fixtures/payload-sch_beacon_process-functions.c",
+      "bytes": 4912,
+      "sha256": "826f41db53f87205665ebced025ccb9bf8e42f19d0c0995768ea6df94b1e1bd2"
+    },
+    {
+      "path": "r81-build-route/tests/fixtures/preimage-lim_utils-functions.c",
+      "bytes": 2336,
+      "sha256": "242a83bd0f91588e96dcab7b3e307114a8cf6a8e8775275545007a840b7efcab"
+    },
+    {
+      "path": "r81-build-route/tests/fixtures/preimage-sch_beacon_process-functions.c",
+      "bytes": 4521,
+      "sha256": "b6d8cb5d8711679ba4f9d715ffc615783784bab4881d8ebb77bfc24afad52bbe"
+    },
+    {
+      "path": "r81-build-route/tests/test_edca_candidate.py",
+      "bytes": 13326,
+      "sha256": "56ea5b323c3ddadc518df857d5f4658c47018a0e1ad7b9963b3254a9e1621b75"
+    }
+  ]
+}

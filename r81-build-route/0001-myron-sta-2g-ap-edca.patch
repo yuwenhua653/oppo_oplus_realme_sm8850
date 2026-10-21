@@ -1,0 +1,35 @@
+--- a/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/sch/sch_beacon_process.c
++++ b/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/sch/sch_beacon_process.c
+@@ -1134,6 +1134,16 @@
+ 	}
+ 
+ 	follow_ap_edca = mlme_get_follow_ap_edca_flag(session->vdev);
++
++	/* Myron: keep the AP's contention parameters on 2.4 GHz STA links. */
++	if (session->opmode == QDF_STA_MODE &&
++	    wlan_reg_is_24ghz_ch_freq(session->curr_op_freq)) {
++		follow_ap_edca = true;
++		pe_info_rl("R81 AP EDCA vdev %d freq %d BE cwmin %d cwmax %d aifs %d",
++			   session->vdev_id, session->curr_op_freq,
++			   edca->acbe.cw.min, edca->acbe.cw.max,
++			   edca->acbe.aci.aifsn);
++	}
+ 
+ 	session->gLimEdcaParamSetCount = edca->qosInfo.count;
+ 	session->gLimEdcaParams[QCA_WLAN_AC_BE] = edca->acbe;
+--- a/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c
++++ b/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c
+@@ -2112,6 +2112,13 @@
+ 		return;
+ 	}
+ 
++	/*
++	 * Re-evaluate band-specific STA EDCA after a successful CSA even if
++	 * the AP keeps its four-bit parameter-set count unchanged.
++	 */
++	if (pe_session->opmode == QDF_STA_MODE)
++		pe_session->gLimEdcaParamSetCount = 0xff;
++
+ 	mmhMsg.type = eWNI_SME_SWITCH_CHL_IND;
+ 	pSirSmeSwitchChInd = qdf_mem_malloc(sizeof(*pSirSmeSwitchChInd));
+ 	if (!pSirSmeSwitchChInd)

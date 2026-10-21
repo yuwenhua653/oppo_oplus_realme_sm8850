@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+  "commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "package": "vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0",
+  "files": [
+    {"path": "qcom/opensource/wlan/qcacld-3.0/BUILD.bazel", "git_blob": "54f8ac039fb16744102e7e2e863b9c317fa4191c", "sha256": "23cc560db85c8f74c69abfc38734c4a65177e7fc1c115e8f58dd58d2ac1fa37d"},
+    {"path": "qcom/opensource/wlan/qcacld-3.0/wlan_qcacld3_modules.bzl", "git_blob": "34b56cbad92f940f93faa019ba1ac7c8591996c7", "sha256": "fe58365ae65ee4f3736860bd603b84fa0f4dfcb5dadc50be5f0e6e388d465806"},
+    {"path": "qcom/opensource/wlan/qcacld-3.0/target_variants.bzl", "git_blob": "088d2cd938c80f3bc4ae2699676df7ba1c7da10a", "sha256": "0dd4c9d64b936f9db5aede5707fc5c68426903b8b5421d5798c30d9b06f6e77b"}
+  ],
+  "derivation": {
+    "target": "canoe",
+    "variant": "perf",
+    "chipset": "peach-v2",
+    "target_name_template": "{target}_{variant}_qca_cld_{chipset}",
+    "target_name": "canoe_perf_qca_cld_peach-v2",
+    "module_filename": "qca_cld3_peach_v2.ko"
+  },
+  "ci_validation": "Before compilation, resolve exact target-owned KO and Module.symvers in the actual Bazel action graph and prove all modified C files feed the selected output."
+}
