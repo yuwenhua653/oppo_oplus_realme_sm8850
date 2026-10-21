@@ -1,0 +1,102 @@
+--- a/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c
++++ b/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c
+@@ -298,6 +298,61 @@
+ 	}
+ }
+ 
++/* A failed poll is not itself an observed unplug. Keep only the previous
++ * complete snapshot, under its original expiry, on bounded GET failures.
++ * Received contradictory state, malformed data and link/lifetime changes
++ * must still withdraw it immediately. Never combine partial new samples.
++ * Caller holds lock.
++ */
++static bool mr_keep_supply(struct mr_device *m, const struct mr_cache *cache,
++			   u32 generation, u64 now)
++{
++	u64 start = cache->samples[0].start_ms;
++	bool failed = false, aborted = false;
++	unsigned int i;
++
++	if (!mr_supply_fresh(m, now) || generation != m->generation ||
++	    start > now || now - start >= MR_FRESH_MS)
++		return false;
++	for (i = 0; i < MR_PROPERTIES; i++) {
++		const struct mr_sample *s = &cache->samples[i];
++
++		if (s->property != mr_properties[i])
++			return false;
++		if (!s->attempted) {
++			if (!aborted || s->error != -ECANCELED || s->response_seen)
++				return false;
++			continue;
++		}
++		if (aborted || s->start_ms < start || s->end_ms < s->start_ms ||
++		    s->end_ms > now)
++			return false;
++		if (s->error) {
++			if (s->error != -EIO && s->error != -ETIMEDOUT &&
++			    s->error != -EREMOTEIO)
++				return false;
++			if (s->error == -EREMOTEIO ?
++			    (!s->response_seen || !s->remote_status) :
++			    (s->response_seen || s->remote_status))
++				return false;
++			failed = true;
++			aborted = s->error != -EREMOTEIO;
++			continue;
++		}
++		if (!s->response_seen || s->remote_status)
++			return false;
++		if ((i == 0 && (!s->raw || s->raw != (u32)m->supply.online)) ||
++		    (i == 1 && (s->raw > MR_MAX_BUS_UV || s->raw > INT_MAX ||
++				(m->supply.online && s->raw < 1000000U))) ||
++		    (i == 2 && (s->raw > MR_MAX_BUS_UA || s->raw > INT_MAX)) ||
++		    (i == 4 && (mr_status(m->supply.online, s->raw) ==
++				POWER_SUPPLY_STATUS_UNKNOWN ||
++				mr_status(m->supply.online, s->raw) != m->supply.status)))
++			return false;
++	}
++	return failed;
++}
++
+ /* Caller holds lock; all six replies belong to one uninterrupted link epoch.
+  * Sequential samples are not an atomic firmware snapshot. Contradictory
+  * offline/charging replies are therefore withheld instead of extrapolated.
+@@ -354,6 +409,13 @@
+ 	mr_queue_notify(m);
+ 	return;
+ invalid:
++	if (mr_keep_supply(m, cache, generation, now)) {
++		/* Extra diagnostics require this round to be complete, even when
++		 * the previous supply snapshot remains within its original TTL.
++		 */
++		mr_extra_stop(m, -ENODATA);
++		return;
++	}
+ 	mr_invalidate(m);
+ 	mr_queue_notify(m);
+ }
+@@ -586,13 +648,22 @@
+ {
+ 	struct mr_extra_sample result = { 0 };
+ 	unsigned long flags;
+-	unsigned int index;
++	unsigned int index, i;
+ 	int error;
+ 
+ 	spin_lock_irqsave(&m->lock, flags);
+ 	if (!m->extra_enabled || m->stopping || m->finished ||
+ 	    m->extra.state == MR_EXTRA_COMPLETE || m->extra.state == MR_EXTRA_STOPPED)
+ 		goto out;
++	/* A retained prior supply snapshot cannot arm extras from a partial
++	 * current round, even if its USB_ONLINE and USB_REAL_TYPE replied.
++	 */
++	for (i = 0; i < MR_PROPERTIES; i++) {
++		const struct mr_sample *s = &m->cache.samples[i];
++
++		if (!s->attempted || !s->response_seen || s->error || s->remote_status)
++			goto out;
++	}
+ 	if (m->extra.state == MR_EXTRA_WAITING) {
+ 		if (!mr_supply_fresh(m, mr_now_ms()) ||
+ 		    m->cache.samples[0].raw != 1 || m->cache.samples[3].raw != 0xb)

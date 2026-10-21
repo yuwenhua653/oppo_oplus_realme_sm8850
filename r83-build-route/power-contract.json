@@ -1,0 +1,201 @@
+{
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "sources_lock_sha256": "ef3d806f679ac8e0bf1371e6ab6dfc173118a32e3a66f44f684116bc0b52e756",
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "build/kernel": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "prebuilts/clang/host/linux-x86": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04"
+  },
+  "core_targets": [
+    "//common:kernel_aarch64",
+    "//myron_artifact_metadata:kernel_release"
+  ],
+  "schema": 1,
+  "base_commit": "45405ec4b75ac71c60f3178d1be24db312fae3ff",
+  "parent_contract": "r79-build-route/repair-contract.json",
+  "parent_contract_sha256": "aabb37375d33dfe9ae1bf9a86e7a3ce4602bd67f06855709b046fa493d744cc2",
+  "compile_only": true,
+  "flashable": false,
+  "hardware_tested": false,
+  "experiment": "Retain an original still-fresh coherent USB snapshot on narrowly classified transient GET failures; never renew its lifetime",
+  "runtime_candidate_module_names": [
+    "myron_mca_readonly"
+  ],
+  "runtime_baseline": {
+    "vendor_boot_sha256": "bbf76ea645db010b5a7842c939f227dada9de85fa9933733e7b08176a4c639ef",
+    "retained_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+    "retained_core_symvers_sha256": "9d69a48179b0288dbd452dffc061f7754fba09d507fba3086161dfb019c496e3",
+    "myron_mca_readonly_module_sha256": "5d336da04be43186f696e1d62b3de4d27727942471e6d58d480173eda9c72f8f",
+    "qti_pmic_glink_module_sha256": "29f97959761de3f2145c5bd8f8a6ef3b1bc1e18196f0c99b3bfbc6b94410aa86",
+    "cnss2_module_sha256": "2cee16815ad9962e82ea8ec833b5a934c6c8de1a6be0c2ee10de0a8bde43ab76",
+    "wlan_module_sha256": "d987d12125e5dbd82bfa9225741dadb2a8b7fe8ba8078c3588554e999a973598"
+  },
+  "modules": [
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/myron_mca_readonly/myron_mca_readonly",
+      "module_name": "myron_mca_readonly",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c"
+      ]
+    }
+  ],
+  "validation_only_modules": [
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561",
+      "module_name": "bq27z561",
+      "output_basename": "bq27z561.ko",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+      ],
+      "role": "validation_only"
+    },
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/iio/adc/qcom-spmi-adc5-gen3",
+      "module_name": "qcom_spmi_adc5_gen3",
+      "output_basename": "qcom-spmi-adc5-gen3.ko",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/iio/adc/qcom-spmi-adc5-gen3.c"
+      ],
+      "role": "validation_only"
+    },
+    {
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/iio/adc/qcom-vadc-common",
+      "module_name": "qcom_vadc_common",
+      "output_basename": "qcom-vadc-common.ko",
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/iio/adc/qcom-vadc-common.c"
+      ],
+      "role": "validation_only"
+    }
+  ],
+  "locked_files": [
+    {
+      "path": "r83-build-route/README.md",
+      "bytes": 2197,
+      "sha256": "f58fd09f990d223cfcf5f38c82a7051b8e599e3e6c7f58699fd867e320bcd69e"
+    },
+    {
+      "path": "r83-build-route/SOURCE-CONTRACT.json",
+      "bytes": 2327,
+      "sha256": "d04502a9ca28b62c74604dbae3b6e91b675ba13c057e394983f6a10d7809291a"
+    },
+    {
+      "path": "r83-build-route/VALIDATION-SOURCE-CONTRACT.json",
+      "bytes": 4957,
+      "sha256": "0b02b56f2127c82576867a2626373cfcaa2604d1588edde94e4b777b3160e2d9"
+    },
+    {
+      "path": "r83-build-route/apply_power.py",
+      "bytes": 3713,
+      "sha256": "a44434238cbdfdd628afcadb552e9f85e0e92d890e1c1a7bc84b8c8a0a725a29"
+    },
+    {
+      "path": "r83-build-route/bq-boundaries.patch",
+      "bytes": 901,
+      "sha256": "4dca820df8443c212a4b58054cbfaf08ca0c3ab8d8bb925cc86564ebc7afd4de"
+    },
+    {
+      "path": "r83-build-route/build_power.py",
+      "bytes": 22413,
+      "sha256": "d3142de88d1f26bedf9fa481194e896ae85b883820cd3dd86bc670671d8e3edb"
+    },
+    {
+      "path": "r83-build-route/freeze_inputs.py",
+      "bytes": 3657,
+      "sha256": "34277921e9f59f68a3dd7347a59e2df10d1954dabd11b73fd9019ac59f779336"
+    },
+    {
+      "path": "r83-build-route/r83-mca-transient-cache.patch",
+      "bytes": 3504,
+      "sha256": "2d9c753dd1378df00d8aaab67002302427fa236e2e308cdf127e800f00fba988"
+    },
+    {
+      "path": "r83-build-route/test_power.py",
+      "bytes": 1865,
+      "sha256": "1ad065bb0ef03e3b03cebfd119bf2245eef3e6d21de3bf299899d1c43e15ba09"
+    },
+    {
+      "path": "r83-build-route/test_validation.py",
+      "bytes": 1724,
+      "sha256": "da9025e5a8da3f452292a0f6ff0cabd40f4920aa91622652af11fe95c8f7a54c"
+    },
+    {
+      "path": "r83-build-route/tests/bq/test_bq_boundaries.py",
+      "bytes": 7461,
+      "sha256": "c2ac714f08b2a7024c889d5fc8d02bbaf5281dfbfbd4e0f9666189c1aa96c289"
+    },
+    {
+      "path": "r83-build-route/tests/client/fake_kernel.h",
+      "bytes": 7607,
+      "sha256": "2af9a1ebe1bc1facfd7f6bbbdfd54c2ff8acd9d9e19ff2b79a312efb68a339fd"
+    },
+    {
+      "path": "r83-build-route/tests/client/qti_pmic_glink.h",
+      "bytes": 2788,
+      "sha256": "b12e923464df2b0f46a872d7be168856adaac0e00b2d7c83c123fc18f5418baa"
+    },
+    {
+      "path": "r83-build-route/tests/client/run_tests.py",
+      "bytes": 2827,
+      "sha256": "dd6f9516a37ab7a5c2f97a9531a7ecfca2737c7ea2ad6d016a8da3ea943eb955"
+    },
+    {
+      "path": "r83-build-route/tests/client/test_client.c",
+      "bytes": 30654,
+      "sha256": "1bedd0ca61112336f799aa98332477b23c1679c2af5ec765a13e3b1850e7efb2"
+    },
+    {
+      "path": "r83-build-route/tests/client/test_extra_diagnostics.inc",
+      "bytes": 14083,
+      "sha256": "bae23394175547181db4fe6c8f319191387d5cb973708dec48e0cd4af01258dd"
+    },
+    {
+      "path": "r83-build-route/tests/client/test_transient_cache.inc",
+      "bytes": 8877,
+      "sha256": "48b53bf3fef1f6b658e3785d96652d77011c1bde07adca3e30d15e50ca2274f6"
+    },
+    {
+      "path": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/Kconfig",
+      "bytes": 3281,
+      "sha256": "23296172d829bd9c2f10b5744f1e38220686c56c7d11d0e486b350ab330b2a1a"
+    },
+    {
+      "path": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/Makefile",
+      "bytes": 271,
+      "sha256": "df9e0cdd4a52bcf804c43570299a34a6bd4d2ca86833aac2fb38d3098c87a122"
+    },
+    {
+      "path": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/modules.bzl",
+      "bytes": 3424,
+      "sha256": "b81499d559812ef29e42c4df5937bc76d60c63e5ca80997f11c941cfc5a826c0"
+    },
+    {
+      "path": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/qcom-spmi-adc5-gen3.c",
+      "bytes": 57740,
+      "sha256": "26dad8cb9b0f660ccf22fcd3e3e37a4020ed8b0ee9d012a7854d9a7855697819"
+    },
+    {
+      "path": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/qcom-vadc-common.c",
+      "bytes": 40818,
+      "sha256": "45508ab03c5195987a02a68cb6637ed31a8ac9cc6896022c2094f9e859fb6b36"
+    },
+    {
+      "path": "r83-build-route/validation-reference/vendor/qcom/sm8850/include/dt-bindings/iio/qcom,spmi-vadc.h",
+      "bytes": 16708,
+      "sha256": "e45da5c631b3d6993614f8b64dce2c06e3b9ceaf1318a7a484bdfd1506eb6453"
+    },
+    {
+      "path": "r83-build-route/validation-reference/vendor/qcom/sm8850/include/linux/iio/adc/qcom-vadc-common.h",
+      "bytes": 10490,
+      "sha256": "21734ebcc3e28b77a4b604f926beeceb781a36ac135b45b59cfe6e5a8a23fc6f"
+    },
+    {
+      "path": "r83-build-route/validation_only.py",
+      "bytes": 9977,
+      "sha256": "098af5ba75546f90a93dff6b297cfe2e197b2ee5e332ff86b22a13b238af0319"
+    }
+  ]
+}

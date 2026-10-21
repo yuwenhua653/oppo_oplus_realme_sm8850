@@ -1,0 +1,35 @@
+--- a/vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
++++ b/vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
+@@ -621,9 +621,9 @@
+ 
+ 		ret = i2c_transfer(client->adapter, msgs, 2);
+ 	}
+-	if (ret < 0) {
++	if (ret != 2) {
+ 		mca_log_err("I2C read failed\n");
+-		return ret;
++		return ret < 0 ? ret : -EIO;
+ 	}
+ 
+ 	return ret;
+@@ -766,7 +766,7 @@
+ 
+ static int fg_set_fastcharge_mode(struct bq_fg_chip *bq, bool enable)
+ {
+-	u8 data[2];
++	u8 data[2] = {0};
+ 	int ret, len = 0;
+ 
+ 	if (bq->fast_mode == enable)
+@@ -3454,9 +3454,9 @@
+ 	int ret = 0;
+ 	u8 data[2] = {0xb8, 0x0b};
+ 
+-	if (value < TERM_VOLTAGE_MIN && value > TERM_VOLTAGE_MAX) {
++	if (value < TERM_VOLTAGE_MIN || value > TERM_VOLTAGE_MAX) {
+ 		mca_log_info("term_voltage over range\n");
+-		return ret;
++		return -EINVAL;
+ 	}
+ 
+ 	data[0] = (value & 0xFF);

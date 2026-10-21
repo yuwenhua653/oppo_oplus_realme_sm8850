@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "source_repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+  "source_commit": "45405ec4b75ac71c60f3178d1be24db312fae3ff",
+  "preparation_parent_contract_sha256": "aabb37375d33dfe9ae1bf9a86e7a3ce4602bd67f06855709b046fa493d744cc2",
+  "compile_only": true,
+  "flashable": false,
+  "runtime_candidate_module_names": [
+    "myron_mca_readonly"
+  ],
+  "patch": {
+    "path": "r83-mca-transient-cache.patch",
+    "bytes": 3504,
+    "sha256": "2d9c753dd1378df00d8aaab67002302427fa236e2e308cdf127e800f00fba988"
+  },
+  "writes": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+      "source": "r75-build-route/payload/drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+      "before": {
+        "bytes": 28947,
+        "sha256": "35a510e7b3379032dbe529f9b7c0365192a967940ee6b91cf97e4a1e6942e4e8"
+      },
+      "after": {
+        "bytes": 31383,
+        "sha256": "f26fea6565773663fd1491f1c5df4b0a1004f2cef1ebfb9fd1226552de751776"
+      }
+    }
+  ],
+  "read_only_guards": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/soc/qcom/qti_pmic_glink.c",
+      "source": "r75-build-route/payload/drivers/soc/qcom/qti_pmic_glink.c",
+      "expected": {
+        "bytes": 25870,
+        "sha256": "e766099f52c4905cef5b79e9b8203afbd33aaf303f60c6856d75fb9fb3299999"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/include/linux/soc/qcom/qti_pmic_glink.h",
+      "source": "r75-build-route/payload/include/linux/soc/qcom/qti_pmic_glink.h",
+      "expected": {
+        "bytes": 2788,
+        "sha256": "b12e923464df2b0f46a872d7be168856adaac0e00b2d7c83c123fc18f5418baa"
+      }
+    }
+  ],
+  "constraints": [
+    "No SET transactions or full MCA/high-voltage activation.",
+    "Retain only the complete old coherent snapshot on EIO, ETIMEDOUT or EREMOTEIO.",
+    "Never renew the retained timestamp or exceed the existing freshness limit.",
+    "Invalidate on observed unplug/status change, range/time/lifecycle/epoch faults, stop or removal.",
+    "Keep all existing QTI transport and callback lifetime source unchanged."
+  ],
+  "validation": {
+    "host_entry": "tests/client/run_tests.py",
+    "actual_complete_production_translation_unit": true,
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "macro_tests": "NOT_APPLICABLE"
+  }
+}

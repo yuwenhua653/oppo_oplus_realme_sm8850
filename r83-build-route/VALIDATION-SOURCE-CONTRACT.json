@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "source_commit": "45405ec4b75ac71c60f3178d1be24db312fae3ff",
+  "vendor_source_repository": "LineageOS/android_kernel_qcom_sm8850",
+  "vendor_source_commit": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+  "role": "validation_only",
+  "activation_allowed": false,
+  "runtime_candidate_module_names": [],
+  "patch": {
+    "path": "bq-boundaries.patch",
+    "bytes": 901,
+    "sha256": "4dca820df8443c212a4b58054cbfaf08ca0c3ab8d8bb925cc86564ebc7afd4de"
+  },
+  "patch_working_directory": ".",
+  "writes": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
+      "before": {
+        "bytes": 170096,
+        "sha256": "0bf60a409ba866c2a4f846f1a8430edefa0f6dce1bc16bdb796a9643f56463d6"
+      },
+      "after": {
+        "bytes": 170124,
+        "sha256": "d414cc63011673a36822de3a37b65580df96f44ad616f7cd9b3259655f807236"
+      }
+    }
+  ],
+  "read_only_guards": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
+      "source": "r61-build-route/preimage/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
+      "expected": {
+        "bytes": 13951,
+        "sha256": "505fdab2a1d70462754e0f8924db64272d32bfdb3f57bb38deb24f6cec61bb6e"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
+      "expected": {
+        "bytes": 11605,
+        "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/Kconfig",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/Kconfig",
+      "expected": {
+        "bytes": 3281,
+        "sha256": "23296172d829bd9c2f10b5744f1e38220686c56c7d11d0e486b350ab330b2a1a"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/Makefile",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/Makefile",
+      "expected": {
+        "bytes": 271,
+        "sha256": "df9e0cdd4a52bcf804c43570299a34a6bd4d2ca86833aac2fb38d3098c87a122"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/modules.bzl",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/modules.bzl",
+      "expected": {
+        "bytes": 3424,
+        "sha256": "b81499d559812ef29e42c4df5937bc76d60c63e5ca80997f11c941cfc5a826c0"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/qcom-spmi-adc5-gen3.c",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/qcom-spmi-adc5-gen3.c",
+      "expected": {
+        "bytes": 57740,
+        "sha256": "26dad8cb9b0f660ccf22fcd3e3e37a4020ed8b0ee9d012a7854d9a7855697819"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/include/dt-bindings/iio/qcom,spmi-vadc.h",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/include/dt-bindings/iio/qcom,spmi-vadc.h",
+      "expected": {
+        "bytes": 16708,
+        "sha256": "e45da5c631b3d6993614f8b64dce2c06e3b9ceaf1318a7a484bdfd1506eb6453"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/qcom-vadc-common.c",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/qcom-vadc-common.c",
+      "expected": {
+        "bytes": 40818,
+        "sha256": "45508ab03c5195987a02a68cb6637ed31a8ac9cc6896022c2094f9e859fb6b36"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/include/linux/iio/adc/qcom-vadc-common.h",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/include/linux/iio/adc/qcom-vadc-common.h",
+      "expected": {
+        "bytes": 10490,
+        "sha256": "21734ebcc3e28b77a4b604f926beeceb781a36ac135b45b59cfe6e5a8a23fc6f"
+      }
+    }
+  ],
+  "bq_changes": [
+    "Require two completed I2C messages; retain negative errors, reject short nonnegative transfers with EIO.",
+    "Initialize both fastcharge payload bytes before setting enable byte.",
+    "Reject cutoff voltages outside existing inclusive 3000..3400mV bounds before writing."
+  ],
+  "deferred": [
+    "Digest busy behavior unchanged: consumer has no reliable retry contract.",
+    "FullFG activation blocked: stock/source FG snapshot ABI differs.",
+    "ADC/VADC activation requires separate retained ABI and runtime DT/load review."
+  ],
+  "adc_policy": {
+    "source_changed": false,
+    "debug_logging_must_be_disabled": true,
+    "target_kernel_compile_required": true
+  },
+  "validation": {
+    "bq_entry": "tests/bq/test_bq_boundaries.py",
+    "actual_production_function_bodies": true,
+    "macro_tests": "NOT_APPLICABLE"
+  }
+}
