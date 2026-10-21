@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "kind": "R82_MYRON_PEACH_OEM_BDF_REGDB_SELECTION",
+  "source_repository": "LineageOS/android_kernel_qcom_sm8850-modules",
+  "source_commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+  "baseline_runtime_module": {
+    "name": "cnss2",
+    "bytes": 1092464,
+    "sha256": "a2a29ea47bd7b9a22702cf7d52f27d8fec9aa9a7befd477ec974e5a16924cbb2"
+  },
+  "patch": {
+    "path": "0001-myron-cnss-oem-file-selection.patch",
+    "bytes": 2782,
+    "sha256": "89da89ca528e7d9e071d6575bccb60d3725856fea1bfb5b3a810185f4430792f"
+  },
+  "writes": [
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/cnss2/qmi.c",
+      "before": {
+        "bytes": 130004,
+        "sha256": "49da9d95ffab29e1c2c4309f17f181b4ac1b2a7cb11a6c6e8256b7c0588e7533"
+      },
+      "after": {
+        "bytes": 131110,
+        "sha256": "1b4a75f7dd8dea9385e5c33cdf3440e01b5cb2ac224ae3442467ddd45a078a61"
+      },
+      "upstream_git_blob": "ddb5ebf8858d4f8bdb7cd2be6d26dc86658c45ed",
+      "source_url": "https://github.com/LineageOS/android_kernel_qcom_sm8850-modules/blob/f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322/qcom/opensource/wlan/platform/cnss2/qmi.c"
+    },
+    {
+      "path": "vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/wlan_platform_modules.bzl",
+      "before": {
+        "bytes": 14851,
+        "sha256": "1a1f3317f0ffe004b9ff8ca437ed9ba9eb89d5481ad56f724f9f7d32e0396153"
+      },
+      "after": {
+        "bytes": 15149,
+        "sha256": "598b25828d0c32e81157cd67451694dc456b30bb463f720320d601d8b42dc1dd"
+      },
+      "upstream_git_blob": "3a9de8a1f9996985d419a3dafb67480dbb28e9c7",
+      "source_url": "https://github.com/LineageOS/android_kernel_qcom_sm8850-modules/blob/f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322/qcom/opensource/wlan/platform/wlan_platform_modules.bzl"
+    }
+  ],
+  "read_only_guards": [
+    {
+      "kind": "file",
+      "path": "vendor/qcom/sm8850/drivers/misc/hwid/hwid.h",
+      "expected": {
+        "bytes": 1174,
+        "sha256": "28a90e94c08854b74fa577e252be741ec49f166d571dba456c4d5994e5675fa8"
+      }
+    }
+  ],
+  "constraints": [
+    "Enable only for canoe CNSS at build time, with real hwid DDK symbol dependency.",
+    "At runtime restrict OEM selection to Peach device and project 4.",
+    "Keep DT bdf-names priority. Select country-specific p11u ELF only for board 0xff and non-GF chip.",
+    "Use regdb_xiaomi.bin for Myron independently of BDF type-specific board, GF, and DT conditions.",
+    "Do not change QMI board/file IDs, firmware transport, BDF contents, power settings, NSS, EDCA, or failure recovery.",
+    "Do not replace kernel, hwid, WLAN, or prerequisite modules with newly compiled dependencies.",
+    "Verify new cnss2 imports/exports against the retained running kernel and actual modules before any flashable assembly."
+  ],
+  "required_hwid_imports": {
+    "get_hw_version_platform": "0x0f600de8",
+    "get_hw_country_version": "0x0f600de8"
+  },
+  "hardware_tested": false,
+  "stability_fix_proven": false
+}

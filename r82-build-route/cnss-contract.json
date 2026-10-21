@@ -1,0 +1,85 @@
+{
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "sources_lock_sha256": "ef3d806f679ac8e0bf1371e6ab6dfc173118a32e3a66f44f684116bc0b52e756",
+  "git_heads": {
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "build/kernel": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "prebuilts/clang/host/linux-x86": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04"
+  },
+  "core_targets": [
+    "//common:kernel_aarch64",
+    "//myron_artifact_metadata:kernel_release"
+  ],
+  "schema": 1,
+  "base_commit": "007514c3e5b58dc9b3ea9aa3a72586527fa8c5bc",
+  "parent_contract": "r79-build-route/repair-contract.json",
+  "parent_contract_sha256": "aabb37375d33dfe9ae1bf9a86e7a3ce4602bd67f06855709b046fa493d744cc2",
+  "compile_only": true,
+  "flashable": false,
+  "hardware_tested": false,
+  "experiment": "Restore the Myron/Peach stock BDF and REGDB filename selection with existing DT precedence",
+  "runtime_candidate_module_names": [
+    "cnss2"
+  ],
+  "runtime_baseline": {
+    "vendor_boot_sha256": "db3298a43a44f704faf3e593a08bb750389fbc789d6c4dffd95fa85016305806",
+    "cnss2_module_sha256": "a2a29ea47bd7b9a22702cf7d52f27d8fec9aa9a7befd477ec974e5a16924cbb2",
+    "wlan_module_sha256": "d987d12125e5dbd82bfa9225741dadb2a8b7fe8ba8078c3588554e999a973598",
+    "hwid_module_sha256": "056ea6ca25ff336c92c43c52729b34f88aab136fca449b2cdffc4bd37cb403d6",
+    "hwid_getter_crc32": "0x0f600de8"
+  },
+  "modules": [
+    {
+      "target": "//vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform:canoe_perf_cnss2",
+      "module_name": "cnss2",
+      "expected_sources": [
+        "vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/cnss2/qmi.c"
+      ]
+    }
+  ],
+  "locked_files": [
+    {
+      "path": "r82-build-route/0001-myron-cnss-oem-file-selection.patch",
+      "bytes": 2782,
+      "sha256": "89da89ca528e7d9e071d6575bccb60d3725856fea1bfb5b3a810185f4430792f"
+    },
+    {
+      "path": "r82-build-route/README.md",
+      "bytes": 1538,
+      "sha256": "2ced940f4bcf6e60e7acbffeaae1f0afbe85277602c3a797fe51d00ba1fe0e20"
+    },
+    {
+      "path": "r82-build-route/SOURCE-CONTRACT.json",
+      "bytes": 2999,
+      "sha256": "65c81f3d544174cff45fb8097abc32656667e758bd72e89279a8f4648da444eb"
+    },
+    {
+      "path": "r82-build-route/apply_cnss.py",
+      "bytes": 3925,
+      "sha256": "d17e6d27f17fecdd8415723c235efe64b265466f00d61aaac23e8918f384d7cf"
+    },
+    {
+      "path": "r82-build-route/build_cnss.py",
+      "bytes": 17166,
+      "sha256": "77061f0c1c0803bb8f00a421158671c3d66622569ae1d3cd0c8ee84d79662941"
+    },
+    {
+      "path": "r82-build-route/freeze_inputs.py",
+      "bytes": 3284,
+      "sha256": "bdda004aff85737c2491be366d989d176f59fa2573f0b44f452e0642ee01245c"
+    },
+    {
+      "path": "r82-build-route/test_cnss.py",
+      "bytes": 16485,
+      "sha256": "a11ccb695dbaca4b615aabf0306cf5cb4df1fc87f91ad92f549924662f2cbd1f"
+    },
+    {
+      "path": "r82-build-route/tests/fixtures/qmi.c",
+      "bytes": 130004,
+      "sha256": "49da9d95ffab29e1c2c4309f17f181b4ac1b2a7cb11a6c6e8256b7c0588e7533"
+    }
+  ]
+}

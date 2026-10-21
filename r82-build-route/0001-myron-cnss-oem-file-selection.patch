@@ -1,0 +1,87 @@
+--- a/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/cnss2/qmi.c
++++ b/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/cnss2/qmi.c
+@@ -879,6 +879,33 @@
+ 	}
+ }
+ 
++#ifdef MYRON_CNSS_FILE_SELECTION
++/* Interfaces provided by the frozen Myron hwid module. */
++extern uint32_t get_hw_version_platform(void);
++extern uint32_t get_hw_country_version(void);
++
++#define MYRON_HW_PLATFORM_ID 4
++#define MYRON_REGDB_FILE_NAME "regdb_xiaomi.bin"
++
++static bool cnss_is_myron(struct cnss_plat_data *plat_priv)
++{
++	return plat_priv->device_id == PEACH_DEVICE_ID &&
++	       get_hw_version_platform() == MYRON_HW_PLATFORM_ID;
++}
++
++static const char *cnss_myron_bdf_file_name(void)
++{
++	switch (get_hw_country_version()) {
++	case 1:
++		return "bd_p11ugl.elf";
++	case 2:
++		return "bd_p11uin.elf";
++	default:
++		return "bd_p11u.elf";
++	}
++}
++#endif
++
+ static int cnss_get_bdf_file_name(struct cnss_plat_data *plat_priv,
+ 				  u32 bdf_type, char *filename,
+ 				  u32 filename_len)
+@@ -898,6 +925,14 @@
+ 			if (plat_priv->chip_info.chip_id & CHIP_ID_GF_MASK)
+ 				snprintf(filename_tmp, filename_len,
+ 					 ELF_BDF_FILE_NAME_GF);
++#ifdef MYRON_CNSS_FILE_SELECTION
++			else if (cnss_is_myron(plat_priv)) {
++				snprintf(filename_tmp, filename_len, "%s",
++					 cnss_myron_bdf_file_name());
++				cnss_pr_info("R82 myron BDF selected: %s\n",
++					     filename_tmp);
++			}
++#endif
+ 			else
+ 				snprintf(filename_tmp, filename_len,
+ 					 ELF_BDF_FILE_NAME);
+@@ -942,6 +977,13 @@
+ 		}
+ 		break;
+ 	case CNSS_BDF_REGDB:
++#ifdef MYRON_CNSS_FILE_SELECTION
++		if (cnss_is_myron(plat_priv)) {
++			snprintf(filename_tmp, filename_len, MYRON_REGDB_FILE_NAME);
++			cnss_pr_info("R82 myron REGDB selected: %s\n", filename_tmp);
++			break;
++		}
++#endif
+ 		snprintf(filename_tmp, filename_len, REGDB_FILE_NAME);
+ 		break;
+ 	case CNSS_BDF_HDS:
+--- a/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/wlan_platform_modules.bzl
++++ b/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/wlan_platform_modules.bzl
+@@ -169,6 +169,10 @@
+             deps += [
+                     soc_label("{}/drivers/soc/qcom/minidump".format(tv)),
+                 ]
++        # Myron firmware selection reads the existing Xiaomi HWID provider.
++        if target == "canoe":
++            deps += [soc_label("{}/drivers/misc/hwid/hwid".format(tv))]
++
+         ddk_module(
+             name = "{}_cnss2".format(tv),
+             srcs = native.glob([
+@@ -183,6 +187,8 @@
+                 "cnss_utils/*.h",
+             ]),
+             includes = ["cnss", "cnss_utils"],
++            local_defines = (["MYRON_CNSS_FILE_SELECTION"]
++                             if target == "canoe" else []),
+             kconfig = "cnss2/Kconfig",
+             defconfig = defconfig,
+             conditional_srcs = {
