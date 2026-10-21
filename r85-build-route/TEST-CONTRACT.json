@@ -1,0 +1,72 @@
+{
+  "ASan_UBSan_Werror": true,
+  "all_data_is_synthetic": true,
+  "hardware_tested": false,
+  "independent_merged": {
+    "arguments": [
+      "--source",
+      "{source}",
+      "--out",
+      "{output}"
+    ],
+    "name": "merged_peer",
+    "script": "tests/peer/run_peer.py",
+    "source": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+  },
+  "jobs": [
+    {
+      "arguments": [
+        "--suite",
+        "mac",
+        "--source",
+        "{source}",
+        "--before",
+        "{before}",
+        "--header",
+        "{header}",
+        "--out",
+        "{output}"
+      ],
+      "name": "mac",
+      "script": "tests/run_suite.py",
+      "source": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+    },
+    {
+      "arguments": [
+        "--suite",
+        "probe",
+        "--source",
+        "{source}",
+        "--before",
+        "{before}",
+        "--header",
+        "{header}",
+        "--out",
+        "{output}"
+      ],
+      "name": "probe",
+      "script": "tests/run_suite.py",
+      "source": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+    },
+    {
+      "arguments": [
+        "--suite",
+        "control",
+        "--source",
+        "{source}",
+        "--before",
+        "{before}",
+        "--header",
+        "{header}",
+        "--out",
+        "{output}"
+      ],
+      "name": "control",
+      "script": "tests/run_suite.py",
+      "source": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+    }
+  ],
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "schema": 1,
+  "target_compile_tested": false
+}

@@ -1,0 +1,68 @@
+{
+  "activation_allowed": false,
+  "compile_only": true,
+  "full_charging_control_enabled": false,
+  "hardware_control_tested": false,
+  "header_path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
+  "patches": [
+    {
+      "bytes": 30917,
+      "file": "patches/bq-full-safety.patch",
+      "sha256": "dfed5d851b2045b9f145c99d37f281c2df6afb21869a25848bb26efd60745dfa",
+      "working_directory": "vendor/qcom/sm8850"
+    }
+  ],
+  "preparation_parent_contract_sha256": "1bea452ed2f1a337b5c6e588251bdb24b816a22248fe1dde956e05fc01898eec",
+  "read_only_guards": [
+    {
+      "expected": {
+        "bytes": 13951,
+        "sha256": "505fdab2a1d70462754e0f8924db64272d32bfdb3f57bb38deb24f6cec61bb6e"
+      },
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
+      "source": "r61-build-route/preimage/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h"
+    },
+    {
+      "expected": {
+        "bytes": 11605,
+        "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+      },
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h"
+    },
+    {
+      "expected": {
+        "bytes": 17895,
+        "sha256": "73e51362e61cf75c15c0ed9f026cc1b36ed72eedafc826405fb70f2c6ed7b6c3"
+      },
+      "path": "vendor/qcom/sm8850/configs/canoe_perf.bzl",
+      "source_parts": [
+        "r78-build-route/audio/preimage/configs/canoe_perf.bzl",
+        "r78-build-route/audio/fragments/canoe_perf.bzl"
+      ]
+    }
+  ],
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "schema": 1,
+  "scope": [
+    "strict bounded MAC/I2C completion and output publication",
+    "validated vendor before mandatory initialization and provider publication",
+    "serialized authentication/MAC/fast-mode transactions and truthful errors"
+  ],
+  "source_commit": "5e4568f2ff6ed8257a3c9f5974605cafab8e956a",
+  "source_repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+  "writes": [
+    {
+      "after": {
+        "bytes": 172616,
+        "sha256": "8bd2ae4391584e35df44f76013e0980bb1f5e5d6ff3ec9ab07b868f3ac474b4e"
+      },
+      "before": {
+        "bytes": 170124,
+        "sha256": "d414cc63011673a36822de3a37b65580df96f44ad616f7cd9b3259655f807236"
+      },
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
+      "role": "inactive_full_MCA_validation_only"
+    }
+  ]
+}
