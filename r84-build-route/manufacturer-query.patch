@@ -1,0 +1,195 @@
+--- a/drivers/power/supply/myron_bq_readonly.c
++++ b/drivers/power/supply/myron_bq_readonly.c
+@@ -1,9 +1,11 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+  * Minimal opt-in battery telemetry. No charging, authentication, firmware,
+- * manufacturer commands or persistent storage operations are implemented.
++ * persistent storage operations are implemented. A separately enabled, fixed
++ * manufacturer-name query writes only its command selector once during probe.
+  */
+ #include <linux/device.h>
++#include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/errno.h>
+ #include <linux/i2c.h>
+@@ -48,13 +50,91 @@
+ MODULE_PARM_DESC(enable_status_readonly,
+ 	"Forward verified read-only MCA status; requires both telemetry opt-ins");
+ 
++/* This is a command-selector write followed by a read, not a passive read.
++ * The only admitted MAC is ManufacturerName(0x004c); there is no data/checksum
++ * write, arbitrary command, authentication operation or charging control.
++ */
++static bool enable_manufacturer_query;
++module_param(enable_manufacturer_query, bool, 0444);
++MODULE_PARM_DESC(enable_manufacturer_query,
++	"Opt in to one fixed manufacturer-name query during probe; requires both telemetry opt-ins");
++
++#define MYRON_MAC_REGISTER	0x3e
++#define MYRON_MAC_MANUFACTURER	0x004c
++#define MYRON_MAC_FRAME_BYTES	36
++#define MYRON_MAC_PAYLOAD_BYTES	32
++
+ struct myron_readonly_gauge {
+ 	struct i2c_client *client;
+ 	struct power_supply *psy;
+ 	struct mutex lock;
+ 	bool extended_readonly;
+ 	bool status_readonly;
+-};
++	int manufacturer_error;
++	unsigned int manufacturer_length;
++	u8 manufacturer_name[MYRON_MAC_PAYLOAD_BYTES];
++};
++
++/* Called once before publication, with no retry or userspace trigger.
++ * SLUUC54C 12.1.26-29/12.8.30 and the stock driver use this register window.
++ * The length includes command, checksum and length itself. A valid response
++ * needs at least three payload bytes to contain the vendor discriminator;
++ * never infer a variant from the DT alias, missing bytes or a failed query.
++ */
++static int myron_manufacturer_query(struct myron_readonly_gauge *gauge)
++{
++	u8 selector[] = { MYRON_MAC_REGISTER, MYRON_MAC_MANUFACTURER, 0 };
++	u8 reg = MYRON_MAC_REGISTER;
++	u8 frame[MYRON_MAC_FRAME_BYTES] = { 0 };
++	struct i2c_msg select = {
++		.addr = gauge->client->addr,
++		.flags = 0,
++		.len = sizeof(selector),
++		.buf = selector,
++	};
++	struct i2c_msg read[] = {
++		{ .addr = gauge->client->addr, .flags = 0,
++		  .len = 1, .buf = &reg },
++		{ .addr = gauge->client->addr, .flags = I2C_M_RD,
++		  .len = sizeof(frame), .buf = frame },
++	};
++	unsigned int length, i, sum = 0;
++	int ret;
++
++	if (!i2c_check_functionality(gauge->client->adapter, I2C_FUNC_I2C))
++		return -EOPNOTSUPP;
++	mutex_lock(&gauge->lock);
++	ret = i2c_transfer(gauge->client->adapter, &select, 1);
++	if (ret != 1) {
++		ret = ret < 0 ? ret : -EIO;
++		goto out;
++	}
++	usleep_range(4000, 4100);
++	ret = i2c_transfer(gauge->client->adapter, read, ARRAY_SIZE(read));
++	if (ret != ARRAY_SIZE(read)) {
++		ret = ret < 0 ? ret : -EIO;
++		goto out;
++	}
++	length = frame[35];
++	if (length < 7 || length > sizeof(frame) ||
++	    frame[0] != (u8)MYRON_MAC_MANUFACTURER ||
++	    frame[1] != (u8)(MYRON_MAC_MANUFACTURER >> 8)) {
++		ret = -EPROTO;
++		goto out;
++	}
++	for (i = 0; i < length - 2; i++)
++		sum += frame[i];
++	if ((u8)(0xff - (sum & 0xff)) != frame[34]) {
++		ret = -EBADMSG;
++		goto out;
++	}
++	memcpy(gauge->manufacturer_name, frame + 2, length - 4);
++	gauge->manufacturer_length = length - 4;
++	ret = 0;
++out:
++	mutex_unlock(&gauge->lock);
++	return ret;
++}
+ 
+ struct myron_readonly_sample {
+ 	int capacity;
+@@ -152,6 +232,24 @@
+ }
+ static DEVICE_ATTR_RO(battery_status_raw);
+ 
++static ssize_t manufacturer_name_show(struct device *dev,
++				     struct device_attribute *attr, char *buf)
++{
++	struct myron_readonly_gauge *gauge =
++		power_supply_get_drvdata(to_power_supply(dev));
++
++	(void)attr;
++	/* Immutable post-probe evidence. Reading this file never sends I2C. */
++	if (gauge->manufacturer_error)
++		return sysfs_emit(buf, "command=0x004c valid=0 error=%d\n",
++				  gauge->manufacturer_error);
++	return sysfs_emit(buf,
++		"command=0x004c valid=1 length=%u discriminator=0x%02x payload=%*phN\n",
++		gauge->manufacturer_length, gauge->manufacturer_name[2],
++		(int)gauge->manufacturer_length, gauge->manufacturer_name);
++}
++static DEVICE_ATTR_RO(manufacturer_name);
++
+ static struct attribute *myron_readonly_diag_attrs[] = {
+ 	&dev_attr_battery_status_raw.attr,
+ 	NULL,
+@@ -162,6 +260,20 @@
+ };
+ static const struct attribute_group *myron_readonly_diag_groups[] = {
+ 	&myron_readonly_diag_group,
++	NULL,
++};
++
++static struct attribute *myron_manufacturer_diag_attrs[] = {
++	&dev_attr_battery_status_raw.attr,
++	&dev_attr_manufacturer_name.attr,
++	NULL,
++};
++static const struct attribute_group myron_manufacturer_diag_group = {
++	.name = "myron_readonly_diag",
++	.attrs = myron_manufacturer_diag_attrs,
++};
++static const struct attribute_group *myron_manufacturer_diag_groups[] = {
++	&myron_manufacturer_diag_group,
+ 	NULL,
+ };
+ 
+@@ -334,6 +446,8 @@
+ 		return -EPERM;
+ 	if (enable_status_readonly && !enable_extended_readonly)
+ 		return -EPERM;
++	if (enable_manufacturer_query && !enable_extended_readonly)
++		return -EPERM;
+ 	if (client->addr != 0x55 || !client->dev.of_node ||
+ 	    !of_device_is_compatible(client->dev.of_node, "ti,bq27z561_master"))
+ 		return -ENODEV;
+@@ -356,17 +470,21 @@
+ 	gauge->client = client;
+ 	gauge->extended_readonly = enable_extended_readonly;
+ 	gauge->status_readonly = enable_status_readonly;
++	gauge->manufacturer_error = -EOPNOTSUPP;
+ 	mutex_init(&gauge->lock);
+ 	ret = myron_readonly_sample(gauge, &sample);
+ 	if (ret)
+ 		return dev_err_probe(&client->dev, ret,
+ 			"read-only telemetry sample unavailable\n");
++	if (enable_manufacturer_query)
++		gauge->manufacturer_error = myron_manufacturer_query(gauge);
+ 	cfg.drv_data = gauge;
+ 	desc = &myron_readonly_desc;
+ 	if (gauge->extended_readonly) {
+ 		desc = &myron_readonly_extended_desc;
+ 		/* Core device groups share the managed supply's lifetime. */
+-		cfg.attr_grp = myron_readonly_diag_groups;
++		cfg.attr_grp = enable_manufacturer_query ?
++			myron_manufacturer_diag_groups : myron_readonly_diag_groups;
+ 	}
+ 	if (gauge->status_readonly)
+ 		desc = &myron_readonly_status_desc;
+@@ -421,6 +539,8 @@
+ 		return -EPERM;
+ 	if (enable_status_readonly && !enable_extended_readonly)
+ 		return -EPERM;
++	if (enable_manufacturer_query && !enable_extended_readonly)
++		return -EPERM;
+ 	return i2c_add_driver(&myron_readonly_driver);
+ }
+ module_init(myron_readonly_init);

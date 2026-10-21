@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "jobs": [
+    {
+      "name": "adc",
+      "source": "vendor/qcom/sm8850/drivers/iio/adc/qcom-spmi-adc5-gen3.c",
+      "script": "tests/adc/run_lifecycle.py",
+      "output_flag": "--output",
+      "negative_original": true
+    },
+    {
+      "name": "gauge",
+      "source": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",
+      "script": "tests/gauge/run_tests.py",
+      "output_flag": "--output"
+    },
+    {
+      "name": "usb_psy",
+      "source": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+      "script": "tests/usb_psy/test_usb_psy.py",
+      "output_flag": "--out"
+    }
+  ],
+  "target_compile_tested": false,
+  "hardware_tested": false
+}

@@ -1,0 +1,519 @@
+--- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
++++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+@@ -28,6 +28,7 @@
+ #include <dt-bindings/iio/qcom,spmi-vadc.h>
+ 
+ static LIST_HEAD(adc_tm_device_list);
++static DEFINE_MUTEX(adc_tm_device_list_lock);
+ 
+ #define ADC5_GEN3_REGMAP_ID			0x40
+ 
+@@ -154,10 +155,18 @@
+ 	[SCALE_R_ABSOLUTE] = {adc_tm_absolute_rthr_gen3},
+ };
+ 
++enum adc5_gen3_state {
++	ADC5_GEN3_PROBING,
++	ADC5_GEN3_READY,
++	ADC5_GEN3_SUSPENDED,
++	ADC5_GEN3_STOPPING,
++};
++
+ struct adc5_base_data {
+ 	u16			base_addr;
+ 	const char		*irq_name;
+ 	int			irq;
++	bool			irq_requested;
+ };
+ 
+ /**
+@@ -278,7 +287,21 @@
+ 	struct work_struct		tm_err_handler_work;
+ 	u8				*conv_err;
+ 	spinlock_t			tm_lock;
++	/* state is protected by lock; tm_ready and ISR queuing by tm_lock. */
++	enum adc5_gen3_state		state;
++	bool				tm_ready;
++	bool				hw_started;
+ };
++
++/* Caller holds adc->lock. Immediate reads during TZ registration are valid. */
++static int adc5_gen3_state_error(struct adc5_chip *adc)
++{
++	if (adc->state == ADC5_GEN3_STOPPING)
++		return -ENODEV;
++	if (adc->state == ADC5_GEN3_SUSPENDED)
++		return -EBUSY;
++	return 0;
++}
+ 
+ static int adc5_read(struct adc5_chip *adc, unsigned int sdam_index, u16 offset, u8 *data, int len)
+ {
+@@ -547,6 +570,9 @@
+ 		sdam_index = 0;
+ 
+ 	mutex_lock(&adc->lock);
++	ret = adc5_gen3_state_error(adc);
++	if (ret)
++		goto unlock;
+ 	ret = adc5_gen3_poll_wait_hs(adc, 0);
+ 	if (ret < 0)
+ 		goto unlock;
+@@ -704,8 +730,9 @@
+ 		} else if (conv_err) {
+ 			spin_lock(&adc->tm_lock);
+ 			adc->conv_err[sdam_num] |= conv_err;
++			if (adc->tm_ready)
++				schedule_work(&adc->tm_err_handler_work);
+ 			spin_unlock(&adc->tm_lock);
+-			schedule_work(&adc->tm_err_handler_work);
+ 			return IRQ_HANDLED;
+ 		}
+ 	}
+@@ -716,8 +743,12 @@
+ 		goto handler_end;
+ 	}
+ 
+-	if (tm_status[0] || tm_status[1])
+-		schedule_work(&adc->tm_handler_work);
++	if (tm_status[0] || tm_status[1]) {
++		spin_lock(&adc->tm_lock);
++		if (adc->tm_ready)
++			schedule_work(&adc->tm_handler_work);
++		spin_unlock(&adc->tm_lock);
++	}
+ 
+ 	return IRQ_HANDLED;
+ 
+@@ -867,8 +898,10 @@
+ 				continue;
+ 			}
+ 			pr_debug("notifying thermal, temp:%d\n", temp);
++			mutex_lock(&adc->lock);
+ 			chan_prop->last_temp = temp;
+ 			chan_prop->last_temp_set = true;
++			mutex_unlock(&adc->lock);
+ 			thermal_zone_device_update(chan_prop->tzd, THERMAL_TRIP_VIOLATED);
+ 		}
+ 	}
+@@ -954,12 +987,20 @@
+ 
+ 	adc = prop->chip;
+ 
++	mutex_lock(&adc->lock);
++	ret = adc5_gen3_state_error(adc);
++	if (ret) {
++		mutex_unlock(&adc->lock);
++		return ret;
++	}
+ 	if (prop->last_temp_set) {
+ 		pr_debug("last_temp: %d\n", prop->last_temp);
+ 		prop->last_temp_set = false;
+ 		*temp = prop->last_temp;
++		mutex_unlock(&adc->lock);
+ 		return 0;
+ 	}
++	mutex_unlock(&adc->lock);
+ 
+ 	ret = adc5_gen3_do_conversion(adc, prop, &adc_code_volt);
+ 	if (ret < 0)
+@@ -977,6 +1018,9 @@
+ 	u32 mask = 0;
+ 	struct adc5_chip *adc = prop->chip;
+ 
++	ret = adc5_gen3_state_error(adc);
++	if (ret)
++		return ret;
+ 	ret = adc5_gen3_poll_wait_hs(adc, prop->sdam_index);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1069,6 +1113,11 @@
+ 		tm_config.high_thr_voltage, tm_config.low_thr_voltage);
+ 
+ 	mutex_lock(&adc->lock);
++	ret = adc5_gen3_state_error(adc);
++	if (ret) {
++		mutex_unlock(&adc->lock);
++		return ret;
++	}
+ 
+ 	if (high_temp != INT_MAX) {
+ 		prop->low_thr_voltage = tm_config.low_thr_voltage;
+@@ -1107,13 +1156,16 @@
+ 	if (node == NULL)
+ 		return ERR_PTR(-ENODEV);
+ 
++	mutex_lock(&adc_tm_device_list_lock);
+ 	list_for_each_entry(chip, &adc_tm_device_list, list) {
+ 		pdev = to_platform_device(chip->dev);
+ 		if (pdev->dev.of_node == node) {
++			mutex_unlock(&adc_tm_device_list_lock);
+ 			of_node_put(node);
+ 			return chip;
+ 		}
+ 	}
++	mutex_unlock(&adc_tm_device_list_lock);
+ 	of_node_put(node);
+ 	return ERR_PTR(-EPROBE_DEFER);
+ }
+@@ -1254,6 +1306,11 @@
+ 	chip = prop->chip;
+ 
+ 	mutex_lock(&chip->lock);
++	/* Preserve pending notifications across freeze; restore requeues them. */
++	if (chip->state != ADC5_GEN3_READY) {
++		mutex_unlock(&chip->lock);
++		return;
++	}
+ 	if (prop->low_thr_triggered) {
+ 		/* adjust thr, calling manage_thr */
+ 		list_for_each(thr_list, &prop->thr_list) {
+@@ -1358,6 +1415,9 @@
+ 	}
+ 
+ 	mutex_lock(&chip->lock);
++	ret = adc5_gen3_state_error(chip);
++	if (ret)
++		goto fail_unlock;
+ 
+ 	/* add channel client to channel list */
+ 	adc_tm_add_to_list(chip, dt_index, param);
+@@ -1405,6 +1465,9 @@
+ 	}
+ 
+ 	mutex_lock(&chip->lock);
++	ret = adc5_gen3_state_error(chip);
++	if (ret)
++		goto fail;
+ 	list_for_each_entry(client_info,
+ 			&chip->chan_props[i].thr_list, list) {
+ 		if (client_info->param->id == param->id) {
+@@ -1884,6 +1947,148 @@
+ 	return 0;
+ }
+ 
++/* All IRQs are released before work or callback backing storage can disappear. */
++static void adc5_gen3_free_irqs(struct adc5_chip *adc)
++{
++	int i;
++
++	for (i = 0; i < adc->num_sdams; i++) {
++		if (!adc->base[i].irq_requested)
++			continue;
++		devm_free_irq(adc->dev, adc->base[i].irq, adc);
++		adc->base[i].irq_requested = false;
++	}
++}
++
++static int adc5_gen3_request_irqs(struct adc5_chip *adc)
++{
++	int i, ret;
++
++	for (i = 0; i < adc->num_sdams; i++) {
++		ret = devm_request_irq(adc->dev, adc->base[i].irq, adc5_gen3_isr,
++				0, adc->base[i].irq_name, adc);
++		if (ret) {
++			adc5_gen3_free_irqs(adc);
++			return ret;
++		}
++		adc->base[i].irq_requested = true;
++	}
++	return 0;
++}
++
++static void adc5_gen3_publish_ready(struct adc5_chip *adc)
++{
++	unsigned long flags;
++	int i;
++
++	mutex_lock(&adc->lock);
++	adc->state = ADC5_GEN3_READY;
++	spin_lock_irqsave(&adc->tm_lock, flags);
++	adc->tm_ready = true;
++	/* Consume status/faults that arrived while thermal zones were unpublished. */
++	if (adc->n_tm_channels) {
++		schedule_work(&adc->tm_handler_work);
++		schedule_work(&adc->tm_err_handler_work);
++	}
++	spin_unlock_irqrestore(&adc->tm_lock, flags);
++	for (i = 0; i < adc->nchannels; i++) {
++		struct adc5_channel_prop *prop = &adc->chan_props[i];
++
++		if (prop->req_wq && (prop->low_thr_triggered || prop->high_thr_triggered))
++			queue_work(prop->req_wq, &prop->work);
++	}
++	mutex_unlock(&adc->lock);
++}
++
++static void adc5_gen3_quiesce(struct adc5_chip *adc, bool permanent)
++{
++	unsigned long flags;
++	int i;
++
++	/* The gate and every ISR queue operation share this lock. */
++	spin_lock_irqsave(&adc->tm_lock, flags);
++	adc->tm_ready = false;
++	spin_unlock_irqrestore(&adc->tm_lock, flags);
++
++	/* Keep completion IRQs and transactions alive while old TM callbacks drain.
++	 * In particular, thermal updates can synchronously call get_temp/set_trips.
++	 */
++	cancel_work_sync(&adc->tm_err_handler_work);
++	cancel_work_sync(&adc->tm_handler_work);
++	mutex_lock(&adc->lock);
++	adc->state = permanent ? ADC5_GEN3_STOPPING : ADC5_GEN3_SUSPENDED;
++	mutex_unlock(&adc->lock);
++	adc5_gen3_free_irqs(adc);
++
++	if (!adc->chan_props)
++		return;
++	for (i = 0; i < adc->nchannels; i++) {
++		if (adc->chan_props[i].req_wq)
++			cancel_work_sync(&adc->chan_props[i].work);
++	}
++}
++
++static void adc5_gen3_destroy_queues(struct adc5_chip *adc)
++{
++	int i;
++
++	if (!adc->chan_props)
++		return;
++	for (i = 0; i < adc->nchannels; i++) {
++		if (!adc->chan_props[i].req_wq)
++			continue;
++		destroy_workqueue(adc->chan_props[i].req_wq);
++		adc->chan_props[i].req_wq = NULL;
++	}
++}
++
++static void adc5_gen3_disable_channels(struct adc5_chip *adc)
++{
++	u8 data;
++	int i, sdam_index;
++
++	if (!adc->hw_started)
++		return;
++	mutex_lock(&adc->lock);
++	for (i = 0; i < adc->nchannels; i++)
++		adc->chan_props[i].timer = MEAS_INT_DISABLE;
++	/* Preserve normal monitoring teardown for every owned SDAM slot. */
++	for (i = 0; i < adc->num_sdams * 8; i++) {
++		sdam_index = i / 8;
++		data = MEAS_INT_DISABLE;
++		adc5_write(adc, sdam_index, ADC5_GEN3_TIMER_SEL, &data, 1);
++		data = ADC5_GEN3_CHAN_CONV_REQ | (i - (sdam_index * 8));
++		adc5_write(adc, sdam_index, ADC5_GEN3_PERPH_CH, &data, 1);
++		data = ADC5_GEN3_CONV_REQ_REQ;
++		adc5_write(adc, sdam_index, ADC5_GEN3_CONV_REQ, &data, 1);
++	}
++	adc->hw_started = false;
++	mutex_unlock(&adc->lock);
++}
++
++static void adc5_gen3_unpublish(struct adc5_chip *adc)
++{
++	mutex_lock(&adc_tm_device_list_lock);
++	if (adc->device_list) {
++		list_del_init(&adc->list);
++		adc->device_list = NULL;
++	}
++	mutex_unlock(&adc_tm_device_list_lock);
++}
++
++static void adc5_gen3_cleanup(struct adc5_chip *adc)
++{
++	adc5_gen3_unpublish(adc);
++	adc5_gen3_quiesce(adc, true);
++	adc5_gen3_destroy_queues(adc);
++	adc5_gen3_disable_channels(adc);
++	if (adc->ipc_log) {
++		ipc_log_context_destroy(adc->ipc_log);
++		adc->ipc_log = NULL;
++	}
++	/* The private mutex must outlive devm thermal/IIO callback unregister. */
++}
++
+ static int adc5_gen3_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *node = pdev->dev.of_node;
+@@ -1952,6 +2157,10 @@
+ 	init_completion(&adc->complete);
+ 	mutex_init(&adc->lock);
+ 	spin_lock_init(&adc->tm_lock);
++	INIT_LIST_HEAD(&adc->list);
++	INIT_WORK(&adc->tm_handler_work, tm_handler_work);
++	INIT_WORK(&adc->tm_err_handler_work, tm_err_handler_work);
++	adc->state = ADC5_GEN3_PROBING;
+ 
+ 	ret = adc5_get_dt_data(adc, node);
+ 	if (ret < 0) {
+@@ -1959,21 +2168,18 @@
+ 		goto fail;
+ 	}
+ 
+-	for (i = 0; i < adc->num_sdams; i++) {
+-		ret = devm_request_irq(dev, adc->base[i].irq, adc5_gen3_isr,
+-					0, adc->base[i].irq_name, adc);
+-		if (ret < 0)
+-			goto fail;
+-	}
+-
++	adc->ipc_log = ipc_log_context_create(10, "adc5-gen3", 0);
++	if (!adc->ipc_log)
++		pr_warn("Error in creating ipc_log for adc5-gen3\n");
++
++	ret = adc5_gen3_request_irqs(adc);
++	if (ret)
++		goto fail;
++
++	adc->hw_started = true;
+ 	ret = adc_tm_register_tzd(adc);
+ 	if (ret < 0)
+ 		goto fail;
+-
+-	if (adc->n_tm_channels) {
+-		INIT_WORK(&adc->tm_handler_work, tm_handler_work);
+-		INIT_WORK(&adc->tm_err_handler_work, tm_err_handler_work);
+-	}
+ 
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->dev.of_node = node;
+@@ -1982,95 +2188,58 @@
+ 	indio_dev->channels = adc->iio_chans;
+ 	indio_dev->num_channels = adc->nchannels;
+ 
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret)
++		goto fail;
++
++	adc5_gen3_publish_ready(adc);
++	mutex_lock(&adc_tm_device_list_lock);
+ 	list_add_tail(&adc->list, &adc_tm_device_list);
+ 	adc->device_list = &adc_tm_device_list;
+-
+-	adc->ipc_log = ipc_log_context_create(10, "adc5-gen3", 0);
+-	if (!adc->ipc_log)
+-		pr_warn("Error in creating ipc_log for adc5-gen3\n");
+-
+-	return devm_iio_device_register(dev, indio_dev);
++	mutex_unlock(&adc_tm_device_list_lock);
++	return 0;
+ 
+ fail:
+-	i = 0;
+-	while (i < adc->nchannels) {
+-		if (adc->chan_props[i].req_wq)
+-			destroy_workqueue(adc->chan_props[i].req_wq);
+-		i++;
+-	}
++	adc5_gen3_cleanup(adc);
+ 	return ret;
+ }
+ 
+ static void adc5_gen3_exit(struct platform_device *pdev)
+ {
+-	struct adc5_chip *adc = platform_get_drvdata(pdev);
+-	u8 data = 0;
+-	int i, sdam_index;
++	adc5_gen3_cleanup(platform_get_drvdata(pdev));
++}
++
++static int adc5_gen3_freeze(struct device *dev)
++{
++	struct adc5_chip *adc = dev_get_drvdata(dev);
++	int ret;
+ 
+ 	mutex_lock(&adc->lock);
+-	for (i = 0; i < adc->nchannels; i++) {
+-		if (adc->chan_props[i].req_wq)
+-			destroy_workqueue(adc->chan_props[i].req_wq);
+-		adc->chan_props[i].timer = MEAS_INT_DISABLE;
+-	}
+-
+-	/* Disable all available channels */
+-	for (i = 0; i < adc->num_sdams * 8; i++) {
+-		sdam_index = i / 8;
+-		data = MEAS_INT_DISABLE;
+-		adc5_write(adc, sdam_index, ADC5_GEN3_TIMER_SEL, &data, 1);
+-
+-		/* To indicate there is an actual conversion request */
+-		data = ADC5_GEN3_CHAN_CONV_REQ | (i - (sdam_index*8));
+-		adc5_write(adc, sdam_index, ADC5_GEN3_PERPH_CH, &data, 1);
+-
+-		data = ADC5_GEN3_CONV_REQ_REQ;
+-		adc5_write(adc, sdam_index, ADC5_GEN3_CONV_REQ, &data, 1);
+-	}
+-
++	ret = adc->state == ADC5_GEN3_STOPPING ? -ENODEV : 0;
+ 	mutex_unlock(&adc->lock);
+-
+-	if (adc->n_tm_channels) {
+-		cancel_work_sync(&adc->tm_err_handler_work);
+-		cancel_work_sync(&adc->tm_handler_work);
+-	}
+-
+-	mutex_destroy(&adc->lock);
+-
+-	list_del(&adc->list);
+-
+-	ipc_log_context_destroy(adc->ipc_log);
+-}
+-
+-static int adc5_gen3_freeze(struct device *dev)
++	if (ret)
++		return ret;
++	adc5_gen3_quiesce(adc, false);
++	return 0;
++}
++
++static int adc5_gen3_restore(struct device *dev)
+ {
+ 	struct adc5_chip *adc = dev_get_drvdata(dev);
+-	int i = 0;
++	int ret;
+ 
+ 	mutex_lock(&adc->lock);
+-
+-	for (i = 0; i < adc->num_sdams; i++)
+-		devm_free_irq(dev, adc->base[i].irq, adc);
+-
++	if (adc->state != ADC5_GEN3_SUSPENDED) {
++		ret = adc->state == ADC5_GEN3_READY ? 0 : -ENODEV;
++		mutex_unlock(&adc->lock);
++		return ret;
++	}
+ 	mutex_unlock(&adc->lock);
+-
++	ret = adc5_gen3_request_irqs(adc);
++	if (ret)
++		return ret;
++	adc5_gen3_publish_ready(adc);
+ 	return 0;
+-}
+-
+-static int adc5_gen3_restore(struct device *dev)
+-{
+-	struct adc5_chip *adc = dev_get_drvdata(dev);
+-	int i = 0;
+-	int ret = 0;
+-
+-	for (i = 0; i < adc->num_sdams; i++) {
+-		ret = devm_request_irq(dev, adc->base[i].irq, adc5_gen3_isr,
+-				0, adc->base[i].irq_name, adc);
+-		if (ret < 0)
+-			return ret;
+-	}
+-
+-	return ret;
+ }
+ 
+ static int adc5_gen3_suspend(struct device *dev)
+@@ -2089,6 +2258,7 @@
+ 
+ static const struct dev_pm_ops adc5_gen3_pm_ops = {
+ 	.freeze = adc5_gen3_freeze,
++	.thaw = adc5_gen3_restore,
+ 	.restore = adc5_gen3_restore,
+ 	.suspend = adc5_gen3_suspend,
+ 	.resume = adc5_gen3_resume,

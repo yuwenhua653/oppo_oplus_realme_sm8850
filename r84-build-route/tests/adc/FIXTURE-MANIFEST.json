@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "run_lifecycle.py",
+      "bytes": 5680,
+      "sha256": "f62d8bf7d5d1028520bfa7b210be5c45c6c998319d8dfab4a9f8fd4caabf6854"
+    },
+    {
+      "path": "fake_kernel.h",
+      "bytes": 9832,
+      "sha256": "95b3f3761ac5edca482c1d4301d9f4533c68745e24daaad36e1b9c2ea36b58ec"
+    },
+    {
+      "path": "fixture_support.inc",
+      "bytes": 12547,
+      "sha256": "d6a89474430b585012dc4bc7ce8946a6886841d91366685a9727c3e9c1d906d5"
+    },
+    {
+      "path": "fixture_tests.inc",
+      "bytes": 7234,
+      "sha256": "76f1ee6ce5ab21678019c9e64f9eb13d826389cbda98a94298f4746a0f0b6bfa"
+    },
+    {
+      "path": "README.txt",
+      "bytes": 3451,
+      "sha256": "ca16a1c9263182866dad312a781dca000686753d05041490f141de3ca025c901"
+    }
+  ]
+}

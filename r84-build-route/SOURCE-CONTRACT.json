@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "source_repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+  "source_commit": "c010de24a9f4a738ea4aa088ce4aa45f68ac3e09",
+  "preparation_parent_contract_sha256": "aabf43d239c1be0368aefc59bd88bf5ea46c5dfd1bfa193dcdf1adc27eb290a5",
+  "full_charging_control_enabled": false,
+  "writes": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/qcom-spmi-adc5-gen3.c",
+      "preimage_source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/qcom-spmi-adc5-gen3.c",
+      "before": {
+        "bytes": 57740,
+        "sha256": "26dad8cb9b0f660ccf22fcd3e3e37a4020ed8b0ee9d012a7854d9a7855697819"
+      },
+      "after": {
+        "bytes": 62239,
+        "sha256": "562626cf8268131977b0aa2929be3e98ce304e8e9a1a61af72956686167b949d"
+      },
+      "role": "compile_candidate"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/myron_bq_readonly.c",
+      "preimage_source": "r79-build-route/thermal/payload/drivers/power/supply/myron_bq_readonly.c",
+      "before": {
+        "bytes": 13447,
+        "sha256": "0c96a07732109f8dbfb5e00ca54e1ef80f4b2d7fd119f1a0f498baf9fc83e45d"
+      },
+      "after": {
+        "bytes": 17574,
+        "sha256": "0879527df1e0b482554834829fe5a560431d215e27e19838d886b6c75e9f0945"
+      },
+      "role": "compile_candidate"
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+      "before": {
+        "bytes": 6304,
+        "sha256": "783e36610ddec2eb09d8612c0bc4c1b78ba1e0cbe9de642997b0b2385578decb"
+      },
+      "after": {
+        "bytes": 6535,
+        "sha256": "efb237b5f3fed68faf4eecc4510b6c1aec0e0dc2a7e116ed8a20434450da551e"
+      },
+      "preimage_source": "r61-build-route/payload/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+      "role": "inactive_full_MCA_validation_only"
+    }
+  ],
+  "patches": [
+    {
+      "file": "adc-lifecycle.patch",
+      "working_directory": "vendor/qcom/sm8850",
+      "bytes": 13111,
+      "sha256": "1731b5d54d17d08c16348f2852fa5505dd6733f1a7fec176cdfc96c9126c9218"
+    },
+    {
+      "file": "manufacturer-query.patch",
+      "working_directory": "vendor/qcom/sm8850",
+      "bytes": 6562,
+      "sha256": "dc53dd7a95eb0afb3cdb3059a97bb115ca3b0f536f00c592bfcb1f8a6cf40ef5"
+    },
+    {
+      "file": "usb-psy-errors.patch",
+      "working_directory": ".",
+      "bytes": 2626,
+      "sha256": "895c83df81556576f36331c5308e99418f72cd876382e4db04803245ee78867b"
+    }
+  ],
+  "read_only_guards": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
+      "source": "r61-build-route/preimage/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
+      "expected": {
+        "bytes": 13951,
+        "sha256": "505fdab2a1d70462754e0f8924db64272d32bfdb3f57bb38deb24f6cec61bb6e"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
+      "source": "r61-build-route/payload/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
+      "expected": {
+        "bytes": 11605,
+        "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/Kconfig",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/Kconfig",
+      "expected": {
+        "bytes": 3281,
+        "sha256": "23296172d829bd9c2f10b5744f1e38220686c56c7d11d0e486b350ab330b2a1a"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/Makefile",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/Makefile",
+      "expected": {
+        "bytes": 271,
+        "sha256": "df9e0cdd4a52bcf804c43570299a34a6bd4d2ca86833aac2fb38d3098c87a122"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/modules.bzl",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/modules.bzl",
+      "expected": {
+        "bytes": 3424,
+        "sha256": "b81499d559812ef29e42c4df5937bc76d60c63e5ca80997f11c941cfc5a826c0"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/include/dt-bindings/iio/qcom,spmi-vadc.h",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/include/dt-bindings/iio/qcom,spmi-vadc.h",
+      "expected": {
+        "bytes": 16708,
+        "sha256": "e45da5c631b3d6993614f8b64dce2c06e3b9ceaf1318a7a484bdfd1506eb6453"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/iio/adc/qcom-vadc-common.c",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/drivers/iio/adc/qcom-vadc-common.c",
+      "expected": {
+        "bytes": 40818,
+        "sha256": "45508ab03c5195987a02a68cb6637ed31a8ac9cc6896022c2094f9e859fb6b36"
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/include/linux/iio/adc/qcom-vadc-common.h",
+      "source": "r83-build-route/validation-reference/vendor/qcom/sm8850/include/linux/iio/adc/qcom-vadc-common.h",
+      "expected": {
+        "bytes": 10490,
+        "sha256": "21734ebcc3e28b77a4b604f926beeceb781a36ac135b45b59cfe6e5a8a23fc6f"
+      }
+    }
+  ],
+  "scope": {
+    "ADC": "coherent work/IRQ/thermal publication and lifecycle cleanup",
+    "gauge": "default-off one fixed manufacturer selector transaction plus checked response",
+    "full_MCA_USB": "preserve provider errors and do not publish failed/unimplemented values; inactive only"
+  }
+}

@@ -1,0 +1,83 @@
+--- a/vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c
++++ b/vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c
+@@ -52,42 +52,55 @@
+ 			    union power_supply_propval *val)
+ {
+ 	int rc = 0;
+-	int bus_vol, bus_curr = 0;
++	int sample = 0;
+ 	struct usb_psy_info *info = power_supply_get_drvdata(psy);
+ 
+ 	switch (psp) {
+ 	case POWER_SUPPLY_PROP_PRESENT:
+-		(void)mca_strategy_func_get_status(
++		rc = mca_strategy_func_get_status(
+ 			STRATEGY_FUNC_TYPE_BUCK_CHARGE,
+-			STRATEGY_STATUS_TYPE_ONLINE, &info->present);
+-		val->intval = info->present;
++			STRATEGY_STATUS_TYPE_ONLINE, &sample);
++		if (rc >= 0) {
++			info->present = sample;
++			val->intval = sample;
++		}
+ 		break;
+ 	case POWER_SUPPLY_PROP_ONLINE:
+-		(void)mca_strategy_func_get_status(
++		rc = mca_strategy_func_get_status(
+ 			STRATEGY_FUNC_TYPE_BUCK_CHARGE,
+-			STRATEGY_STATUS_TYPE_ONLINE, &info->online);
+-		val->intval = info->online;
++			STRATEGY_STATUS_TYPE_ONLINE, &sample);
++		if (rc >= 0) {
++			info->online = sample;
++			val->intval = sample;
++		}
+ 		break;
+ 	case POWER_SUPPLY_PROP_VOLTAGE_MAX:
+-		(void)platform_class_buckchg_ops_get_usb_sns_volt(
+-			MAIN_BUCK_CHARGER, &bus_vol);
+-		val->intval = bus_vol;
++		rc = platform_class_buckchg_ops_get_usb_sns_volt(
++			MAIN_BUCK_CHARGER, &sample);
++		if (rc >= 0)
++			val->intval = sample;
+ 		break;
+ 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+-		(void)platform_class_buckchg_ops_get_bus_volt(MAIN_BUCK_CHARGER,
+-							      &bus_vol);
+-		val->intval = bus_vol;
++		rc = platform_class_buckchg_ops_get_bus_volt(MAIN_BUCK_CHARGER,
++							      &sample);
++		if (rc >= 0)
++			val->intval = sample;
+ 		break;
+ 	case POWER_SUPPLY_PROP_CURRENT_NOW:
+-		(void)platform_class_buckchg_ops_get_bus_curr(MAIN_BUCK_CHARGER,
+-							      &bus_curr);
+-		val->intval = bus_curr;
++		rc = platform_class_buckchg_ops_get_bus_curr(MAIN_BUCK_CHARGER,
++							      &sample);
++		if (rc >= 0)
++			val->intval = sample;
+ 		break;
+ 	case POWER_SUPPLY_PROP_CURRENT_MAX:
++		/* No qualified provider for this advertised property yet. */
++		rc = -ENODATA;
+ 		break;
+ 	case POWER_SUPPLY_PROP_TYPE:
++		val->intval = psy->desc->type;
+ 		break;
+ 	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
++		rc = -ENODATA;
+ 		break;
+ 	default:
+ 		mca_log_err("Get prop %d is not supported in usb\n", psp);
+@@ -111,7 +124,7 @@
+ 
+ 	switch (psp) {
+ 	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
+-		mca_strategy_func_set_config(
++		rc = mca_strategy_func_set_config(
+ 			STRATEGY_FUNC_TYPE_BUCK_CHARGE,
+ 			STRATEGY_CONFIG_INPUT_CURRENT_LIMIT, pval->intval);
+ 		break;
