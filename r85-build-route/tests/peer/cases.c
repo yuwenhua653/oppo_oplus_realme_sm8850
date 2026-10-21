@@ -29,6 +29,8 @@ static void matrix(struct bq_fg_chip *bq){
  }
 }
 static void transport(struct bq_fg_chip *bq){
+ reset();fg_set_force_report_full(NULL);CHECK(wire_n==0);
+ fg_set_force_report_full(bq);CHECK(wire_n==1);CHECK(wires[0].reg==0x3e);CHECK(wires[0].length==2);CHECK(wires[0].payload[0]==0x31&&wires[0].payload[1]==0);
  const int bad[]={0,1,3,-EIO,-ETIMEDOUT};
  for(unsigned i=0;i<sizeof(bad)/sizeof(bad[0]);i++){
   reset();frame(20,0x4c);u8 out[36];memset(out,0x5a,sizeof(out));for(int k=0;k<3;k++)returns[k]=bad[i];return_n=3;

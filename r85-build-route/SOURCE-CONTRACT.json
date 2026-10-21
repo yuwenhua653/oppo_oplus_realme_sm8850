@@ -6,9 +6,9 @@
   "header_path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
   "patches": [
     {
-      "bytes": 30917,
+      "bytes": 31235,
       "file": "patches/bq-full-safety.patch",
-      "sha256": "dfed5d851b2045b9f145c99d37f281c2df6afb21869a25848bb26efd60745dfa",
+      "sha256": "6839f69ccf48f82560e4590f399d1a606b000e0aed44cb8b53ca07bd8e8e77d3",
       "working_directory": "vendor/qcom/sm8850"
     }
   ],
@@ -54,8 +54,8 @@
   "writes": [
     {
       "after": {
-        "bytes": 172616,
-        "sha256": "8bd2ae4391584e35df44f76013e0980bb1f5e5d6ff3ec9ab07b868f3ac474b4e"
+        "bytes": 172398,
+        "sha256": "efa4c7e24c2d79ce31cbc37b5cb0810d49f7354a5b7d320ff368dacb7ffa2af0"
       },
       "before": {
         "bytes": 170124,

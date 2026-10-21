@@ -29,10 +29,13 @@ def extract(text,name):
  raise ValueError(name)
 def main():
  p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
- text=a.source.read_text();names=['__fg_read_block','__fg_write_block','fg_write_block','fg_read_block','checksum','fg_write_read_block','fg_mac_read_frame_locked','fg_mac_read_block_variable','fg_mac_read_block','fg_mac_write_block_locked','fg_mac_write_block','fg_set_fastcharge_mode','StringToHex','fg_sha256_auth','get_verify_digest','set_verify_digest','fg_set_force_report_full']
+ text=a.source.read_text();names=['__fg_read_block','__fg_write_block','fg_write_block','checksum','fg_write_read_block','fg_mac_read_frame_locked','fg_mac_read_block_variable','fg_mac_read_block','fg_mac_write_block_locked','fg_mac_write_block','fg_set_fastcharge_mode','StringToHex','fg_sha256_auth','get_verify_digest','set_verify_digest','fg_set_force_report_full']
+ # Include the legacy wrapper if present so unused-function diagnostics catch
+ # the orphan left by switching authentication to the already-locked raw read.
+ if re.search(r'^static\s+int\s+fg_read_block\s*\(',text,re.M):names.insert(3,'fg_read_block')
  bodies={n:extract(text,n) for n in names};a.out.mkdir(parents=True,exist_ok=False)
  generated=(HERE/'host.h').read_text()+'\n'+'\n\n'.join(bodies.values())+'\n'+(HERE/'cases.c').read_text();c=a.out/'peer.c';c.write_text(generated)
- command=['cc','-std=gnu11','-O1','-g','-pthread','-Wall','-Wextra','-Werror','-Wno-unused-function','-Wno-unused-but-set-variable','-fsanitize=address,undefined','-fno-omit-frame-pointer','-no-pie',str(c),'-o',str(a.out/'peer')]
+ command=['cc','-std=gnu11','-O1','-g','-pthread','-Wall','-Wextra','-Werror','-Wno-unused-but-set-variable','-fsanitize=address,undefined','-fno-omit-frame-pointer','-no-pie',str(c),'-o',str(a.out/'peer')]
  build=subprocess.run(command,text=True,capture_output=True);(a.out/'build.log').write_text(build.stdout+build.stderr);assert build.returncode==0,build.stderr
  import os
  run=subprocess.run([str(a.out/'peer')],capture_output=True,text=True,timeout=40,env={**os.environ,'ASAN_OPTIONS':'detect_leaks=0:abort_on_error=1','UBSAN_OPTIONS':'halt_on_error=1:print_stacktrace=1'})

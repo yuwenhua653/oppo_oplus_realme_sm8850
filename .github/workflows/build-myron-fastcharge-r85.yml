@@ -44,7 +44,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo 'c6a443c0aa6513f0abe976fe270fa0674ccd45108168bd821a6fbe173b62c9de  r85-build-route/build-contract.json' | sha256sum --check --strict
+          echo 'f5ce42e231837c8e11b07665529ce39e878ae8fb14445ebc8bde756fc9f77329  r85-build-route/build-contract.json' | sha256sum --check --strict
           python3 r85-build-route/build_bq.py --repo-root "$GITHUB_WORKSPACE" --check-inputs
           mkdir -p "$GITHUB_WORKSPACE/r85-host-reports"
           python3 r85-build-route/test_build_guards.py > "$GITHUB_WORKSPACE/r85-host-reports/build-guard-test.log" 2>&1
