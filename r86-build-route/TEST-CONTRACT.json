@@ -1,0 +1,37 @@
+{
+  "ASan_UBSan_Werror": true,
+  "all_data_is_synthetic": true,
+  "hardware_tested": false,
+  "jobs": [
+    {
+      "arguments": [
+        "--source",
+        "{bq}",
+        "--before",
+        "{before_bq}",
+        "--out",
+        "{output}"
+      ],
+      "name": "bq_mode",
+      "script": "tests/bq/run_tests.py"
+    },
+    {
+      "arguments": [
+        "--quickchg",
+        "{quickchg}",
+        "--bq",
+        "{bq}",
+        "--strategy",
+        "{strategy}",
+        "--before-quickchg",
+        "{before_quickchg}",
+        "--out",
+        "{output}"
+      ],
+      "name": "quickchg",
+      "script": "tests/quickchg/run_tests.py"
+    }
+  ],
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "schema": 1
+}

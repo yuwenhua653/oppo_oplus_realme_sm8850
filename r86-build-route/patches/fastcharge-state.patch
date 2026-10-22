@@ -1,0 +1,183 @@
+--- a/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
++++ b/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
+@@ -715,9 +715,14 @@
+ #define READ_FASTCHARGE_REG 0
+ static int fg_get_fastcharge_mode(struct bq_fg_chip *bq, int *ffc)
+ {
++	int ret = 0;
+ #if READ_FASTCHARGE_REG
+ 	u8 data[3];
+-	int ret;
++#endif
++
++	if (!bq || !ffc)
++		return -EINVAL;
++#if READ_FASTCHARGE_REG
+ 
+ 	ret = fg_mac_read_block(bq, FG_MAC_CMD_CHARGING_STATUS, data, 3);
+ 	if (ret < 0) {
+@@ -734,9 +739,13 @@
+ 	return 0;
+ #endif
+ 
+-	*ffc = bq->fast_mode;
+-	return 0;
+-
++	mutex_lock(&bq->data_lock);
++	if (!bq->fast_mode_valid)
++		ret = -EAGAIN;
++	else
++		*ffc = bq->fast_mode;
++	mutex_unlock(&bq->data_lock);
++	return ret;
+ }
+ 
+ static int fg_get_gague_mode(struct bq_fg_chip *bq)
+@@ -772,7 +781,7 @@
+ 	 * authentication. A request must not disappear while a digest is busy.
+ 	 */
+ 	mutex_lock(&bq->data_lock);
+-	if (bq->fast_mode == enable)
++	if (bq->fast_mode_valid && bq->fast_mode == enable)
+ 		goto out;
+ 
+ 	if (bq->fg_vendor != MPC7021)
+@@ -789,6 +798,7 @@
+ 		goto out;
+ 	}
+ 	bq->fast_mode = enable;
++	bq->fast_mode_valid = true;
+ out:
+ 	mutex_unlock(&bq->data_lock);
+ 	return ret;
+@@ -5747,7 +5757,10 @@
+ 		count = scnprintf(buf, PAGE_SIZE, "%d\n", val);
+ 		break;
+ 	case FG_IC_PROP_FAST_CHARGE:
+-		count = scnprintf(buf, PAGE_SIZE, "%d\n", info->fast_mode);
++		count = fg_get_fastcharge_mode(info, &val);
++		if (count)
++			return count;
++		count = scnprintf(buf, PAGE_SIZE, "%d\n", val);
+ 		break;
+ 	case FG_IC_PROP_RESISTANCE_ID:
+ 		count = scnprintf(buf, PAGE_SIZE, "%d\n", info->resistance_id);
+--- a/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h
++++ b/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h
+@@ -472,6 +472,8 @@
+ 	struct cold_thermal *cold_thermal_seq;
+ 	int	cold_thermal_len;
+ 	bool	fast_mode;
++	/* Valid only after a completed mode command; zero allocation is unknown. */
++	bool	fast_mode_valid;
+ 
+ 	int cell1_max;
+ 	int max_charge_current;
+--- a/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
++++ b/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
+@@ -1235,17 +1235,19 @@
+ 		mca_log_info(
+ 			"max_current is 0, should set fast charge to false\n");
+ 		info->proc_data.ffc_flag = 0;
+-		strategy_class_fg_set_fastcharge(false);
++		ret = strategy_class_fg_set_fastcharge(false);
++		if (ret)
++			mca_log_err("disable gauge fastcharge failed: %d\n", ret);
+ 
+ 		if (init)
+-			return -1;
++			return ret ? ret : -1;
+ 
+ 		if (i > info->proc_data.temp_para_index[role])
+ 			info->proc_data.temp_hys_en = MCA_QUICK_TEMP_HYS_HIGH;
+ 		if (i < info->proc_data.temp_para_index[role])
+ 			info->proc_data.temp_hys_en = MCA_QUICK_TEMP_HYS_LOW;
+ 
+-		return -1;
++		return ret ? ret : -1;
+ 	}
+ 
+ 	if (init) {
+@@ -2011,6 +2013,7 @@
+ 	else
+ 		ret = mca_qc_quick_charge_open_path(info);
+ 	platform_class_cp_enable_busucp(info->proc_data.cur_work_cp, true);
++err_stop:
+ 	if (ret) {
+ 		info->proc_data.total_err++;
+ 		mca_vote(info->input_suspend_voter, "wire_qc", false, 0);
+@@ -2023,14 +2026,15 @@
+ 				MCA_QUICK_QC_CHG_ADP_DEFAULT_VOLT;
+ 		mca_quick_charge_req_adp_volt_and_cur(info);
+ 		mca_quick_charge_stop_charging(info);
+-		mca_log_err("open path fail\n");
++		mca_log_err("start charging failed: %d\n", ret);
+ 		return;
+ 	}
+ 	info->pd_switch_to_pmic = false;
+ 	info->proc_data.charge_flag = MCA_QUICK_CHG_STS_CHARGING;
+ 	info->boost_done = false;
+-	if (info->proc_data.ffc_flag)
+-		strategy_class_fg_set_fastcharge(true);
++	ret = strategy_class_fg_set_fastcharge(info->proc_data.ffc_flag);
++	if (ret)
++		goto err_stop;
+ 
+ 	schedule_delayed_work(&info->monitor_work, 0);
+ 	if (info->vfc_para.support_cp_vfc)
+@@ -3406,7 +3410,6 @@
+ 		work, struct mca_quick_charge_info, monitor_work.work);
+ 	int ret;
+ 	bool need_goto_taper = false;
+-	static int last_ffc_flag;
+ 
+ 	if (!strategy_class_fg_is_chip_ok()) {
+ 		mca_log_info("fg i2c error, exit quick charging\n");
+@@ -3438,8 +3441,16 @@
+ 
+ 	mca_quick_charge_select_stage(info);
+ 
+-	if (info->proc_data.ffc_flag != last_ffc_flag)
+-		strategy_class_fg_set_fastcharge(info->proc_data.ffc_flag);
++	/* The providers own the acknowledged-mode cache. Retry this request on
++	 * each normal entry instead of remembering a failed or another instance's
++	 * request here; unchanged acknowledged modes do not issue another write.
++	 */
++	ret = strategy_class_fg_set_fastcharge(info->proc_data.ffc_flag);
++	if (ret) {
++		info->proc_data.total_err++;
++		mca_log_err("set gauge fastcharge failed: %d\n", ret);
++		goto out;
++	}
+ 
+ 	mca_quick_charge_check_charge_done(info);
+ 	if (info->proc_data.charge_flag == MCA_QUICK_CHG_STS_CHARGE_DONE) {
+@@ -3465,7 +3476,6 @@
+ 		goto out;
+ 	}
+ 
+-	last_ffc_flag = info->proc_data.ffc_flag;
+ 	schedule_delayed_work(&info->monitor_work,
+ 			      msecs_to_jiffies(MCA_QUICK_CHG_FAST_INTERVAL));
+ 	return;
+@@ -3507,6 +3517,7 @@
+ static int mca_quick_charge_process_event(int event, int value, void *data)
+ {
+ 	struct mca_quick_charge_info *info = data;
++	int ret;
+ 
+ 	if (!data)
+ 		return -1;
+@@ -3543,8 +3554,10 @@
+ 	case MCA_EVENT_USB_DISCONNECT:
+ 		mca_quick_charge_reset_charge_para(info);
+ 		mca_quick_charge_exit_charging(info);
+-		(void)strategy_class_fg_set_fastcharge(false);
+-		break;
++		ret = strategy_class_fg_set_fastcharge(false);
++		if (ret)
++			mca_log_err("disconnect gauge fastcharge failed: %d\n", ret);
++		return ret;
+ 	case MCA_EVENT_BATT_AUTH_PASS:
+ 		info->batt_auth = 1;
+ 		break;
