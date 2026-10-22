@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "headers": [
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/inc/mca_quick_charger.h",
+      "bytes": 16221,
+      "sha256": "43167af5e7662752bcd963e9e23c65dc2869dadc9e0d94ddd4ce4a50641d0401",
+      "frozen_R86_parent_postimage_sha256": "43167af5e7662752bcd963e9e23c65dc2869dadc9e0d94ddd4ce4a50641d0401",
+      "values_used_by_fixture": {
+        "MCA_QUICK_CHG_TUNE_VBUS_MAX_COUNT": 15,
+        "MCA_QUICK_CHG_TUNE_VBUS_INTERVAL": 300,
+        "MCA_QUICK_CHG_DEFAULT_VSTEP": 20,
+        "MCA_QUICK_CHG_QC3B_DEFAULT_VSTEP": 200,
+        "CP_ENABLE_IBUS_UCP_RISING_MA": 250
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/protocol/protocol_class.h",
+      "bytes": 4184,
+      "sha256": "4b6102eb6fac2462f7b1fc73a26cbfe87bf6aa4f482426b48de9448f5725170b",
+      "frozen_R86_parent_postimage_sha256": "4b6102eb6fac2462f7b1fc73a26cbfe87bf6aa4f482426b48de9448f5725170b",
+      "values_used_by_fixture": {
+        "XM_CHARGER_TYPE_HVDCP3_B": 7
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/protocol/protocol_qc_class.h",
+      "bytes": 1047,
+      "sha256": "0b1340efe2f759b36a4344c90df79190ea1e90a7965c20bbf5d93142ed74744b",
+      "frozen_R86_parent_postimage_sha256": "0b1340efe2f759b36a4344c90df79190ea1e90a7965c20bbf5d93142ed74744b",
+      "values_used_by_fixture": {
+        "QC3_STEP_SIZE": 200
+      }
+    },
+    {
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_cp_class.h",
+      "bytes": 7856,
+      "sha256": "cf5812c3b9afcfe26e66f46fcd791327de862ef923cf34e9b67fa75840aa7ade",
+      "frozen_R86_parent_postimage_sha256": "cf5812c3b9afcfe26e66f46fcd791327de862ef923cf34e9b67fa75840aa7ade",
+      "values_used_by_fixture": {
+        "CP_ROLE_MASTER": 0
+      }
+    }
+  ],
+  "method": "Constants checked against actual frozen header text; source/header data recipe verified against current R86 preparation when a parent postimage is declared. Enum VBUS_TUNE_STAT copied in full order."
+}

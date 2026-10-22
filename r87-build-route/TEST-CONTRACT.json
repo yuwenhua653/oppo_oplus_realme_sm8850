@@ -1,0 +1,49 @@
+{
+  "ASan_UBSan_Werror": true,
+  "all_data_is_synthetic": true,
+  "hardware_tested": false,
+  "jobs": [
+    {
+      "arguments": [
+        "--source",
+        "{cp}",
+        "--before",
+        "{before_cp}",
+        "--out",
+        "{output}"
+      ],
+      "name": "cp",
+      "script": "tests/cp/run_tests.py"
+    },
+    {
+      "arguments": [
+        "--source",
+        "{quickchg}",
+        "--before",
+        "{before_quickchg}",
+        "--out",
+        "{output}"
+      ],
+      "name": "quickchg",
+      "script": "tests/quickchg/run_tests.py"
+    },
+    {
+      "arguments": [
+        "--quickchg",
+        "{quickchg}",
+        "--bq",
+        "{bq}",
+        "--strategy",
+        "{strategy}",
+        "--strategy-header",
+        "{strategy_header}",
+        "--out",
+        "{output}"
+      ],
+      "name": "fanout",
+      "script": "tests/fanout/run_tests.py"
+    }
+  ],
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "schema": 1
+}

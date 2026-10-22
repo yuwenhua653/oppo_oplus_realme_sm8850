@@ -1,0 +1,909 @@
+--- a/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c
++++ b/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c
+@@ -20,6 +20,7 @@
+ #include <mca/platform/platform_cp_class.h>
+ #include "inc/sc8581_reg.h"
+ #include "inc/sc8581.h"
++#include <linux/mutex.h>
+ #include <mca/common/mca_log.h>
+ #include <mca/common/mca_event.h>
+ #include <linux/version.h>
+@@ -139,31 +140,37 @@
+ static int cp_read_i2c_block_data(struct i2c_client *client, u8 reg,
+ 				  unsigned short len, u8 *buf)
+ {
++	u8 data[I2C_SMBUS_BLOCK_MAX];
+ 	int ret;
+ 
+-	if (!client || !buf) {
+-		mca_log_err("null pointer read\n");
++	if (!client || !buf || !len || len > sizeof(data))
+ 		return -EINVAL;
+-	}
+-
+-	ret = i2c_smbus_read_i2c_block_data(client, reg, len, buf);
+-	if (ret < 0) {
+-		mca_log_err("I2C SMBus read failed, ret=%d\n", ret);
+-		return ret;
+-	}
+-
+-	return ret;
+-}
++	ret = i2c_smbus_read_i2c_block_data(client, reg, len, data);
++	if (ret < 0)
++		return ret;
++	if (ret != len)
++		return -EIO;
++	memcpy(buf, data, len);
++	return ret;
++}
++
++static DEFINE_MUTEX(sc8581_reg_lock);
+ 
+ static int cp_update_bits(struct i2c_client *client, u8 reg, u8 mask, u8 val)
+ {
+ 	u8 tmp;
+-
+-	cp_read_byte(client, reg, &tmp);
++	int ret;
++
++	mutex_lock(&sc8581_reg_lock);
++	ret = cp_read_byte(client, reg, &tmp);
++	if (ret)
++		goto out;
+ 	tmp &= ~mask;
+ 	tmp |= val & mask;
+-	cp_write_byte(client, reg, tmp);
+-	return 0;
++	ret = cp_write_byte(client, reg, tmp);
++out:
++	mutex_unlock(&sc8581_reg_lock);
++	return ret;
+ }
+ /***********************end **********************/
+ 
+@@ -275,7 +282,7 @@
+ /*******end debugfs******************************/
+ 
+ static int sc8581_init_protection(struct sc8581_device *cp,
+-				  int forward_work_mode);
++				  int forward_work_mode, int operation_mode);
+ /* SC8581_ADC */
+ static int sc8581_check_adc_enabled(struct sc8581_device *bq, bool *enabled)
+ {
+@@ -488,7 +495,8 @@
+ }
+ /* SC8581_BUS_OVP */
+ #define RANGE_MIN_MAX 2
+-static int sc8581_set_busovp_th(struct sc8581_device *bq, int threshold)
++static int sc8581_set_busovp_th(struct sc8581_device *bq, int threshold,
++				 int work_mode)
+ {
+ 	int ret = 0;
+ 	u8 val;
+@@ -513,12 +521,12 @@
+ 		ovp_th_range[CP_MODE_DIV1][1] = 5500;
+ 	}
+ 	mca_log_info("%s threshold= %d, min = %d, max =%d\n", bq->log_tag,
+-		     threshold, ovp_th_range[bq->work_mode][0],
+-		     ovp_th_range[bq->work_mode][1]);
+-	if (threshold < ovp_th_range[bq->work_mode][0])
+-		threshold = ovp_th_range[bq->work_mode][0];
+-	else if (threshold > ovp_th_range[bq->work_mode][1])
+-		threshold = ovp_th_range[bq->work_mode][1];
++		     threshold, ovp_th_range[work_mode][0],
++		     ovp_th_range[work_mode][1]);
++	if (threshold < ovp_th_range[work_mode][0])
++		threshold = ovp_th_range[work_mode][0];
++	else if (threshold > ovp_th_range[work_mode][1])
++		threshold = ovp_th_range[work_mode][1];
+ 
+ 	switch (bq->chip_vendor) {
+ 	case SC8585:
+@@ -546,7 +554,7 @@
+ 		return -1;
+ 	}
+ 
+-	val = (threshold - base[bq->work_mode]) / lsb[bq->work_mode];
++	val = (threshold - base[work_mode]) / lsb[work_mode];
+ 
+ 	mca_log_info("%s bus_ovpth= %d, val = %d\n", bq->log_tag, threshold,
+ 		     val);
+@@ -908,47 +916,47 @@
+ static int sc8581_set_operation_mode(struct sc8581_device *bq,
+ 				     int operation_mode)
+ {
+-	int ret = 0;
++	int ret;
++	int work_mode;
+ 	u8 val;
+ 
+ 	switch (operation_mode) {
+ 	case SC8581_FORWARD_4_1_CHARGER_MODE:
+ 	case SC8581_REVERSE_1_4_CONVERTER_MODE:
+ 		val = operation_mode;
+-		bq->work_mode = CP_MODE_DIV4;
++		work_mode = CP_MODE_DIV4;
+ 		break;
+ 	case SC8581_FORWARD_2_1_CHARGER_MODE:
+ 	case SC8581_REVERSE_1_2_CONVERTER_MODE:
+ 		val = operation_mode;
+-		bq->work_mode = CP_MODE_DIV2;
++		work_mode = CP_MODE_DIV2;
+ 		break;
+ 	case SC8581_FORWARD_1_1_CHARGER_MODE:
+ 	case SC8581_REVERSE_1_1_CONVERTER_MODE:
+ 		val = operation_mode;
+-		bq->work_mode = CP_MODE_DIV1;
++		work_mode = CP_MODE_DIV1;
+ 		break;
+ 	case SC8581_FORWARD_1_1_CHARGER_MODE_REVERSEED:
+ 		val = SC8581_FORWARD_1_1_CHARGER_MODE;
+-		bq->work_mode = CP_MODE_DIV1;
++		work_mode = CP_MODE_DIV1;
+ 		break;
+ 	case SC8581_REVERSE_1_1_CONVERTER_MODE_REVERSED:
+ 		val = SC8581_REVERSE_1_1_CONVERTER_MODE;
+-		bq->work_mode = CP_MODE_DIV1;
++		work_mode = CP_MODE_DIV1;
+ 		break;
+ 	default:
+-		mca_log_info("%s operation mode error%d\n", bq->log_tag,
+-			     operation_mode);
+-		return -1;
+-		break;
+-	}
++		return -EINVAL;
++	}
++	ret = sc8581_init_protection(bq, work_mode, val);
++	if (ret)
++		return ret;
++	ret = cp_update_bits(bq->client, SC8581_REG_0E, SC8581_MODE_MASK,
++			     val << SC8581_MODE_SHIFT);
++	if (ret)
++		return ret;
++	bq->work_mode = work_mode;
+ 	bq->operation_mode = val;
+-
+-	ret = sc8581_init_protection(bq, bq->work_mode);
+-	mca_log_info("%s set operation mode %d reg %d work_mode %d\n",
+-		     bq->log_tag, operation_mode, val, bq->work_mode);
+-	val <<= SC8581_MODE_SHIFT;
+-	ret = cp_update_bits(bq->client, SC8581_REG_0E, SC8581_MODE_MASK, val);
+-	return ret;
++	return 0;
+ }
+ 
+ static int sc8581_get_operation_mode(struct sc8581_device *bq,
+@@ -975,6 +983,8 @@
+ 	u8 val = 0;
+ 
+ 	ret = cp_read_byte(bq->client, SC8581_REG_10, &val);
++	if (ret)
++		return ret;
+ 	switch (channel) {
+ 	case VOUT_OK_REV_STAT:
+ 		*enable = !!(val & SC8581_VOUT_OK_REV_STAT_MASK);
+@@ -1032,36 +1042,30 @@
+ 
+ static int sc8581_enable_ovpgate(struct sc8581_device *bq, bool enable)
+ {
+-	int ret = 0;
+-	u8 val;
++	int ret = -EIO;
+ 	int i;
+-	bool penable = true;
+ 	u8 value;
+-
+-	bq->ovpgate_en = enable;
++	u8 val = (enable ? SC8581_OVPGATE_ENABLE : SC8581_OVPGATE_DISABLE)
++		 << SC8581_OVPGATE_EN_SHIFT;
++
+ 	if (!bq->i2c_is_working)
+ 		msleep(30);
+-
+-	val = enable ? SC8581_OVPGATE_ENABLE : SC8581_OVPGATE_DISABLE;
+-	val <<= SC8581_OVPGATE_EN_SHIFT;
+-	ret = cp_update_bits(bq->client, SC8581_REG_0B, SC8581_OVPGATE_EN_MASK,
+-			     val);
+-
+ 	for (i = 0; i < MCA_SET_OVPGATE_COUNT; i++) {
+-		ret = cp_read_byte(bq->client, SC8581_REG_0B, &value);
+-		if (!ret) {
+-			penable = !!(value & SC8581_OVPGATE_EN_MASK);
+-			if (bq->ovpgate_en == penable)
+-				break;
+-		}
+-		mca_log_info("%s count %d, ovpgate_en %d, penable %d\n",
+-			     bq->log_tag, i, bq->ovpgate_en, penable);
+-
+ 		ret = cp_update_bits(bq->client, SC8581_REG_0B,
+ 				     SC8581_OVPGATE_EN_MASK, val);
++		if (ret)
++			goto retry;
++		ret = cp_read_byte(bq->client, SC8581_REG_0B, &value);
++		if (ret)
++			goto retry;
++		if (!!(value & SC8581_OVPGATE_EN_MASK) == enable) {
++			bq->ovpgate_en = enable;
++			return 0;
++		}
++		ret = -EIO;
++retry:
+ 		msleep(10);
+ 	}
+-	mca_log_err("%s enable %d\n", bq->log_tag, enable);
+ 	return ret;
+ }
+ 
+@@ -1533,6 +1537,7 @@
+ 	if (ret < 0) {
+ 		mca_log_err("dump registers failed, base_addr: 0x%02X\n",
+ 			    base_addr);
++		return ret;
+ 	} else {
+ 		memcpy(reg, data + 1, 15);
+ 		for (i = 0; i < CP_DUMP_REG_LEN; i += 8) {
+@@ -1553,7 +1558,9 @@
+ 	if (!!(data[11] & SC8581_OVPGATE_EN_MASK) != bq->ovpgate_en) {
+ 		mca_log_info(
+ 			"set cp ovpgate not effective, repeat set ovpgate\n");
+-		sc8581_enable_ovpgate(bq, bq->ovpgate_en);
++		ret = sc8581_enable_ovpgate(bq, bq->ovpgate_en);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	base_addr = SC8581_REG_10;
+@@ -1562,6 +1569,7 @@
+ 	if (ret < 0) {
+ 		mca_log_err("dump registers failed, base_addr: 0x%02X\n",
+ 			    base_addr);
++		return ret;
+ 	} else {
+ 		reg[INT_STAT_REG] = data[SC8581_REG_10 - base_addr];
+ 		reg[INT_FLAG_REG] = data[SC8581_REG_11 - base_addr];
+@@ -1586,6 +1594,7 @@
+ 	if (ret < 0) {
+ 		mca_log_err("dump registers failed, base_addr: 0x%02X\n",
+ 			    base_addr);
++		return ret;
+ 	} else {
+ 		reg[DEVICE_ID_REG] = data[SC8581_REG_6E - base_addr];
+ 		reg[FAULT_STATUS_REG] = data[SC8581_REG_70 - base_addr];
+@@ -1626,116 +1635,182 @@
+ 	return ret;
+ }
+ 
+-static int sc8581_init_protection(struct sc8581_device *cp, int work_mode)
++static int sc8581_init_protection(struct sc8581_device *cp, int work_mode,
++				  int operation_mode)
+ {
+ 	int ret = 0;
+ 
+ 	ret = sc8581_enable_batovp(cp, true);
++	if (ret)
++		return ret;
+ 	ret = sc8581_enable_batocp(cp, false);
++	if (ret)
++		return ret;
+ 	ret = sc8581_enable_busocp(cp, true);
++	if (ret)
++		return ret;
+ 	ret = sc8581_enable_busucp(cp, true);
++	if (ret)
++		return ret;
+ 	ret = sc8581_enable_pmid2outovp(cp, true);
++	if (ret)
++		return ret;
+ 	ret = sc8581_enable_pmid2outuvp(cp, true);
++	if (ret)
++		return ret;
+ 	ret = sc8581_enable_batovp_alarm(cp, true);
++	if (ret)
++		return ret;
+ 	ret = sc8581_enable_busocp_alarm(cp, true);
++	if (ret)
++		return ret;
+ 	ret = sc8581_set_batovp_th(cp, cp->cfg.bat_ovp_th);
++	if (ret)
++		return ret;
+ 	ret = sc8581_set_batocp_th(cp, BAT_OCP_TH);
++	if (ret)
++		return ret;
+ 	ret = sc8581_set_batovp_alarm_th(cp, cp->cfg.bat_ovp_alarm_th);
+-	ret = sc8581_set_busovp_th(cp, cp->cfg.bus_ovp_th[work_mode]);
++	if (ret)
++		return ret;
++	ret = sc8581_set_busovp_th(cp, cp->cfg.bus_ovp_th[work_mode], work_mode);
++	if (ret)
++		return ret;
+ 	ret = sc8581_set_usbovp_th(cp, cp->cfg.usb_ovp_th[work_mode]);
++	if (ret)
++		return ret;
+ 	ret = sc8581_set_busocp_th(cp, cp->cfg.bus_ocp_th[work_mode]);
++	if (ret)
++		return ret;
+ 
+ 	ret = sc8581_set_wpcovp_th(cp, cp->cfg.wpc_ovp_th);
++	if (ret)
++		return ret;
+ 	ret = sc8581_set_outovp_th(cp, cp->cfg.out_ovp_th);
+-	ret = sc8581_set_pmid2outuvp_th(cp, cp->operation_mode);
++	if (ret)
++		return ret;
++	ret = sc8581_set_pmid2outuvp_th(cp, operation_mode);
++	if (ret)
++		return ret;
+ 	ret = sc8581_set_pmid2outovp_th(cp, cp->cfg.pmid2out_ovp_th);
++	if (ret)
++		return ret;
+ 
+ 	return ret;
+ }
+ 
+ static int sc8581_init_adc(struct sc8581_device *cp)
+ {
+-	sc8581_set_adc_scanrate(cp, false);
+-	sc8581_set_adc_scan(cp, ADC_IBUS, true);
+-	sc8581_set_adc_scan(cp, ADC_VBUS, true);
+-	sc8581_set_adc_scan(cp, ADC_VUSB, true);
+-	sc8581_set_adc_scan(cp, ADC_VWPC, true);
+-	sc8581_set_adc_scan(cp, ADC_VOUT, true);
+-	sc8581_set_adc_scan(cp, ADC_VBAT, true);
++	int ret;
++
++	ret = sc8581_set_adc_scanrate(cp, false);
++	if (ret)
++		return ret;
++	ret = sc8581_set_adc_scan(cp, ADC_IBUS, true);
++	if (ret)
++		return ret;
++	ret = sc8581_set_adc_scan(cp, ADC_VBUS, true);
++	if (ret)
++		return ret;
++	ret = sc8581_set_adc_scan(cp, ADC_VUSB, true);
++	if (ret)
++		return ret;
++	ret = sc8581_set_adc_scan(cp, ADC_VWPC, true);
++	if (ret)
++		return ret;
++	ret = sc8581_set_adc_scan(cp, ADC_VOUT, true);
++	if (ret)
++		return ret;
++	ret = sc8581_set_adc_scan(cp, ADC_VBAT, true);
++	if (ret)
++		return ret;
+ 	if (cp->chip_vendor != SC8585) {
+-		sc8581_set_adc_scan(cp, ADC_IBAT, true);
+-		sc8581_set_adc_scan(cp, ADC_TBAT, true);
+-	}
+-	sc8581_set_adc_scan(cp, ADC_TDIE, true);
+-	sc8581_enable_adc(cp, false);
+-
+-	return 0;
++		ret = sc8581_set_adc_scan(cp, ADC_IBAT, true);
++		if (ret)
++			return ret;
++		ret = sc8581_set_adc_scan(cp, ADC_TBAT, true);
++		if (ret)
++			return ret;
++	}
++	ret = sc8581_set_adc_scan(cp, ADC_TDIE, true);
++	if (ret)
++		return ret;
++	return sc8581_enable_adc(cp, false);
+ }
+ 
+ static int sc8581_init_device(struct sc8581_device *cp)
+ {
+-	int ret = 0;
+-	int retry_cnt = 0;
+-
+-	sc8581_set_reg_reset(cp);
+-	sc8581_enable_parallel_func(cp, false);
+-
+-	while (retry_cnt < ERROR_RECOVERY_COUNT) {
+-		sc8581_enable_acdrv_manual_ovpgate_wpcgate(cp, 1);
+-		ret |= sc8581_set_ss_timeout(cp, SC8581_SS_TIMEOUT_5120MS);
+-		ret |= sc8581_set_ucp_fall_dg(cp, SC8581_BUS_UCP_FALL_DG_5MS);
++	int ret;
++	int retry_cnt;
++
++	ret = sc8581_set_reg_reset(cp);
++	if (ret)
++		return ret;
++	ret = sc8581_enable_parallel_func(cp, false);
++	if (ret)
++		return ret;
++	if (cp->chip_vendor == SC8585) {
++		cp->fsw_cfg.min = SC8585_FSW_MIN;
++		cp->fsw_cfg.max = SC8585_FSW_MAX;
++		cp->fsw_cfg.step = SC8585_FSW_STEP;
++	} else {
++		cp->fsw_cfg.min = SC8581_FSW_MIN;
++		cp->fsw_cfg.max = SC8581_FSW_MAX;
++		cp->fsw_cfg.step = SC8581_FSW_STEP;
++	}
++	for (retry_cnt = 0; retry_cnt < ERROR_RECOVERY_COUNT; retry_cnt++) {
++		ret = sc8581_enable_acdrv_manual_ovpgate_wpcgate(cp, 1);
++		if (ret)
++			continue;
++		ret = sc8581_set_ss_timeout(cp, SC8581_SS_TIMEOUT_5120MS);
++		if (ret)
++			continue;
++		ret = sc8581_set_ucp_fall_dg(cp, SC8581_BUS_UCP_FALL_DG_5MS);
++		if (ret)
++			continue;
+ 		if (cp->chip_vendor != SC8585) {
+-			ret |= sc8581_set_acdrv_up(cp, true);
+-			ret |= sc8581_set_sense_resistor(cp, 1);
+-			ret |= sc8581_set_enable_tsbat(cp,
+-						       SC8581_TSBAT_DISABLE);
++			ret = sc8581_set_acdrv_up(cp, true);
++			if (ret)
++				continue;
++			ret = sc8581_set_sense_resistor(cp, 1);
++			if (ret)
++				continue;
++			ret = sc8581_set_enable_tsbat(cp, SC8581_TSBAT_DISABLE);
++			if (ret)
++				continue;
+ 		}
+-		ret |= sc8581_set_sync(cp, SC8581_SYNC_NO_SHIFT);
+-		ret |= sc8581_set_ovpgate_on_dg_set(cp,
+-						    SC8581_OVPGATE_ON_DG_20MS);
+-		ret |= sc8581_init_adc(cp);
+-		ret |= sc8581_init_int_src(cp);
+-		ret |= sc8581_set_operation_mode(
+-			cp, SC8581_FORWARD_2_1_CHARGER_MODE);
++		ret = sc8581_set_sync(cp, SC8581_SYNC_NO_SHIFT);
++		if (ret)
++			continue;
++		ret = sc8581_set_ovpgate_on_dg_set(cp, SC8581_OVPGATE_ON_DG_20MS);
++		if (ret)
++			continue;
++		ret = sc8581_init_adc(cp);
++		if (ret)
++			continue;
++		ret = sc8581_init_int_src(cp);
++		if (ret)
++			continue;
++		ret = sc8581_set_operation_mode(cp, SC8581_FORWARD_2_1_CHARGER_MODE);
++		if (ret)
++			continue;
+ 		if (cp->chip_vendor == SC8581) {
+-			ret |= sc8581_tsbat_flt_dis(cp,
+-						    SC8581_TSBAT_FLT_DISABLE);
+-			ret |= sc8581_pin_diag_dis(cp,
+-						   SC8581_PIN_DIAG_DIS_DISABLE);
++			ret = sc8581_tsbat_flt_dis(cp, SC8581_TSBAT_FLT_DISABLE);
++			if (ret)
++				continue;
++			ret = sc8581_pin_diag_dis(cp, SC8581_PIN_DIAG_DIS_DISABLE);
++			if (ret)
++				continue;
+ 		}
+-
+-		if (cp->chip_vendor == SC8585) {
+-			cp->fsw_cfg.min = SC8585_FSW_MIN;
+-			cp->fsw_cfg.max = SC8585_FSW_MAX;
+-			cp->fsw_cfg.step = SC8585_FSW_STEP;
+-		} else {
+-			cp->fsw_cfg.min = SC8581_FSW_MIN;
+-			cp->fsw_cfg.max = SC8581_FSW_MAX;
+-			cp->fsw_cfg.step = SC8581_FSW_STEP;
++		if (cp->cp_role == SC8581_MASTER || cp->cp_role == SC8581_SLAVE) {
++			ret = sc8581_set_fsw(cp, CP_DEFAULT_FSW);
++			if (ret)
++				continue;
+ 		}
+-
+-		switch (cp->cp_role) {
+-		case SC8581_MASTER:
+-			sc8581_set_fsw(cp, CP_DEFAULT_FSW);
+-			break;
+-		case SC8581_SLAVE:
+-			sc8581_set_fsw(cp, CP_DEFAULT_FSW);
+-			break;
+-		default:
+-			break;
+-		}
+-		cp_write_byte(cp->client, SC8581_REG_42,
+-			      0x82); // pengwanglin@xiaomi.com: enable resonance
+-
+-		if (ret < 0) {
+-			retry_cnt++;
+-		} else {
+-			mca_log_err("%s success to init CP device\n",
+-				    cp->log_tag);
+-			break;
+-		}
+-	}
+-
++		ret = cp_write_byte(cp->client, SC8581_REG_42, 0x82);
++		if (!ret)
++			return 0;
++	}
+ 	return ret;
+ }
+ 
+@@ -2271,7 +2346,7 @@
+ 
+ 	if (bq->work_mode < 0 || bq->work_mode >= CP_MODE_DIV_MAX)
+ 		return -EINVAL;
+-	return sc8581_set_busovp_th(bq, threshold);
++	return sc8581_set_busovp_th(bq, threshold, bq->work_mode);
+ }
+ 
+ static struct platform_class_cp_ops sc8581_chg_ops = {
+@@ -2320,12 +2395,15 @@
+ 	struct sc8581_device *bq =
+ 		container_of(work, struct sc8581_device, irq_handle_work.work);
+ 	bool usb_present;
++	int ret;
+ 	static bool last_usb_present;
+ 
+ 	if (!bq->i2c_is_working)
+ 		return;
+ 
+-	sc8581_get_int_stat(bq, VUSB_PRESENT_STAT, &usb_present);
++	ret = sc8581_get_int_stat(bq, VUSB_PRESENT_STAT, &usb_present);
++	if (ret)
++		return;
+ 	if (usb_present != last_usb_present) {
+ 		if (usb_present)
+ 			mca_event_block_notify(MCA_EVENT_TYPE_CP_INFO,
+@@ -2449,57 +2527,62 @@
+ 	return ret;
+ }
+ 
++static void sc8581_disable_irq_wake(void *data)
++{
++	struct sc8581_device *bq = data;
++	disable_irq_wake(bq->irq);
++}
++
+ static int sc8581_register_irq(struct sc8581_device *bq)
+ {
+-	int ret = 0;
++	int ret;
+ 
+ 	ret = devm_gpio_request(bq->dev, bq->irq_gpio, dev_name(bq->dev));
+-	if (ret < 0) {
+-		mca_log_info(" %s failed to master request gpio\n",
+-			     bq->log_tag);
+-		return -1;
+-	}
+-
++	if (ret)
++		return ret;
++	ret = gpio_direction_input(bq->irq_gpio);
++	if (ret)
++		return ret;
+ 	bq->irq = gpio_to_irq(bq->irq_gpio);
+-	if (bq->irq_gpio < 0) {
+-		mca_log_info("%s failed to master get gpio_irq\n", bq->log_tag);
+-		return -1;
+-	}
+-
+-	ret = request_irq(bq->irq, sc8581_int_isr,
+-			  IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+-			  dev_name(bq->dev), bq);
+-	if (ret < 0) {
+-		mca_log_info("%s failed to master request irq\n", bq->log_tag);
+-		return -1;
+-	}
+-
+-	enable_irq_wake(bq->irq);
+-
++	if (bq->irq < 0)
++		return bq->irq;
++	ret = devm_request_irq(bq->dev, bq->irq, sc8581_int_isr,
++			       IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++			       dev_name(bq->dev), bq);
++	if (ret)
++		return ret;
++	ret = enable_irq_wake(bq->irq);
++	if (ret)
++		return ret;
++	return devm_add_action_or_reset(bq->dev, sc8581_disable_irq_wake, bq);
++}
++
++static void sc8581_restore_nlpm(void *data)
++{
++	struct sc8581_device *bq = data;
++	int ret = gpio_direction_output(bq->nlpm_gpio, 0);
++
++	if (ret)
++		mca_log_err("%s failed to restore nlpm GPIO: %d\n", bq->log_tag, ret);
++}
++
++static int sc8581_init_gpio(struct sc8581_device *bq)
++{
++	int ret;
++
++	if (bq->cp_role != SC8581_MASTER)
++		return 0;
++	ret = devm_gpio_request(bq->dev, bq->nlpm_gpio, dev_name(bq->dev));
++	if (ret)
++		return ret;
++	ret = devm_add_action_or_reset(bq->dev, sc8581_restore_nlpm, bq);
++	if (ret)
++		return ret;
++	ret = gpio_direction_output(bq->nlpm_gpio, 1);
++	if (ret)
++		return ret;
++	msleep(400);
+ 	return 0;
+-}
+-
+-static int sc8581_init_gpio(struct sc8581_device *bq)
+-{
+-	int ret = 0;
+-
+-	if (bq->cp_role != SC8581_MASTER)
+-		return ret;
+-
+-	ret = devm_gpio_request(bq->dev, bq->nlpm_gpio, dev_name(bq->dev));
+-	if (ret)
+-		mca_log_info("%s unable to request nlpm gpio [%d]\n",
+-			     bq->log_tag, bq->nlpm_gpio);
+-	else {
+-		ret = gpio_direction_output(bq->nlpm_gpio, 1);
+-		if (ret)
+-			mca_log_info(
+-				"%s unable to set direction for nlpm gpio[%d]\n",
+-				bq->log_tag, bq->nlpm_gpio);
+-		msleep(400);
+-	}
+-
+-	return ret;
+ }
+ 
+ static int sc8581_dump_log_head(void *data, char *buf, int size)
+@@ -2561,6 +2644,31 @@
+ 	       hwid->hwid_value == EN_BUCK_PROJECT_HWID;
+ }
+ 
++static void sc8581_cancel_irq_work(void *data)
++{
++	struct sc8581_device *bq = data;
++	cancel_delayed_work_sync(&bq->irq_handle_work);
++}
++
++static void sc8581_quiesce_device(void *data)
++{
++	struct sc8581_device *bq = data;
++	int ret;
++
++	ret = sc8581_enable_charge(bq, false);
++	if (ret)
++		mca_log_err("%s failed to quiesce CP: %d\n", bq->log_tag, ret);
++	ret = sc8581_enable_adc(bq, false);
++	if (ret)
++		mca_log_err("%s failed to quiesce ADC: %d\n", bq->log_tag, ret);
++}
++
++static void sc8581_disable_wakeup(void *data)
++{
++	struct sc8581_device *bq = data;
++	device_init_wakeup(bq->dev, false);
++}
++
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 9))
+ static int sc8581_probe(struct i2c_client *client)
+ #else
+@@ -2570,75 +2678,66 @@
+ {
+ 	struct device *dev = &client->dev;
+ 	struct sc8581_device *bq;
+-	int ret = 0;
++	int ret;
+ 
+ 	bq = devm_kzalloc(dev, sizeof(*bq), GFP_KERNEL);
+ 	if (!bq)
+ 		return -ENOMEM;
+-
+ 	bq->client = client;
+ 	bq->dev = dev;
+ 	i2c_set_clientdata(client, bq);
+-
+-	if (mca_cp_is_en_buck_project_hwid()) {
+-		mca_log_err("adjust en buck CP addr");
++	if (mca_cp_is_en_buck_project_hwid())
+ 		client->addr = SC8581_EN_BUCK_CP_I2C_ADDR;
+-	} else {
+-		mca_log_err("normal CP addr");
+-	}
+-
+ 	ret = sc8581_parse_dt(bq);
+-	if (ret) {
+-		mca_log_err(" %s failed to parse DTS\n", bq->log_tag);
+-		return ret;
+-	}
+-
++	if (ret)
++		return ret;
+ 	ret = sc8581_init_gpio(bq);
++	if (ret)
++		return ret;
+ 	ret = cp_charge_detect_device(bq);
+-	if (ret) {
+-		mca_log_err("%s failed to detect device\n", bq->log_tag);
+-		mca_event_block_notify(MCA_EVENT_TYPE_CP_INFO,
+-				       MCA_EVENT_CP_IIC_ERROR, NULL);
+-		return ret;
+-	}
+-
++	if (ret)
++		return ret;
+ 	INIT_DELAYED_WORK(&bq->irq_handle_work, sc8581_irq_handler);
++	/* Register before the managed IRQ: reverse release frees IRQ first. */
++	ret = devm_add_action_or_reset(dev, sc8581_quiesce_device, bq);
++	if (ret)
++		return ret;
++	ret = devm_add_action_or_reset(dev, sc8581_cancel_irq_work, bq);
++	if (ret)
++		return ret;
++	ret = sc8581_init_device(bq);
++	if (ret)
++		return ret;
+ 	ret = sc8581_register_irq(bq);
+-	if (ret) {
+-		mca_log_err("%s failed to int irq\n", bq->log_tag);
+-		return ret;
+-	}
+-
+-	ret = sc8581_init_device(bq);
+-	if (ret) {
+-		mca_log_err("%s failed to init sc8581\n", bq->log_tag);
+-		mca_event_block_notify(MCA_EVENT_TYPE_CP_INFO,
+-				       MCA_EVENT_CP_IIC_ERROR, NULL);
+-		return ret;
+-	}
+-
+-	schedule_delayed_work(&bq->irq_handle_work, 0);
++	if (ret)
++		return ret;
++	ret = device_init_wakeup(dev, true);
++	if (ret)
++		return ret;
++	ret = devm_add_action_or_reset(dev, sc8581_disable_wakeup, bq);
++	if (ret)
++		return ret;
++	/* No fatal setup may remain after publishing this unregistered-on-remove ABI. */
++	ret = platform_class_cp_register_ops_v2(bq->cp_role, &sc8581_chg_ops,
++					      bq, sizeof(sc8581_chg_ops));
++	if (ret)
++		return ret;
++#ifdef CONFIG_DEBUG_FS
++	reg_info.address = SC8581_REG_00;
++	reg_info.count = 1;
++	if (bq->cp_role == SC8581_SLAVE)
++		mca_debugfs_create_group("sc85xx_01", cp_debugfs_field_tbl,
++					CP_DEBUGFS_ATTRS_SIZE, bq);
++	else
++		mca_debugfs_create_group("sc85xx_00", cp_debugfs_field_tbl,
++					CP_DEBUGFS_ATTRS_SIZE, bq);
++#endif
++	mca_log_charge_log_register(MCA_CHARGE_LOG_ID_CP_MASTER_IC,
++				    &g_sc8581_log_ops, bq);
+ 	bq->chip_ok = true;
+ 	bq->ovpgate_en = true;
+ 	bq->i2c_is_working = true;
+-#ifdef CONFIG_DEBUG_FS
+-	reg_info.address = SC8581_REG_00;
+-	reg_info.count = 1;
+-
+-	if (bq->cp_role == SC8581_SLAVE)
+-		mca_debugfs_create_group("sc85xx_01", cp_debugfs_field_tbl,
+-					 CP_DEBUGFS_ATTRS_SIZE, bq);
+-	else
+-		mca_debugfs_create_group("sc85xx_00", cp_debugfs_field_tbl,
+-					 CP_DEBUGFS_ATTRS_SIZE, bq);
+-#endif
+-	platform_class_cp_register_ops_v2(bq->cp_role, &sc8581_chg_ops, bq,
+-					  sizeof(sc8581_chg_ops));
+-	mca_log_charge_log_register(MCA_CHARGE_LOG_ID_CP_MASTER_IC,
+-				    &g_sc8581_log_ops, bq);
+-	device_init_wakeup(bq->dev, true);
+-	mca_log_err("%s probe success %d\n", bq->log_tag, ret);
+-
++	schedule_delayed_work(&bq->irq_handle_work, 0);
+ 	return 0;
+ }
+ 
+--- a/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
++++ b/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
+@@ -202,11 +202,13 @@
+ 	int ret;
+ 	int ibus;
+ 
+-	(void)platform_class_cp_enable_adc(CP_ROLE_MASTER, true);
++	ret = platform_class_cp_enable_adc(CP_ROLE_MASTER, true);
++	if (ret)
++		return ret;
+ 	ret = platform_class_cp_get_bus_current(CP_ROLE_MASTER, &ibus);
+ 	if (ret) {
+ 		info->proc_data.error_num[CP_ROLE_MASTER]++;
+-		return -1;
++		return ret;
+ 	}
+ 
+ 	info->proc_data.ibus = ibus;
+@@ -1427,6 +1429,8 @@
+ 	for (i = 0; i < MCA_QUICK_CHG_TUNE_VBUS_MAX_COUNT; i++) {
+ 		ret = platform_class_cp_get_bus_voltage(
+ 			info->proc_data.cur_work_cp, &vbus);
++		if (ret)
++			return ret;
+ 		ret = platform_class_cp_get_errorhl_stat(
+ 			info->proc_data.cur_work_cp, &stat);
+ 		if (ret)
+@@ -1457,10 +1461,12 @@
+ 			vbus_stat = XM_VBUS_TUNE_READY_DOWN;
+ 		}
+ 
+-		(void)protocol_class_set_adapter_volt_and_curr(
++		ret = protocol_class_set_adapter_volt_and_curr(
+ 			info->proc_data.cur_protocol,
+ 			info->proc_data.cur_adp_volt,
+ 			info->proc_data.cur_adp_cur);
++		if (ret)
++			return ret;
+ 		if (mca_quick_charge_msleep(MCA_QUICK_CHG_TUNE_VBUS_INTERVAL,
+ 					    info))
+ 			return -1;
+@@ -1621,7 +1627,9 @@
+ 		return ret;
+ 	}
+ 
+-	(void)platform_class_cp_get_errorhl_stat(CP_ROLE_MASTER, &cp_vbus_hl);
++	ret = platform_class_cp_get_errorhl_stat(CP_ROLE_MASTER, &cp_vbus_hl);
++	if (ret)
++		return ret;
+ 	if (cp_vbus_hl == CP_PMID_ERROR_OK &&
+ 	    abs(vbus_cp_mv - info->proc_data.cur_adp_volt) <=
+ 		    MCA_QUICK_CHG_TUNE_VBUS_WINDOW_MV) {
+@@ -1653,12 +1661,17 @@
+ static int mca_qc_retry_to_enable_cp(struct mca_quick_charge_info *info)
+ {
+ 	int i = 0;
+-
+-	(void)platform_class_cp_set_charging_enable(CP_ROLE_MASTER, true);
++	int ret;
++
++	ret = platform_class_cp_set_charging_enable(CP_ROLE_MASTER, true);
++	if (ret)
++		return ret;
+ 	if (mca_quick_charge_msleep(200, info))
+ 		return -1;
+ 
+-	mca_qc_quick_charge_update_ibus(info);
++	ret = mca_qc_quick_charge_update_ibus(info);
++	if (ret)
++		return ret;
+ 	while (i++ < 5 && info->proc_data.ibus < CP_ENABLE_IBUS_UCP_RISING_MA) {
+ 		if (info->proc_data.adp_type == XM_CHARGER_TYPE_HVDCP3_B)
+ 			info->proc_data.cur_adp_volt +=
+@@ -1666,13 +1679,17 @@
+ 		else
+ 			info->proc_data.cur_adp_volt +=
+ 				MCA_QUICK_CHG_DEFAULT_VSTEP;
+-		(void)protocol_class_set_adapter_volt_and_curr(
++		ret = protocol_class_set_adapter_volt_and_curr(
+ 			info->proc_data.cur_protocol,
+ 			info->proc_data.cur_adp_volt,
+ 			info->proc_data.cur_adp_cur);
++		if (ret)
++			return ret;
+ 		if (mca_quick_charge_msleep(100, info))
+ 			return -1;
+-		mca_qc_quick_charge_update_ibus(info);
++		ret = mca_qc_quick_charge_update_ibus(info);
++		if (ret)
++			return ret;
+ 	}
+ 	return 0;
+ }
