@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "status": "PASS_EXPLICIT_72_TO_80_MIB_PAYLOAD_GROWTH_ONLY",
+  "source_bytes": 75497472,
+  "target_bytes": 83886080,
+  "source_sha256": "ab13a4dfff268bcabc65d9ee8cc9298ded6351e17e4c4cfabd365fd504c9707f",
+  "grown_sha256": "0358470feaaac1e2b8f3edf99a6a33b28a51710e6059a836ec40d7b981a5649a",
+  "source_free_blocks": 162,
+  "grown_free_blocks": 2210,
+  "source_inodes": 10240,
+  "grown_inodes": 10240,
+  "free_inodes": 9952,
+  "block_bytes": 4096,
+  "source_blockgroups": 1,
+  "grown_blockgroups": 1,
+  "reserved_internal_inode_changes": [
+    7
+  ],
+  "all_existing_reachable_inode_content_records_identical": true,
+  "reachable_records": 278,
+  "all_existing_reachable_xattrs_identical": true,
+  "double_growth_byte_identical": true,
+  "outer_vendor_boot_unchanged": true,
+  "no_final_candidate_image_created": true,
+  "explicit_size_required": 83886080,
+  "fake_time_seconds": 1792713600,
+  "commands": [
+    {
+      "argv": [
+        "truncate",
+        "83886080",
+        "copy_of_pinned_R84_vendor_dlkm"
+      ]
+    },
+    {
+      "argv": [
+        "resize2fs",
+        "-f",
+        "copy_of_pinned_R84_vendor_dlkm",
+        "20480"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "e2fsck",
+        "-fn",
+        "copy_of_pinned_R84_vendor_dlkm"
+      ],
+      "returncode": 0
+    }
+  ]
+}
