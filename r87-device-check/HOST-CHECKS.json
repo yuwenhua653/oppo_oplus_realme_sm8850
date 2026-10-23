@@ -1,0 +1,30 @@
+{
+  "status": "PASS_SOURCE_AND_SHELL_SYNTAX_ONLY",
+  "files": [
+    {
+      "file": "README-CN.txt",
+      "bytes": 1635,
+      "sha256": "756d8a58a73e8b1d806ecd5bc8030517f46a3b97f6e5280897bebbf1800f41ad"
+    },
+    {
+      "file": "collect-r87.cmd",
+      "bytes": 949,
+      "sha256": "1bee761a53326a31463febd410c640e88be8f457b731d34f751c3c7fb1c7d14e"
+    },
+    {
+      "file": "collect-r87.sh",
+      "bytes": 6776,
+      "sha256": "5662e15b6946493219219ce54a594c654c324065698e4b35faadff1d58403828"
+    }
+  ],
+  "device_contacted": false,
+  "sh_syntax": true,
+  "cmd_path_quoting_and_CRLF_static_check": true,
+  "remote_slow_commands_bounded": true,
+  "timeout_missing_skips_reads": true,
+  "no_wait_for_device": true,
+  "no_root_or_device_writes": true,
+  "auth_values_not_read": true,
+  "logcat_limited_to_three_system_tags": true,
+  "hardware_tested": false
+}

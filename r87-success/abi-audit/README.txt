@@ -47,7 +47,14 @@ Identity output: ARTIFACT-IDENTITY.json
   - Complete artifact-lock inventory, frozen route inventory, every source
     write and read-only guard snapshot (2 writes + 9 guards for this route).
   - Both ZIP pins; validation ZIP members compared byte-for-byte to extracted
-    files; all copied reports compared with their original reports ZIP members.
+    files. Original diagnostic ZIP correspondence is required for exactly the
+    workflow's top-level r87-*.json/log/txt and nested r87-host/**/*.json/log/txt
+    scope. Its original/copied inventory and all128 current copies are checked.
+    The30 nested parent R85/R86 host report duplicates are outside those upload
+    globs; each is explicitly listed with its verified validation-lock/ZIP pin
+    and expected_in_reports_zip=false. Their absence from the diagnostic ZIP
+    is expected. If an optional duplicate is present, its bytes must also match.
+    Any other copied-report category outside declared scope is rejected.
   - Reconstructed source->KernelModule->staging->copied KO chains for all47,
     including CP, quickchg, BQ C/header and FG C/actual enum header.
   - Actual emitted config before/after compilation, shared config tree and

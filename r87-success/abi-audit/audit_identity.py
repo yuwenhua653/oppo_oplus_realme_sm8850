@@ -211,6 +211,14 @@ def zip_pin(archive, member):
     return {'bytes': size, 'sha256': digest.hexdigest()}
 
 
+def workflow_report_selected(relative):
+    """Exact diagnostic upload scope, relative to integration-reports/."""
+    parts = PurePosixPath(relative)
+    supported = parts.suffix in ('.json', '.log', '.txt')
+    return supported and ((len(parts.parts) == 1 and parts.name.startswith('r87-')) or
+                          (len(parts.parts) > 1 and parts.parts[0] == 'r87-host'))
+
+
 def audit_identity(args):
     need(re.fullmatch(r'[0-9a-f]{40}', args.ci_head), 'explicit 40-digit CI head')
     need(re.fullmatch(r'[1-9][0-9]*', args.ci_run) and args.ci_attempt > 0, 'real CI run and attempt')
@@ -371,15 +379,39 @@ def audit_identity(args):
     archives.append(record)
     archive, members, record = zip_inventory(args.reports_zip, args.reports_zip_sha256)
     copied_reports = [name for name in actual if name.startswith('reports/')]
+    selected_reports = [name for name in copied_reports if workflow_report_selected(name.removeprefix('reports/'))]
+    validation_only_reports = []
     try:
-        for name in copied_reports:
+        original_selected = set()
+        for member in members:
+            if '/integration-reports/' in member:
+                relative = member.split('/integration-reports/', 1)[1]
+                if workflow_report_selected(relative):
+                    original_selected.add('reports/' + relative)
+        need(original_selected == set(selected_reports), 'complete workflow-selected original/copied reports inventory')
+        for name in sorted(selected_reports):
             suffix = '/integration-reports/' + name.removeprefix('reports/')
             matches = [member for member in members if member.endswith(suffix)]
             need(len(matches) == 1, 'one original reports ZIP member: ' + name)
             need(zip_pin(archive, members[matches[0]]) == pin(safe(ci, name)), 'original/copied report bytes: ' + name)
+        for name in sorted(set(copied_reports) - set(selected_reports)):
+            parts = PurePosixPath(name)
+            need(len(parts.parts) > 2 and parts.parts[1] in ('r87-parent-r85-host', 'r87-parent-r86-host') and
+                 parts.suffix in ('.json', '.log', '.txt'), 'explicit validation-only report duplicate scope: ' + name)
+            suffix = '/integration-reports/' + name.removeprefix('reports/')
+            matches = [member for member in members if member.endswith(suffix)]
+            need(len(matches) <= 1, 'unique optional original duplicate: ' + name)
+            if matches:
+                need(zip_pin(archive, members[matches[0]]) == pin(safe(ci, name)), 'optional original duplicate bytes: ' + name)
+            validation_only_reports.append({
+                'file': name, **pin(safe(ci, name)), 'expected_in_reports_zip': False,
+                'present_in_reports_zip': bool(matches),
+                'verification': 'Validation artifact lock and validation ZIP verified; validation-only report duplicate not expected by diagnostic upload globs.',
+            })
     finally:
         archive.close()
-    record['copied_reports_verified'] = len(copied_reports)
+    record['copied_reports_verified'] = len(selected_reports)
+    record['validation_only_report_duplicates'] = validation_only_reports
     archives.append(record)
     return {
         'schema': 1, 'status': 'PASS_R87_EXACT_ARTIFACT_IDENTITY', 'ci': identity,
@@ -404,6 +436,7 @@ def audit_identity(args):
         'limits': [
             'Identity, byte inventory, source snapshots and declared action/config provenance only; no semantic source review assertion.',
             'Unchanged action inputs outside writes/guards have CI-recorded pins, not independent compiled-source snapshots.',
+            'Parent R85/R86 host report duplicates are verified by the validation artifact lock and ZIP; diagnostics upload globs include only top-level r87-* reports and nested r87-host reports.',
             'Retained-kernel ABI/CFI, exclusive runtime ownership, authentication, thermal behavior, fast charging and flash readiness require separate gates.',
         ], 'reviewer': pin(Path(__file__).resolve()),
     }
