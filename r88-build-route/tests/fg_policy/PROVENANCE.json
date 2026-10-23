@@ -1,0 +1,24 @@
+{
+  "r87_optional_enum_header": {
+    "bytes": 11605,
+    "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+  },
+  "r87_soc_smooth": {
+    "bytes": 9546,
+    "sha256": "141889a0c5470421c51317873913383f21fa0f469934d1d945af5eae4691be8d"
+  },
+  "r87_strategy": {
+    "bytes": 120590,
+    "sha256": "37ebfb0d733f680f96cb6539c9bb8f67a3c46d7cc7262027160fe039bc7610e0"
+  },
+  "r87_strategy_header": {
+    "bytes": 8056,
+    "sha256": "5946858f4101fcba417aef82ed05122df452cc6685b687d34a0331d2d8aaed69"
+  },
+  "soc_smooth_threshold_header": {
+    "bytes": 633,
+    "sha256": "efa6c2ba00d7cc0816e250e2ce920684c638e8577676d3dd8d3edd9fafd05874",
+    "source": "myron-boot-r18.zip!myron-adaptation-r12.zip!myron-adaptation-r12/drivers/payload/drivers/power/supply/mca/mca_strategy/strategy_fg/inc/mca_soc_smooth.h",
+    "workspace_pin_verified": true
+  }
+}

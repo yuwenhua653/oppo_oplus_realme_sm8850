@@ -1,0 +1,27 @@
+{
+  "ASan_UBSan_Werror": true,
+  "all_data_is_synthetic": true,
+  "hardware_tested": false,
+  "jobs": [
+    {
+      "arguments": [
+        "--source",
+        "{strategy}",
+        "--header",
+        "{strategy_header}",
+        "--soc-smooth",
+        "{soc_smooth}",
+        "--before",
+        "{before_strategy}",
+        "--before-soc-smooth",
+        "{before_soc_smooth}",
+        "--out",
+        "{output}"
+      ],
+      "name": "fg_policy",
+      "script": "tests/fg_policy/run_tests.py"
+    }
+  ],
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "schema": 1
+}

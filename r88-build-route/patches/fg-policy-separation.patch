@@ -1,0 +1,282 @@
+--- a/drivers/power/supply/mca/mca_strategy/strategy_fg/inc/strategy_fg.h
++++ b/drivers/power/supply/mca/mca_strategy/strategy_fg/inc/strategy_fg.h
+@@ -198,6 +198,8 @@
+ 	bool recharging;
+ 	bool lossless_recharge;
+ 	bool is_eu_model;
++	bool eu_policy_valid;
++	int eu_policy_errno;
+ 	bool en_smooth_full;
+ 	int real_type;
+ 
+@@ -329,6 +331,7 @@
+ 	FG_PROP_CALC_RVALUE,
+ 	FG_PROP_MANUFACTURING_DATE,
+ 	FG_PROP_FIRST_USAGE_DATE,
++	FG_PROP_EU_POLICY_STATUS,
+ };
+ 
+ void strategy_fg_record_volt_mean(struct strategy_fg *fg);
+--- a/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c
++++ b/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c
+@@ -140,7 +140,11 @@
+ 	int mapped_soc = 0;
+ 	int mapped_soc_decimal = 0;
+ 
+-	if (fg->is_eu_model) {
++	if (!fg->eu_policy_valid) {
++		/* RSOC is the gauge's integer reading; apply no regional full mapping. */
++		mapped_soc = fg->batt_rsoc;
++		mapped_soc_decimal = 0;
++	} else if (fg->is_eu_model) {
+ 		if (fg->charging_done && fg->batt_rsoc == 100) {
+ 			mapped_soc = 100;
+ 			mapped_soc_decimal = 0;
+@@ -229,7 +233,8 @@
+ 		}
+ 	}
+ 
+-	if (fg->keep_full_flag && last_ui_soc == 100 &&
++	if (fg->eu_policy_valid && !fg->is_eu_model && fg->keep_full_flag &&
++	    last_ui_soc == 100 &&
+ 	    fg->batt_raw_soc >
+ 		    fg->cfg.report_full_raw_soc - FG_HOLD_UISOC_100_GAP) {
+ 		mca_log_info("WARNING: set ui_soc to 100 by: keep_full_flag\n");
+@@ -247,7 +252,9 @@
+ static void fg_ui_soc_update_decimal(struct strategy_fg *fg, int last_ui_soc,
+ 				     int ui_soc)
+ {
+-	if (ui_soc < fg->batt_mapped_soc && ui_soc == last_ui_soc)
++	if (!fg->eu_policy_valid)
++		fg->batt_ui_soc_decimal = 0;
++	else if (ui_soc < fg->batt_mapped_soc && ui_soc == last_ui_soc)
+ 		fg->batt_ui_soc_decimal = 99;
+ 	else if (ui_soc > fg->batt_mapped_soc && ui_soc == last_ui_soc)
+ 		fg->batt_ui_soc_decimal = 0;
+@@ -279,7 +286,7 @@
+ 	}
+ 
+ 	// If the soc jump, will smooth one cap every 10S
+-	if (fg->en_smooth_full) {
++	if (fg->eu_policy_valid && fg->is_eu_model && fg->en_smooth_full) {
+ 		soc_keep_time = 30;
+ 		mca_log_info("start en_smooth_full soc increase per 30s \n");
+ 	}
+--- a/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c
++++ b/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c
+@@ -215,6 +215,8 @@
+ 			  manufacturing_date),
+ 	mca_sysfs_attr_rw(strategy_fg_sysfs, 0640, FG_PROP_FIRST_USAGE_DATE,
+ 			  first_usage_date),
++	mca_sysfs_attr_ro(strategy_fg_sysfs, 0444, FG_PROP_EU_POLICY_STATUS,
++			  eu_policy_status),
+ };
+ 
+ #define FG_AUTH_ATTRS_SIZE ARRAY_SIZE(strategy_fg_sysfs_field_tbl)
+@@ -414,6 +416,13 @@
+ 		return -1;
+ 
+ 	switch (attr_info->sysfs_attr_name) {
++	case FG_PROP_EU_POLICY_STATUS:
++		count = scnprintf(buf, PAGE_SIZE,
++			"valid=%d is_eu_model=%d errno=%d\n",
++			info->eu_policy_valid,
++			info->eu_policy_valid ? info->is_eu_model : -1,
++			info->eu_policy_errno);
++		break;
+ 	case FG_PROP_MAIN_AUTH:
+ 		platform_fg_ops_get_authentic(FG_IC_MASTER, &val);
+ 		count = scnprintf(buf, PAGE_SIZE, "%x\n", val);
+@@ -2142,7 +2151,8 @@
+ 
+ static int mca_strategy_check_recharge(struct strategy_fg *fg)
+ {
+-	if (!fg || !fg->power_present || !fg->charging_done || fg->recharging)
++	if (!fg || !fg->eu_policy_valid || !fg->power_present ||
++	    !fg->charging_done || fg->recharging)
+ 		return 0;
+ 
+ 	if (!fg->is_eu_model) {
+@@ -2268,7 +2278,14 @@
+ 	int batt_temp = 0;
+ 	int vterm = 0;
+ 
+-	if (!fg->charging_done) {
++	if (!fg->eu_policy_valid) {
++		fg->lossless_recharge = false;
++		if (fg->voter_ok) {
++			mca_vote(fg->vterm_voter, "losslessRec", false, 0);
++			mca_vote(fg->charge_limit_voter, "losslessRec", false, 0);
++		}
++	}
++	if (!fg->eu_policy_valid || !fg->charging_done) {
+ 		last_time = time_now;
+ 		return 0;
+ 	}
+@@ -3438,6 +3455,13 @@
+ 	if (!data)
+ 		return -1;
+ 
++	/* Unknown regional policy exposes integer gauge SOC without animation. */
++	if (!fg->eu_policy_valid) {
++		*soc_decimal = 0;
++		*rate = 0;
++		return 0;
++	}
++
+ 	*rate = STRATEGY_FG_SOC_DECIMAL_DEFAULT_RATE;
+ 	for (i = fg->cfg.soc_decimal_cnt - 1; i >= 0; i--) {
+ 		if (fg->batt_ui_soc > fg->cfg.soc_decimal[i].soc) {
+@@ -3477,7 +3501,10 @@
+ 		fg->lossless_recharge = false;
+ 		fg->near_vterm = false;
+ 		fg->ffc_continue_charge = false;
+-		if (fg->is_eu_model) {
++		if (!fg->eu_policy_valid) {
++			fg->en_smooth_full = false;
++			fg->keep_full_flag = false;
++		} else if (fg->is_eu_model) {
+ 			if (fg->batt_rsoc < 100) {
+ 				fg->en_smooth_full = true;
+ 				mca_log_info(
+@@ -3956,7 +3983,7 @@
+ 		info->non_std_charger_reported = false;
+ 		info->co_ctrl_support = true;
+ 		info->co_ctrl_active = true;
+-		if (info->is_eu_model) {
++		if (info->eu_policy_valid && info->is_eu_model) {
+ 			if (info->batt_ui_soc < EU_MODEL_RECHARGE_SOC) {
+ 				mca_vote(info->en_voter, "term_recharge", false,
+ 					 0);
+@@ -3981,7 +4008,12 @@
+ 		break;
+ 	case MCA_EVENT_USB_DISCONNECT:
+ 	case MCA_EVENT_WIRELESS_DISCONNECT:
+-		if (!info->is_eu_model) {
++		if (!info->eu_policy_valid) {
++			/* Unplug ends this charging session, independent of region. */
++			mca_vote(info->en_voter, "term_recharge", false, 0);
++			info->charging_done = false;
++			info->keep_full_flag = false;
++		} else if (!info->is_eu_model) {
+ 			mca_vote(info->en_voter, "term_recharge", false, 0);
+ 			info->charging_done = false;
+ 		} else {
+@@ -4029,9 +4061,20 @@
+ 		}
+ 		break;
+ 	case MCA_EVENT_IS_EU_MODEL:
+-		if (!info->is_eu_model) {
++		if (value != 0 && value != 1)
++			return -EINVAL;
++		if (!info->eu_policy_valid || info->is_eu_model != value) {
+ 			info->is_eu_model = value;
+-			info->boot_update_soc = value ? true : false;
++			info->eu_policy_valid = true;
++			info->eu_policy_errno = 0;
++			info->keep_full_flag = false;
++			info->en_smooth_full = false;
++			info->lossless_recharge = false;
++			if (info->voter_ok) {
++				mca_vote(info->vterm_voter, "losslessRec", false, 0);
++				mca_vote(info->charge_limit_voter, "losslessRec", false, 0);
++			}
++			info->boot_update_soc = true;
+ 			mca_log_info("is_eu_model[%d] update soc\n",
+ 				     info->is_eu_model);
+ 		}
+@@ -4119,8 +4162,8 @@
+ 
+ 	if (ret == 1)
+ 		return 0;
+-	if (!ret)
+-		ret = -EOPNOTSUPP;
++	if (!ret || ret == -EOPNOTSUPP)
++		return -EOPNOTSUPP;
+ 	return dev_err_probe(fg->dev, ret,
+ 		"requested FG optional operation %u is unavailable\n", op);
+ }
+@@ -4131,17 +4174,44 @@
+ 
+ 	if (fg->cfg.support_nvt1000_ota) {
+ 		ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_OTA_FLAG);
+-		if (ret)
++		if (!ret)
++			ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_AVERAGE_CURRENT);
++		if (!ret)
++			ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_OTA_UPDATE);
++		if (ret == -EOPNOTSUPP) {
++			fg->cfg.support_nvt1000_ota = 0;
++			dev_warn(fg->dev, "disabled unsupported FG OTA feature\n");
++		} else if (ret) {
+ 			return ret;
+-		ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_AVERAGE_CURRENT);
+-		if (ret)
++		}
++	}
++	if (fg->cfg.support_qbg) {
++		ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_QBG_CHG_DATA);
++		if (ret == -EOPNOTSUPP) {
++			fg->cfg.support_qbg = false;
++			dev_warn(fg->dev, "disabled unsupported FG QBG feature\n");
++		} else if (ret) {
+ 			return ret;
+-		ret = strategy_fg_require_optional_op(fg, MCA_FG_OP_OTA_UPDATE);
+-		if (ret)
+-			return ret;
+-	}
+-	if (fg->cfg.support_qbg)
+-		return strategy_fg_require_optional_op(fg, MCA_FG_OP_QBG_CHG_DATA);
++		}
++	}
++	return 0;
++}
++
++static int strategy_fg_read_eu_policy(struct strategy_fg *fg)
++{
++	bool is_eu_model;
++	int ret = charger_partition_get_eu_model(&is_eu_model);
++
++	fg->eu_policy_errno = ret;
++	if (ret) {
++		dev_warn(fg->dev,
++			 "charger EU policy unavailable (%d); using gauge SOC without regional recharge policy\n",
++			 ret);
++		return ret;
++	}
++	fg->is_eu_model = is_eu_model;
++	fg->eu_policy_valid = true;
++	fg->boot_update_soc = is_eu_model;
+ 	return 0;
+ }
+ 
+@@ -4160,23 +4230,18 @@
+ 	fg->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, fg);
+ 	ret = strategy_fg_parse_dt(fg);
+-	if (ret) {
+-		ret = -EPROBE_DEFER;
+-		mca_log_err("fg device found: %d\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(fg->dev, ret, "FG device tree initialization failed\n");
+ 
+ 	ret = strategy_fg_check_optional_ops(fg);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = charger_partition_get_eu_model(&fg->is_eu_model);
+-	if (ret)
+-		return dev_err_probe(fg->dev, ret, "charger EU policy is unavailable\n");
++	/* Persistence is optional for physical gauge telemetry. Never infer a region. */
++	(void)strategy_fg_read_eu_policy(fg);
+ 	fg->batt_psy = power_supply_get_by_name("battery");
+-	if (fg->is_eu_model)
+-		fg->boot_update_soc = true;
+-	mca_log_info("probe is_eu_model[%d]\n", fg->is_eu_model);
++	mca_log_info("probe eu_policy_valid[%d], is_eu_model[%d]\n",
++		     fg->eu_policy_valid, fg->eu_policy_valid ? fg->is_eu_model : -1);
+ 	INIT_DELAYED_WORK(&fg->monitor_work, strategy_fg_monitor_workfunc);
+ 	INIT_DELAYED_WORK(&fg->delay_reset_full_flag_work,
+ 			  delay_reset_full_flag_work);

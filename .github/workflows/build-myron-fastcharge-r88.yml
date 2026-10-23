@@ -1,0 +1,130 @@
+name: Myron R88 FG telemetry and persistent-policy separation and inactive MCA closure
+
+on:
+  push:
+    branches:
+      - codex/myron-r61-battery
+    paths:
+      - .github/workflows/build-myron-fastcharge-r88.yml
+      - r88-build-route/**
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Parallel build jobs
+        type: choice
+        required: true
+        default: '2'
+        options: ['2', '4']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-r88-fastcharge-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CCACHE_NODEBUG: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r1
+      PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
+      BUILD_JOBS: ${{ inputs.jobs || '2' }}
+    steps:
+      - name: Checkout integration files
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Verify frozen R88 FG policy separation and production-function tests before sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '0e0415d33c94bfa2d28df0841883f03e903f122060a934a937f2aca175b58f7d  r88-build-route/build-contract.json' | sha256sum --check --strict
+          python3 r88-build-route/build_fg_policy.py --repo-root "$GITHUB_WORKSPACE" --check-inputs
+          mkdir -p "$GITHUB_WORKSPACE/r88-host-reports"
+          python3 r87-build-route/test_build_guards.py > "$GITHUB_WORKSPACE/r88-host-reports/parent-build-guard-test.log" 2>&1
+          python3 r88-build-route/test_build_guards.py > "$GITHUB_WORKSPACE/r88-host-reports/build-guard-test.log" 2>&1
+          python3 r88-build-route/test_source.py --output "$GITHUB_WORKSPACE/r88-host-reports/source" > "$GITHUB_WORKSPACE/r88-host-reports/source-test.log" 2>&1
+
+      - name: Extract unchanged pinned source preparation bundles
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r55-source/ci/extract_inputs.py --root "$GITHUB_WORKSPACE"
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/fastcheck_r12.py" \
+            --reports "$GITHUB_WORKSPACE/myron-fastchecks"
+
+      - name: Prepare hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config patch
+          df -h .
+          free -h
+
+      - name: Sync locked source and toolchain revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r61-build-route/sync_with_retry.py \
+            --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR" --jobs 4
+
+      - name: Apply unchanged R18 preparation hooks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 r55-source/ci/prepare_legacy.py
+
+      - name: Build the isolated inactive 47-module MCA closure once
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset CCACHE_DEBUG
+          python3 r88-build-route/build_fg_policy.py \
+            --workspace "$WORKSPACE_DIR" --package "$PACKAGE_DIR" \
+            --baseline "$GITHUB_WORKSPACE/myron-adaptation-r12" \
+            --r18 "$GITHUB_WORKSPACE/myron-boot-r18" \
+            --repo-root "$GITHUB_WORKSPACE" --jobs "$BUILD_JOBS"
+
+      - name: Upload R88 source and diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r88-fastcharge-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r88-*.json
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r88-*.log
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r88-*.txt
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r88-host/**/*.json
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r88-host/**/*.log
+            ${{ env.WORKSPACE_DIR }}/integration-reports/r88-host/**/*.txt
+            ${{ env.WORKSPACE_DIR }}/integration-reports/sync.json
+            ${{ env.WORKSPACE_DIR }}/integration-reports/sync-retries/**/summary.json
+            ${{ env.PACKAGE_DIR }}/sources.lock.json
+            ${{ github.workspace }}/r88-host-reports/
+            ${{ github.workspace }}/r88-build-route/
+            ${{ github.workspace }}/r87-build-route/
+            ${{ github.workspace }}/r86-build-route/
+            ${{ github.workspace }}/r85-build-route/
+            ${{ github.workspace }}/.github/workflows/build-myron-fastcharge-r88.yml
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload inactive full MCA compile proof
+        if: ${{ !cancelled() && hashFiles('kernel_workspace/myron-platform-r1/integration-artifacts/r88-mca-validation-only/validation-complete.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r88-mca-validation-only-output-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-artifacts/r88-mca-validation-only/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
