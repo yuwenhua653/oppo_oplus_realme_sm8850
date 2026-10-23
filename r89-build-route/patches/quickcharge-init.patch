@@ -1,0 +1,614 @@
+--- a/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
++++ b/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
+@@ -879,55 +879,58 @@
+ 
+ static int fg_read_cell_vendor(struct bq_fg_chip *bq)
+ {
+-	u8 t_buf[40];
++	u8 t_buf[40] = { 0 };
++	const char *cell_name;
+ 	int ret;
+ 
+ 	ret = fg_mac_read_block(bq, FG_MAC_CMD_CHEM_NAME, t_buf, 4);
+-	if (ret < 0) {
+-		mca_log_info("failed to get MANE NAME\n");
+-		return 0;
++	if (ret) {
++		mca_log_info("failed to get cell vendor, ret=%d\n", ret);
++		return ret < 0 ? ret : -EIO;
+ 	}
+ 	mca_log_info("%s\n", t_buf);
+ 
+ 	switch (t_buf[1]) {
+ 	case FG_CELL_NAME_A:
+-		bq->cell_name = "samsung";
++		cell_name = "samsung";
+ 		break;
+ 	case FG_CELL_NAME_B:
+-		bq->cell_name = "sony";
++		cell_name = "sony";
+ 		break;
+ 	case FG_CELL_NAME_C:
+-		bq->cell_name = "sanyo";
++		cell_name = "sanyo";
+ 		break;
+ 	case FG_CELL_NAME_D:
+-		bq->cell_name = "lg";
++		cell_name = "lg";
+ 		break;
+ 	case FG_CELL_NAME_E:
+-		bq->cell_name = "panasonic";
++		cell_name = "panasonic";
+ 		break;
+ 	case FG_CELL_NAME_F:
+-		bq->cell_name = "atl";
++		cell_name = "atl";
+ 		break;
+ 	case FG_CELL_NAME_G:
+-		bq->cell_name = "byd";
++		cell_name = "byd";
+ 		break;
+ 	case FG_CELL_NAME_H:
+-		bq->cell_name = "tws";
++		cell_name = "tws";
+ 		break;
+ 	case FG_CELL_NAME_I:
+-		bq->cell_name = "lishen";
++		cell_name = "lishen";
+ 		break;
+ 	case FG_CELL_NAME_J:
+-		bq->cell_name = "coslight";
++		cell_name = "coslight";
+ 		break;
+ 	case FG_CELL_NAME_L:
+-		bq->cell_name = "lwn";
++		cell_name = "lwn";
+ 		break;
+ 	default:
+-		bq->cell_name = "default";
+-		break;
+-	}
+-
++		cell_name = "default";
++		break;
++	}
++
++	/* Publish only a validated result; all names have static lifetime. */
++	WRITE_ONCE(bq->cell_name, cell_name);
+ 	return 0;
+ }
+ 
+@@ -4149,13 +4152,27 @@
+ static int fg_get_one_batt_cell_info(void *data, const char **name)
+ {
+ 	struct bq_fg_chip *info = (struct bq_fg_chip *)data;
+-
+-	if (info->cell_name) {
+-		*name = info->cell_name;
+-		return 0;
+-	}
+-
+-	return -1;
++	const char *cell_name;
++	int ret;
++
++	if (!info || !name)
++		return -EINVAL;
++
++	cell_name = READ_ONCE(info->cell_name);
++	if (!cell_name) {
++		/* The MAC reader owns data_lock -> i2c_rw_lock. A failed
++		 * optional probe read must remain retryable by its consumer.
++		 */
++		ret = fg_read_cell_vendor(info);
++		if (ret)
++			return ret;
++		cell_name = READ_ONCE(info->cell_name);
++		if (!cell_name)
++			return -ENODATA;
++	}
++
++	*name = cell_name;
++	return 0;
+ }
+ 
+ static int fg_get_one_adapt_power(void *data, int *adapt_power)
+--- a/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
++++ b/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
+@@ -17,6 +17,9 @@
+  *
+  */
+ #include <linux/kernel.h>
++#include <linux/moduleparam.h>
++#include <linux/mutex.h>
++#include <linux/sched.h>
+ #include <linux/string.h>
+ #include <linux/reboot.h>
+ #include <linux/ktime.h>
+@@ -59,6 +62,149 @@
+ #define MCA_DTPT_MOLECULE_SCALE 8
+ #define MCA_DTPT_DENOM_SCALE 10
+ #define MCA_PPS_MAXFCC_PEAK_TIME_S 120
++
++/* R89: a read-only snapshot exists even when the platform device cannot bind.
++ * Only the latest active probe updates it; runtime battery-table updates do not.
++ * dependency_errno is the returned dependency status, or a local -ENOENT /
++ * -ENOMEM for a missing object. It is distinct from the legacy probe return.
++ */
++struct mca_quick_charge_probe_diag {
++	unsigned int attempt;
++	bool active;
++	struct task_struct *owner;
++	struct mca_quick_charge_info *info;
++	const char *stage;
++	int probe_errno;
++	int dependency_errno;
++	bool dependency_recorded;
++	int country;
++	int global_table;
++	int mode;
++	char main_cell[32];
++	char table[64];
++};
++
++static DEFINE_MUTEX(mca_quick_charge_probe_diag_lock);
++static struct mca_quick_charge_probe_diag mca_quick_charge_diag = {
++	.stage = "not_started", .country = -1, .global_table = -1,
++	.mode = -1,
++};
++
++static void mca_quick_charge_diag_begin(void)
++{
++	unsigned int attempt;
++
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	attempt = mca_quick_charge_diag.attempt + 1;
++	mca_quick_charge_diag = (struct mca_quick_charge_probe_diag) {
++		.attempt = attempt, .active = true, .owner = current, .stage = "fg_ready",
++		.probe_errno = -EINPROGRESS, .country = -1, .global_table = -1,
++		.mode = -1,
++	};
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++}
++
++static void mca_quick_charge_diag_attach(struct mca_quick_charge_info *info)
++{
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	if (mca_quick_charge_diag.active && mca_quick_charge_diag.owner == current) {
++		mca_quick_charge_diag.info = info;
++		mca_quick_charge_diag.stage = "parse_dt";
++	}
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++}
++
++static void mca_quick_charge_diag_note(struct mca_quick_charge_info *info,
++				     const char *stage, int dependency_errno)
++{
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	if (mca_quick_charge_diag.active && mca_quick_charge_diag.owner == current &&
++	    mca_quick_charge_diag.info == info) {
++		mca_quick_charge_diag.stage = stage;
++		mca_quick_charge_diag.dependency_errno = dependency_errno;
++		mca_quick_charge_diag.dependency_recorded = true;
++	}
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++}
++
++static void mca_quick_charge_diag_context(struct mca_quick_charge_info *info,
++					int country, int global_table, int mode)
++{
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	if (mca_quick_charge_diag.active && mca_quick_charge_diag.owner == current &&
++	    mca_quick_charge_diag.info == info) {
++		mca_quick_charge_diag.country = country;
++		mca_quick_charge_diag.global_table = global_table;
++		mca_quick_charge_diag.mode = mode;
++	}
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++}
++
++static void mca_quick_charge_diag_cell(struct mca_quick_charge_info *info,
++				     const char *name)
++{
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	if (mca_quick_charge_diag.active && mca_quick_charge_diag.owner == current &&
++	    mca_quick_charge_diag.info == info)
++		strscpy(mca_quick_charge_diag.main_cell, name ?: "<missing>",
++			sizeof(mca_quick_charge_diag.main_cell));
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++}
++
++static void mca_quick_charge_diag_table(struct mca_quick_charge_info *info,
++				      const char *name)
++{
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	if (mca_quick_charge_diag.active && mca_quick_charge_diag.owner == current &&
++	    mca_quick_charge_diag.info == info)
++		strscpy(mca_quick_charge_diag.table, name,
++			sizeof(mca_quick_charge_diag.table));
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++}
++
++static int mca_quick_charge_diag_finish(const char *stage, int result,
++				      int dependency_errno)
++{
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	if (mca_quick_charge_diag.active && mca_quick_charge_diag.owner == current) {
++		if (stage)
++			mca_quick_charge_diag.stage = stage;
++		if (stage || !mca_quick_charge_diag.dependency_recorded)
++			mca_quick_charge_diag.dependency_errno = dependency_errno;
++		mca_quick_charge_diag.probe_errno = result;
++		mca_quick_charge_diag.active = false;
++		mca_quick_charge_diag.owner = NULL;
++		mca_quick_charge_diag.info = NULL;
++	}
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++	return result;
++}
++
++static int mca_quick_charge_probe_status_get(char *buf,
++					   const struct kernel_param *kp)
++{
++	const struct mca_quick_charge_probe_diag *d = &mca_quick_charge_diag;
++	int ret;
++
++	(void)kp;
++	mutex_lock(&mca_quick_charge_probe_diag_lock);
++	ret = scnprintf(buf, PAGE_SIZE,
++		"attempt=%u active=%d stage=%s probe_errno=%d dependency_errno=%d "
++		"country=%d global_table=%d mode=%d cell=%s table=%s\n",
++		d->attempt, d->active, d->stage, d->probe_errno, d->dependency_errno,
++		d->country, d->global_table, d->mode,
++		d->main_cell[0] ? d->main_cell : "<unread>",
++		d->table[0] ? d->table : "<unselected>");
++	mutex_unlock(&mca_quick_charge_probe_diag_lock);
++	return ret;
++}
++
++static const struct kernel_param_ops mca_quick_charge_probe_status_ops = {
++	.get = mca_quick_charge_probe_status_get,
++};
++module_param_cb(probe_status, &mca_quick_charge_probe_status_ops, NULL, 0444);
++MODULE_PARM_DESC(probe_status, "Read-only latest quick-charge probe diagnostic snapshot");
++
+ 
+ static void
+ strategy_quickchg_map_ibus_to_fsw(struct mca_quick_charge_info *info,
+@@ -3927,13 +4073,14 @@
+ {
+ 	struct mca_quick_charge_batt_para_info *batt_para_info =
+ 		&(info->batt_para[batt_role]);
+-	int array_len, row, col, i;
++	int array_len, row, col, i, ret;
+ 	const char *tmp_string = NULL;
+ 	struct mca_quick_charge_temp_para_info *temp_info = NULL;
+ 
+ 	array_len = mca_parse_dts_count_strings(node, name, TEMP_PARA_MAX_GROUP,
+ 						MCA_QUICK_CHG_TEMP_PARA_MAX);
+ 	if (array_len < 0) {
++		mca_quick_charge_diag_note(info, "temp_count", array_len);
+ 		mca_log_err("parse %s failed\n", name);
+ 		return -1;
+ 	}
+@@ -3947,59 +4094,87 @@
+ 	batt_para_info->temp_info = kcalloc(batt_para_info->temp_para_size,
+ 					    sizeof(*temp_info), GFP_KERNEL);
+ 	if (!batt_para_info->temp_info) {
++		mca_quick_charge_diag_note(info, "temp_allocate", -ENOMEM);
+ 		mca_log_err("temp para no mem\n");
+ 		return -ENOMEM;
+ 	}
+ 	temp_info = batt_para_info->temp_info;
+ 	for (i = 0; i < array_len; i++) {
+-		if (mca_parse_dts_string_index(node, name, i, &tmp_string))
++		ret = mca_parse_dts_string_index(node, name, i, &tmp_string);
++		if (ret) {
++			mca_quick_charge_diag_note(info, "temp_string", ret);
+ 			return -1;
++		}
+ 
+ 		row = i / MCA_QUICK_CHG_TEMP_PARA_MAX;
+ 		col = i % MCA_QUICK_CHG_TEMP_PARA_MAX;
+ 		switch (col) {
+ 		case MCA_QUICK_CHG_TEMP_LOW:
+-			if (kstrtoint(tmp_string, 10,
+-				      &temp_info[row].temp_para.temp_low))
++			ret = kstrtoint(tmp_string, 10,
++				      &temp_info[row].temp_para.temp_low);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "temp_integer", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_TEMP_HIGH:
+-			if (kstrtoint(tmp_string, 10,
+-				      &temp_info[row].temp_para.temp_high))
++			ret = kstrtoint(tmp_string, 10,
++				      &temp_info[row].temp_para.temp_high);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "temp_integer", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_LOW_TEMP_HYS:
+-			if (kstrtoint(tmp_string, 10,
++			ret = kstrtoint(tmp_string, 10,
+ 				      &temp_info[row]
+-					       .temp_para.low_temp_hysteresis))
++					       .temp_para.low_temp_hysteresis);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "temp_integer", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_HIGH_TEMP_HYS:
+-			if (kstrtoint(tmp_string, 10,
++			ret = kstrtoint(tmp_string, 10,
+ 				      &temp_info[row]
+-					       .temp_para.high_temp_hysteresis))
++					       .temp_para.high_temp_hysteresis);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "temp_integer", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_TEMP_MAX_CURRENT:
+-			if (kstrtoint(tmp_string, 10,
+-				      &temp_info[row].temp_para.max_current))
++			ret = kstrtoint(tmp_string, 10,
++				      &temp_info[row].temp_para.max_current);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "temp_integer", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_TEMP_NROMAL_FV:
+-			if (kstrtoint(tmp_string, 10,
+-				      &temp_info[row].temp_para.normal_max_fv))
++			ret = kstrtoint(tmp_string, 10,
++				      &temp_info[row].temp_para.normal_max_fv);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "temp_integer", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_TEMP_FFC_FV:
+-			if (kstrtoint(tmp_string, 10,
+-				      &temp_info[row].temp_para.ffc_max_fv))
++			ret = kstrtoint(tmp_string, 10,
++				      &temp_info[row].temp_para.ffc_max_fv);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "temp_integer", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_VOLT_PARA_NAME:
+-			if (mca_quick_charge_parse_volt_para(
++			ret = mca_quick_charge_parse_volt_para(
+ 				    node, tmp_string,
+-				    &temp_info[row].volt_info))
++				    &temp_info[row].volt_info);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "voltage_table", ret);
+ 				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_VOLT_FFC_PARA_NAME: {
+ 			const char *ffc_name = tmp_string;
+@@ -4027,10 +4202,13 @@
+ 					ffc_node = cc_node;
+ 				}
+ 			}
+-			if (mca_quick_charge_parse_volt_para(
++			ret = mca_quick_charge_parse_volt_para(
+ 				    ffc_node, ffc_name,
+-				    &temp_info[row].volt_ffc_info))
++				    &temp_info[row].volt_ffc_info);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "ffc_voltage_table", ret);
+ 				goto error;
++			}
+ 			break;
+ 		}
+ 		case MCA_QUICK_CHG_STAGE_PARA_NAME:
+@@ -4090,7 +4268,7 @@
+ 					    int mode)
+ {
+ 	struct device_node *node = info->dev->of_node;
+-	int array_len, row, col, i;
++	int array_len, row, col, i, ret;
+ 	int batt_role = 0;
+ 	const char *tmp_string = NULL;
+ 	const char *main_cell_name = NULL;
+@@ -4098,12 +4276,16 @@
+ 	const struct mca_hwid *hwid = mca_get_hwid_info();
+ 	char *battpara[] = { "batt_para", "base_flip_para" };
+ 
++	mca_quick_charge_diag_context(info, hwid ? hwid->country_version : -1,
++			hwid && info->has_gbl_batt_para &&
++			hwid->country_version != CountryCN, mode);
+ 	if (hwid && info->has_gbl_batt_para &&
+ 	    hwid->country_version != CountryCN)
+ 		node = of_find_node_by_name(NULL,
+ 					    "mca_quick_charge_batt_para_gbl");
+ 
+ 	if (!node) {
++		mca_quick_charge_diag_note(info, "battery_node", -ENOENT);
+ 		mca_log_err("node in null\n");
+ 		return -1;
+ 	}
+@@ -4112,36 +4294,47 @@
+ 						BATT_PARA_MAX_GROUP,
+ 						MCA_QUICK_CHG_BATT_PARA_MAX);
+ 	if (array_len < 0) {
++		mca_quick_charge_diag_note(info, "battery_count", array_len);
+ 		mca_log_err("parse batt_para failed\n");
+ 		return -1;
+ 	}
+ 
+-	(void)platform_fg_ops_get_batt_cell_info(FG_IC_MASTER, &main_cell_name);
++	ret = platform_fg_ops_get_batt_cell_info(FG_IC_MASTER, &main_cell_name);
++	mca_quick_charge_diag_cell(info, main_cell_name);
+ 	if (!main_cell_name) {
++		mca_quick_charge_diag_note(info, "main_cell", ret ? ret : -ENOENT);
+ 		mca_log_err("get main cell name fail\n");
+ 		return -EINVAL;
+ 	}
+ 	main_cell_name = mca_quick_charge_check_model_name(main_cell_name);
++	mca_quick_charge_diag_cell(info, main_cell_name);
+ 	if (info->batt_type > MCA_BATTERY_TYPE_SINGLE_NUM_MAX) {
+-		(void)platform_fg_ops_get_batt_cell_info(FG_IC_SLAVE,
+-							 &slave_cell_name);
++		ret = platform_fg_ops_get_batt_cell_info(FG_IC_SLAVE,
++						       &slave_cell_name);
+ 		if (!slave_cell_name) {
++			mca_quick_charge_diag_note(info, "slave_cell", ret ? ret : -ENOENT);
+ 			mca_log_err("get slave cell name fail\n");
+ 			return -EINVAL;
+ 		}
+ 		mca_log_info("slave_cell_name %s\n", slave_cell_name);
+ 	}
+ 	for (i = 0; i < array_len; i++) {
+-		if (mca_parse_dts_string_index(node, battpara[mode], i,
+-					       &tmp_string))
++		ret = mca_parse_dts_string_index(node, battpara[mode], i,
++					       &tmp_string);
++		if (ret) {
++			mca_quick_charge_diag_note(info, "battery_string", ret);
+ 			return -1;
++		}
+ 
+ 		row = i / MCA_QUICK_CHG_BATT_PARA_MAX;
+ 		col = i % MCA_QUICK_CHG_BATT_PARA_MAX;
+ 		switch (col) {
+ 		case MCA_QUICK_CHG_BATT_ROLE:
+-			if (kstrtoint(tmp_string, 10, &batt_role))
++			ret = kstrtoint(tmp_string, 10, &batt_role);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "battery_role", ret);
+ 				return -1;
++			}
+ 			if (batt_role > FG_IC_SLAVE)
+ 				i += 2;
+ 			break;
+@@ -4156,6 +4349,7 @@
+ 			}
+ 			break;
+ 		case MCA_QUICK_CHG_TEMP_PARA_NAME:
++			mca_quick_charge_diag_table(info, tmp_string);
+ 			if (mca_quick_charge_parse_temp_para(
+ 				    node, batt_role, tmp_string, info, mode))
+ 				return -1;
+@@ -4166,6 +4360,7 @@
+ 	}
+ 
+ 	if (!info->batt_para[FG_IC_MASTER].temp_info) {
++		mca_quick_charge_diag_note(info, "battery_table_match", -ENOENT);
+ 		mca_log_err("parse master batt para failed\n");
+ 		return -1;
+ 	}
+@@ -5644,67 +5839,76 @@
+ 
+ static int mca_quick_charge_probe(struct platform_device *pdev)
+ {
+-	int ret = 0;
++	int ret = 0, master_probe, slave_probe;
+ 	struct mca_quick_charge_info *info;
+ 
++	mca_quick_charge_diag_begin();
+ 	mca_log_info("probe begin\n");
+ 
+-	if (strategy_class_fg_ops_is_init_ok() <= 0) {
++	ret = strategy_class_fg_ops_is_init_ok();
++	if (ret <= 0) {
+ 		mca_log_info("fg is not ready, wait for it\n");
+-		return -EPROBE_DEFER;
++		return mca_quick_charge_diag_finish("fg_ready", -EPROBE_DEFER, ret);
+ 	}
+ 
+ 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+ 	if (!info)
+-		return -ENOMEM;
+-
+-	platform_class_cp_get_chip_vendor(CP_ROLE_MASTER, &info->cp_chip_vendor);
++		return mca_quick_charge_diag_finish("allocate", -ENOMEM, -ENOMEM);
++
++	ret = platform_class_cp_get_chip_vendor(CP_ROLE_MASTER, &info->cp_chip_vendor);
+ 	if (!info->cp_chip_vendor) {
+-		if (platform_class_cp_get_probe_ok(CP_ROLE_MASTER) |
+-		    platform_class_cp_get_probe_ok(CP_ROLE_SLAVE)) {
++		master_probe = platform_class_cp_get_probe_ok(CP_ROLE_MASTER);
++		slave_probe = platform_class_cp_get_probe_ok(CP_ROLE_SLAVE);
++		if (master_probe | slave_probe) {
+ 			mca_log_err("cp is not ready, wait for it\n");
+-			return -EPROBE_DEFER;
++			return mca_quick_charge_diag_finish("cp_ready", -EPROBE_DEFER,
++							 (ret ? ret : (master_probe ? master_probe : slave_probe)));
+ 		}
+ 	}
+ 
+ 	info->input_suspend_voter = mca_find_votable("input_suspend");
+ 	if (!info->input_suspend_voter) {
+ 		mca_log_info("get voter fail, wait for it\n");
+-		return -EPROBE_DEFER;
++		return mca_quick_charge_diag_finish("voter_input_suspend",
++						     -EPROBE_DEFER, -ENOENT);
+ 	}
+ 	info->buck_input_voter = mca_find_votable("buck_input");
+ 	if (!info->buck_input_voter) {
+ 		mca_log_info("get buck_input voter fail, wait for it\n");
+-		return -EPROBE_DEFER;
++		return mca_quick_charge_diag_finish("voter_buck_input",
++						     -EPROBE_DEFER, -ENOENT);
+ 	}
+ 	info->buck_charge_curr_voter = mca_find_votable("buck_charge_curr");
+ 	if (!info->buck_charge_curr_voter) {
+ 		mca_log_info("get buck_charge_curr voter fail, wait for it\n");
+-		return -EPROBE_DEFER;
++		return mca_quick_charge_diag_finish("voter_buck_charge_curr",
++						     -EPROBE_DEFER, -ENOENT);
+ 	}
+ 	info->term_volt_voter = mca_find_votable("term_volt");
+ 	if (!info->term_volt_voter) {
+ 		mca_log_info("get term_volt voter fail, wait for it\n");
+-		return -EPROBE_DEFER;
++		return mca_quick_charge_diag_finish("voter_term_volt",
++						     -EPROBE_DEFER, -ENOENT);
+ 	}
+ 	info->flip_charge_curr_voter = mca_find_votable("flip_charge_curr");
+ 	if (!info->flip_charge_curr_voter) {
+ 		mca_log_info("get flip_charge_curr voter fail, wait for it\n");
+-		return -EPROBE_DEFER;
++		return mca_quick_charge_diag_finish("voter_flip_charge_curr",
++						     -EPROBE_DEFER, -ENOENT);
+ 	}
+ 
+ 	info->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, info);
++	mca_quick_charge_diag_attach(info);
+ 	ret = mca_quick_charge_parse_dt(info);
+ 	if (ret) {
+ 		mca_log_err("parst dts failed, ret: %d\n", ret);
+-		if (ret != -1)
+-			ret = -EPROBE_DEFER;
+-		return ret;
++		return mca_quick_charge_diag_finish(NULL,
++				ret != -1 ? -EPROBE_DEFER : ret, ret);
+ 	}
+ 	ret = mca_quick_charge_create_voter(info);
+ 	if (ret)
+-		return -EPROBE_DEFER;
++		return mca_quick_charge_diag_finish("create_voter", -EPROBE_DEFER, ret);
+ 	mca_quick_charge_init_data(info);
+ 	mca_quick_charge_create_group(info->dev);
+ 	mutex_init(&info->data_lock);
+@@ -5728,7 +5932,7 @@
+ 		mca_log_err("register reboot notify failed\n");
+ 	mca_log_err("probe end\n");
+ 
+-	return 0;
++	return mca_quick_charge_diag_finish("bound", 0, 0);
+ }
+ 
+ static void mca_quick_charge_remove(struct platform_device *pdev)

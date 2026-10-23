@@ -1,0 +1,115 @@
+--- a/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
++++ b/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c
+@@ -879,55 +879,58 @@
+ 
+ static int fg_read_cell_vendor(struct bq_fg_chip *bq)
+ {
+-	u8 t_buf[40];
++	u8 t_buf[40] = { 0 };
++	const char *cell_name;
+ 	int ret;
+ 
+ 	ret = fg_mac_read_block(bq, FG_MAC_CMD_CHEM_NAME, t_buf, 4);
+-	if (ret < 0) {
+-		mca_log_info("failed to get MANE NAME\n");
+-		return 0;
++	if (ret) {
++		mca_log_info("failed to get cell vendor, ret=%d\n", ret);
++		return ret < 0 ? ret : -EIO;
+ 	}
+ 	mca_log_info("%s\n", t_buf);
+ 
+ 	switch (t_buf[1]) {
+ 	case FG_CELL_NAME_A:
+-		bq->cell_name = "samsung";
++		cell_name = "samsung";
+ 		break;
+ 	case FG_CELL_NAME_B:
+-		bq->cell_name = "sony";
++		cell_name = "sony";
+ 		break;
+ 	case FG_CELL_NAME_C:
+-		bq->cell_name = "sanyo";
++		cell_name = "sanyo";
+ 		break;
+ 	case FG_CELL_NAME_D:
+-		bq->cell_name = "lg";
++		cell_name = "lg";
+ 		break;
+ 	case FG_CELL_NAME_E:
+-		bq->cell_name = "panasonic";
++		cell_name = "panasonic";
+ 		break;
+ 	case FG_CELL_NAME_F:
+-		bq->cell_name = "atl";
++		cell_name = "atl";
+ 		break;
+ 	case FG_CELL_NAME_G:
+-		bq->cell_name = "byd";
++		cell_name = "byd";
+ 		break;
+ 	case FG_CELL_NAME_H:
+-		bq->cell_name = "tws";
++		cell_name = "tws";
+ 		break;
+ 	case FG_CELL_NAME_I:
+-		bq->cell_name = "lishen";
++		cell_name = "lishen";
+ 		break;
+ 	case FG_CELL_NAME_J:
+-		bq->cell_name = "coslight";
++		cell_name = "coslight";
+ 		break;
+ 	case FG_CELL_NAME_L:
+-		bq->cell_name = "lwn";
++		cell_name = "lwn";
+ 		break;
+ 	default:
+-		bq->cell_name = "default";
+-		break;
+-	}
+-
++		cell_name = "default";
++		break;
++	}
++
++	/* Publish only a validated result; all names have static lifetime. */
++	WRITE_ONCE(bq->cell_name, cell_name);
+ 	return 0;
+ }
+ 
+@@ -4149,13 +4152,27 @@
+ static int fg_get_one_batt_cell_info(void *data, const char **name)
+ {
+ 	struct bq_fg_chip *info = (struct bq_fg_chip *)data;
+-
+-	if (info->cell_name) {
+-		*name = info->cell_name;
+-		return 0;
+-	}
+-
+-	return -1;
++	const char *cell_name;
++	int ret;
++
++	if (!info || !name)
++		return -EINVAL;
++
++	cell_name = READ_ONCE(info->cell_name);
++	if (!cell_name) {
++		/* The MAC reader owns data_lock -> i2c_rw_lock. A failed
++		 * optional probe read must remain retryable by its consumer.
++		 */
++		ret = fg_read_cell_vendor(info);
++		if (ret)
++			return ret;
++		cell_name = READ_ONCE(info->cell_name);
++		if (!cell_name)
++			return -ENODATA;
++	}
++
++	*name = cell_name;
++	return 0;
+ }
+ 
+ static int fg_get_one_adapt_power(void *data, int *adapt_power)
