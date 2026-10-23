@@ -1,0 +1,32 @@
+R87 local runtime preparation source checkpoint
+
+Kernel compile identity remains ae4bf5b38ae1771e0f440b8b26b02cd66a008231,
+GitHub Actions run 39873532978, attempt 1. This source-only checkpoint changes
+neither r87-build-route nor its workflow and must not start another compile.
+
+r87-handover contains the fixed boot-only native helper, production-C tests,
+contract generator and reproducible build preparation. The current test fixture
+uses runtime_frozen=false and cannot activate modules. After actual R87 success,
+the generator requires matching retained-kernel ABI and explicit reviewed run
+identity before producing a runtime contract. Normal249 stay unchanged; add45
+coherent modules and never call the two old readonly owners in the same boot.
+Final checks require canonical battery/USB owners and real quick-charge binding;
+USB type may vary with the adapter. Authentication interface presence does not
+assert authentication or charging success. Native host checks: 21,220 assertions.
+
+r87-assembly contains local image assembly code, six guard tests and the pinned
+72-to-80MiB RAM payload growth review. Actual new R87 CI/ABI/frozen native inputs
+are required before output creation. The outer vendor_boot remains 96MiB.
+
+r87-success/abi-audit contains read-only exact artifact/source/action/config and
+static294 ELF auditors. Generic parser regression used the old R86 graph only;
+no R87 PASS or flash image is included. The actual251 R84 ELF fixture includes
+249 vendor_dlkm and two system_dlkm files and is checked through both roots.
+
+These files preserve the local review-workspace source layout. Their pinned
+R84 baseline images, native toolchain and previous review/reference directories
+are external inputs and must be restored at the paths documented by the scripts.
+The repository checkout itself is at r85-build-route/repository within that review
+workspace. Use the original layout or relocate the explicit CLI input paths.
+No user capture, stock image, generated module, helper binary or candidate image
+is part of this source checkpoint. Hardware qualification is still pending.
