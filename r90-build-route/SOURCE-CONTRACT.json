@@ -1,0 +1,137 @@
+{
+  "activation_allowed": false,
+  "compile_only": true,
+  "full_charging_control_enabled": false,
+  "hardware_control_tested": false,
+  "parent_source_contract_sha256": "d6c9a364ff008547a4f59cab2d74672955b5d81af5a0a58e7edeb5bce2a61356",
+  "patches": [
+    {
+      "bytes": 6928,
+      "file": "patches/quickcharge-temp-table.patch",
+      "sha256": "0caa464e65b50f6bfec68446f32a80668b63718135d0d826d4139961d17b9d07",
+      "working_directory": "vendor/qcom/sm8850"
+    }
+  ],
+  "preparation_parent_contract_sha256": "68de38814d6b58896b0366f32d5c763f1f6895dd6cbfd3b987846631b0de7cbb",
+  "read_only_guards": [
+    {
+      "expected": {
+        "bytes": 17895,
+        "sha256": "73e51362e61cf75c15c0ed9f026cc1b36ed72eedafc826405fb70f2c6ed7b6c3"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/configs/canoe_perf.bzl"
+    },
+    {
+      "expected": {
+        "bytes": 11605,
+        "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h"
+    },
+    {
+      "expected": {
+        "bytes": 6535,
+        "sha256": "efb237b5f3fed68faf4eecc4510b6c1aec0e0dc2a7e116ed8a20434450da551e"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c"
+    },
+    {
+      "expected": {
+        "bytes": 13327,
+        "sha256": "b766aba518a331a2833f40caa402bfb767f59149e8c593699a27d14034115df5"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_adsp_glink.c"
+    },
+    {
+      "expected": {
+        "bytes": 69059,
+        "sha256": "fa70fd99eea0a11e4e9700d14a75e769b6bfde452e29bbde6c529b1af82b4da2"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c"
+    },
+    {
+      "expected": {
+        "bytes": 173184,
+        "sha256": "53db4a95167708dd5410c951a6119d562eace7ab94fff341cb8d68cbe04f9925"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+    },
+    {
+      "expected": {
+        "bytes": 14052,
+        "sha256": "1322e421e2bb6a90deacc47f2af235f91ccc8b92ee65958318e3cfda83364843"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h"
+    },
+    {
+      "expected": {
+        "bytes": 35522,
+        "sha256": "0a6abfc0db98dcc572042c7ab91a11c16d684b381d0f845463a5f7351c3d2a99"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c"
+    },
+    {
+      "expected": {
+        "bytes": 33783,
+        "sha256": "44a70082a3eb052a8bc137f56cb7ca4a854c2560d4b956f1db058eb3bda2b44b"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_shared_memory/charger_partition.c"
+    },
+    {
+      "expected": {
+        "bytes": 8128,
+        "sha256": "66c4acb91f17128286cd79eaaeb3398157d77ec8d8edbf0e4f758af49db3df45"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/inc/strategy_fg.h"
+    },
+    {
+      "expected": {
+        "bytes": 9868,
+        "sha256": "fa147e6ad95ffe161cb12a0a38a92013239f02fbb3acdfdfbedae02bacb33b2d"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c"
+    },
+    {
+      "expected": {
+        "bytes": 122791,
+        "sha256": "f65f40ebec8fb46bb0fcf9b3209951c0a6ab0be1a419e3c6769adfac3fa49bb0"
+      },
+      "inherited_r89_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c"
+    }
+  ],
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "schema": 1,
+  "scope": [
+    "parse supported 9-column and 11-column quickcharge temperature tables",
+    "retain strict malformed-table rejection and battery-table selection",
+    "retain R89 metadata recovery, R88 FG policy separation and all charging protections"
+  ],
+  "source_commit": "fd9b66007d6ab12c2281feb9ad2984b6ca5c4339",
+  "source_repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+  "writes": [
+    {
+      "after": {
+        "bytes": 181225,
+        "sha256": "fe577d79307914d0e5d4d8585bf44db2d125e7151b65da87614042e40ee2c0e5"
+      },
+      "before": {
+        "bytes": 179512,
+        "sha256": "55627d74ab0ffb074548aca1cac3fedecc2b6268a89ffb93fb0e1e5f187c350f"
+      },
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
+      "role": "inactive_full_MCA_validation_only"
+    }
+  ]
+}

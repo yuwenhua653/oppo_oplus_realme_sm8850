@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "stock_dt": {
+    "source_zip": "myron-adaptation-r12.zip",
+    "source_member": "myron-adaptation-r12/drivers/evidence/r12-hardware/dt/stock-charging-nodes.json",
+    "sha256": "454343095983034d2c02653d85422cb569b92afdd76966596f9e72a4cef26773",
+    "captured_dtb_sha256": "c3174805b46e7679aded164edfff2c109188e16f41da49c19bd4b79223987802",
+    "limitation": "captured partition DT selection merge, not Android runtime FDT with bootloader fixups"
+  },
+  "stock_fv_evidence": {
+    "source_zip": "myron-adaptation-r12.zip",
+    "source_member": "myron-adaptation-r12/drivers/evidence/r9-shared-abi/mca_strategy_quickchg.disasm.txt",
+    "sha256": "4428f407ef6a1e13ea81c0162aef9619e8afd57b76acd78e33a2014e435892f7",
+    "symbol": "mca_qc_quick_charge_regulation",
+    "offsets": [
+      "0x5cd0-0x5cf4"
+    ],
+    "observation": "Stock regulation reads the final voltage row (size - 1) of cur_volt_para. The nine-column temperature record has no independent normal/FFC FV fields. R90 derives each missing FV from the final parsed voltage row, preserving all voltage and stage entries.",
+    "stock_module_sha256": "4cdec39dc67155b2209dafc0e991f057720dffb871754786ed3c1a022368a201",
+    "limit": "Evidence for terminal FV compatibility only, not equivalence of the complete replacement driver."
+  },
+  "pinned_inputs": {
+    "mca_parse_dts.c": {
+      "sha256": "9d51b3a00340decb5f3419eef2ed7542f07d7b3c2c20d3cfa9f3c23c6271440b",
+      "source_zip": "myron-adaptation-r12.zip"
+    },
+    "mca_quick_charger.h": {
+      "sha256": "43167af5e7662752bcd963e9e23c65dc2869dadc9e0d94ddd4ce4a50641d0401",
+      "source_zip": "myron-adaptation-r12.zip"
+    }
+  }
+}

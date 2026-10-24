@@ -1,0 +1,226 @@
+--- a/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
++++ b/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c
+@@ -3982,7 +3982,7 @@
+ 	struct mca_quick_charge_volt_para_info *volt_info)
+ {
+ 	struct mca_quick_charge_volt_para *volt_para;
+-	int array_len, row, col, i;
++	int array_len, row, col, i, size;
+ 	const char *tmp_string = NULL;
+ 
+ 	if (strcmp(name, "null") == 0) {
+@@ -3996,17 +3996,16 @@
+ 		return -1;
+ 	}
+ 
+-	volt_info->volt_para_size = array_len / MCA_QUICK_CHG_VOLT_PARA_MAX;
+-	volt_info->volt_para = kcalloc(volt_info->volt_para_size,
++	size = array_len / MCA_QUICK_CHG_VOLT_PARA_MAX;
++	volt_para = kcalloc(size,
+ 				       sizeof(*volt_para), GFP_KERNEL);
+-	if (!volt_info->volt_para) {
++	if (!volt_para) {
+ 		mca_log_err("volt para no mem\n");
+ 		return -ENOMEM;
+ 	}
+-	volt_para = volt_info->volt_para;
+ 	for (i = 0; i < array_len; i++) {
+ 		if (mca_parse_dts_string_index(node, name, i, &tmp_string))
+-			return -1;
++			goto error;
+ 
+ 		row = i / MCA_QUICK_CHG_VOLT_PARA_MAX;
+ 		col = i % MCA_QUICK_CHG_VOLT_PARA_MAX;
+@@ -4030,10 +4029,12 @@
+ 			break;
+ 		}
+ 	}
+-	for (i = 0; i < volt_info->volt_para_size; i++)
++	for (i = 0; i < size; i++)
+ 		mca_log_info("volt_para %d %d %d\n", volt_para[i].voltage,
+ 			     volt_para[i].current_max,
+ 			     volt_para[i].current_min);
++	volt_info->volt_para_size = size;
++	volt_info->volt_para = volt_para;
+ 	return 0;
+ error:
+ 	kfree(volt_para);
+@@ -4041,24 +4042,33 @@
+ 	return -1;
+ }
+ 
+-static void mca_quick_charge_parse_stage_para(
++static int mca_quick_charge_parse_stage_para(
+ 	struct device_node *node, const char *name,
+ 	struct mca_quick_charge_volt_para_info *volt_info)
+ {
++	int *stage_para;
++	int ret;
++
+ 	if (strcmp(name, "null") == 0) {
+ 		mca_log_info("no need parse stage para\n");
+-		return;
+-	}
+-
+-	volt_info->stage_para =
+-		kcalloc(volt_info->volt_para_size * 2, sizeof(int), GFP_KERNEL);
+-	if (!volt_info->volt_para) {
+-		mca_log_err("volt para no mem\n");
+-		return;
+-	}
+-
+-	mca_parse_dts_u32_array(node, name, volt_info->stage_para,
+-				volt_info->volt_para_size * 2);
++		return 0;
++	}
++	if (!volt_info->volt_para || volt_info->volt_para_size <= 0)
++		return -EINVAL;
++
++	stage_para = kcalloc(volt_info->volt_para_size * 2,
++			     sizeof(*stage_para), GFP_KERNEL);
++	if (!stage_para)
++		return -ENOMEM;
++
++	ret = mca_parse_dts_u32_array(node, name, stage_para,
++				    volt_info->volt_para_size * 2);
++	if (ret) {
++		kfree(stage_para);
++		return ret;
++	}
++	volt_info->stage_para = stage_para;
++	return 0;
+ }
+ 
+ #define BATT_PARA_CC_NAME_LEN 50
+@@ -4073,12 +4083,21 @@
+ {
+ 	struct mca_quick_charge_batt_para_info *batt_para_info =
+ 		&(info->batt_para[batt_role]);
+-	int array_len, row, col, i, ret;
++	int array_len, row, col, i, ret, temp_para_size;
++	int para_cols = MCA_QUICK_CHG_TEMP_PARA_MAX;
+ 	const char *tmp_string = NULL;
+ 	struct mca_quick_charge_temp_para_info *temp_info = NULL;
+ 
++	/* Legacy tables omit the normal/FFC FV columns, not the stage names.
++	 * Keep the same row limit and parse their voltage and stage tables.
++	 */
+ 	array_len = mca_parse_dts_count_strings(node, name, TEMP_PARA_MAX_GROUP,
+-						MCA_QUICK_CHG_TEMP_PARA_MAX);
++						para_cols);
++	if (array_len == -EINVAL) {
++		para_cols = MCA_QUICK_CHG_TEMP_PARA_MAX - 2;
++		array_len = mca_parse_dts_count_strings(node, name,
++						TEMP_PARA_MAX_GROUP, para_cols);
++	}
+ 	if (array_len < 0) {
+ 		mca_quick_charge_diag_note(info, "temp_count", array_len);
+ 		mca_log_err("parse %s failed\n", name);
+@@ -4089,25 +4108,26 @@
+ 	else
+ 		batt_para_info = &(info->base_flip_para[batt_role]);
+ 
+-	batt_para_info->temp_para_size =
+-		array_len / MCA_QUICK_CHG_TEMP_PARA_MAX;
+-	batt_para_info->temp_info = kcalloc(batt_para_info->temp_para_size,
++	temp_para_size = array_len / para_cols;
++	temp_info = kcalloc(temp_para_size,
+ 					    sizeof(*temp_info), GFP_KERNEL);
+-	if (!batt_para_info->temp_info) {
++	if (!temp_info) {
+ 		mca_quick_charge_diag_note(info, "temp_allocate", -ENOMEM);
+ 		mca_log_err("temp para no mem\n");
+ 		return -ENOMEM;
+ 	}
+-	temp_info = batt_para_info->temp_info;
+ 	for (i = 0; i < array_len; i++) {
+ 		ret = mca_parse_dts_string_index(node, name, i, &tmp_string);
+ 		if (ret) {
+ 			mca_quick_charge_diag_note(info, "temp_string", ret);
+-			return -1;
+-		}
+-
+-		row = i / MCA_QUICK_CHG_TEMP_PARA_MAX;
+-		col = i % MCA_QUICK_CHG_TEMP_PARA_MAX;
++			goto error;
++		}
++
++		row = i / para_cols;
++		col = i % para_cols;
++		if (para_cols != MCA_QUICK_CHG_TEMP_PARA_MAX &&
++		    col >= MCA_QUICK_CHG_TEMP_NROMAL_FV)
++			col += 2;
+ 		switch (col) {
+ 		case MCA_QUICK_CHG_TEMP_LOW:
+ 			ret = kstrtoint(tmp_string, 10,
+@@ -4212,19 +4232,45 @@
+ 			break;
+ 		}
+ 		case MCA_QUICK_CHG_STAGE_PARA_NAME:
+-			mca_quick_charge_parse_stage_para(
++			ret = mca_quick_charge_parse_stage_para(
+ 				node, tmp_string, &temp_info[row].volt_info);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "stage_table", ret);
++				goto error;
++			}
+ 			break;
+ 		case MCA_QUICK_CHG_FFC_STAGE_PARA_NAME:
+-			mca_quick_charge_parse_stage_para(
++			ret = mca_quick_charge_parse_stage_para(
+ 				node, tmp_string,
+ 				&temp_info[row].volt_ffc_info);
++			if (ret) {
++				mca_quick_charge_diag_note(info, "ffc_stage_table", ret);
++				goto error;
++			}
+ 			break;
+ 		default:
+ 			break;
+ 		}
+ 	}
+-	for (i = 0; i < batt_para_info->temp_para_size; i++)
++	if (para_cols != MCA_QUICK_CHG_TEMP_PARA_MAX) {
++		/* The final voltage stage is the legacy table's terminal FV.
++		 * A null table keeps FV zero and is never selected by the policy.
++		 */
++		for (i = 0; i < temp_para_size; i++) {
++			struct mca_quick_charge_volt_para_info *normal =
++				&temp_info[i].volt_info;
++			struct mca_quick_charge_volt_para_info *ffc =
++				&temp_info[i].volt_ffc_info;
++
++			if (normal->volt_para_size)
++				temp_info[i].temp_para.normal_max_fv =
++					normal->volt_para[normal->volt_para_size - 1].voltage;
++			if (ffc->volt_para_size)
++				temp_info[i].temp_para.ffc_max_fv =
++					ffc->volt_para[ffc->volt_para_size - 1].voltage;
++		}
++	}
++	for (i = 0; i < temp_para_size; i++)
+ 		mca_log_info("temp_para %d %d %d %d %d %d %d %d %d\n",
+ 			     temp_info[i].temp_para.temp_low,
+ 			     temp_info[i].temp_para.temp_high,
+@@ -4235,10 +4281,20 @@
+ 			     temp_info[i].temp_para.ffc_max_fv,
+ 			     temp_info[i].volt_info.volt_para_size,
+ 			     temp_info[i].volt_ffc_info.volt_para_size);
++	/* Publish only a complete table. A failed update leaves the previous
++	 * table untouched; runtime ownership of that table is unchanged.
++	 */
++	batt_para_info->temp_para_size = temp_para_size;
++	batt_para_info->temp_info = temp_info;
+ 	return 0;
+ error:
++	for (i = 0; i < temp_para_size; i++) {
++		kfree(temp_info[i].volt_info.stage_para);
++		kfree(temp_info[i].volt_info.volt_para);
++		kfree(temp_info[i].volt_ffc_info.stage_para);
++		kfree(temp_info[i].volt_ffc_info.volt_para);
++	}
+ 	kfree(temp_info);
+-	temp_info = NULL;
+ 	return -1;
+ }
+ 
