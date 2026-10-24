@@ -1,0 +1,145 @@
+{
+  "activation_allowed": false,
+  "compile_only": true,
+  "full_charging_control_enabled": false,
+  "hardware_control_tested": false,
+  "parent_build_contract_sha256": "5064ca52790956bbc024016ef85b19839f83f65a69f42db380cfc9fb67834b26",
+  "parent_source_contract_sha256": "709774666e5c9904d2cc15d80fcce861b9211297beb712e6552ac996f0e81715",
+  "patches": [
+    {
+      "bytes": 22335,
+      "file": "patches/pd-provider.patch",
+      "sha256": "bd0e41435ac75b35a458799a56e3db4c94804a4d9482663efbd4c6f6f0fedf2c",
+      "working_directory": "vendor/qcom/sm8850"
+    }
+  ],
+  "read_only_guards": [
+    {
+      "expected": {
+        "bytes": 17895,
+        "sha256": "73e51362e61cf75c15c0ed9f026cc1b36ed72eedafc826405fb70f2c6ed7b6c3"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/configs/canoe_perf.bzl"
+    },
+    {
+      "expected": {
+        "bytes": 11605,
+        "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h"
+    },
+    {
+      "expected": {
+        "bytes": 6535,
+        "sha256": "efb237b5f3fed68faf4eecc4510b6c1aec0e0dc2a7e116ed8a20434450da551e"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c"
+    },
+    {
+      "expected": {
+        "bytes": 13327,
+        "sha256": "b766aba518a331a2833f40caa402bfb767f59149e8c593699a27d14034115df5"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_adsp_glink.c"
+    },
+    {
+      "expected": {
+        "bytes": 69059,
+        "sha256": "fa70fd99eea0a11e4e9700d14a75e769b6bfde452e29bbde6c529b1af82b4da2"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c"
+    },
+    {
+      "expected": {
+        "bytes": 173184,
+        "sha256": "53db4a95167708dd5410c951a6119d562eace7ab94fff341cb8d68cbe04f9925"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+    },
+    {
+      "expected": {
+        "bytes": 14052,
+        "sha256": "1322e421e2bb6a90deacc47f2af235f91ccc8b92ee65958318e3cfda83364843"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h"
+    },
+    {
+      "expected": {
+        "bytes": 35522,
+        "sha256": "0a6abfc0db98dcc572042c7ab91a11c16d684b381d0f845463a5f7351c3d2a99"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c"
+    },
+    {
+      "expected": {
+        "bytes": 33783,
+        "sha256": "44a70082a3eb052a8bc137f56cb7ca4a854c2560d4b956f1db058eb3bda2b44b"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_shared_memory/charger_partition.c"
+    },
+    {
+      "expected": {
+        "bytes": 181225,
+        "sha256": "fe577d79307914d0e5d4d8585bf44db2d125e7151b65da87614042e40ee2c0e5"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c"
+    },
+    {
+      "expected": {
+        "bytes": 8128,
+        "sha256": "66c4acb91f17128286cd79eaaeb3398157d77ec8d8edbf0e4f758af49db3df45"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/inc/strategy_fg.h"
+    },
+    {
+      "expected": {
+        "bytes": 9868,
+        "sha256": "fa147e6ad95ffe161cb12a0a38a92013239f02fbb3acdfdfbedae02bacb33b2d"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c"
+    },
+    {
+      "expected": {
+        "bytes": 122791,
+        "sha256": "f65f40ebec8fb46bb0fcf9b3209951c0a6ab0be1a419e3c6769adfac3fa49bb0"
+      },
+      "inherited_R90_postimage": true,
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c"
+    }
+  ],
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "schema": 1,
+  "scope": [
+    "add the missing hardware PD protocol provider to the compiled module selection",
+    "align the provider with reviewed stock firmware property layout and lifecycle",
+    "preserve every R90 production source, kernel/config/toolchain and charging policy"
+  ],
+  "source_commit": "8dcb57ac2a449595a483912c3de8726ea9df8a32",
+  "source_repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+  "writes": [
+    {
+      "after": {
+        "bytes": 22285,
+        "sha256": "2a03a0666f7955277948a5232f1fae7bdae1d87172f87fa79771f28618926cae"
+      },
+      "before": {
+        "bytes": 16559,
+        "sha256": "18d6bb1a2ebe4833f98d2eb73e058a7c81d46cac9f1bb70b6bed3c73f1093762"
+      },
+      "path": "vendor/qcom/sm8850/drivers/power/supply/mca/mca_protocol/protocol_pd/qcom_tcpc/qcom_adsp_pd_protocol.c",
+      "role": "additional_inactive_PD_provider_validation_only"
+    }
+  ]
+}

@@ -1,0 +1,576 @@
+{
+  "activation_allowed": false,
+  "base_commit": "8dcb57ac2a449595a483912c3de8726ea9df8a32",
+  "baseline_image_sha256": "2fa774b4ffdd75064fb733bb2cad071b02b1813ad5cd54bae32bda2247ef18a7",
+  "baseline_kernel_release": "6.12.81-android16-6-maybe-dirty-4k",
+  "compile_only": true,
+  "core_targets": [
+    "//common:kernel_aarch64",
+    "//myron_artifact_metadata:kernel_release"
+  ],
+  "experiment": "Restore the missing ADSP PD/PPS provider over byte-exact R90 module sources",
+  "flashable": false,
+  "full_charging_control_enabled": false,
+  "git_heads": {
+    "build/kernel": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "common": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "prebuilts/clang/host/linux-x86": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04",
+    "vendor/qcom/sm8850": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "vendor/qcom/sm8850-modules": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322"
+  },
+  "hardware_tested": false,
+  "locked_files": [
+    {
+      "bytes": 3292,
+      "path": "r92-build-route/README.txt",
+      "sha256": "b1f50d4fec5f1419637b9955d518c25cee8ea89dd619cadf8a9fe5163c1134d1"
+    },
+    {
+      "bytes": 5334,
+      "path": "r92-build-route/SOURCE-CONTRACT.json",
+      "sha256": "65e35dd1dc2762f0f6727c466d57e66aa04b2bf4a1c3682e836c9287b793e1a8"
+    },
+    {
+      "bytes": 15433,
+      "path": "r92-build-route/build_pd_provider.py",
+      "sha256": "4d22b96c51e704faf6eac56436d17d0b25a506c924eec679dd6bd9fed973f672"
+    },
+    {
+      "bytes": 9518,
+      "path": "r92-build-route/contract.py",
+      "sha256": "252f436e232f1867cfd205f867c3e53a45d5cc0f1b4ea1ba3442d8ac69984159"
+    },
+    {
+      "bytes": 5107,
+      "path": "r92-build-route/freeze_inputs.py",
+      "sha256": "dd8aaed65300d326e09f796aee62f5f5ac4f30af0acaa69f734f40bc3a680227"
+    },
+    {
+      "bytes": 15367,
+      "path": "r92-build-route/module-scope.json",
+      "sha256": "c9fd1155c5ebfeda9eda7f8741ee8340aef6ed902af64f9c64361bbd42fae5db"
+    },
+    {
+      "bytes": 22335,
+      "path": "r92-build-route/patches/pd-provider.patch",
+      "sha256": "bd0e41435ac75b35a458799a56e3db4c94804a4d9482663efbd4c6f6f0fedf2c"
+    },
+    {
+      "bytes": 22285,
+      "path": "r92-build-route/payload/qcom_adsp_pd_protocol.c",
+      "sha256": "2a03a0666f7955277948a5232f1fae7bdae1d87172f87fa79771f28618926cae"
+    },
+    {
+      "bytes": 16559,
+      "path": "r92-build-route/preimage/qcom_adsp_pd_protocol.c",
+      "sha256": "18d6bb1a2ebe4833f98d2eb73e058a7c81d46cac9f1bb70b6bed3c73f1093762"
+    },
+    {
+      "bytes": 3786,
+      "path": "r92-build-route/reference/PROVIDER-IMPLEMENTATION-REVIEW.json",
+      "sha256": "032ff3d102d0775019d559a018cf9e34fe74f3cf99b639e8b4f0155fa6e35b02"
+    },
+    {
+      "bytes": 29647,
+      "path": "r92-build-route/reference/STOCK-PD-PROVIDER-REVIEW.json",
+      "sha256": "e2a51a8f192e46a80bbe5b9eaf15a469e7d2e7c18a560be9e30239a6cdc4c041"
+    },
+    {
+      "bytes": 6176,
+      "path": "r92-build-route/reference/STOCK-WIRE-INDEPENDENT-CROSSCHECK.json",
+      "sha256": "26dfb69a9810f6d3203be1b55428ecdde3259a18e3cdc24b36fcc99d756da5a3"
+    },
+    {
+      "bytes": 5082,
+      "path": "r92-build-route/reference/r18_elf_parser.py",
+      "sha256": "4648bf5a5b45b69d6ad342e5254a65acdec588532fda7cf00e20b82cb778d86c"
+    },
+    {
+      "bytes": 6921,
+      "path": "r92-build-route/reference/r90-module-pins.json",
+      "sha256": "006d3391fc547be5f5e79fd3684f5ccf5ff14a3fe448cf48652de1654d28c943"
+    },
+    {
+      "bytes": 50385,
+      "path": "r92-build-route/reference/stock-pd-disassembly.txt",
+      "sha256": "97334a3ff077afd48ec42d70eb6d60f6bc984d9fe8e4f76c82e18ef4a82d4c36"
+    },
+    {
+      "bytes": 8810,
+      "path": "r92-build-route/test_build_guards.py",
+      "sha256": "62a7189a3cdfcfd5ff4db1c46df63947850a107acf7a405a964b596e828fb223"
+    },
+    {
+      "bytes": 9111,
+      "path": "r92-build-route/test_compiled_scope.py",
+      "sha256": "f7a8434d085db5868983ea2c1e6424aa2d6daecf9f4fd73553d9c9781665eee9"
+    },
+    {
+      "bytes": 2126,
+      "path": "r92-build-route/test_source.py",
+      "sha256": "8e7bc03f4066a5185502c90bb02457764fc09401fa9b33145c31a18c51dc2267"
+    },
+    {
+      "bytes": 12796,
+      "path": "r92-build-route/tests/provider/harness.c",
+      "sha256": "36500346460bfbeef18e720596202b88273298be134124c87cd7981da81a55cc"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/mm.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/mod_devicetable.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/module.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/moduleparam.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/notifier.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/of.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/platform_device.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/slab.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/spinlock.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/string.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/swab.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/linux/types.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 836,
+      "path": "r92-build-route/tests/provider/include/mca/common/mca_adsp_glink.h",
+      "sha256": "061d28f45136c071e790054ee18600f452642bcc024013641a48d6e6ae31f00b"
+    },
+    {
+      "bytes": 4441,
+      "path": "r92-build-route/tests/provider/include/mca/common/mca_event.h",
+      "sha256": "040a945128d47f4214620890f301c160cd58745c57c90c87a3e9b9b88c0e3502"
+    },
+    {
+      "bytes": 23,
+      "path": "r92-build-route/tests/provider/include/mca/common/mca_log.h",
+      "sha256": "14bc78f0c09777ec4e41b5606d2ae9b3fe99771b558deca2b250f43ea59d2f0d"
+    },
+    {
+      "bytes": 4184,
+      "path": "r92-build-route/tests/provider/include/mca/protocol/protocol_class.h",
+      "sha256": "4b6102eb6fac2462f7b1fc73a26cbfe87bf6aa4f482426b48de9448f5725170b"
+    },
+    {
+      "bytes": 9600,
+      "path": "r92-build-route/tests/provider/include/mca/protocol/protocol_pd_class.h",
+      "sha256": "e98566c6fcdccdfdc9c0a81a04ba0da0aff2bc317cc3bf38e08327de1037dbda"
+    },
+    {
+      "bytes": 2566,
+      "path": "r92-build-route/tests/provider/include/test_shim.h",
+      "sha256": "fe3985bfa3c15524ac721e76e86c2dd09e30a4f5a42123e166fcaab3f3eb0fc2"
+    },
+    {
+      "bytes": 16559,
+      "path": "r92-build-route/tests/provider/preimage.c",
+      "sha256": "18d6bb1a2ebe4833f98d2eb73e058a7c81d46cac9f1bb70b6bed3c73f1093762"
+    },
+    {
+      "bytes": 3698,
+      "path": "r92-build-route/tests/provider/run_tests.py",
+      "sha256": "ab165aff1af0d5b4010fedf007e48c53d0e82a806fabc81166efcd263b4ab345"
+    }
+  ],
+  "modules": [],
+  "parent_contract": "r90-build-route/build-contract.json",
+  "parent_contract_sha256": "5064ca52790956bbc024016ef85b19839f83f65a69f42db380cfc9fb67834b26",
+  "review_status": "FROZEN_REVIEWED_SOURCE",
+  "runtime_candidate_module_names": [],
+  "schema": 1,
+  "source_contract": {
+    "bytes": 5334,
+    "sha256": "65e35dd1dc2762f0f6727c466d57e66aa04b2bf4a1c3682e836c9287b793e1a8"
+  },
+  "sources_lock_sha256": "ef3d806f679ac8e0bf1371e6ab6dfc173118a32e3a66f44f684116bc0b52e756",
+  "validation_only_modules": [
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/misc/hwid/hwid.c"
+      ],
+      "module_name": "hwid",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/misc/hwid/hwid"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/misc/miev/midevice.c",
+        "vendor/qcom/sm8850/drivers/misc/miev/mievent.c"
+      ],
+      "module_name": "miev",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/misc/miev/miev"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_battery/mca_business_battery.c",
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_battery/mca_battery_psy.c"
+      ],
+      "module_name": "mca_business_battery_comp",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_business/business_battery/mca_business_battery_comp"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_business/business_charger/mca_charger_wireless_psy.c"
+      ],
+      "module_name": "mca_business_charger_comp",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger_comp"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_adsp_glink.c"
+      ],
+      "module_name": "mca_adsp_glink",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_adsp_glink"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_charge_interface.c"
+      ],
+      "module_name": "mca_charge_interface",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_charge_interface"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_charge_mievent.c"
+      ],
+      "module_name": "mca_charge_mievent",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_charge_mievent"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_event.c"
+      ],
+      "module_name": "mca_event",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_event"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_hwid.c"
+      ],
+      "module_name": "mca_hwid",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_hwid"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_log.c"
+      ],
+      "module_name": "mca_log",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_log"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_parse_dts.c"
+      ],
+      "module_name": "mca_parse_dts",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_parse_dts"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_qcom_smem.c"
+      ],
+      "module_name": "mca_qcom_smem",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_qcom_smem"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_sysfs.c"
+      ],
+      "module_name": "mca_sysfs",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_sysfs"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_voter.c"
+      ],
+      "module_name": "mca_voter",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_voter"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_common/mca_workqueue.c"
+      ],
+      "module_name": "mca_workqueue",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_common/mca_workqueue"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c"
+      ],
+      "module_name": "sc8581",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c"
+      ],
+      "module_name": "bq27z561",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_monitor/mca_bmd.c"
+      ],
+      "module_name": "mca_bmd",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_bmd"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_monitor/mca_connector_antiburn.c"
+      ],
+      "module_name": "mca_connector_antiburn",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_connector_antiburn"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_monitor/mca_ibat_ocp_monitor.c"
+      ],
+      "module_name": "mca_ibat_ocp_monitor",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_ibat_ocp_monitor"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_monitor/mca_lpd_detect.c"
+      ],
+      "module_name": "mca_lpd_detect",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_lpd_detect"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_monitor/mca_path_control.c"
+      ],
+      "module_name": "mca_path_control",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_path_control"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_hardware_monitor/mca_vbat_ovp_monitor.c"
+      ],
+      "module_name": "mca_vbat_ovp_monitor",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_vbat_ovp_monitor"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_bc12_class.c"
+      ],
+      "module_name": "mca_platform_bc12_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_bc12_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class.c"
+      ],
+      "module_name": "mca_platform_buckchg_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_cp_class.c"
+      ],
+      "module_name": "mca_platform_cp_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_cp_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c"
+      ],
+      "module_name": "mca_platform_fg_ic_ops",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_loadsw_class.c"
+      ],
+      "module_name": "mca_platform_loadsw_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_loadsw_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_platform/mca_platform_wireless_class.c"
+      ],
+      "module_name": "mca_platform_wireless_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_wireless_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_protocol/mca_protocol_class.c"
+      ],
+      "module_name": "mca_protocol_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_protocol/mca_protocol_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_protocol/protocol_pd/mca_protocol_pd_class.c"
+      ],
+      "module_name": "mca_protocol_pd_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_protocol/protocol_pd/mca_protocol_pd_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_protocol/protocol_qc/mca_protocol_qc_class.c"
+      ],
+      "module_name": "mca_protocol_qc_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_protocol/protocol_qc/mca_protocol_qc_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c"
+      ],
+      "module_name": "mca_qcom_subpmic_proxy",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c"
+      ],
+      "module_name": "mca_qcom_sysfs",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_shared_memory/charger_partition.c"
+      ],
+      "module_name": "charger_partition",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_shared_memory/charger_partition"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c"
+      ],
+      "module_name": "mca_smart_charge",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/mca_strategy_class.c"
+      ],
+      "module_name": "mca_strategy_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/mca_strategy_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c"
+      ],
+      "module_name": "mca_buckchg_jeita",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal.c"
+      ],
+      "module_name": "mca_charger_thermal",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg.c"
+      ],
+      "module_name": "mca_strategy_buckchg",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c"
+      ],
+      "module_name": "mca_strategy_quickchg",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_class.c"
+      ],
+      "module_name": "mca_strategy_fg_class",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_class"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c",
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c"
+      ],
+      "module_name": "mca_strategy_fg_comp",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_comp"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_pd/mca_pd_auth.c"
+      ],
+      "module_name": "mca_pd_auth",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_pd/mca_pd_auth"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c"
+      ],
+      "module_name": "mca_basic_wireless",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c"
+      ],
+      "module_name": "mca_quick_wireless",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_wireless_revchg.c"
+      ],
+      "module_name": "mca_wireless_revchg",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_wireless_revchg"
+    },
+    {
+      "expected_sources": [
+        "vendor/qcom/sm8850/drivers/power/supply/mca/mca_protocol/protocol_pd/qcom_tcpc/qcom_adsp_pd_protocol.c"
+      ],
+      "module_name": "qcom_adsp_pd_protocol",
+      "target": "//vendor/qcom/sm8850:canoe_perf/drivers/power/supply/mca/mca_protocol/protocol_pd/qcom_tcpc/qcom_adsp_pd_protocol"
+    }
+  ],
+  "validation_scope": "r92-build-route/module-scope.json",
+  "validation_scope_sha256": "c9fd1155c5ebfeda9eda7f8741ee8340aef6ed902af64f9c64361bbd42fae5db"
+}

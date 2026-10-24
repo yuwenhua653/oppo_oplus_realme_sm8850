@@ -1,0 +1,1270 @@
+
+qcom_adsp_pd_protocol.ko:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000000000 <adsp_pd_protocol_get_pps_max_power-0x4>:
+   0:	95ca8de3 	.word	0x95ca8de3
+
+0000000000000004 <adsp_pd_protocol_get_pps_max_power>:
+   4:	d503233f 	paciasp
+   8:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+   c:	910003fd 	mov	x29, sp
+  10:	aa0003e1 	mov	x1, x0
+  14:	52820380 	mov	w0, #0x101c                	// #4124
+  18:	52800082 	mov	w2, #0x4                   	// #4
+  1c:	72a00040 	movk	w0, #0x2, lsl #16
+  20:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			20: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+  24:	a8c17bfd 	ldp	x29, x30, [sp], #16
+  28:	d50323bf 	autiasp
+  2c:	d65f03c0 	ret
+  30:	a7f8f8a9 	.word	0xa7f8f8a9
+
+0000000000000034 <adsp_pd_protocol_select_pps_pdo>:
+  34:	d503233f 	paciasp
+  38:	d100c3ff 	sub	sp, sp, #0x30
+  3c:	a9017bfd 	stp	x29, x30, [sp, #16]
+  40:	a9024ff4 	stp	x20, x19, [sp, #32]
+  44:	910043fd 	add	x29, sp, #0x10
+  48:	d5384108 	mrs	x8, sp_el0
+  4c:	2a0103f3 	mov	w19, w1
+  50:	2a0003f4 	mov	w20, w0
+  54:	f9438908 	ldr	x8, [x8, #1808]
+  58:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			58: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x295
+  5c:	91000000 	add	x0, x0, #0x0
+			5c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x295
+  60:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			60: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x63
+  64:	91000021 	add	x1, x1, #0x0
+			64: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x63
+  68:	528008c2 	mov	w2, #0x46                  	// #70
+  6c:	2a1403e3 	mov	w3, w20
+  70:	2a1303e4 	mov	w4, w19
+  74:	f90007e8 	str	x8, [sp, #8]
+  78:	94000000 	bl	0 <__mca_log_info>
+			78: R_AARCH64_CALL26	__mca_log_info
+  7c:	529999a8 	mov	w8, #0xcccd                	// #52429
+  80:	5290a3e9 	mov	w9, #0x851f                	// #34079
+  84:	52820300 	mov	w0, #0x1018                	// #4120
+  88:	72b99988 	movk	w8, #0xcccc, lsl #16
+  8c:	72aa3d69 	movk	w9, #0x51eb, lsl #16
+  90:	910013e1 	add	x1, sp, #0x4
+  94:	9ba87e88 	umull	x8, w20, w8
+  98:	72a00040 	movk	w0, #0x2, lsl #16
+  9c:	52800082 	mov	w2, #0x4                   	// #4
+  a0:	9ba97e69 	umull	x9, w19, w9
+  a4:	d360fd08 	lsr	x8, x8, #32
+  a8:	d364fd29 	lsr	x9, x9, #36
+  ac:	53047d08 	lsr	w8, w8, #4
+  b0:	2a084128 	orr	w8, w9, w8, lsl #16
+  b4:	b90007e8 	str	w8, [sp, #4]
+  b8:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			b8: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+  bc:	d5384108 	mrs	x8, sp_el0
+  c0:	f9438908 	ldr	x8, [x8, #1808]
+  c4:	f94007e9 	ldr	x9, [sp, #8]
+  c8:	eb09011f 	cmp	x8, x9
+  cc:	540000c1 	b.ne	e4 <adsp_pd_protocol_select_pps_pdo+0xb0>  // b.any
+  d0:	a9424ff4 	ldp	x20, x19, [sp, #32]
+  d4:	a9417bfd 	ldp	x29, x30, [sp, #16]
+  d8:	9100c3ff 	add	sp, sp, #0x30
+  dc:	d50323bf 	autiasp
+  e0:	d65f03c0 	ret
+  e4:	94000000 	bl	0 <__stack_chk_fail>
+			e4: R_AARCH64_CALL26	__stack_chk_fail
+  e8:	5bfea00d 	.word	0x5bfea00d
+
+00000000000000ec <adsp_pd_protocol_get_pps_ptf>:
+  ec:	d503233f 	paciasp
+  f0:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+  f4:	910003fd 	mov	x29, sp
+  f8:	aa0003e1 	mov	x1, x0
+  fc:	528204c0 	mov	w0, #0x1026                	// #4134
+ 100:	52800082 	mov	w2, #0x4                   	// #4
+ 104:	72a00040 	movk	w0, #0x2, lsl #16
+ 108:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			108: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 10c:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 110:	d50323bf 	autiasp
+ 114:	d65f03c0 	ret
+ 118:	cf7d4038 	.word	0xcf7d4038
+
+000000000000011c <adsp_pd_protocol_set_fixed_pd_volt>:
+ 11c:	d503233f 	paciasp
+ 120:	d100c3ff 	sub	sp, sp, #0x30
+ 124:	a9017bfd 	stp	x29, x30, [sp, #16]
+ 128:	f90013f3 	str	x19, [sp, #32]
+ 12c:	910043fd 	add	x29, sp, #0x10
+ 130:	d5384108 	mrs	x8, sp_el0
+ 134:	aa0103f3 	mov	x19, x1
+ 138:	2a0003e3 	mov	w3, w0
+ 13c:	f9438908 	ldr	x8, [x8, #1808]
+ 140:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			140: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0xb7
+ 144:	91000021 	add	x1, x1, #0x0
+			144: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0xb7
+ 148:	52800ae2 	mov	w2, #0x57                  	// #87
+ 14c:	f90007e8 	str	x8, [sp, #8]
+ 150:	b90007e0 	str	w0, [sp, #4]
+ 154:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			154: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1
+ 158:	91000000 	add	x0, x0, #0x0
+			158: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1
+ 15c:	94000000 	bl	0 <__mca_log_info>
+			15c: R_AARCH64_CALL26	__mca_log_info
+ 160:	b9404268 	ldr	w8, [x19, #64]
+ 164:	34000128 	cbz	w8, 188 <adsp_pd_protocol_set_fixed_pd_volt+0x6c>
+ 168:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			168: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x3d3
+ 16c:	91000000 	add	x0, x0, #0x0
+			16c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x3d3
+ 170:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			170: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0xb7
+ 174:	91000021 	add	x1, x1, #0x0
+			174: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0xb7
+ 178:	52800b22 	mov	w2, #0x59                  	// #89
+ 17c:	94000000 	bl	0 <__mca_log_err>
+			17c: R_AARCH64_CALL26	__mca_log_err
+ 180:	2a1f03e0 	mov	w0, wzr
+ 184:	14000006 	b	19c <adsp_pd_protocol_set_fixed_pd_volt+0x80>
+ 188:	52820320 	mov	w0, #0x1019                	// #4121
+ 18c:	910013e1 	add	x1, sp, #0x4
+ 190:	52800082 	mov	w2, #0x4                   	// #4
+ 194:	72a00040 	movk	w0, #0x2, lsl #16
+ 198:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			198: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+ 19c:	d5384108 	mrs	x8, sp_el0
+ 1a0:	f9438908 	ldr	x8, [x8, #1808]
+ 1a4:	f94007e9 	ldr	x9, [sp, #8]
+ 1a8:	eb09011f 	cmp	x8, x9
+ 1ac:	540000c1 	b.ne	1c4 <adsp_pd_protocol_set_fixed_pd_volt+0xa8>  // b.any
+ 1b0:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ 1b4:	f94013f3 	ldr	x19, [sp, #32]
+ 1b8:	9100c3ff 	add	sp, sp, #0x30
+ 1bc:	d50323bf 	autiasp
+ 1c0:	d65f03c0 	ret
+ 1c4:	94000000 	bl	0 <__stack_chk_fail>
+			1c4: R_AARCH64_CALL26	__stack_chk_fail
+ 1c8:	e0be2469 	.word	0xe0be2469
+
+00000000000001cc <adsp_pd_protocol_set_gear_shift>:
+ 1cc:	d503233f 	paciasp
+ 1d0:	d10083ff 	sub	sp, sp, #0x20
+ 1d4:	a9017bfd 	stp	x29, x30, [sp, #16]
+ 1d8:	910043fd 	add	x29, sp, #0x10
+ 1dc:	d5384108 	mrs	x8, sp_el0
+ 1e0:	910013e1 	add	x1, sp, #0x4
+ 1e4:	52800082 	mov	w2, #0x4                   	// #4
+ 1e8:	f9438908 	ldr	x8, [x8, #1808]
+ 1ec:	f90007e8 	str	x8, [sp, #8]
+ 1f0:	b90007e0 	str	w0, [sp, #4]
+ 1f4:	52820520 	mov	w0, #0x1029                	// #4137
+ 1f8:	72a00040 	movk	w0, #0x2, lsl #16
+ 1fc:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			1fc: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+ 200:	d5384108 	mrs	x8, sp_el0
+ 204:	f9438908 	ldr	x8, [x8, #1808]
+ 208:	f94007e9 	ldr	x9, [sp, #8]
+ 20c:	eb09011f 	cmp	x8, x9
+ 210:	540000a1 	b.ne	224 <adsp_pd_protocol_set_gear_shift+0x58>  // b.any
+ 214:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ 218:	910083ff 	add	sp, sp, #0x20
+ 21c:	d50323bf 	autiasp
+ 220:	d65f03c0 	ret
+ 224:	94000000 	bl	0 <__stack_chk_fail>
+			224: R_AARCH64_CALL26	__stack_chk_fail
+ 228:	95ca8de3 	.word	0x95ca8de3
+
+000000000000022c <adsp_pd_protocol_get_pps_max_cur>:
+ 22c:	d503233f 	paciasp
+ 230:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 234:	910003fd 	mov	x29, sp
+ 238:	aa0003e1 	mov	x1, x0
+ 23c:	52820280 	mov	w0, #0x1014                	// #4116
+ 240:	52800082 	mov	w2, #0x4                   	// #4
+ 244:	72a00040 	movk	w0, #0x2, lsl #16
+ 248:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			248: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 24c:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 250:	d50323bf 	autiasp
+ 254:	d65f03c0 	ret
+ 258:	33cf4cf6 	.word	0x33cf4cf6
+
+000000000000025c <adsp_pd_protocol_get_pps_status>:
+ 25c:	d503233f 	paciasp
+ 260:	d100c3ff 	sub	sp, sp, #0x30
+ 264:	a9017bfd 	stp	x29, x30, [sp, #16]
+ 268:	a9024ff4 	stp	x20, x19, [sp, #32]
+ 26c:	910043fd 	add	x29, sp, #0x10
+ 270:	d5384108 	mrs	x8, sp_el0
+ 274:	aa0003f3 	mov	x19, x0
+ 278:	52820340 	mov	w0, #0x101a                	// #4122
+ 27c:	f9438908 	ldr	x8, [x8, #1808]
+ 280:	aa0103f4 	mov	x20, x1
+ 284:	910013e1 	add	x1, sp, #0x4
+ 288:	72a00040 	movk	w0, #0x2, lsl #16
+ 28c:	52800082 	mov	w2, #0x4                   	// #4
+ 290:	f90007e8 	str	x8, [sp, #8]
+ 294:	b90007ff 	str	wzr, [sp, #4]
+ 298:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			298: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 29c:	35000140 	cbnz	w0, 2c4 <adsp_pd_protocol_get_pps_status+0x68>
+ 2a0:	b94007e8 	ldr	w8, [sp, #4]
+ 2a4:	5280064a 	mov	w10, #0x32                  	// #50
+ 2a8:	53107d09 	lsr	w9, w8, #16
+ 2ac:	12003d08 	and	w8, w8, #0xffff
+ 2b0:	1b0a7d08 	mul	w8, w8, w10
+ 2b4:	0b090929 	add	w9, w9, w9, lsl #2
+ 2b8:	531e7529 	lsl	w9, w9, #2
+ 2bc:	b9000288 	str	w8, [x20]
+ 2c0:	b9000269 	str	w9, [x19]
+ 2c4:	d5384108 	mrs	x8, sp_el0
+ 2c8:	f9438908 	ldr	x8, [x8, #1808]
+ 2cc:	f94007e9 	ldr	x9, [sp, #8]
+ 2d0:	eb09011f 	cmp	x8, x9
+ 2d4:	540000c1 	b.ne	2ec <adsp_pd_protocol_get_pps_status+0x90>  // b.any
+ 2d8:	a9424ff4 	ldp	x20, x19, [sp, #32]
+ 2dc:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ 2e0:	9100c3ff 	add	sp, sp, #0x30
+ 2e4:	d50323bf 	autiasp
+ 2e8:	d65f03c0 	ret
+ 2ec:	94000000 	bl	0 <__stack_chk_fail>
+			2ec: R_AARCH64_CALL26	__stack_chk_fail
+ 2f0:	e0be2469 	.word	0xe0be2469
+
+00000000000002f4 <adsp_pd_protocol_set_pd_active>:
+ 2f4:	b40000a1 	cbz	x1, 308 <adsp_pd_protocol_set_pd_active+0x14>
+ 2f8:	2a0003e8 	mov	w8, w0
+ 2fc:	2a1f03e0 	mov	w0, wzr
+ 300:	b9000828 	str	w8, [x1, #8]
+ 304:	d65f03c0 	ret
+ 308:	12800000 	mov	w0, #0xffffffff            	// #-1
+ 30c:	d65f03c0 	ret
+ 310:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000314 <adsp_pd_protocol_get_pd_active>:
+ 314:	b40000c1 	cbz	x1, 32c <adsp_pd_protocol_get_pd_active+0x18>
+ 318:	b9400829 	ldr	w9, [x1, #8]
+ 31c:	aa0003e8 	mov	x8, x0
+ 320:	2a1f03e0 	mov	w0, wzr
+ 324:	b9000109 	str	w9, [x8]
+ 328:	d65f03c0 	ret
+ 32c:	12800000 	mov	w0, #0xffffffff            	// #-1
+ 330:	d65f03c0 	ret
+ 334:	95ca8de3 	.word	0x95ca8de3
+
+0000000000000338 <adsp_pd_protocol_get_pps_apdo_max>:
+ 338:	d503233f 	paciasp
+ 33c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 340:	910003fd 	mov	x29, sp
+ 344:	aa0003e1 	mov	x1, x0
+ 348:	528202a0 	mov	w0, #0x1015                	// #4117
+ 34c:	52800082 	mov	w2, #0x4                   	// #4
+ 350:	72a00040 	movk	w0, #0x2, lsl #16
+ 354:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			354: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 358:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 35c:	d50323bf 	autiasp
+ 360:	d65f03c0 	ret
+ 364:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000368 <adsp_pd_protocol_get_pd_type>:
+ 368:	d503233f 	paciasp
+ 36c:	d100c3ff 	sub	sp, sp, #0x30
+ 370:	a9017bfd 	stp	x29, x30, [sp, #16]
+ 374:	a9024ff4 	stp	x20, x19, [sp, #32]
+ 378:	910043fd 	add	x29, sp, #0x10
+ 37c:	d5384108 	mrs	x8, sp_el0
+ 380:	f9438908 	ldr	x8, [x8, #1808]
+ 384:	f90007e8 	str	x8, [sp, #8]
+ 388:	b90007ff 	str	wzr, [sp, #4]
+ 38c:	b4000221 	cbz	x1, 3d0 <adsp_pd_protocol_get_pd_type+0x68>
+ 390:	aa0003f3 	mov	x19, x0
+ 394:	52800180 	mov	w0, #0xc                   	// #12
+ 398:	aa0103f4 	mov	x20, x1
+ 39c:	910013e1 	add	x1, sp, #0x4
+ 3a0:	72a00040 	movk	w0, #0x2, lsl #16
+ 3a4:	52800082 	mov	w2, #0x4                   	// #4
+ 3a8:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			3a8: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 3ac:	350001c0 	cbnz	w0, 3e4 <adsp_pd_protocol_get_pd_type+0x7c>
+ 3b0:	b94007e8 	ldr	w8, [sp, #4]
+ 3b4:	71002d1f 	cmp	w8, #0xb
+ 3b8:	54000101 	b.ne	3d8 <adsp_pd_protocol_get_pd_type+0x70>  // b.any
+ 3bc:	b9400e88 	ldr	w8, [x20, #12]
+ 3c0:	7100011f 	cmp	w8, #0x0
+ 3c4:	52800168 	mov	w8, #0xb                   	// #11
+ 3c8:	1a880508 	cinc	w8, w8, ne	// ne = any
+ 3cc:	14000004 	b	3dc <adsp_pd_protocol_get_pd_type+0x74>
+ 3d0:	12800000 	mov	w0, #0xffffffff            	// #-1
+ 3d4:	14000004 	b	3e4 <adsp_pd_protocol_get_pd_type+0x7c>
+ 3d8:	2a1f03e8 	mov	w8, wzr
+ 3dc:	2a1f03e0 	mov	w0, wzr
+ 3e0:	b9000268 	str	w8, [x19]
+ 3e4:	d5384108 	mrs	x8, sp_el0
+ 3e8:	f9438908 	ldr	x8, [x8, #1808]
+ 3ec:	f94007e9 	ldr	x9, [sp, #8]
+ 3f0:	eb09011f 	cmp	x8, x9
+ 3f4:	540000c1 	b.ne	40c <adsp_pd_protocol_get_pd_type+0xa4>  // b.any
+ 3f8:	a9424ff4 	ldp	x20, x19, [sp, #32]
+ 3fc:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ 400:	9100c3ff 	add	sp, sp, #0x30
+ 404:	d50323bf 	autiasp
+ 408:	d65f03c0 	ret
+ 40c:	94000000 	bl	0 <__stack_chk_fail>
+			40c: R_AARCH64_CALL26	__stack_chk_fail
+ 410:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000414 <adsp_pd_protocol_get_typec_mode>:
+ 414:	d503233f 	paciasp
+ 418:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 41c:	910003fd 	mov	x29, sp
+ 420:	aa0003e1 	mov	x1, x0
+ 424:	528202c0 	mov	w0, #0x1016                	// #4118
+ 428:	52800082 	mov	w2, #0x4                   	// #4
+ 42c:	72a00040 	movk	w0, #0x2, lsl #16
+ 430:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			430: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 434:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 438:	d50323bf 	autiasp
+ 43c:	d65f03c0 	ret
+ 440:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000444 <adsp_pd_protocol_get_typec_cc_orientation>:
+ 444:	d503233f 	paciasp
+ 448:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 44c:	910003fd 	mov	x29, sp
+ 450:	aa0003e1 	mov	x1, x0
+ 454:	528202e0 	mov	w0, #0x1017                	// #4119
+ 458:	52800082 	mov	w2, #0x4                   	// #4
+ 45c:	72a00040 	movk	w0, #0x2, lsl #16
+ 460:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			460: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 464:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 468:	d50323bf 	autiasp
+ 46c:	d65f03c0 	ret
+ 470:	95ca8de3 	.word	0x95ca8de3
+
+0000000000000474 <adsp_pd_protocol_get_adapter_id>:
+ 474:	d503233f 	paciasp
+ 478:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 47c:	910003fd 	mov	x29, sp
+ 480:	aa0003e1 	mov	x1, x0
+ 484:	528201e0 	mov	w0, #0x100f                	// #4111
+ 488:	52800082 	mov	w2, #0x4                   	// #4
+ 48c:	72a00040 	movk	w0, #0x2, lsl #16
+ 490:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			490: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 494:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 498:	d50323bf 	autiasp
+ 49c:	d65f03c0 	ret
+ 4a0:	95ca8de3 	.word	0x95ca8de3
+
+00000000000004a4 <adsp_pd_protocol_get_adapter_svid>:
+ 4a4:	d503233f 	paciasp
+ 4a8:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 4ac:	910003fd 	mov	x29, sp
+ 4b0:	aa0003e1 	mov	x1, x0
+ 4b4:	52820200 	mov	w0, #0x1010                	// #4112
+ 4b8:	52800082 	mov	w2, #0x4                   	// #4
+ 4bc:	72a00040 	movk	w0, #0x2, lsl #16
+ 4c0:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			4c0: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 4c4:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 4c8:	d50323bf 	autiasp
+ 4cc:	d65f03c0 	ret
+ 4d0:	b87fa2fc 	.word	0xb87fa2fc
+
+00000000000004d4 <adsp_pd_protocol_get_has_dp>:
+ 4d4:	d503233f 	paciasp
+ 4d8:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 4dc:	910003fd 	mov	x29, sp
+ 4e0:	aa0003e1 	mov	x1, x0
+ 4e4:	528203e0 	mov	w0, #0x101f                	// #4127
+ 4e8:	52800022 	mov	w2, #0x1                   	// #1
+ 4ec:	72a00040 	movk	w0, #0x2, lsl #16
+ 4f0:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			4f0: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 4f4:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 4f8:	d50323bf 	autiasp
+ 4fc:	d65f03c0 	ret
+ 500:	a21e7ddb 	.word	0xa21e7ddb
+
+0000000000000504 <adsp_pd_protocol_request_vdm_cmd>:
+ 504:	b4000841 	cbz	x1, 60c <adsp_pd_protocol_request_vdm_cmd+0x108>
+ 508:	d503233f 	paciasp
+ 50c:	a9bc7bfd 	stp	x29, x30, [sp, #-64]!
+ 510:	f9000bf7 	str	x23, [sp, #16]
+ 514:	a90257f6 	stp	x22, x21, [sp, #32]
+ 518:	a9034ff4 	stp	x20, x19, [sp, #48]
+ 51c:	910003fd 	mov	x29, sp
+ 520:	2a0203f3 	mov	w19, w2
+ 524:	2a0003f6 	mov	w22, w0
+ 528:	b9400025 	ldr	w5, [x1]
+ 52c:	aa0103f4 	mov	x20, x1
+ 530:	52820075 	mov	w21, #0x1003                	// #4099
+ 534:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			534: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x1e8
+ 538:	91000000 	add	x0, x0, #0x0
+			538: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x1e8
+ 53c:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			53c: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x2c2
+ 540:	91000021 	add	x1, x1, #0x0
+			540: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x2c2
+ 544:	52801d42 	mov	w2, #0xea                  	// #234
+ 548:	2a1303e3 	mov	w3, w19
+ 54c:	2a1603e4 	mov	w4, w22
+ 550:	72a00055 	movk	w21, #0x2, lsl #16
+ 554:	94000000 	bl	0 <__mca_log_info>
+			554: R_AARCH64_CALL26	__mca_log_info
+ 558:	710016df 	cmp	w22, #0x5
+ 55c:	540005cd 	b.le	614 <adsp_pd_protocol_request_vdm_cmd+0x110>
+ 560:	71031edf 	cmp	w22, #0xc7
+ 564:	5400070c 	b.gt	644 <adsp_pd_protocol_request_vdm_cmd+0x140>
+ 568:	71001adf 	cmp	w22, #0x6
+ 56c:	54000880 	b.eq	67c <adsp_pd_protocol_request_vdm_cmd+0x178>  // b.none
+ 570:	71001edf 	cmp	w22, #0x7
+ 574:	54000900 	b.eq	694 <adsp_pd_protocol_request_vdm_cmd+0x190>  // b.none
+ 578:	710022df 	cmp	w22, #0x8
+ 57c:	54000ee1 	b.ne	758 <adsp_pd_protocol_request_vdm_cmd+0x254>  // b.any
+ 580:	7100127f 	cmp	w19, #0x4
+ 584:	540005c3 	b.cc	63c <adsp_pd_protocol_request_vdm_cmd+0x138>  // b.lo, b.ul, b.last
+ 588:	29402688 	ldp	w8, w9, [x20]
+ 58c:	90000016 	adrp	x22, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			58c: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x4b3
+ 590:	910002d6 	add	x22, x22, #0x0
+			590: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x4b3
+ 594:	90000017 	adrp	x23, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			594: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x2c2
+ 598:	910002f7 	add	x23, x23, #0x0
+			598: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x2c2
+ 59c:	aa1603e0 	mov	x0, x22
+ 5a0:	52802162 	mov	w2, #0x10b                 	// #267
+ 5a4:	5ac00903 	rev	w3, w8
+ 5a8:	5ac00929 	rev	w9, w9
+ 5ac:	aa1703e1 	mov	x1, x23
+ 5b0:	29412a88 	ldp	w8, w10, [x20, #8]
+ 5b4:	29002683 	stp	w3, w9, [x20]
+ 5b8:	5ac00908 	rev	w8, w8
+ 5bc:	5ac00949 	rev	w9, w10
+ 5c0:	29012688 	stp	w8, w9, [x20, #8]
+ 5c4:	94000000 	bl	0 <__mca_log_info>
+			5c4: R_AARCH64_CALL26	__mca_log_info
+ 5c8:	b9400683 	ldr	w3, [x20, #4]
+ 5cc:	aa1603e0 	mov	x0, x22
+ 5d0:	aa1703e1 	mov	x1, x23
+ 5d4:	52802162 	mov	w2, #0x10b                 	// #267
+ 5d8:	94000000 	bl	0 <__mca_log_info>
+			5d8: R_AARCH64_CALL26	__mca_log_info
+ 5dc:	b9400a83 	ldr	w3, [x20, #8]
+ 5e0:	aa1603e0 	mov	x0, x22
+ 5e4:	aa1703e1 	mov	x1, x23
+ 5e8:	52802162 	mov	w2, #0x10b                 	// #267
+ 5ec:	94000000 	bl	0 <__mca_log_info>
+			5ec: R_AARCH64_CALL26	__mca_log_info
+ 5f0:	b9400e83 	ldr	w3, [x20, #12]
+ 5f4:	aa1603e0 	mov	x0, x22
+ 5f8:	aa1703e1 	mov	x1, x23
+ 5fc:	52802162 	mov	w2, #0x10b                 	// #267
+ 600:	94000000 	bl	0 <__mca_log_info>
+			600: R_AARCH64_CALL26	__mca_log_info
+ 604:	11001eb5 	add	w21, w21, #0x7
+ 608:	1400004a 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 60c:	12800000 	mov	w0, #0xffffffff            	// #-1
+ 610:	d65f03c0 	ret
+ 614:	71000adf 	cmp	w22, #0x2
+ 618:	5400026d 	b.le	664 <adsp_pd_protocol_request_vdm_cmd+0x160>
+ 61c:	71000edf 	cmp	w22, #0x3
+ 620:	54000360 	b.eq	68c <adsp_pd_protocol_request_vdm_cmd+0x188>  // b.none
+ 624:	710012df 	cmp	w22, #0x4
+ 628:	540003e0 	b.eq	6a4 <adsp_pd_protocol_request_vdm_cmd+0x1a0>  // b.none
+ 62c:	710016df 	cmp	w22, #0x5
+ 630:	54000941 	b.ne	758 <adsp_pd_protocol_request_vdm_cmd+0x254>  // b.any
+ 634:	7100127f 	cmp	w19, #0x4
+ 638:	540003e2 	b.cs	6b4 <adsp_pd_protocol_request_vdm_cmd+0x1b0>  // b.hs, b.nlast
+ 63c:	12800000 	mov	w0, #0xffffffff            	// #-1
+ 640:	14000040 	b	740 <adsp_pd_protocol_request_vdm_cmd+0x23c>
+ 644:	710322df 	cmp	w22, #0xc8
+ 648:	540001e0 	b.eq	684 <adsp_pd_protocol_request_vdm_cmd+0x180>  // b.none
+ 64c:	7103fadf 	cmp	w22, #0xfe
+ 650:	54000260 	b.eq	69c <adsp_pd_protocol_request_vdm_cmd+0x198>  // b.none
+ 654:	7103fedf 	cmp	w22, #0xff
+ 658:	54000801 	b.ne	758 <adsp_pd_protocol_request_vdm_cmd+0x254>  // b.any
+ 65c:	110026b5 	add	w21, w21, #0x9
+ 660:	14000034 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 664:	710006df 	cmp	w22, #0x1
+ 668:	54000640 	b.eq	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>  // b.none
+ 66c:	71000adf 	cmp	w22, #0x2
+ 670:	54000741 	b.ne	758 <adsp_pd_protocol_request_vdm_cmd+0x254>  // b.any
+ 674:	110006b5 	add	w21, w21, #0x1
+ 678:	1400002e 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 67c:	110016b5 	add	w21, w21, #0x5
+ 680:	1400002c 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 684:	11002ab5 	add	w21, w21, #0xa
+ 688:	1400002a 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 68c:	11000ab5 	add	w21, w21, #0x2
+ 690:	14000028 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 694:	11001ab5 	add	w21, w21, #0x6
+ 698:	14000026 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 69c:	110022b5 	add	w21, w21, #0x8
+ 6a0:	14000024 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 6a4:	7100127f 	cmp	w19, #0x4
+ 6a8:	54000262 	b.cs	6f4 <adsp_pd_protocol_request_vdm_cmd+0x1f0>  // b.hs, b.nlast
+ 6ac:	2a1f03f5 	mov	w21, wzr
+ 6b0:	14000020 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 6b4:	29402688 	ldp	w8, w9, [x20]
+ 6b8:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			6b8: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x10f
+ 6bc:	91000000 	add	x0, x0, #0x0
+			6bc: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x10f
+ 6c0:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			6c0: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x2c2
+ 6c4:	91000021 	add	x1, x1, #0x0
+			6c4: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x2c2
+ 6c8:	52802062 	mov	w2, #0x103                 	// #259
+ 6cc:	5ac00903 	rev	w3, w8
+ 6d0:	5ac00924 	rev	w4, w9
+ 6d4:	29412a88 	ldp	w8, w10, [x20, #8]
+ 6d8:	29001283 	stp	w3, w4, [x20]
+ 6dc:	5ac00905 	rev	w5, w8
+ 6e0:	5ac00946 	rev	w6, w10
+ 6e4:	29011a85 	stp	w5, w6, [x20, #8]
+ 6e8:	94000000 	bl	0 <__mca_log_info>
+			6e8: R_AARCH64_CALL26	__mca_log_info
+ 6ec:	110012b5 	add	w21, w21, #0x4
+ 6f0:	14000010 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 6f4:	29402688 	ldp	w8, w9, [x20]
+ 6f8:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			6f8: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x34b
+ 6fc:	91000000 	add	x0, x0, #0x0
+			6fc: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x34b
+ 700:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			700: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x2c2
+ 704:	91000021 	add	x1, x1, #0x0
+			704: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x2c2
+ 708:	52801f62 	mov	w2, #0xfb                  	// #251
+ 70c:	5ac00903 	rev	w3, w8
+ 710:	5ac00924 	rev	w4, w9
+ 714:	29412a88 	ldp	w8, w10, [x20, #8]
+ 718:	29001283 	stp	w3, w4, [x20]
+ 71c:	5ac00905 	rev	w5, w8
+ 720:	5ac00946 	rev	w6, w10
+ 724:	29011a85 	stp	w5, w6, [x20, #8]
+ 728:	94000000 	bl	0 <__mca_log_info>
+			728: R_AARCH64_CALL26	__mca_log_info
+ 72c:	11000eb5 	add	w21, w21, #0x3
+ 730:	2a1503e0 	mov	w0, w21
+ 734:	aa1403e1 	mov	x1, x20
+ 738:	2a1303e2 	mov	w2, w19
+ 73c:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			73c: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+ 740:	a9434ff4 	ldp	x20, x19, [sp, #48]
+ 744:	f9400bf7 	ldr	x23, [sp, #16]
+ 748:	a94257f6 	ldp	x22, x21, [sp, #32]
+ 74c:	a8c47bfd 	ldp	x29, x30, [sp], #64
+ 750:	d50323bf 	autiasp
+ 754:	d65f03c0 	ret
+ 758:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			758: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0xf6
+ 75c:	91000000 	add	x0, x0, #0x0
+			75c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0xf6
+ 760:	2a1603e1 	mov	w1, w22
+ 764:	94000000 	bl	0 <_printk>
+			764: R_AARCH64_CALL26	_printk
+ 768:	17fffff2 	b	730 <adsp_pd_protocol_request_vdm_cmd+0x22c>
+ 76c:	07a15f03 	.word	0x07a15f03
+
+0000000000000770 <adsp_pd_protocol_get_vdm_cmd>:
+ 770:	d503233f 	paciasp
+ 774:	d10143ff 	sub	sp, sp, #0x50
+ 778:	a9027bfd 	stp	x29, x30, [sp, #32]
+ 77c:	f9001bf5 	str	x21, [sp, #48]
+ 780:	a9044ff4 	stp	x20, x19, [sp, #64]
+ 784:	910083fd 	add	x29, sp, #0x20
+ 788:	d5384108 	mrs	x8, sp_el0
+ 78c:	f9438908 	ldr	x8, [x8, #1808]
+ 790:	f81f83a8 	stur	x8, [x29, #-8]
+ 794:	a900ffff 	stp	xzr, xzr, [sp, #8]
+ 798:	b4000381 	cbz	x1, 808 <adsp_pd_protocol_get_vdm_cmd+0x98>
+ 79c:	52820075 	mov	w21, #0x1003                	// #4099
+ 7a0:	aa0003f4 	mov	x20, x0
+ 7a4:	aa0103f3 	mov	x19, x1
+ 7a8:	72a00055 	movk	w21, #0x2, lsl #16
+ 7ac:	aa1403e1 	mov	x1, x20
+ 7b0:	52800082 	mov	w2, #0x4                   	// #4
+ 7b4:	321c02a0 	orr	w0, w21, #0x10
+ 7b8:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			7b8: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 7bc:	35000640 	cbnz	w0, 884 <adsp_pd_protocol_get_vdm_cmd+0x114>
+ 7c0:	b9400283 	ldr	w3, [x20]
+ 7c4:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			7c4: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x21a
+ 7c8:	91000000 	add	x0, x0, #0x0
+			7c8: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x21a
+ 7cc:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			7cc: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x1cb
+ 7d0:	91000021 	add	x1, x1, #0x0
+			7d0: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x1cb
+ 7d4:	52802662 	mov	w2, #0x133                 	// #307
+ 7d8:	94000000 	bl	0 <__mca_log_info>
+			7d8: R_AARCH64_CALL26	__mca_log_info
+ 7dc:	b9400288 	ldr	w8, [x20]
+ 7e0:	2a1f03e0 	mov	w0, wzr
+ 7e4:	7100091f 	cmp	w8, #0x2
+ 7e8:	5400014c 	b.gt	810 <adsp_pd_protocol_get_vdm_cmd+0xa0>
+ 7ec:	7100051f 	cmp	w8, #0x1
+ 7f0:	540003a0 	b.eq	864 <adsp_pd_protocol_get_vdm_cmd+0xf4>  // b.none
+ 7f4:	7100091f 	cmp	w8, #0x2
+ 7f8:	54000461 	b.ne	884 <adsp_pd_protocol_get_vdm_cmd+0x114>  // b.any
+ 7fc:	110006a0 	add	w0, w21, #0x1
+ 800:	91002261 	add	x1, x19, #0x8
+ 804:	1400001e 	b	87c <adsp_pd_protocol_get_vdm_cmd+0x10c>
+ 808:	12800000 	mov	w0, #0xffffffff            	// #-1
+ 80c:	1400001e 	b	884 <adsp_pd_protocol_get_vdm_cmd+0x114>
+ 810:	71000d1f 	cmp	w8, #0x3
+ 814:	54000300 	b.eq	874 <adsp_pd_protocol_get_vdm_cmd+0x104>  // b.none
+ 818:	7100151f 	cmp	w8, #0x5
+ 81c:	54000341 	b.ne	884 <adsp_pd_protocol_get_vdm_cmd+0x114>  // b.any
+ 820:	110012a0 	add	w0, w21, #0x4
+ 824:	910023e1 	add	x1, sp, #0x8
+ 828:	52800202 	mov	w2, #0x10                  	// #16
+ 82c:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			82c: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 830:	294113e3 	ldp	w3, w4, [sp, #8]
+ 834:	29421be5 	ldp	w5, w6, [sp, #16]
+ 838:	2a0003f4 	mov	w20, w0
+ 83c:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			83c: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x45d
+ 840:	91000000 	add	x0, x0, #0x0
+			840: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x45d
+ 844:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			844: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x1cb
+ 848:	91000021 	add	x1, x1, #0x0
+			848: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x1cb
+ 84c:	52802922 	mov	w2, #0x149                 	// #329
+ 850:	a9031263 	stp	x3, x4, [x19, #48]
+ 854:	a9041a65 	stp	x5, x6, [x19, #64]
+ 858:	94000000 	bl	0 <__mca_log_info>
+			858: R_AARCH64_CALL26	__mca_log_info
+ 85c:	2a1403e0 	mov	w0, w20
+ 860:	14000009 	b	884 <adsp_pd_protocol_get_vdm_cmd+0x114>
+ 864:	52820060 	mov	w0, #0x1003                	// #4099
+ 868:	aa1303e1 	mov	x1, x19
+ 86c:	72a00040 	movk	w0, #0x2, lsl #16
+ 870:	14000003 	b	87c <adsp_pd_protocol_get_vdm_cmd+0x10c>
+ 874:	11000aa0 	add	w0, w21, #0x2
+ 878:	91001261 	add	x1, x19, #0x4
+ 87c:	52800082 	mov	w2, #0x4                   	// #4
+ 880:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			880: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 884:	d5384108 	mrs	x8, sp_el0
+ 888:	f9438908 	ldr	x8, [x8, #1808]
+ 88c:	f85f83a9 	ldur	x9, [x29, #-8]
+ 890:	eb09011f 	cmp	x8, x9
+ 894:	540000e1 	b.ne	8b0 <adsp_pd_protocol_get_vdm_cmd+0x140>  // b.any
+ 898:	a9444ff4 	ldp	x20, x19, [sp, #64]
+ 89c:	f9401bf5 	ldr	x21, [sp, #48]
+ 8a0:	a9427bfd 	ldp	x29, x30, [sp, #32]
+ 8a4:	910143ff 	add	sp, sp, #0x50
+ 8a8:	d50323bf 	autiasp
+ 8ac:	d65f03c0 	ret
+ 8b0:	94000000 	bl	0 <__stack_chk_fail>
+			8b0: R_AARCH64_CALL26	__stack_chk_fail
+ 8b4:	b87fa2fc 	.word	0xb87fa2fc
+
+00000000000008b8 <adsp_pd_protocol_get_data_role>:
+ 8b8:	d503233f 	paciasp
+ 8bc:	d100c3ff 	sub	sp, sp, #0x30
+ 8c0:	a9017bfd 	stp	x29, x30, [sp, #16]
+ 8c4:	a9024ff4 	stp	x20, x19, [sp, #32]
+ 8c8:	910043fd 	add	x29, sp, #0x10
+ 8cc:	d5384108 	mrs	x8, sp_el0
+ 8d0:	aa0003f4 	mov	x20, x0
+ 8d4:	528201a0 	mov	w0, #0x100d                	// #4109
+ 8d8:	f9438908 	ldr	x8, [x8, #1808]
+ 8dc:	52800029 	mov	w9, #0x1                   	// #1
+ 8e0:	910013e1 	add	x1, sp, #0x4
+ 8e4:	72a00040 	movk	w0, #0x2, lsl #16
+ 8e8:	52800082 	mov	w2, #0x4                   	// #4
+ 8ec:	f90007e8 	str	x8, [sp, #8]
+ 8f0:	b90007e9 	str	w9, [sp, #4]
+ 8f4:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			8f4: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 8f8:	b94007e8 	ldr	w8, [sp, #4]
+ 8fc:	2a0003f3 	mov	w19, w0
+ 900:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			900: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x388
+ 904:	91000000 	add	x0, x0, #0x0
+			904: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x388
+ 908:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			908: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x416
+ 90c:	91000021 	add	x1, x1, #0x0
+			90c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x416
+ 910:	12001d03 	and	w3, w8, #0xff
+ 914:	52802c82 	mov	w2, #0x164                 	// #356
+ 918:	39000288 	strb	w8, [x20]
+ 91c:	94000000 	bl	0 <__mca_log_info>
+			91c: R_AARCH64_CALL26	__mca_log_info
+ 920:	d5384108 	mrs	x8, sp_el0
+ 924:	f9438908 	ldr	x8, [x8, #1808]
+ 928:	f94007e9 	ldr	x9, [sp, #8]
+ 92c:	eb09011f 	cmp	x8, x9
+ 930:	540000e1 	b.ne	94c <adsp_pd_protocol_get_data_role+0x94>  // b.any
+ 934:	2a1303e0 	mov	w0, w19
+ 938:	a9424ff4 	ldp	x20, x19, [sp, #32]
+ 93c:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ 940:	9100c3ff 	add	sp, sp, #0x30
+ 944:	d50323bf 	autiasp
+ 948:	d65f03c0 	ret
+ 94c:	94000000 	bl	0 <__stack_chk_fail>
+			94c: R_AARCH64_CALL26	__stack_chk_fail
+ 950:	bf8f29ce 	.word	0xbf8f29ce
+
+0000000000000954 <adsp_pd_protocol_get_current_state>:
+ 954:	d503233f 	paciasp
+ 958:	d100c3ff 	sub	sp, sp, #0x30
+ 95c:	a9017bfd 	stp	x29, x30, [sp, #16]
+ 960:	f90013f3 	str	x19, [sp, #32]
+ 964:	910043fd 	add	x29, sp, #0x10
+ 968:	d5384108 	mrs	x8, sp_el0
+ 96c:	f9438908 	ldr	x8, [x8, #1808]
+ 970:	7101003f 	cmp	w1, #0x40
+ 974:	f90007e8 	str	x8, [sp, #8]
+ 978:	5400006a 	b.ge	984 <adsp_pd_protocol_get_current_state+0x30>  // b.tcont
+ 97c:	12800000 	mov	w0, #0xffffffff            	// #-1
+ 980:	1400002a 	b	a28 <adsp_pd_protocol_get_current_state+0xd4>
+ 984:	aa0003f3 	mov	x19, x0
+ 988:	528201c0 	mov	w0, #0x100e                	// #4110
+ 98c:	910013e1 	add	x1, sp, #0x4
+ 990:	72a00040 	movk	w0, #0x2, lsl #16
+ 994:	52800082 	mov	w2, #0x4                   	// #4
+ 998:	b90007ff 	str	wzr, [sp, #4]
+ 99c:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			99c: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ 9a0:	35000440 	cbnz	w0, a28 <adsp_pd_protocol_get_current_state+0xd4>
+ 9a4:	b94007e8 	ldr	w8, [sp, #4]
+ 9a8:	7100091f 	cmp	w8, #0x2
+ 9ac:	54000180 	b.eq	9dc <adsp_pd_protocol_get_current_state+0x88>  // b.none
+ 9b0:	7100051f 	cmp	w8, #0x1
+ 9b4:	540000a0 	b.eq	9c8 <adsp_pd_protocol_get_current_state+0x74>  // b.none
+ 9b8:	350001c8 	cbnz	w8, 9f0 <adsp_pd_protocol_get_current_state+0x9c>
+ 9bc:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			9bc: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x4a9
+ 9c0:	91000021 	add	x1, x1, #0x0
+			9c0: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x4a9
+ 9c4:	14000008 	b	9e4 <adsp_pd_protocol_get_current_state+0x90>
+ 9c8:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			9c8: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x20
+ 9cc:	91000021 	add	x1, x1, #0x0
+			9cc: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x20
+ 9d0:	aa1303e0 	mov	x0, x19
+ 9d4:	52800182 	mov	w2, #0xc                   	// #12
+ 9d8:	1400000a 	b	a00 <adsp_pd_protocol_get_current_state+0xac>
+ 9dc:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			9dc: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0xad
+ 9e0:	91000021 	add	x1, x1, #0x0
+			9e0: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0xad
+ 9e4:	aa1303e0 	mov	x0, x19
+ 9e8:	52800142 	mov	w2, #0xa                   	// #10
+ 9ec:	14000005 	b	a00 <adsp_pd_protocol_get_current_state+0xac>
+ 9f0:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			9f0: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x435
+ 9f4:	91000021 	add	x1, x1, #0x0
+			9f4: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x435
+ 9f8:	aa1303e0 	mov	x0, x19
+ 9fc:	52800102 	mov	w2, #0x8                   	// #8
+ a00:	94000000 	bl	0 <sized_strscpy>
+			a00: R_AARCH64_CALL26	sized_strscpy
+ a04:	b94007e3 	ldr	w3, [sp, #4]
+ a08:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			a08: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x14f
+ a0c:	91000000 	add	x0, x0, #0x0
+			a0c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x14f
+ a10:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			a10: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x2e3
+ a14:	91000021 	add	x1, x1, #0x0
+			a14: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x2e3
+ a18:	528019e2 	mov	w2, #0xcf                  	// #207
+ a1c:	aa1303e4 	mov	x4, x19
+ a20:	94000000 	bl	0 <__mca_log_info>
+			a20: R_AARCH64_CALL26	__mca_log_info
+ a24:	2a1f03e0 	mov	w0, wzr
+ a28:	d5384108 	mrs	x8, sp_el0
+ a2c:	f9438908 	ldr	x8, [x8, #1808]
+ a30:	f94007e9 	ldr	x9, [sp, #8]
+ a34:	eb09011f 	cmp	x8, x9
+ a38:	540000c1 	b.ne	a50 <adsp_pd_protocol_get_current_state+0xfc>  // b.any
+ a3c:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ a40:	f94013f3 	ldr	x19, [sp, #32]
+ a44:	9100c3ff 	add	sp, sp, #0x30
+ a48:	d50323bf 	autiasp
+ a4c:	d65f03c0 	ret
+ a50:	94000000 	bl	0 <__stack_chk_fail>
+			a50: R_AARCH64_CALL26	__stack_chk_fail
+ a54:	1da6ce13 	.word	0x1da6ce13
+
+0000000000000a58 <adsp_pd_protocol_get_pdos>:
+ a58:	d503233f 	paciasp
+ a5c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ a60:	910003fd 	mov	x29, sp
+ a64:	531c6c22 	lsl	w2, w1, #4
+ a68:	aa0003e1 	mov	x1, x0
+ a6c:	52820240 	mov	w0, #0x1012                	// #4114
+ a70:	72a00040 	movk	w0, #0x2, lsl #16
+ a74:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			a74: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ a78:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ a7c:	d50323bf 	autiasp
+ a80:	d65f03c0 	ret
+ a84:	e0be2469 	.word	0xe0be2469
+
+0000000000000a88 <adsp_pd_protocol_set_verify_process>:
+ a88:	d503233f 	paciasp
+ a8c:	d10083ff 	sub	sp, sp, #0x20
+ a90:	a9017bfd 	stp	x29, x30, [sp, #16]
+ a94:	910043fd 	add	x29, sp, #0x10
+ a98:	d5384108 	mrs	x8, sp_el0
+ a9c:	2a0003e3 	mov	w3, w0
+ aa0:	52801202 	mov	w2, #0x90                  	// #144
+ aa4:	f9438908 	ldr	x8, [x8, #1808]
+ aa8:	f90007e8 	str	x8, [sp, #8]
+ aac:	b90007e0 	str	w0, [sp, #4]
+ ab0:	b9004020 	str	w0, [x1, #64]
+ ab4:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			ab4: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x306
+ ab8:	91000000 	add	x0, x0, #0x0
+			ab8: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x306
+ abc:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			abc: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x180
+ ac0:	91000021 	add	x1, x1, #0x0
+			ac0: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x180
+ ac4:	94000000 	bl	0 <__mca_log_err>
+			ac4: R_AARCH64_CALL26	__mca_log_err
+ ac8:	52820040 	mov	w0, #0x1002                	// #4098
+ acc:	910013e1 	add	x1, sp, #0x4
+ ad0:	52800082 	mov	w2, #0x4                   	// #4
+ ad4:	72a00040 	movk	w0, #0x2, lsl #16
+ ad8:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			ad8: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+ adc:	d5384108 	mrs	x8, sp_el0
+ ae0:	f9438908 	ldr	x8, [x8, #1808]
+ ae4:	f94007e9 	ldr	x9, [sp, #8]
+ ae8:	eb09011f 	cmp	x8, x9
+ aec:	540000a1 	b.ne	b00 <adsp_pd_protocol_set_verify_process+0x78>  // b.any
+ af0:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ af4:	910083ff 	add	sp, sp, #0x20
+ af8:	d50323bf 	autiasp
+ afc:	d65f03c0 	ret
+ b00:	94000000 	bl	0 <__stack_chk_fail>
+			b00: R_AARCH64_CALL26	__stack_chk_fail
+ b04:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000b08 <adsp_pd_protocol_get_verify_process>:
+ b08:	d503233f 	paciasp
+ b0c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ b10:	910003fd 	mov	x29, sp
+ b14:	aa0003e1 	mov	x1, x0
+ b18:	52820040 	mov	w0, #0x1002                	// #4098
+ b1c:	52800082 	mov	w2, #0x4                   	// #4
+ b20:	72a00040 	movk	w0, #0x2, lsl #16
+ b24:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			b24: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ b28:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ b2c:	d50323bf 	autiasp
+ b30:	d65f03c0 	ret
+ b34:	e0be2469 	.word	0xe0be2469
+
+0000000000000b38 <adsp_pd_protocol_set_pd_verifed>:
+ b38:	d503233f 	paciasp
+ b3c:	d100c3ff 	sub	sp, sp, #0x30
+ b40:	a9017bfd 	stp	x29, x30, [sp, #16]
+ b44:	f90013f3 	str	x19, [sp, #32]
+ b48:	910043fd 	add	x29, sp, #0x10
+ b4c:	d5384108 	mrs	x8, sp_el0
+ b50:	aa0103f3 	mov	x19, x1
+ b54:	52800082 	mov	w2, #0x4                   	// #4
+ b58:	f9438908 	ldr	x8, [x8, #1808]
+ b5c:	f90007e8 	str	x8, [sp, #8]
+ b60:	52820168 	mov	w8, #0x100b                	// #4107
+ b64:	72a00048 	movk	w8, #0x2, lsl #16
+ b68:	b90007e0 	str	w0, [sp, #4]
+ b6c:	b9000c20 	str	w0, [x1, #12]
+ b70:	11001900 	add	w0, w8, #0x6
+ b74:	910013e1 	add	x1, sp, #0x4
+ b78:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			b78: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+ b7c:	52820160 	mov	w0, #0x100b                	// #4107
+ b80:	91011261 	add	x1, x19, #0x44
+ b84:	52800082 	mov	w2, #0x4                   	// #4
+ b88:	72a00040 	movk	w0, #0x2, lsl #16
+ b8c:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			b8c: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ b90:	b94007e3 	ldr	w3, [sp, #4]
+ b94:	b9404664 	ldr	w4, [x19, #68]
+ b98:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			b98: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x257
+ b9c:	91000000 	add	x0, x0, #0x0
+			b9c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x257
+ ba0:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			ba0: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x2c
+ ba4:	91000021 	add	x1, x1, #0x0
+			ba4: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x2c
+ ba8:	52802e22 	mov	w2, #0x171                 	// #369
+ bac:	94000000 	bl	0 <__mca_log_err>
+			bac: R_AARCH64_CALL26	__mca_log_err
+ bb0:	d5384108 	mrs	x8, sp_el0
+ bb4:	f9438908 	ldr	x8, [x8, #1808]
+ bb8:	f94007e9 	ldr	x9, [sp, #8]
+ bbc:	eb09011f 	cmp	x8, x9
+ bc0:	540000e1 	b.ne	bdc <adsp_pd_protocol_set_pd_verifed+0xa4>  // b.any
+ bc4:	2a1f03e0 	mov	w0, wzr
+ bc8:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ bcc:	f94013f3 	ldr	x19, [sp, #32]
+ bd0:	9100c3ff 	add	sp, sp, #0x30
+ bd4:	d50323bf 	autiasp
+ bd8:	d65f03c0 	ret
+ bdc:	94000000 	bl	0 <__stack_chk_fail>
+			bdc: R_AARCH64_CALL26	__stack_chk_fail
+ be0:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000be4 <adsp_pd_protocol_get_pd_verifed>:
+ be4:	d503233f 	paciasp
+ be8:	a9be7bfd 	stp	x29, x30, [sp, #-32]!
+ bec:	a9014ff4 	stp	x20, x19, [sp, #16]
+ bf0:	910003fd 	mov	x29, sp
+ bf4:	b9400c23 	ldr	w3, [x1, #12]
+ bf8:	aa0103f3 	mov	x19, x1
+ bfc:	aa0003f4 	mov	x20, x0
+ c00:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			c00: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x3af
+ c04:	91000000 	add	x0, x0, #0x0
+			c04: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x3af
+ c08:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			c08: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x43d
+ c0c:	91000021 	add	x1, x1, #0x0
+			c0c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x43d
+ c10:	52802f22 	mov	w2, #0x179                 	// #377
+ c14:	94000000 	bl	0 <__mca_log_info>
+			c14: R_AARCH64_CALL26	__mca_log_info
+ c18:	b9400e68 	ldr	w8, [x19, #12]
+ c1c:	2a1f03e0 	mov	w0, wzr
+ c20:	b9000288 	str	w8, [x20]
+ c24:	a9414ff4 	ldp	x20, x19, [sp, #16]
+ c28:	a8c27bfd 	ldp	x29, x30, [sp], #32
+ c2c:	d50323bf 	autiasp
+ c30:	d65f03c0 	ret
+ c34:	b87fa2fc 	.word	0xb87fa2fc
+
+0000000000000c38 <adsp_pd_protocol_get_cid_status>:
+ c38:	d503233f 	paciasp
+ c3c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ c40:	910003fd 	mov	x29, sp
+ c44:	aa0003e1 	mov	x1, x0
+ c48:	52820400 	mov	w0, #0x1020                	// #4128
+ c4c:	52800022 	mov	w2, #0x1                   	// #1
+ c50:	72a00040 	movk	w0, #0x2, lsl #16
+ c54:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			c54: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ c58:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ c5c:	d50323bf 	autiasp
+ c60:	d65f03c0 	ret
+ c64:	b87fa2fc 	.word	0xb87fa2fc
+
+0000000000000c68 <adsp_pd_protocol_get_otg_plugin_status>:
+ c68:	d503233f 	paciasp
+ c6c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ c70:	910003fd 	mov	x29, sp
+ c74:	aa0003e1 	mov	x1, x0
+ c78:	52820420 	mov	w0, #0x1021                	// #4129
+ c7c:	52800022 	mov	w2, #0x1                   	// #1
+ c80:	72a00040 	movk	w0, #0x2, lsl #16
+ c84:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			c84: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ c88:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ c8c:	d50323bf 	autiasp
+ c90:	d65f03c0 	ret
+ c94:	cd48abb4 	.word	0xcd48abb4
+
+0000000000000c98 <adsp_protocol_set_cc_toggle>:
+ c98:	d503233f 	paciasp
+ c9c:	d10083ff 	sub	sp, sp, #0x20
+ ca0:	a9017bfd 	stp	x29, x30, [sp, #16]
+ ca4:	910043fd 	add	x29, sp, #0x10
+ ca8:	d5384108 	mrs	x8, sp_el0
+ cac:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			cac: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0xda
+ cb0:	91000021 	add	x1, x1, #0x0
+			cb0: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0xda
+ cb4:	f9438908 	ldr	x8, [x8, #1808]
+ cb8:	12000003 	and	w3, w0, #0x1
+ cbc:	52803782 	mov	w2, #0x1bc                 	// #444
+ cc0:	f90007e8 	str	x8, [sp, #8]
+ cc4:	90000008 	adrp	x8, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			cc4: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x83
+ cc8:	91000108 	add	x8, x8, #0x0
+			cc8: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x83
+ ccc:	390013e0 	strb	w0, [sp, #4]
+ cd0:	aa0803e0 	mov	x0, x8
+ cd4:	94000000 	bl	0 <__mca_log_info>
+			cd4: R_AARCH64_CALL26	__mca_log_info
+ cd8:	52820440 	mov	w0, #0x1022                	// #4130
+ cdc:	910013e1 	add	x1, sp, #0x4
+ ce0:	52800022 	mov	w2, #0x1                   	// #1
+ ce4:	72a00040 	movk	w0, #0x2, lsl #16
+ ce8:	94000000 	bl	0 <mca_adsp_glink_write_prop>
+			ce8: R_AARCH64_CALL26	mca_adsp_glink_write_prop
+ cec:	d5384108 	mrs	x8, sp_el0
+ cf0:	f9438908 	ldr	x8, [x8, #1808]
+ cf4:	f94007e9 	ldr	x9, [sp, #8]
+ cf8:	eb09011f 	cmp	x8, x9
+ cfc:	540000a1 	b.ne	d10 <adsp_protocol_set_cc_toggle+0x78>  // b.any
+ d00:	a9417bfd 	ldp	x29, x30, [sp, #16]
+ d04:	910083ff 	add	sp, sp, #0x20
+ d08:	d50323bf 	autiasp
+ d0c:	d65f03c0 	ret
+ d10:	94000000 	bl	0 <__stack_chk_fail>
+			d10: R_AARCH64_CALL26	__stack_chk_fail
+ d14:	b87fa2fc 	.word	0xb87fa2fc
+
+0000000000000d18 <adsp_protocol_get_cc_toggle>:
+ d18:	d503233f 	paciasp
+ d1c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ d20:	910003fd 	mov	x29, sp
+ d24:	aa0003e1 	mov	x1, x0
+ d28:	52820440 	mov	w0, #0x1022                	// #4130
+ d2c:	52800022 	mov	w2, #0x1                   	// #1
+ d30:	72a00040 	movk	w0, #0x2, lsl #16
+ d34:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			d34: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ d38:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ d3c:	d50323bf 	autiasp
+ d40:	d65f03c0 	ret
+ d44:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000d48 <adsp_pd_protocol_get_snk_src_mode>:
+ d48:	d503233f 	paciasp
+ d4c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ d50:	910003fd 	mov	x29, sp
+ d54:	aa0003e1 	mov	x1, x0
+ d58:	52820460 	mov	w0, #0x1023                	// #4131
+ d5c:	52800082 	mov	w2, #0x4                   	// #4
+ d60:	72a00040 	movk	w0, #0x2, lsl #16
+ d64:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			d64: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ d68:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ d6c:	d50323bf 	autiasp
+ d70:	d65f03c0 	ret
+ d74:	b87fa2fc 	.word	0xb87fa2fc
+
+0000000000000d78 <adsp_protocol_get_cc_status>:
+ d78:	d503233f 	paciasp
+ d7c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ d80:	910003fd 	mov	x29, sp
+ d84:	aa0003e1 	mov	x1, x0
+ d88:	52820480 	mov	w0, #0x1024                	// #4132
+ d8c:	52800022 	mov	w2, #0x1                   	// #1
+ d90:	72a00040 	movk	w0, #0x2, lsl #16
+ d94:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			d94: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ d98:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ d9c:	d50323bf 	autiasp
+ da0:	d65f03c0 	ret
+ da4:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000da8 <adsp_protocol_get_cc_short_vbus>:
+ da8:	d503233f 	paciasp
+ dac:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ db0:	910003fd 	mov	x29, sp
+ db4:	aa0003e1 	mov	x1, x0
+ db8:	528204a0 	mov	w0, #0x1025                	// #4133
+ dbc:	52800082 	mov	w2, #0x4                   	// #4
+ dc0:	72a00040 	movk	w0, #0x2, lsl #16
+ dc4:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			dc4: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ dc8:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ dcc:	d50323bf 	autiasp
+ dd0:	d65f03c0 	ret
+ dd4:	b87fa2fc 	.word	0xb87fa2fc
+
+0000000000000dd8 <adsp_pd_protocol_get_suspend_support_status>:
+ dd8:	d503233f 	paciasp
+ ddc:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ de0:	910003fd 	mov	x29, sp
+ de4:	aa0003e1 	mov	x1, x0
+ de8:	528204e0 	mov	w0, #0x1027                	// #4135
+ dec:	52800022 	mov	w2, #0x1                   	// #1
+ df0:	72a00040 	movk	w0, #0x2, lsl #16
+ df4:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			df4: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ df8:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ dfc:	d50323bf 	autiasp
+ e00:	d65f03c0 	ret
+ e04:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000e08 <adsp_pd_protocol_get_zimi_cypress_flag>:
+ e08:	d503233f 	paciasp
+ e0c:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ e10:	910003fd 	mov	x29, sp
+ e14:	aa0003e1 	mov	x1, x0
+ e18:	52820500 	mov	w0, #0x1028                	// #4136
+ e1c:	52800082 	mov	w2, #0x4                   	// #4
+ e20:	72a00040 	movk	w0, #0x2, lsl #16
+ e24:	94000000 	bl	0 <mca_adsp_glink_read_prop>
+			e24: R_AARCH64_CALL26	mca_adsp_glink_read_prop
+ e28:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ e2c:	d50323bf 	autiasp
+ e30:	d65f03c0 	ret
+ e34:	5bfea00d 	.word	0x5bfea00d
+
+0000000000000e38 <adsp_pd_protocol_get_support_keep_pdo>:
+ e38:	b9404429 	ldr	w9, [x1, #68]
+ e3c:	aa0003e8 	mov	x8, x0
+ e40:	2a1f03e0 	mov	w0, wzr
+ e44:	b9000109 	str	w9, [x8]
+ e48:	d65f03c0 	ret
+ e4c:	c7f8c87c 	.word	0xc7f8c87c
+
+0000000000000e50 <adsp_pd_protocol_probe>:
+ e50:	d503233f 	paciasp
+ e54:	a9be7bfd 	stp	x29, x30, [sp, #-32]!
+ e58:	a9014ff4 	stp	x20, x19, [sp, #16]
+ e5c:	910003fd 	mov	x29, sp
+ e60:	91004014 	add	x20, x0, #0x10
+ e64:	52800901 	mov	w1, #0x48                  	// #72
+ e68:	5281b802 	mov	w2, #0xdc0                 	// #3520
+ e6c:	aa1403e0 	mov	x0, x20
+ e70:	94000000 	bl	0 <devm_kmalloc>
+			e70: R_AARCH64_CALL26	devm_kmalloc
+ e74:	b4000260 	cbz	x0, ec0 <adsp_pd_protocol_probe+0x70>
+ e78:	aa0003f3 	mov	x19, x0
+ e7c:	f9000014 	str	x20, [x0]
+ e80:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			e80: R_AARCH64_ADR_PREL_PG_HI21	g_adsp_pd_ops
+ e84:	91000021 	add	x1, x1, #0x0
+			e84: R_AARCH64_ADD_ABS_LO12_NC	g_adsp_pd_ops
+ e88:	2a1f03e0 	mov	w0, wzr
+ e8c:	aa1303e2 	mov	x2, x19
+ e90:	94000000 	bl	0 <protocol_class_pd_register_ops>
+			e90: R_AARCH64_CALL26	protocol_class_pd_register_ops
+ e94:	340001a0 	cbz	w0, ec8 <adsp_pd_protocol_probe+0x78>
+ e98:	90000008 	adrp	x8, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			e98: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x1a4
+ e9c:	91000108 	add	x8, x8, #0x0
+			e9c: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x1a4
+ ea0:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			ea0: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x4c
+ ea4:	91000021 	add	x1, x1, #0x0
+			ea4: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x4c
+ ea8:	2a0003f3 	mov	w19, w0
+ eac:	aa0803e0 	mov	x0, x8
+ eb0:	528045c2 	mov	w2, #0x22e                 	// #558
+ eb4:	94000000 	bl	0 <__mca_log_err>
+			eb4: R_AARCH64_CALL26	__mca_log_err
+ eb8:	2a1303e0 	mov	w0, w19
+ ebc:	14000015 	b	f10 <adsp_pd_protocol_probe+0xc0>
+ ec0:	12800160 	mov	w0, #0xfffffff4            	// #-12
+ ec4:	14000013 	b	f10 <adsp_pd_protocol_probe+0xc0>
+ ec8:	90000008 	adrp	x8, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			ec8: R_AARCH64_ADR_PREL_PG_HI21	.text+0xf34
+ ecc:	91000108 	add	x8, x8, #0x0
+			ecc: R_AARCH64_ADD_ABS_LO12_NC	.text+0xf34
+ ed0:	aa1303e1 	mov	x1, x19
+ ed4:	f8010c28 	str	x8, [x1, #16]!
+ ed8:	94000000 	bl	0 <mca_event_block_notify_register>
+			ed8: R_AARCH64_CALL26	mca_event_block_notify_register
+ edc:	90000008 	adrp	x8, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			edc: R_AARCH64_ADR_PREL_PG_HI21	.text+0xf54
+ ee0:	91000108 	add	x8, x8, #0x0
+			ee0: R_AARCH64_ADD_ABS_LO12_NC	.text+0xf54
+ ee4:	528000a0 	mov	w0, #0x5                   	// #5
+ ee8:	f8028e68 	str	x8, [x19, #40]!
+ eec:	aa1303e1 	mov	x1, x19
+ ef0:	94000000 	bl	0 <mca_event_block_notify_register>
+			ef0: R_AARCH64_CALL26	mca_event_block_notify_register
+ ef4:	90000000 	adrp	x0, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			ef4: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x32d
+ ef8:	91000000 	add	x0, x0, #0x0
+			ef8: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x32d
+ efc:	90000001 	adrp	x1, 0 <adsp_pd_protocol_get_pps_max_power-0x4>
+			efc: R_AARCH64_ADR_PREL_PG_HI21	.rodata.str1.1+0x4c
+ f00:	91000021 	add	x1, x1, #0x0
+			f00: R_AARCH64_ADD_ABS_LO12_NC	.rodata.str1.1+0x4c
+ f04:	52804702 	mov	w2, #0x238                 	// #568
+ f08:	94000000 	bl	0 <__mca_log_err>
+			f08: R_AARCH64_CALL26	__mca_log_err
+ f0c:	2a1f03e0 	mov	w0, wzr
+ f10:	a9414ff4 	ldp	x20, x19, [sp, #16]
+ f14:	a8c27bfd 	ldp	x29, x30, [sp], #32
+ f18:	d50323bf 	autiasp
+ f1c:	d65f03c0 	ret
+ f20:	24a11bb9 	.word	0x24a11bb9
+
+0000000000000f24 <adsp_pd_protocol_remove>:
+ f24:	d65f03c0 	ret
+ f28:	24a11bb9 	.word	0x24a11bb9
+
+0000000000000f2c <adsp_pd_protocol_shutdown>:
+ f2c:	d65f03c0 	ret
+ f30:	d5127a3b 	.word	0xd5127a3b
+
+0000000000000f34 <adsp_pd_protocol_event_cb>:
+ f34:	b4000061 	cbz	x1, f40 <adsp_pd_protocol_event_cb+0xc>
+ f38:	2a1f03e0 	mov	w0, wzr
+ f3c:	d65f03c0 	ret
+ f40:	b81fc01f 	stur	wzr, [x0, #-4]
+ f44:	f900181f 	str	xzr, [x0, #48]
+ f48:	2a1f03e0 	mov	w0, wzr
+ f4c:	d65f03c0 	ret
+ f50:	d5127a3b 	.word	0xd5127a3b
+
+0000000000000f54 <adsp_pd_protocol_abnormal_cb>:
+ f54:	f100b43f 	cmp	x1, #0x2d
+ f58:	54000041 	b.ne	f60 <adsp_pd_protocol_abnormal_cb+0xc>  // b.any
+ f5c:	b81e401f 	stur	wzr, [x0, #-28]
+ f60:	2a1f03e0 	mov	w0, wzr
+ f64:	d65f03c0 	ret
+
+Disassembly of section .init.text:
+
+0000000000000000 <init_module-0x4>:
+   0:	6fbb3035 	.word	0x6fbb3035
+
+0000000000000004 <init_module>:
+   4:	d503233f 	paciasp
+   8:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+   c:	910003fd 	mov	x29, sp
+  10:	90000000 	adrp	x0, 0 <init_module-0x4>
+			10: R_AARCH64_ADR_PREL_PG_HI21	.data+0x198
+  14:	91000000 	add	x0, x0, #0x0
+			14: R_AARCH64_ADD_ABS_LO12_NC	.data+0x198
+  18:	90000001 	adrp	x1, 0 <init_module-0x4>
+			18: R_AARCH64_ADR_PREL_PG_HI21	__this_module
+  1c:	91000021 	add	x1, x1, #0x0
+			1c: R_AARCH64_ADD_ABS_LO12_NC	__this_module
+  20:	94000000 	bl	0 <__platform_driver_register>
+			20: R_AARCH64_CALL26	__platform_driver_register
+  24:	a8c17bfd 	ldp	x29, x30, [sp], #16
+  28:	d50323bf 	autiasp
+  2c:	d65f03c0 	ret
+
+Disassembly of section .exit.text:
+
+0000000000000000 <cleanup_module-0x4>:
+   0:	e5c47d60 	.word	0xe5c47d60
+
+0000000000000004 <cleanup_module>:
+   4:	d503233f 	paciasp
+   8:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+   c:	910003fd 	mov	x29, sp
+  10:	90000000 	adrp	x0, 0 <cleanup_module-0x4>
+			10: R_AARCH64_ADR_PREL_PG_HI21	.data+0x198
+  14:	91000000 	add	x0, x0, #0x0
+			14: R_AARCH64_ADD_ABS_LO12_NC	.data+0x198
+  18:	94000000 	bl	0 <platform_driver_unregister>
+			18: R_AARCH64_CALL26	platform_driver_unregister
+  1c:	a8c17bfd 	ldp	x29, x30, [sp], #16
+  20:	d50323bf 	autiasp
+  24:	d65f03c0 	ret

@@ -1,0 +1,295 @@
+{
+  "status": "PASS",
+  "direct_call_checks": [
+    {
+      "property": "PD_PROP_USB_REAL_TYPE",
+      "call": "0x3a8",
+      "id": 131084,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_VERIFY_PROCESS",
+      "call": "0xad8",
+      "id": 135170,
+      "bytes": 4,
+      "op": "write"
+    },
+    {
+      "property": "PD_PROP_VERIFY_PROCESS",
+      "call": "0xb24",
+      "id": 135170,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_VDM_AUTH",
+      "call": "0x82c",
+      "id": 135175,
+      "bytes": 16,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_SUPPORT_KEEP_PDO",
+      "call": "0xb8c",
+      "id": 135179,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_DATA_ROLE",
+      "call": "0x8f4",
+      "id": 135181,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_CURRENT_STATE",
+      "call": "0x99c",
+      "id": 135182,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_ADAPTER_ID",
+      "call": "0x490",
+      "id": 135183,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_ADAPTER_SVID",
+      "call": "0x4c0",
+      "id": 135184,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_PD_VERIFIED",
+      "call": "0xb78",
+      "id": 135185,
+      "bytes": 4,
+      "op": "write"
+    },
+    {
+      "property": "PD_PROP_PDOS",
+      "call": "0xa74",
+      "id": 135186,
+      "bytes": null,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_VDM_STATE",
+      "call": "0x7b8",
+      "id": 135187,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_PPS_MAX_CUR",
+      "call": "0x248",
+      "id": 135188,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_PPS_APDO_MAX",
+      "call": "0x354",
+      "id": 135189,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_TYPEC_MODE",
+      "call": "0x430",
+      "id": 135190,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_TYPEC_CC_ORIENT",
+      "call": "0x460",
+      "id": 135191,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_SELECT_PPS_PDO",
+      "call": "0xb8",
+      "id": 135192,
+      "bytes": 4,
+      "op": "write"
+    },
+    {
+      "property": "PD_PROP_FIXED_PD_VOLT",
+      "call": "0x198",
+      "id": 135193,
+      "bytes": 4,
+      "op": "write"
+    },
+    {
+      "property": "PD_PROP_PPS_STATUS",
+      "call": "0x298",
+      "id": 135194,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_PPS_MAX_POWER",
+      "call": "0x20",
+      "id": 135196,
+      "bytes": 4,
+      "op": "write"
+    },
+    {
+      "property": "PD_PROP_HAS_DP",
+      "call": "0x4f0",
+      "id": 135199,
+      "bytes": 1,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_CID_STATUS",
+      "call": "0xc54",
+      "id": 135200,
+      "bytes": 1,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_OTG_PLUGIN",
+      "call": "0xc84",
+      "id": 135201,
+      "bytes": 1,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_CC_TOGGLE",
+      "call": "0xd34",
+      "id": 135202,
+      "bytes": 1,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_CC_TOGGLE",
+      "call": "0xce8",
+      "id": 135202,
+      "bytes": 1,
+      "op": "write"
+    },
+    {
+      "property": "PD_PROP_SNK_SRC_MODE",
+      "call": "0xd64",
+      "id": 135203,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_CC_STATUS",
+      "call": "0xd94",
+      "id": 135204,
+      "bytes": 1,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_CC_SHORT_VBUS",
+      "call": "0xdc4",
+      "id": 135205,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_PPS_PTF",
+      "call": "0x108",
+      "id": 135206,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_SUSPEND_SUPPORT",
+      "call": "0xdf4",
+      "id": 135207,
+      "bytes": 1,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_ZIMI_CYPRESS",
+      "call": "0xe24",
+      "id": 135208,
+      "bytes": 4,
+      "op": "read"
+    },
+    {
+      "property": "PD_PROP_GEAR_SHIFT",
+      "call": "0x1fc",
+      "id": 135209,
+      "bytes": 4,
+      "op": "write"
+    }
+  ],
+  "direct_call_count": 32,
+  "dynamic_dispatch_manual_review": [
+    {
+      "property": "PD_PROP_VDM_VERSION",
+      "call": "0x880"
+    },
+    {
+      "property": "PD_PROP_VDM_VERSION",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_VOLTAGE",
+      "call": "0x880"
+    },
+    {
+      "property": "PD_PROP_VDM_VOLTAGE",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_TEMP",
+      "call": "0x880"
+    },
+    {
+      "property": "PD_PROP_VDM_TEMP",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_SESSION_SEED",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_AUTH",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_VERIFIED",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_REMOVE_COMP",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_REVERSE_AUTH",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_SUPPORT_KEEP_PDO",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_VDM_NAK",
+      "call": "0x73c"
+    },
+    {
+      "property": "PD_PROP_DATA_ROLE",
+      "call": "0x73c"
+    }
+  ],
+  "dynamic_dispatch_evidence": "VDM request base w21=0x21003 at0x530/0x550; branch targets add offsets0..10, common write0x73c forwards w19 bytes. Response1/2/3 branches use 0x21003/04/05 and common read0x880,4B. Source host tests exercise actual request and response callbacks with literal expected IDs.",
+  "stock_ELF_sha256": "bec0db9fc108720922066eb9c850535991fc2310dc3319cd84f67e304f549cb3",
+  "full_disassembly_regenerated_from_stock_ELF_and_byte_matched": true,
+  "source": "r92-build-route/payload/qcom_adsp_pd_protocol.c",
+  "source_sha256": "2a03a0666f7955277948a5232f1fae7bdae1d87172f87fa79771f28618926cae",
+  "hardware_tested": false,
+  "stock_reference_date": "2026-10-21"
+}

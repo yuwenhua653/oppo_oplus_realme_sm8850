@@ -1,0 +1,203 @@
+{
+  "effective_config": {
+    "bytes": 261809,
+    "sha256": "c758847251c59a89b3e3deb297e9a9830244da78a78156a98dfcd34e7ef4e6ea"
+  },
+  "github_commit": "8dcb57ac2a449595a483912c3de8726ea9df8a32",
+  "github_run_id": "40046239434",
+  "module_inventory_pin": {
+    "bytes": 25487,
+    "sha256": "deaf46af6c7046250927cbe5efb8c5499310f949730425826cd695f238d4ff51"
+  },
+  "modules": {
+    "bq27z561": {
+      "bytes": 204872,
+      "sha256": "6688efa1d0cf9ff030633b974b14065e6c76cd70053d218cfdf5e6b3d8a37dd3"
+    },
+    "charger_partition": {
+      "bytes": 58560,
+      "sha256": "0406427fec6dfb26d4c91807a16f3caa7a0a11bca5c25a5a385a1013cd409092"
+    },
+    "hwid": {
+      "bytes": 17688,
+      "sha256": "056ea6ca25ff336c92c43c52729b34f88aab136fca449b2cdffc4bd37cb403d6"
+    },
+    "mca_adsp_glink": {
+      "bytes": 29248,
+      "sha256": "c323acbb3bdfe41c1e207e226c21031882ff93df00fdb3f59a8c1e5ec5223d66"
+    },
+    "mca_basic_wireless": {
+      "bytes": 169424,
+      "sha256": "bf388e6a0b5e22672f3655da8fd048f8a6283fcaf3b2f0903c4dd90e260919e2"
+    },
+    "mca_bmd": {
+      "bytes": 28256,
+      "sha256": "a0ff5bf45ee9392d7c7d724fd41b61b56952a0fff31b76a32affbdabae1a0848"
+    },
+    "mca_buckchg_jeita": {
+      "bytes": 53224,
+      "sha256": "ad17cef54b18a1fa6cdfa1a5cd2cf99d8e2fb2a37d86261cd031e474ef238e40"
+    },
+    "mca_business_battery_comp": {
+      "bytes": 28208,
+      "sha256": "0e48b12c61a3b564ee4a5a415be144085aceefe029f82509f9edab9b31ac302f"
+    },
+    "mca_business_charger_comp": {
+      "bytes": 83320,
+      "sha256": "9ec7bc2ba769d4dcd77324b5fc9e38450987767e3dc7defde4005104c1564335"
+    },
+    "mca_charge_interface": {
+      "bytes": 24168,
+      "sha256": "84cc55aa2b0f678a1dd68708f526cab0fc3038e85e9ae8377521928299468a3b"
+    },
+    "mca_charge_mievent": {
+      "bytes": 47552,
+      "sha256": "0d095622b6072dc3753bd5afdccf305b456cd7348b0800c4d2deef404bc3749c"
+    },
+    "mca_charger_thermal": {
+      "bytes": 52216,
+      "sha256": "2ddaf4ac98763b458bdde9f53914b79245036285c0d450dc44470f7e3622b027"
+    },
+    "mca_connector_antiburn": {
+      "bytes": 42184,
+      "sha256": "49d9afd005fab92453ea29b698e1df76abb361f7ac962eccdbce3cbbde38d637"
+    },
+    "mca_event": {
+      "bytes": 23184,
+      "sha256": "3fd19e1abca46880d6cd430fdfd6a370dc8a81eb5ebc1fc6b4f909284d2a48f1"
+    },
+    "mca_hwid": {
+      "bytes": 14960,
+      "sha256": "960336fa538ba811a28ec83226b7989be138a54ad6c987c9b2a8e99e214353ad"
+    },
+    "mca_ibat_ocp_monitor": {
+      "bytes": 24776,
+      "sha256": "54d0fa857e992beb88a9983d291ff70d081cb7d6452c398d831dc9730cfcd778"
+    },
+    "mca_log": {
+      "bytes": 32120,
+      "sha256": "601b29def3c01e2d5760f1d4d3f93583d57e9790c564c97aee20572846ca7b80"
+    },
+    "mca_lpd_detect": {
+      "bytes": 19944,
+      "sha256": "f416fadbac908d65b3fd3d8a1649b57b86c5611aa3703538b0a525ac319b6286"
+    },
+    "mca_parse_dts": {
+      "bytes": 21232,
+      "sha256": "20eace2dfe29ad4f488d7ed43658b8b4f060d52df1ce331e67b198ac01713064"
+    },
+    "mca_path_control": {
+      "bytes": 39440,
+      "sha256": "43c15fca2e2073485da3684640586b5f70b1c88bb9c4f19a21abbd4d6bc76133"
+    },
+    "mca_pd_auth": {
+      "bytes": 26120,
+      "sha256": "9f4f36056d8c6564af50d0db8d6da33e8c7ba08a47c81891c364b581b1d1fb85"
+    },
+    "mca_platform_bc12_class": {
+      "bytes": 20896,
+      "sha256": "434c595bd0054dcc5bfc898e0efdd3a406fd9db747b4ae2c88b36dd83c0265c4"
+    },
+    "mca_platform_buckchg_class": {
+      "bytes": 123224,
+      "sha256": "7b0f0df8d9a27694d43ada3c9ffbf71c104ebff2cc767269b02037c73cb2e1ad"
+    },
+    "mca_platform_cp_class": {
+      "bytes": 75584,
+      "sha256": "b7fe4987b2956fcd18efb88952e0d4734cf7f4c8313af44e2ad6e956595fd146"
+    },
+    "mca_platform_fg_ic_ops": {
+      "bytes": 102672,
+      "sha256": "83952f21e9079fe9144a2544a060763c2e6eca04bb4ed05bce6cff943518a009"
+    },
+    "mca_platform_loadsw_class": {
+      "bytes": 26680,
+      "sha256": "a8788f590634a20102db8c976e63276897f358f3a7d134bbbb0226c4add0ec4f"
+    },
+    "mca_platform_wireless_class": {
+      "bytes": 92488,
+      "sha256": "7206c385be9f595775d70ff7662c79128aa10412750907b450b1d8af5cee21b4"
+    },
+    "mca_protocol_class": {
+      "bytes": 31912,
+      "sha256": "d941d782d43c92b8adc9936c91c8fd6fa3ace7856734123081b1b5847816d2ea"
+    },
+    "mca_protocol_pd_class": {
+      "bytes": 104840,
+      "sha256": "3d12180f9477f6b232a3cb06122f7d6e23adb2e2554d58686aa0bd59cea7633c"
+    },
+    "mca_protocol_qc_class": {
+      "bytes": 17176,
+      "sha256": "63b2c0d2efd47045ae70dc6093a914ddcf1c0e532a56bf24d126bee36dcb321f"
+    },
+    "mca_qcom_smem": {
+      "bytes": 13520,
+      "sha256": "8c7dbe16756e8cd377d142b736523d2f974f20971304282af6404d23b1bbda9c"
+    },
+    "mca_qcom_subpmic_proxy": {
+      "bytes": 63368,
+      "sha256": "34eead15712fc5725d6b55b803cc5804522bcc0309ec416db1de3d6a2ac2f40b"
+    },
+    "mca_qcom_sysfs": {
+      "bytes": 43208,
+      "sha256": "402b53bd6ad596ee11b2574f684d8c1bc32208a708da3c32bae0b2b85794ebd3"
+    },
+    "mca_quick_wireless": {
+      "bytes": 101400,
+      "sha256": "78a08df877a35232deb71fda3aeacac28b54899e6f3f72c44c90ab1dd9b4de27"
+    },
+    "mca_smart_charge": {
+      "bytes": 74608,
+      "sha256": "0df63f1193d181fcb12a52624c8ca6d73cda2528d7c732177134eef5ad20b561"
+    },
+    "mca_strategy_buckchg": {
+      "bytes": 115208,
+      "sha256": "d19771e29d3c23fa6cd41d0a908de496d802bd3068c0caafb4fcba5546b5e8b8"
+    },
+    "mca_strategy_class": {
+      "bytes": 14904,
+      "sha256": "95a666b4125c28c2ab4dcb1fe58b06df761baac15dc953547f9550c549c87604"
+    },
+    "mca_strategy_fg_class": {
+      "bytes": 34080,
+      "sha256": "82ca7d442a0d3dc423690eca5c8e1648ac55188764c13122ba832241501d3c68"
+    },
+    "mca_strategy_fg_comp": {
+      "bytes": 145192,
+      "sha256": "2b0d66278dafe5f0b86d330c4570043d23e2bd1620a62e44b65afc80e2e53697"
+    },
+    "mca_strategy_quickchg": {
+      "bytes": 176800,
+      "sha256": "80f9f64348510c823d3b73dbe8e57a1fd91e98b4779f4009fdc45abc9da7c026"
+    },
+    "mca_sysfs": {
+      "bytes": 36272,
+      "sha256": "3ec0e679d0778c9401cbca4c126c81f85b988bda1c291722ec3b29126495f0ba"
+    },
+    "mca_vbat_ovp_monitor": {
+      "bytes": 20424,
+      "sha256": "08a3f9c499d482b307a3f3196b53b71e9cb512aa6e6066939ed9a34ae3bf5418"
+    },
+    "mca_voter": {
+      "bytes": 40104,
+      "sha256": "5a40998662cc10fe07b95c0cac14e10c64dc49c7d1a0afed6305f9c229603159"
+    },
+    "mca_wireless_revchg": {
+      "bytes": 90096,
+      "sha256": "bc7aee2b85e5fe3183cbc84b9d683b447fe49b2bb0b4dc64dbcc9fde4f7f9dde"
+    },
+    "mca_workqueue": {
+      "bytes": 16016,
+      "sha256": "68471ac80883761195bbc235fb0a4b66cbe2a57f158bf782bb33fbda4d8ca684"
+    },
+    "miev": {
+      "bytes": 32640,
+      "sha256": "c4e379cb6908e83459b29eaf881d9c1b34d1cd8aee3238f3bca2a1abb1c1e786"
+    },
+    "sc8581": {
+      "bytes": 78080,
+      "sha256": "0a168b7e1a2518435165cfd605661113555c82da41d8029a3622d495b31b13d7"
+    }
+  },
+  "schema": 1
+}

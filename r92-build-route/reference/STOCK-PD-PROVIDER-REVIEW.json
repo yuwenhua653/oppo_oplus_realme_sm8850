@@ -1,0 +1,933 @@
+{
+  "status": "STOCK_PD_PROVIDER_AND_PROPERTY_MAP_VERIFIED",
+  "stock_image": {
+    "bytes": 53805056,
+    "sha256": "7d0809c9369f2fa427a72f3667c7fdd72c5ec9c2696a85877d617350280684c8"
+  },
+  "stock_provider": {
+    "bytes": 29832,
+    "sha256": "bec0db9fc108720922066eb9c850535991fc2310dc3319cd84f67e304f549cb3"
+  },
+  "r12_source": {
+    "bytes": 16559,
+    "sha256": "18d6bb1a2ebe4833f98d2eb73e058a7c81d46cac9f1bb70b6bed3c73f1093762"
+  },
+  "compatible": "mca,adsp_pd_protocol",
+  "stock_autoload_line": 105,
+  "register_call": {
+    "symbol": "protocol_class_pd_register_ops",
+    "text_offset": "0xe90",
+    "port": 0
+  },
+  "binary_machine": "AArch64",
+  "stock_module_vermagic": "6.12.23-android16-5-gf79b0b15da3a-mi-4k SMP preempt mod_unload modversions aarch64",
+  "r90_provider_present": false,
+  "properties": [
+    {
+      "property": "PD_PROP_USB_REAL_TYPE",
+      "stock_id": "0x2000c",
+      "r12_source_id": "0x2000c",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_get_pd_type",
+      "text_call_offset": "0x3a8",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_pd_type",
+          "text_call_offset": "0x3a8",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VERIFY_PROCESS",
+      "stock_id": "0x21002",
+      "r12_source_id": "0x21002",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_set_verify_process",
+      "text_call_offset": "0xad8",
+      "transfer_operation": "write",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_set_verify_process",
+          "text_call_offset": "0xad8",
+          "transfer_operation": "write",
+          "payload_bytes": 4
+        },
+        {
+          "stock_function": "adsp_pd_protocol_get_verify_process",
+          "text_call_offset": "0xb24",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_VERSION",
+      "stock_id": "0x21003",
+      "r12_source_id": "0x21003",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+      "text_call_offset": "0x880",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+          "text_call_offset": "0x880",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        },
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_VOLTAGE",
+      "stock_id": "0x21004",
+      "r12_source_id": "0x21004",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+      "text_call_offset": "0x880",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+          "text_call_offset": "0x880",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        },
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_TEMP",
+      "stock_id": "0x21005",
+      "r12_source_id": "0x21005",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+      "text_call_offset": "0x880",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+          "text_call_offset": "0x880",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        },
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_SESSION_SEED",
+      "stock_id": "0x21006",
+      "r12_source_id": "0x21006",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+      "text_call_offset": "0x73c",
+      "transfer_operation": "write",
+      "payload_bytes": "data_len",
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_AUTH",
+      "stock_id": "0x21007",
+      "r12_source_id": "0x21007",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+      "text_call_offset": "0x82c",
+      "transfer_operation": "read",
+      "payload_bytes": 16,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+          "text_call_offset": "0x82c",
+          "transfer_operation": "read",
+          "payload_bytes": 16
+        },
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_VERIFIED",
+      "stock_id": "0x21008",
+      "r12_source_id": "0x21008",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+      "text_call_offset": "0x73c",
+      "transfer_operation": "write",
+      "payload_bytes": "data_len",
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_REMOVE_COMP",
+      "stock_id": "0x21009",
+      "r12_source_id": "0x21009",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+      "text_call_offset": "0x73c",
+      "transfer_operation": "write",
+      "payload_bytes": "data_len",
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_REVERSE_AUTH",
+      "stock_id": "0x2100a",
+      "r12_source_id": "0x2100a",
+      "source_mapping_differs": false,
+      "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+      "text_call_offset": "0x73c",
+      "transfer_operation": "write",
+      "payload_bytes": "data_len",
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_SUPPORT_KEEP_PDO",
+      "stock_id": "0x2100b",
+      "r12_source_id": null,
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_set_pd_verifed",
+      "text_call_offset": "0xb8c",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_set_pd_verifed",
+          "text_call_offset": "0xb8c",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        },
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_NAK",
+      "stock_id": "0x2100c",
+      "r12_source_id": "0x2100b",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+      "text_call_offset": "0x73c",
+      "transfer_operation": "write",
+      "payload_bytes": "data_len",
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_DATA_ROLE",
+      "stock_id": "0x2100d",
+      "r12_source_id": "0x2100c",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_data_role",
+      "text_call_offset": "0x8f4",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_data_role",
+          "text_call_offset": "0x8f4",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        },
+        {
+          "stock_function": "adsp_pd_protocol_request_vdm_cmd",
+          "text_call_offset": "0x73c",
+          "transfer_operation": "write",
+          "payload_bytes": "data_len"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_CURRENT_STATE",
+      "stock_id": "0x2100e",
+      "r12_source_id": "0x2100d",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_current_state",
+      "text_call_offset": "0x99c",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_current_state",
+          "text_call_offset": "0x99c",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_ADAPTER_ID",
+      "stock_id": "0x2100f",
+      "r12_source_id": "0x2100e",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_adapter_id",
+      "text_call_offset": "0x490",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_adapter_id",
+          "text_call_offset": "0x490",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_ADAPTER_SVID",
+      "stock_id": "0x21010",
+      "r12_source_id": "0x2100f",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_adapter_svid",
+      "text_call_offset": "0x4c0",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_adapter_svid",
+          "text_call_offset": "0x4c0",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_PD_VERIFIED",
+      "stock_id": "0x21011",
+      "r12_source_id": "0x21010",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_set_pd_verifed",
+      "text_call_offset": "0xb78",
+      "transfer_operation": "write",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_set_pd_verifed",
+          "text_call_offset": "0xb78",
+          "transfer_operation": "write",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_PDOS",
+      "stock_id": "0x21012",
+      "r12_source_id": "0x21011",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_pdos",
+      "text_call_offset": "0xa74",
+      "transfer_operation": "read",
+      "payload_bytes": "count*16",
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_pdos",
+          "text_call_offset": "0xa74",
+          "transfer_operation": "read",
+          "payload_bytes": "count*16"
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_VDM_STATE",
+      "stock_id": "0x21013",
+      "r12_source_id": "0x21012",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+      "text_call_offset": "0x7b8",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_vdm_cmd",
+          "text_call_offset": "0x7b8",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_PPS_MAX_CUR",
+      "stock_id": "0x21014",
+      "r12_source_id": "0x21013",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_pps_max_cur",
+      "text_call_offset": "0x248",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_pps_max_cur",
+          "text_call_offset": "0x248",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_PPS_APDO_MAX",
+      "stock_id": "0x21015",
+      "r12_source_id": "0x21014",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_pps_apdo_max",
+      "text_call_offset": "0x354",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_pps_apdo_max",
+          "text_call_offset": "0x354",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_TYPEC_MODE",
+      "stock_id": "0x21016",
+      "r12_source_id": "0x21015",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_typec_mode",
+      "text_call_offset": "0x430",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_typec_mode",
+          "text_call_offset": "0x430",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_TYPEC_CC_ORIENT",
+      "stock_id": "0x21017",
+      "r12_source_id": "0x21016",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_typec_cc_orientation",
+      "text_call_offset": "0x460",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_typec_cc_orientation",
+          "text_call_offset": "0x460",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_SELECT_PPS_PDO",
+      "stock_id": "0x21018",
+      "r12_source_id": "0x21017",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_select_pps_pdo",
+      "text_call_offset": "0xb8",
+      "transfer_operation": "write",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_select_pps_pdo",
+          "text_call_offset": "0xb8",
+          "transfer_operation": "write",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_FIXED_PD_VOLT",
+      "stock_id": "0x21019",
+      "r12_source_id": "0x21018",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_set_fixed_pd_volt",
+      "text_call_offset": "0x198",
+      "transfer_operation": "write",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_set_fixed_pd_volt",
+          "text_call_offset": "0x198",
+          "transfer_operation": "write",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_PPS_STATUS",
+      "stock_id": "0x2101a",
+      "r12_source_id": "0x21019",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_pps_status",
+      "text_call_offset": "0x298",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_pps_status",
+          "text_call_offset": "0x298",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_PPS_MAX_POWER",
+      "stock_id": "0x2101c",
+      "r12_source_id": "0x2101b",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_pps_max_power",
+      "text_call_offset": "0x20",
+      "transfer_operation": "write",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_pps_max_power",
+          "text_call_offset": "0x20",
+          "transfer_operation": "write",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_HAS_DP",
+      "stock_id": "0x2101f",
+      "r12_source_id": "0x2101e",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_has_dp",
+      "text_call_offset": "0x4f0",
+      "transfer_operation": "read",
+      "payload_bytes": 1,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_has_dp",
+          "text_call_offset": "0x4f0",
+          "transfer_operation": "read",
+          "payload_bytes": 1
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_CID_STATUS",
+      "stock_id": "0x21020",
+      "r12_source_id": "0x2101f",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_cid_status",
+      "text_call_offset": "0xc54",
+      "transfer_operation": "read",
+      "payload_bytes": 1,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_cid_status",
+          "text_call_offset": "0xc54",
+          "transfer_operation": "read",
+          "payload_bytes": 1
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_OTG_PLUGIN",
+      "stock_id": "0x21021",
+      "r12_source_id": "0x21020",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_otg_plugin_status",
+      "text_call_offset": "0xc84",
+      "transfer_operation": "read",
+      "payload_bytes": 1,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_otg_plugin_status",
+          "text_call_offset": "0xc84",
+          "transfer_operation": "read",
+          "payload_bytes": 1
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_CC_TOGGLE",
+      "stock_id": "0x21022",
+      "r12_source_id": "0x21021",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_protocol_get_cc_toggle",
+      "text_call_offset": "0xd34",
+      "transfer_operation": "read",
+      "payload_bytes": 1,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_protocol_get_cc_toggle",
+          "text_call_offset": "0xd34",
+          "transfer_operation": "read",
+          "payload_bytes": 1
+        },
+        {
+          "stock_function": "adsp_protocol_set_cc_toggle",
+          "text_call_offset": "0xce8",
+          "transfer_operation": "write",
+          "payload_bytes": 1
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_SNK_SRC_MODE",
+      "stock_id": "0x21023",
+      "r12_source_id": "0x21022",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_snk_src_mode",
+      "text_call_offset": "0xd64",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_snk_src_mode",
+          "text_call_offset": "0xd64",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_CC_STATUS",
+      "stock_id": "0x21024",
+      "r12_source_id": "0x21023",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_protocol_get_cc_status",
+      "text_call_offset": "0xd94",
+      "transfer_operation": "read",
+      "payload_bytes": 1,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_protocol_get_cc_status",
+          "text_call_offset": "0xd94",
+          "transfer_operation": "read",
+          "payload_bytes": 1
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_CC_SHORT_VBUS",
+      "stock_id": "0x21025",
+      "r12_source_id": "0x21024",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_protocol_get_cc_short_vbus",
+      "text_call_offset": "0xdc4",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_protocol_get_cc_short_vbus",
+          "text_call_offset": "0xdc4",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_PPS_PTF",
+      "stock_id": "0x21026",
+      "r12_source_id": "0x21025",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_pps_ptf",
+      "text_call_offset": "0x108",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_pps_ptf",
+          "text_call_offset": "0x108",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_SUSPEND_SUPPORT",
+      "stock_id": "0x21027",
+      "r12_source_id": "0x21026",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_suspend_support_status",
+      "text_call_offset": "0xdf4",
+      "transfer_operation": "read",
+      "payload_bytes": 1,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_suspend_support_status",
+          "text_call_offset": "0xdf4",
+          "transfer_operation": "read",
+          "payload_bytes": 1
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_ZIMI_CYPRESS",
+      "stock_id": "0x21028",
+      "r12_source_id": "0x21027",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_get_zimi_cypress_flag",
+      "text_call_offset": "0xe24",
+      "transfer_operation": "read",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_get_zimi_cypress_flag",
+          "text_call_offset": "0xe24",
+          "transfer_operation": "read",
+          "payload_bytes": 4
+        }
+      ]
+    },
+    {
+      "property": "PD_PROP_GEAR_SHIFT",
+      "stock_id": "0x21029",
+      "r12_source_id": "0x21028",
+      "source_mapping_differs": true,
+      "stock_function": "adsp_pd_protocol_set_gear_shift",
+      "text_call_offset": "0x1fc",
+      "transfer_operation": "write",
+      "payload_bytes": 4,
+      "stock_transfer_calls": [
+        {
+          "stock_function": "adsp_pd_protocol_set_gear_shift",
+          "text_call_offset": "0x1fc",
+          "transfer_operation": "write",
+          "payload_bytes": 4
+        }
+      ]
+    }
+  ],
+  "wire_layout": {
+    "pdo_entry_bytes": 16,
+    "pps_request_bytes": 4,
+    "pps_request_encode": "(current_mA/50) | ((voltage_mV/20)<<16)",
+    "pps_status_decode": "current_mA=(word & 0xffff)*50, voltage_mV=(word>>16)*20",
+    "vdm_request_special_commands": {
+      "0xfe": "0x2100b support_keep_pdo",
+      "0xff": "0x2100c NAK",
+      "0xc8": "0x2100d DATA_ROLE"
+    },
+    "vdm_request_commands": {
+      "0x1": "0x21003",
+      "0x2": "0x21004",
+      "0x3": "0x21005",
+      "0x4": "0x21006",
+      "0x5": "0x21007",
+      "0x6": "0x21008",
+      "0x7": "0x21009",
+      "0x8": "0x2100a",
+      "0xfe": "0x2100b",
+      "0xff": "0x2100c",
+      "0xc8": "0x2100d"
+    },
+    "vdm_request_transfer": "All valid requests share .text0x73c write_prop(data_len bytes); seed/auth/reverse perform swab32 on first 4 u32 elements in-place.",
+    "vdm_response_fields": {
+      "state_read": {
+        "id": "0x21013",
+        "bytes": 4,
+        "call": "0x7b8"
+      },
+      "1": {
+        "id": "0x21003",
+        "bytes": 4,
+        "destination": "usbpd_vdm_data.ta_version offset0"
+      },
+      "2": {
+        "id": "0x21004",
+        "bytes": 4,
+        "destination": "usbpd_vdm_data.ta_voltage offset8"
+      },
+      "3": {
+        "id": "0x21005",
+        "bytes": 4,
+        "destination": "usbpd_vdm_data.ta_temp offset4"
+      },
+      "5": {
+        "id": "0x21007",
+        "bytes": 16,
+        "destination": "4 u32 zero-extended to unsigned long s_secert[4..7] at offsets48,56,64,72"
+      },
+      "other_states": "No payload read; 0xfe has no get_vdm response/cache handling."
+    },
+    "support_keep_pdo_cache": {
+      "read": "set_pd_verifed at0xb8c, id0x2100b, 4B into private info offset68",
+      "get": "adsp_pd_protocol_get_support_keep_pdo at0xe38 copies cached offset68 into caller int",
+      "public_abi": "Existing protocol_pd_class.h has get_support_keep_pdo op; usbpd_vdm_data unchanged."
+    }
+  },
+  "important_caveats": [
+    "Stock get_pps_max_power really calls write_prop at 0x2101c, despite its name; do not silently change read/write semantics.",
+    "Source uses a previous property map missing support_keep_pdo at 0x2100b; blindly compiling the original source sends wrong commands.",
+    "This is static stock-binary provenance, not a claim of successful phone execution.",
+    "Source VDM code and stock contain debug printing of auth/seed payload; diagnostics should never surface those payloads.",
+    "The stock image is a same-project reference uploaded 2026-10-21; this does not establish byte equality with the phone current firmware or ROM.",
+    "Retained DT fixture is a partition-selection merge; runtime bootloader fixups are not part of that snapshot.",
+    "Do not load original stock 6.12.23 binary into current 6.12.81 kernel; rebuild compatible provider source."
+  ],
+  "disassembly": {
+    "bytes": 50407,
+    "sha256": "794f8fee5a41825a43595d8abd0073ba34b6a75915fcc20ec5823979f654f37b"
+  },
+  "retained_DT_fixture": {
+    "scope": "captured partition DT selection merge, not Android runtime FDT with bootloader fixups",
+    "input": "analysis/myron-r10-inputs-20261010/dt-current-audit/current-selected-merged.dtb",
+    "sha256": "454343095983034d2c02653d85422cb569b92afdd76966596f9e72a4cef26773",
+    "nodes": {
+      "/soc/mca_qcom_pd_protocol": {
+        "enabled": true,
+        "properties": {
+          "phandle": [
+            1948
+          ],
+          "status": [
+            "ok"
+          ],
+          "compatible": [
+            "mca,adsp_pd_protocol"
+          ]
+        }
+      },
+      "/soc/mca_protocol_pd_class": {
+        "enabled": true,
+        "properties": {
+          "phandle": [
+            1947
+          ],
+          "max_power": [
+            100
+          ],
+          "support_mode": [
+            4
+          ],
+          "status": [
+            "ok"
+          ],
+          "compatible": [
+            "mca,protocol_pd"
+          ]
+        }
+      }
+    }
+  },
+  "stock_scanned_module_count": 375,
+  "stock_register_importers": [
+    "qcom_adsp_pd_protocol.ko"
+  ],
+  "r90_scanned_module_count": 294,
+  "r90_register_importers": [],
+  "stock_reference_date": "2026-10-21",
+  "pd_type_wire_semantics": {
+    "raw_property": "0x2000c",
+    "raw_value_matched": 11,
+    "reported_PD_type_when_unverified": 11,
+    "reported_PD_type_when_verified": 12,
+    "otherwise": 0,
+    "text_range": "0x368-0x408"
+  },
+  "verified_cache_stock_order": [
+    "write requested verified value to cached pd_verifed at .text0xb6c",
+    "write 0x21011/4B at .text0xb78",
+    "read 0x2100b/4B into support_keep_pdo at .text0xb8c",
+    "stock ignores both transport results and returns0 at .text0xbc4; this is a reference, not recommended error handling"
+  ],
+  "vdm_byte_lengths": "Stock forwards data_len as bytes to glink. seed/auth/reverse swap 4 u32s (16 bytes) despite stock minimum check of only4; validate real callers before adapting bounds.",
+  "r90_review_union_scanned_module_count": 296,
+  "r90_module_scope": {
+    "method": "Union BASELINE-ELF-REVIEWS + FULL-MCA-ELF-REVIEWS keyed by module name, exclude INACTIVE-FULL-MCA-CLOSURE excluded_readonly_owners",
+    "excluded_modules": [
+      "myron_bq_readonly",
+      "myron_mca_readonly"
+    ],
+    "expected_count": 294
+  },
+  "stock_module_modinfo": {
+    "built_with": "DDK",
+    "description": "qcom pd protocol",
+    "author": "lvchen@xiaomi.com",
+    "license": "GPL v2",
+    "name": "qcom_adsp_pd_protocol",
+    "scmversion": "gd62d9e41fc39",
+    "depends": "mca_adsp_glink,mca_log,mca_protocol_pd_class,mca_event",
+    "vermagic": "6.12.23-android16-5-gf79b0b15da3a-mi-4k SMP preempt mod_unload modversions aarch64"
+  },
+  "stock_autoload_evidence": {
+    "sha256": "0a83879160001ba94732b5fcc8e6c8860af385715c3f5bfb3afc1b6b0a0a7cad",
+    "line": 105,
+    "context": {
+      "103": "mca_qcom_smem.ko",
+      "104": "mca_qcom_subpmic_proxy.ko",
+      "105": "qcom_adsp_pd_protocol.ko",
+      "106": "sc8581.ko",
+      "107": "sc8531.ko"
+    }
+  },
+  "properties_without_stock_transport_calls": {
+    "note": "The gaps 0x2101b, 0x2101d and 0x2101e have no transport callsite in this provider. No semantic name is asserted for them.",
+    "ids": [
+      "0x2101b",
+      "0x2101d",
+      "0x2101e"
+    ]
+  },
+  "reference_artifacts_included": false,
+  "evidence_scope": "Historical stock reference proves provider and wire layout; no claim of byte-identical firmware on the current phone"
+}

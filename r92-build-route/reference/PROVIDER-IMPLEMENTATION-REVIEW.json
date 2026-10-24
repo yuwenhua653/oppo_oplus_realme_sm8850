@@ -1,0 +1,86 @@
+{
+  "status": "SOURCE_AND_HOST_TESTS_PASS_PENDING_KERNEL_CI_AND_PHONE",
+  "target": "drivers/power/supply/mca/mca_protocol/protocol_pd/qcom_tcpc/qcom_adsp_pd_protocol.c",
+  "source_sha256": "2a03a0666f7955277948a5232f1fae7bdae1d87172f87fa79771f28618926cae",
+  "preimage_sha256": "18d6bb1a2ebe4833f98d2eb73e058a7c81d46cac9f1bb70b6bed3c73f1093762",
+  "stock_provider_sha256": "bec0db9fc108720922066eb9c850535991fc2310dc3319cd84f67e304f549cb3",
+  "stock_image_sha256": "7d0809c9369f2fa427a72f3667c7fdd72c5ec9c2696a85877d617350280684c8",
+  "stock_wire_contract": {
+    "properties_verified": 38,
+    "pdo_stride": 16,
+    "pps_selection": "(mA/50) | ((mV/20)<<16)",
+    "max_power": "write4 at 0x2101c, matching stock",
+    "support_keep_pdo": "read4 at 0x2100b after verified-state write4 at 0x21011; cached getter; request cmd0xfe only"
+  },
+  "intentional_failure_handling_changes": [
+    "verified cache updates only after successful firmware write; write errno propagates",
+    "keep-PDO read failure clears cached capability and returns read errno; successful verified-state write is preserved",
+    "disconnect/GLINK-down epoch prevents delayed transaction completions restoring invalidated cache",
+    "failed authentication response read preserves caller output",
+    "seed/auth/reverse VDM requests shorter than 16 bytes reject before touching payload",
+    "PDO count rejects outside 1..7 before GLINK"
+  ],
+  "lifecycle": "register both notifiers before publishing ops; reverse unwind each failure; remove synchronously unregisters SRCU-protected ops then both notifiers before devm release",
+  "diagnostics": {
+    "path": "/sys/module/qcom_adsp_pd_protocol/parameters/provider_status",
+    "mode": "0444",
+    "set_callback": false,
+    "hardware_io_when_read": false,
+    "contains_secrets": false,
+    "fields": [
+      "registered",
+      "reads",
+      "writes",
+      "errors",
+      "last_prop",
+      "last_write",
+      "last_errno",
+      "last_real_type",
+      "last_pd_type",
+      "pdo_count",
+      "pdo_errno",
+      "select_mv",
+      "select_ma",
+      "select_errno"
+    ]
+  },
+  "host_tests": {
+    "status": "PASS",
+    "source_sha256": "2a03a0666f7955277948a5232f1fae7bdae1d87172f87fa79771f28618926cae",
+    "preimage_sha256": "18d6bb1a2ebe4833f98d2eb73e058a7c81d46cac9f1bb70b6bed3c73f1093762",
+    "compiler": "/usr/bin/cc",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "leak_sanitizer": "disabled because execution environment restricts /proc task access",
+    "scope": "full production C compiled with isolated kernel/GLINK mocks; not a kernel build or phone fast-charge result",
+    "checks": [
+      "stock IDs and wire sizes for all enabled provider transactions",
+      "PPS voltage/current packing and status decoding",
+      "7 x 16-byte PDO records and invalid count rejection",
+      "transport error propagation and failed auth response output preservation",
+      "verified/support cache and disconnect invalidation",
+      "disconnect/GLINK-down injected during verified write and keep-PDO read cannot restore stale cache",
+      "failed clear-verified write preserves prior state; verify-process failure preserves inherited stock cache behavior",
+      "VDM 0/1/3/4/15-byte rejection with ASan and 16-byte byte swap",
+      "notifier registration failure unwind and remove cleanup",
+      "diagnostic reads perform zero GLINK transactions",
+      "exact preimage fails at old PPS selection property"
+    ],
+    "results": [
+      {
+        "case": "provider",
+        "returncode": 0,
+        "expected_failure": false
+      },
+      {
+        "case": "preimage-negative",
+        "returncode": -6,
+        "expected_failure": true
+      }
+    ]
+  },
+  "kernel_build_claim": false,
+  "phone_fast_charge_claim": false
+}
