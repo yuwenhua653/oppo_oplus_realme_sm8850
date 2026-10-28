@@ -1,0 +1,11 @@
+{
+  "kind": "public_source_reference",
+  "repository": "unmoved21/android_kernel_xiaomi_onyx",
+  "commit": "8276ba954d8076303a5ae0f7b15d4092d66bdff6",
+  "path": "drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c",
+  "git_blob_sha1": "c00468c05e3cae2dda91618f0c42c90073c3479b",
+  "url": "https://github.com/unmoved21/android_kernel_xiaomi_onyx/blob/8276ba954d8076303a5ae0f7b15d4092d66bdff6/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c#L177-L185",
+  "property_id": 0,
+  "model_uohm": 100000,
+  "semantics": "Fixed compatibility model, not a real-time impedance measurement."
+}

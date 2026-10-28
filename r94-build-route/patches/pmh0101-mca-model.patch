@@ -1,0 +1,100 @@
+--- a/drivers/leds/flash/leds-qcom-flash.c
++++ b/drivers/leds/flash/leds-qcom-flash.c
+@@ -8,6 +8,7 @@
+ #include <linux/leds.h>
+ #include <linux/led-class-flash.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/power_supply.h>
+ #include <linux/property.h>
+@@ -842,6 +843,33 @@
+ 	return voltage_hdrm_mv;
+ }
+ 
++/*
++ * Myron's stock MCA proxy implements BATTERY_RESISTANCE as a fixed 100 mOhm
++ * model (100000 uOhm), not a live gauge reading.  The generic QTI provider
++ * correctly rejects MCA-owned supplies; do not remove its ownership check or
++ * export the same symbol from a second module.  Keep this compatibility model
++ * local to the observed PMH0101 + MCA battery pairing.  Voltage/current reads,
++ * dynamic budgeting and PMIC protections below still apply.
++ */
++#define MYRON_MCA_RBATT_MODEL_UOHM 100000
++
++static bool qcom_flash_is_pmh0101(struct qcom_flash_data *flash_data)
++{
++	return flash_data->dev &&
++		of_device_is_compatible(flash_data->dev->of_node,
++					"qcom,pmh0101-flash-led");
++}
++
++static bool qcom_flash_uses_mca_model(struct qcom_flash_data *flash_data)
++{
++	struct power_supply *psy = flash_data->batt_psy;
++
++	return qcom_flash_is_pmh0101(flash_data) && psy &&
++		psy->dev.parent &&
++		of_device_is_compatible(psy->dev.parent->of_node,
++					"mca,business_battery");
++}
++
+ static int __qcom_flash_led_get_max_avail_current(
+ 		struct qcom_flash_data *flash_data, int *max_current_ma)
+ {
+@@ -855,15 +883,24 @@
+ 		flash_data->batt_psy = power_supply_get_by_name("battery");
+ 
+ 	if (!flash_data->batt_psy) {
++		/* The production PMH0101 board requires battery data. */
++		if (qcom_flash_is_pmh0101(flash_data))
++			return -ENODEV;
+ 		*max_current_ma = MAX_FLASH_CURRENT_MA;
+ 		return 0;
+ 	}
+ 
+-	if (flash_data->use_smb_battery_interface)
++	if (flash_data->use_smb_battery_interface) {
+ 		rc = qcom_flash_iio_getprop(flash_data, RBATT, &rbatt_uohm);
+-	else
++	} else if (qcom_flash_uses_mca_model(flash_data)) {
++		rbatt_uohm = MYRON_MCA_RBATT_MODEL_UOHM;
++		rc = 0;
++		dev_info_once(flash_data->dev,
++			"using OEM MCA battery model: %d uOhm\n", rbatt_uohm);
++	} else {
+ 		rc = qti_battery_charger_get_prop("battery", BATTERY_RESISTANCE,
+ 						&rbatt_uohm);
++	}
+ 	if (rc < 0) {
+ 		pr_err("Failed to get battery resistance, rc=%d\n",
+ 				rc);
+@@ -926,8 +963,10 @@
+ 	p_flash_fw = BOB_EFFICIENCY * vph_flash_uv * i_flash_ua;
+ 	i_avail_ua = DIV_ROUND_CLOSEST(p_flash_fw, (vin_flash_uv * MCONV));
+ 
+-	*max_current_ma = min(MAX_FLASH_CURRENT_MA,
+-				(int)(DIV_ROUND_CLOSEST(i_avail_ua, MCONV)));
++	/* Never let a depleted/overloaded budget wrap in the camera's u32 API. */
++	*max_current_ma = clamp_t(int64_t,
++			DIV_ROUND_CLOSEST(i_avail_ua, MCONV),
++			0, MAX_FLASH_CURRENT_MA);
+ 
+ 	pr_debug("rbatt_uohm=%d ocv_uv=%d ibatt_now_ua=%d i_avail_ua=%lld\n",
+ 			rbatt_uohm, ocv_uv, ibatt_now_ua, i_avail_ua);
+@@ -1176,6 +1215,7 @@
+ 	flash_data = devm_kzalloc(dev, sizeof(*flash_data), GFP_KERNEL);
+ 	if (!flash_data)
+ 		return -ENOMEM;
++	flash_data->dev = dev;
+ 
+ 	regmap = dev_get_regmap(dev->parent, NULL);
+ 	if (!regmap) {
+@@ -1291,7 +1331,6 @@
+ 		device_property_read_bool(&pdev->dev,
+ 				"qcom,use-smb-battery-interface");
+ 	if (flash_data->use_smb_battery_interface) {
+-		flash_data->dev = &pdev->dev;
+ 		flash_data->iio_channels = devm_kcalloc(&pdev->dev,
+ 				ARRAY_SIZE(qcom_flash_iio_prop_names),
+ 					sizeof(struct iio_channel *), GFP_KERNEL);

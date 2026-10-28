@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "status": "FROZEN_REVIEWED_SOURCE",
+  "baseline_commit": "b193613b3a241430c8c735bdc666ee7bd038993c",
+  "compile_only": true,
+  "flashable": false,
+  "runtime_candidate_module_names": [
+    "leds_qcom_flash"
+  ],
+  "files": [
+    {
+      "file": "LED-PATCH.json",
+      "bytes": 1143,
+      "sha256": "fe863f880689518ad5d06dfdb0a06cefbab47e6297881a7a9bc4d7672652f735"
+    },
+    {
+      "file": "README.txt",
+      "bytes": 1962,
+      "sha256": "1d68318f2cb7da8030546038060e43c0fd052df3ee484eb910a4c28fc52536c9"
+    },
+    {
+      "file": "build_led.py",
+      "bytes": 16226,
+      "sha256": "2adc47c4ce41aaead594ba5ea32c58062244e69dacf8a39cb1b42abe10f1483a"
+    },
+    {
+      "file": "check_inputs.py",
+      "bytes": 1672,
+      "sha256": "1447406eabb00526d116253c35b358cdaa17635083824ac49074255f693c761f"
+    },
+    {
+      "file": "patches/pmh0101-mca-model.patch",
+      "bytes": 3438,
+      "sha256": "786c6df36bedd39ecaab3edbb104a485d5f5028c349453e070b7c0950ea9cbfa"
+    },
+    {
+      "file": "payload/leds-qcom-flash.c",
+      "bytes": 39773,
+      "sha256": "d702d8c0777ae2893bcea2af9b051e83cf81ea7bf4deaa83fe9269167b9c8f92"
+    },
+    {
+      "file": "preimage/leds-qcom-flash.c",
+      "bytes": 38374,
+      "sha256": "84fd44ce4b6170066b82eeb082b634e6e051a412f736760cf76ec42c33017766"
+    },
+    {
+      "file": "prepare_r92.py",
+      "bytes": 3553,
+      "sha256": "9461b459420a6c58c82632a00cdd0324ccf3ab081f52928aa399673404971719"
+    },
+    {
+      "file": "reference/PUBLIC-MODEL-SOURCE.json",
+      "bytes": 626,
+      "sha256": "9c28c0f6053629c7edc8f81514014862034e64e8bd93bd7f16ad3896ecfa2150"
+    },
+    {
+      "file": "test_route_guards.py",
+      "bytes": 9240,
+      "sha256": "b92375b4a7e25690b0b9793532360a30d30067f83d2e8cebbe02733d82eecba8"
+    },
+    {
+      "file": "tests/host_cases.c",
+      "bytes": 7692,
+      "sha256": "37f9f38f52b17495fbb0fe0d4ae52d861b2986644fbb68e46f77c684dbde85c1"
+    },
+    {
+      "file": "tests/host_shim.h",
+      "bytes": 3781,
+      "sha256": "7e26bda29804c18804840d357dae8a8e2cd5a1058d22342b7ff1709c63b0aa63"
+    },
+    {
+      "file": "tests/run_tests.py",
+      "bytes": 6810,
+      "sha256": "9e96c1714993a697f2f4c12ce89261a0707b7a2bac48aefa8ea7a137b315b117"
+    }
+  ]
+}
