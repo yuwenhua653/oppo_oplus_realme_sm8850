@@ -1,0 +1,40 @@
+{
+  "status": "PASS_SYNTHETIC_ASSEMBLY_REGRESSION_ONLY",
+  "real_R97_compilation": false,
+  "flashable_output_produced": false,
+  "source_only_marker_rejected": true,
+  "marker_removed_after_injection": true,
+  "126_private_module_bytes_verified": true,
+  "independent_record_readback": true,
+  "corrupt_control_script_link_inventory_rejected": [
+    "r97-runtime/ui.list",
+    "r97-runtime/hardware.list",
+    "r97-runtime/allowed-live.txt",
+    "r97-runtime/firststage.txt",
+    "r97-runtime/modules.sha256",
+    "r97-runtime/common.sh",
+    "r97-runtime/load-ui.sh",
+    "r97-runtime/load-hardware.sh",
+    "r97-runtime/start-adsp.sh",
+    "r97-runtime/wait-battery.sh",
+    "init.recovery.r97.rc",
+    "init symlink",
+    "extra runtime file"
+  ],
+  "deterministic_native_and_vendor_build": true,
+  "normal_R96_contract_preserved": true,
+  "native_tests": [
+    {
+      "name": "test_r97_bundle.c",
+      "output": "PASS R97 exact bundle, failed binary/init pins, RC cross-pairing and legacy rollback; generic init/runtime unchanged\n"
+    },
+    {
+      "name": "test_rc_selection.c",
+      "output": "PASS legacy/R95 RC selection and unknown-size rejection\n"
+    },
+    {
+      "name": "test_native.c",
+      "output": "PASS: mode boundaries; actual SHA; new nonrecursive bind + original removal; both mount table order gates, recycled IDs, stale source, duplicate/missing mounts, wrong parent/device/fs, malformed rows; all helper FDs closed before same-loop retained verification; both markers; only private mounts removed; normal handoff; failure report-return-before-unmount; partial-bind rollback + moveback failure no parent unmount; bad backing/pin/reopen/close/write block normal handoff; recovery is separate.\n"
+    }
+  ]
+}

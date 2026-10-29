@@ -1,0 +1,26 @@
+{
+  "init.recovery.r97.rc": {
+    "bytes": 972,
+    "sha256": "450c03c98ae51e17ec5b7581c79f443366ecfe991546650f8e1f48191722f57d"
+  },
+  "r97-runtime/common.sh": {
+    "bytes": 1902,
+    "sha256": "02122320329a2707097e7442d3f97b4587559008a8b84c88919b6ace243b6cc7"
+  },
+  "r97-runtime/load-hardware.sh": {
+    "bytes": 2152,
+    "sha256": "19cc1105ce7cfbd0a13e6a9c0300b7a6de17dbd6c0c028507eedc45e56b1fb7f"
+  },
+  "r97-runtime/load-ui.sh": {
+    "bytes": 295,
+    "sha256": "3673479c8802e2474de86bfd67bc1e6709df5fcd73316833238eeabb23b79d65"
+  },
+  "r97-runtime/start-adsp.sh": {
+    "bytes": 1677,
+    "sha256": "5a3363780f5f51358deeb222b0867e950e55d6c2831b4060b8cf456ace9a1081"
+  },
+  "r97-runtime/wait-battery.sh": {
+    "bytes": 1299,
+    "sha256": "0060b0416031d59626b0ae8770c3191e444d0ed641f56e58ffc74fd588d825e5"
+  }
+}

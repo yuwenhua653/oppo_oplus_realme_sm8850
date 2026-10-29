@@ -1,0 +1,230 @@
+{
+  "compile_argv": [
+    "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/sysroot/usr/bin/aarch64-linux-gnu-gcc-13",
+    "--sysroot=/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/sysroot",
+    "-B/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/sysroot/usr/aarch64-linux-gnu/bin/",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Os",
+    "-static",
+    "-fstack-protector-strong",
+    "-D_FORTIFY_SOURCE=2",
+    "-fno-ident",
+    "-Wl,--build-id=sha1",
+    "-Wl,-z,noexecstack",
+    "-Wl,-z,relro,-z,now"
+  ],
+  "env_overrides": {
+    "LD_LIBRARY_PATH": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/sysroot/usr/lib/x86_64-linux-gnu"
+  },
+  "packages": [
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/binutils-aarch64-linux-gnu_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 3710688,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/binutils-aarch64-linux-gnu_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/binutils-aarch64-linux-gnu_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "6bb25a05c50681e240b453f6572d8066f2358dee984d0ff1dbcd08852642adf2"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/binutils-common_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 240286,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/binutils-common_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/binutils-common_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "d136073f5e2153f3df11c1d08d66727b9466b28ff483f50085f14bbe3464b5ee"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/binutils-x86-64-linux-gnu_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 2462744,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/binutils-x86-64-linux-gnu_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/binutils-x86-64-linux-gnu_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "1e510a15f30208d39edcd840e48f26a77bbca7c417805eeccb1e3f7de198ef29"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/binutils_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 18154,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/binutils_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/binutils_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "b3b5a84181a38fd191820b2cdcc1a3eeb1cd6333ad472f2092f96e81047e9c74"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-13-cross/cpp-13-aarch64-linux-gnu_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "bytes": 10752882,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-13-cross/cpp-13-aarch64-linux-gnu_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/cpp-13-aarch64-linux-gnu_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "sha256": "6aafe2a7820e497263d871519326dc3e5bcecc0583cc49852c05abda8c1d2e55"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-13-cross/gcc-13-aarch64-linux-gnu-base_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "bytes": 51896,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-13-cross/gcc-13-aarch64-linux-gnu-base_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/gcc-13-aarch64-linux-gnu-base_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "sha256": "2246058ef9d122c26c9ae9b2ab6843d2504806e68e45c7842dd30dda15e94723"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-13-cross/gcc-13-aarch64-linux-gnu_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "bytes": 21069414,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-13-cross/gcc-13-aarch64-linux-gnu_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/gcc-13-aarch64-linux-gnu_13.3.0-6ubuntu2~24.04.1cross1_amd64.deb",
+      "sha256": "154d549389d13010bc0ef2e89c7870e22c4193afa69335f8e57c5fc891e75578"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-13-cross/gcc-13-cross-base_13.3.0-6ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 46536,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-13-cross/gcc-13-cross-base_13.3.0-6ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/gcc-13-cross-base_13.3.0-6ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "02676468c2f71d57be2fbd6e6f74462ab419a49db15a1b1f031b2460a2954cd3"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/gcc-14-cross-base_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 46132,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/gcc-14-cross-base_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/gcc-14-cross-base_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "ed29eff7b53f6c6b10c42bb9539487d1867f119e84f5f678c02411a34b5c09f3"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libasan8-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 523626,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libasan8-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libasan8-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "7e65c44cda6a9c3be17f5042fe1f0e403d9c959797f3d876345a9c66310724d3"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libatomic1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 11470,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libatomic1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libatomic1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "1c24a0d6dfcd52492797f8f534a5d696bc70a58e214d16796ec823b417c36ac3"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/libbinutils_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 576834,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/libbinutils_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libbinutils_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "064dce00ce94e1fc2d33779cb0071088f4c8aac79e85345f2e78a020f7d14699"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/c/cross-toolchain-base/libc6-arm64-cross_2.39-0ubuntu8cross1_all.deb",
+      "bytes": 1197434,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/c/cross-toolchain-base/libc6-arm64-cross_2.39-0ubuntu8cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libc6-arm64-cross_2.39-0ubuntu8cross1_all.deb",
+      "sha256": "76547cb8a4d7f057e23dcade45a17fc0f3d5c2fa0d3ff125bca56f7c4ecd7a07"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/c/cross-toolchain-base/libc6-dev-arm64-cross_2.39-0ubuntu8cross1_all.deb",
+      "bytes": 1628660,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/c/cross-toolchain-base/libc6-dev-arm64-cross_2.39-0ubuntu8cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libc6-dev-arm64-cross_2.39-0ubuntu8cross1_all.deb",
+      "sha256": "04c6956de42669a53e620ad04a32475ea0bd4325808c227bf5ba52498f0d3f90"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/libctf-nobfd0_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 98012,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/libctf-nobfd0_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libctf-nobfd0_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "da352eb7fa6c4369d2a6c1e5e680f574eda2e38576563326b18d9e47e61c4078"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/libctf0_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 94474,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/libctf0_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libctf0_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "7ec86d697c3668503c85f308a6832f092075b5880ad002f22185264da0bd4645"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-13-cross/libgcc-13-dev-arm64-cross_13.3.0-6ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 2616044,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-13-cross/libgcc-13-dev-arm64-cross_13.3.0-6ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libgcc-13-dev-arm64-cross_13.3.0-6ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "eda9d79e18170fd46ee0ed62aa391f52bfe8c1a336d53162f2e1c0a675af548f"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libgcc-s1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 61860,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libgcc-s1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libgcc-s1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "be13b35e1c56c4158817e668f442a363db6f4e13b2ffed1ef6cf91df9961e35d"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libgomp1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 109584,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libgomp1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libgomp1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "8186dd15e27cb872f1d4b963c5adc68094e31b20f60a72211492424e0d3512a1"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/libgprofng0_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 848684,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/libgprofng0_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libgprofng0_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "1b7e3c2fc162e8358ca6e5a3fffdb4d0d632f790630323215841bb36a63c0ab8"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libhwasan0-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 303812,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libhwasan0-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libhwasan0-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "6165c11d179029ae33e12770a6667202f4a6d504b978610c9b3da0b2d165f0d5"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libitm1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 31098,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libitm1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libitm1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "b0b309433d79b119987c3c7b84bbbbbf26650206e1f48d20cd009c4750b67757"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/liblsan0-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 237994,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/liblsan0-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/liblsan0-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "b5fd148de67b79fd8308b51270f5cc6eef893d47aaaace297bf4680eeae96e32"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/b/binutils/libsframe1_2.42-4ubuntu2.10_amd64.deb",
+      "bytes": 15724,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/b/binutils/libsframe1_2.42-4ubuntu2.10_amd64.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libsframe1_2.42-4ubuntu2.10_amd64.deb",
+      "sha256": "72093fb456864db55f1352bfa5e952a94f7abaff64e71dff1fbf001db1984564"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libstdc++6-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 658562,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libstdc++6-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libstdc++6-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "5b9168ad31befddb46fe1b6af88aa90bec0fc63c0abfb4f9c68c2cfcc2acda95"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libtsan2-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 499758,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libtsan2-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libtsan2-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "9a67551170ab1305e6ed4797f90bd0af5a696b0799b43aeac09e4ff11bfced67"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-14-cross/libubsan1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "bytes": 218622,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/g/gcc-14-cross/libubsan1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/libubsan1-arm64-cross_14.2.0-4ubuntu2~24.04.1cross1_all.deb",
+      "sha256": "1a5b3c11901ba5a65b8cadec57ca1af1b567df5bbe7d88d36b2da774fb939a48"
+    },
+    {
+      "actual_download_url": "https://archive.ubuntu.com/ubuntu/pool/main/c/cross-toolchain-base/linux-libc-dev-arm64-cross_6.8.0-25.25cross1_all.deb",
+      "bytes": 1374680,
+      "download_url": "https://snapshot.ubuntu.com/ubuntu/20260828T000000Z/pool/main/c/cross-toolchain-base/linux-libc-dev-arm64-cross_6.8.0-25.25cross1_all.deb",
+      "path": "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/apt-cache/linux-libc-dev-arm64-cross_6.8.0-25.25cross1_all.deb",
+      "sha256": "6a5a00b8ba8de66862e05493def87a5cbbb23b949601e45a5e3cbde56505cb6b"
+    }
+  ],
+  "recovered_from": {
+    "all_package_bytes_exact": true,
+    "manifest_sha256": "95409ed1e9dbd8fd9b364afaae22c89a8cdeb7e356747cddf0425a5d5919a1d0",
+    "path_relocation_only": true
+  },
+  "source": "Ubuntu noble signed APT snapshot 20260828T000000Z; download-only to local workspace",
+  "strip_argv": [
+    "/workspace/scratch/21ddc02f3263/r94-runtime/toolchain/sysroot/usr/bin/aarch64-linux-gnu-strip",
+    "--strip-unneeded"
+  ]
+}

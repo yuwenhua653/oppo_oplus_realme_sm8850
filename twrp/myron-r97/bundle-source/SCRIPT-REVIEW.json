@@ -1,0 +1,16 @@
+{
+  "capture_checks": 15,
+  "remote_shell_syntax": "PASS",
+  "readonly_command_review": "PASS",
+  "preserved_R96_collector_sha256": "fb3d6c995aff1d3d4d00d2954090c618aabebbf9188f881cee1f5187a6639cb3",
+  "Windows_encoding_line_endings": "PASS",
+  "Windows_execution": "not run: no pwsh / Windows host",
+  "phone_execution": "not run: no phone connection",
+  "template_placeholders": [
+    "{{PACKAGE_DATE}}",
+    "{{BUILD_URL}}",
+    "{{SOURCE_COMMIT}}",
+    "{{IMAGE_VALIDATION_FILE}}",
+    "{{VALIDATION_SUMMARY}}"
+  ]
+}

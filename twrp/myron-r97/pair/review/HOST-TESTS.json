@@ -1,0 +1,14 @@
+[
+  {
+    "test": "test_r97_bundle.c",
+    "output": "PASS R97 exact bundle, failed binary/init pins, RC cross-pairing and legacy rollback; generic init/runtime unchanged\n"
+  },
+  {
+    "test": "test_rc_selection.c",
+    "output": "PASS legacy/R95 RC selection and unknown-size rejection\n"
+  },
+  {
+    "test": "test_native.c",
+    "output": "PASS: mode boundaries; actual SHA; new nonrecursive bind + original removal; both mount table order gates, recycled IDs, stale source, duplicate/missing mounts, wrong parent/device/fs, malformed rows; all helper FDs closed before same-loop retained verification; both markers; only private mounts removed; normal handoff; failure report-return-before-unmount; partial-bind rollback + moveback failure no parent unmount; bad backing/pin/reopen/close/write block normal handoff; recovery is separate.\n"
+  }
+]
