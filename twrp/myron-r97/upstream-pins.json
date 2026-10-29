@@ -1,0 +1,12 @@
+{
+  "BoardConfig.mk": "5a7d344f20ff9627c6102cd8f623c742742c22ac",
+  "device.mk": "2a41d8b3d30077c9644020035f89a9b68e208a3c",
+  "README.md": "bd954f0f838ba8ac036b807e6b96d3da7faf4e6a",
+  "twrp_sm8850.mk": "cf439551b39398c5dcea28f11c384f4d57f5b671",
+  "recovery/root/init.recovery.qcom.rc": "a48a88c0bb05787d8b5fa5ad1a4cd95c84657e64",
+  "recovery/root/odm/bin/variant-script.sh": "99740a30b8a1b689d24b1c7e786f4ff5f270ffd4",
+  "recovery/root/odm/etc/init/vendor.xiaomi.hardware.vibratorfeature.service.rc": "3f7e07798f8a1fa008bafcd454848a87927508e8",
+  "recovery/root/vendor/etc/init/android.hardware.health-service.qti.rc": "591e834a27e75c8b561a7b4dc448295d241d193c",
+  "recovery/root/vendor/bin/wait-adsp-ready.sh": "38b2444a6c000178426520e92131de7d9bd78c69",
+  "prebuilt/Android.mk": "320eaab41777651eacbeba733a8222edc65475b4"
+}

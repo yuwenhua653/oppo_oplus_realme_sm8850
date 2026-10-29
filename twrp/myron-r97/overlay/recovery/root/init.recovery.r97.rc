@@ -1,0 +1,44 @@
+# R97 source-built myron recovery. Android runtime payload remains R96.
+on boot
+    start r97-ui
+
+on property:sys.r97.ui.ready=1
+    start recovery
+    start r97-hardware
+
+on property:sys.r97.battery.check=1
+    start r97-battery
+
+on property:sys.r97.adsp.check=1
+    start r97-adsp
+
+on property:sys.r97.battery.ready=1
+    start vendor.health-default
+
+service r97-ui /system/bin/sh /r97-runtime/load-ui.sh
+    disabled
+    oneshot
+    user root
+    group root system input graphics shell
+    seclabel u:r:recovery:s0
+
+service r97-hardware /system/bin/sh /r97-runtime/load-hardware.sh
+    disabled
+    oneshot
+    user root
+    group root system input
+    seclabel u:r:recovery:s0
+
+service r97-battery /system/bin/sh /r97-runtime/wait-battery.sh
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+service r97-adsp /system/bin/sh /r97-runtime/start-adsp.sh
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0

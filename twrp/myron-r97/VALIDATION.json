@@ -1,0 +1,12 @@
+{
+  "status": "PASS_SOURCE_AND_REAL_RUNTIME_PREPARATION",
+  "runtime_tests": 17,
+  "real_R96_input_verified": true,
+  "selected_modules": 126,
+  "new_UI_modules": 19,
+  "new_hardware_modules": 57,
+  "MCA_modules": 46,
+  "TWRP_full_build": false,
+  "device_tested": false,
+  "flash_qualified": false
+}

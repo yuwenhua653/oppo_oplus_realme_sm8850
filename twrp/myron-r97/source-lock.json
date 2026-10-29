@@ -1,0 +1,12 @@
+{
+  "device_repository": "lingqiqi5211/twrp_device_xiaomi_sm8850",
+  "device_commit": "907b78a804f5a47c4ccd66da0e5dd776cefc077d",
+  "device_branch": "twrp-16.0",
+  "recovery_repository": "TWRP-Test/android_bootable_recovery",
+  "recovery_commit": "8a58fc3b586b8a908337fa87529cfbbb119ec7bb",
+  "recovery_init_blob": "25921caff133437a1c00dfdf3994baa51dff7c85",
+  "recovery_events_blob": "b98d4cd23ed6e557e575107c5de5d45dd9b0ae0b",
+  "runtime_identity": "R94-MCA-TORCH-COMPAT-20261028-01",
+  "image_release_allowed": false,
+  "module_plan_sha256": "e76c873b4d51298c9ea2cb219455c47bfe06fb061613800783ad5f1afae03331"
+}

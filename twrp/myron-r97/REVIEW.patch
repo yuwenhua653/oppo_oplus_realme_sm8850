@@ -1,0 +1,276 @@
+--- a/device/xiaomi/sm8850/BoardConfig.mk
++++ b/device/xiaomi/sm8850/BoardConfig.mk
+@@ -146,10 +146,16 @@
+ TW_DEFAULT_BRIGHTNESS := 250
+ TW_EXCLUDE_APEX := true
+ TW_STATUS_ICONS_ALIGN := center
+-TW_SUPPORT_INPUT_AIDL_HAPTICS := true
+-TW_SUPPORT_INPUT_AIDL_HAPTICS_FIX_OFF := true
++TW_SUPPORT_INPUT_AIDL_HAPTICS := false
++TW_SUPPORT_INPUT_AIDL_HAPTICS_FIX_OFF := false
+ TW_USE_SERIALNO_PROPERTY_FOR_DEVICE_ID := true
+-TW_LOAD_VENDOR_MODULES := "adsp_loader_dlkm.ko rproc_qcom_common.ko q6_dlkm.ko qcom_q6v5.ko qcom_q6v5_pas.ko qcom_sysmon.ko synaptics_tcm2.ko nt38773_touch.ko focaltech_touch_3683.ko focaltech_touch_3685g.ko focaltech_touch_3685g_1.ko nxp-nci.ko stm_st54se_gpio.ko stm_nfc_i2c.ko qcom-hv-haptics.ko cs40l26-i2c.ko"
++TW_LOAD_VENDOR_MODULES := ""
+ TW_LOAD_VENDOR_MODULES_EXCLUDE_GKI := true
+ TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone25/temp" # CPU-0-0-0
+ TW_BACKUP_EXCLUSIONS := /data/fonts,/data/adb/ap,/data/adb/ksu
++
++# R97/myron: use the FF implementation in the pinned TWRP core and only the
++# byte-verified R96 module closure. There is no fallback to stock OEM modules.
++ifeq ($(wildcard $(DEVICE_PATH)/recovery/root/r97-runtime/module-plan.json),)
++$(error Run the R97 prepare_runtime.py + apply.py steps before building)
++endif
+--- a/device/xiaomi/sm8850/prebuilt/Android.mk
++++ b/device/xiaomi/sm8850/prebuilt/Android.mk
+@@ -14,4 +14,7 @@
+     LOCAL_POST_INSTALL_CMD += \
+         mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/lib/firmware; \
+         cp -rf $(LOCAL_PATH)/lib/firmware/* $(TARGET_RECOVERY_ROOT_OUT)/lib/firmware/;
++    LOCAL_POST_INSTALL_CMD += \
++        test -s $(LOCAL_PATH)/../recovery/root/r97-runtime/module-plan.json && \
++        cp -a $(LOCAL_PATH)/../recovery/root/r97-runtime $(TARGET_RECOVERY_ROOT_OUT)/;
+ include $(BUILD_PHONY_PACKAGE)
+--- a/device/xiaomi/sm8850/recovery/root/init.recovery.qcom.rc
++++ b/device/xiaomi/sm8850/recovery/root/init.recovery.qcom.rc
+@@ -57,25 +57,17 @@
+     setprop sys.usb.config adb
+ 
+ 
+-on property:twrp.modules.loaded=true
+-    # Mount firmware
+-    mkdir /firmware
++# R97: module loading and ADSP startup are independently supervised.
++# Do not issue the stock boot_adsp/ssr write on this OSS runtime.
++on fs
++    mkdir /firmware 0755 root root
++    wait /dev/block/bootdevice/by-name/modem${ro.boot.slot_suffix} 10
+     mount vfat /dev/block/bootdevice/by-name/modem${ro.boot.slot_suffix} /firmware ro
+-    # Load ADSP firmware for PMIC
+-    wait /sys/kernel/boot_adsp/boot
+-    write /sys/kernel/boot_adsp/boot 1
+-    # This make USB-OTG work
+-    wait /sys/kernel/boot_adsp/ssr
+-    write /sys/kernel/boot_adsp/ssr 1
+-    start vendor.wait-adsp
+ 
+ on property:twrp.adsp.ready=true && property:vendor.sys.listeners.registered=true
+-    start vendor.health-default
+     start vendor.secure_element
+ 
+-on property:twrp.variant.files_copied=1
+-    start odm.vibratorfeature-hal-service
+-    start odm.touch_report
++# Direct input FF and focaltech_myron replace the OEM haptics/touch HAL path.
+ 
+ on property:twrp.variant.files_copied=1 && property:ro.twrp.weaver=nxp
+     start odm.weaver_nxp
+@@ -87,10 +79,3 @@
+     start odm.secure_element_hal_service
+     start odm.goodix_weaver_hal_service
+ 
+-service vendor.wait-adsp /system/bin/sh /vendor/bin/wait-adsp-ready.sh
+-    class hal
+-    user root
+-    group root
+-    disabled
+-    oneshot
+-    seclabel u:r:recovery:s0
+--- a/device/xiaomi/sm8850/recovery/root/odm/bin/variant-script.sh
++++ b/device/xiaomi/sm8850/recovery/root/odm/bin/variant-script.sh
+@@ -5,6 +5,7 @@
+ set -e
+ 
+ variant=$(getprop ro.boot.hardware.sku)
++[ "$variant" = myron ] || exit 1
+ base_name="Xiaomi"
+ log_file="/tmp/recovery.log"
+ 
+@@ -125,7 +126,9 @@
+ #-------------------------------------------------
+ # Common configuration
+ #-------------------------------------------------
+-echo "$model" >/config/usb_gadget/g1/strings/0x409/product
++if [ -w /config/usb_gadget/g1/strings/0x409/product ]; then
++    echo "$model" >/config/usb_gadget/g1/strings/0x409/product
++fi
+ resetprop vendor.usb.product_string "$model"
+ mkdir -p /usbotg
+ 
+--- a/device/xiaomi/sm8850/recovery/root/odm/etc/init/vendor.xiaomi.hardware.vibratorfeature.service.rc
++++ b/device/xiaomi/sm8850/recovery/root/odm/etc/init/vendor.xiaomi.hardware.vibratorfeature.service.rc
+@@ -1,112 +1 @@
+-on late-fs
+-    # qcom-haptics
+-    chmod 0666 /sys/class/qcom-haptics/lra_calibration
+-    chmod 0666 /sys/class/qcom-haptics/lra_impedance
+-    chmod 0666 /dev/qcom_haptic
+-    chmod 0666 /mnt/vendor/persist/sensors/registry/registry/sns_offhand
+-    chown system system /mnt/vendor/persist/sensors/registry/registry/sns_offhand
+-    chown system system /dev/qcom_haptic
+-    chown system system /sys/class/qcom-haptics/lra_frequency_hz
+-    chmod 0666 /sys/class/qcom-haptics/lra_frequency_hz
+-
+-    # aw86224_haptic
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/2-005a/f0_save
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/2-005a/osc_save
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/2-005a/custom_wave
+-    chmod 0666  /sys/bus/i2c/drivers/awinic_haptic/2-005a/custom_wave
+-
+-    # awinic_haptic for O9
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/10-005a/f0_save
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/10-005a/osc_save
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/10-005a/custom_wave
+-    chmod 0666  /sys/bus/i2c/drivers/awinic_haptic/10-005a/custom_wave
+-
+-    # SI Haptic 6887
+-    chown system system /sys/bus/i2c/drivers/sih_haptic_688X/2-006b/f0_save
+-    chown system system /sys/bus/i2c/drivers/sih_haptic_688X/2-006b/osc_save
+-    chown system system /sys/bus/i2c/drivers/sih_haptic_688X/2-006b/custom_wave
+-    chmod 0666  /sys/bus/i2c/drivers/sih_haptic_688X/2-006b/custom_wave
+-
+-    # SI Haptic 6887
+-    chown system system /sys/bus/i2c/drivers/sih_haptic_688X/5-006b/f0_save
+-    chown system system /sys/bus/i2c/drivers/sih_haptic_688X/5-006b/osc_save
+-    chown system system /sys/bus/i2c/drivers/sih_haptic_688X/5-006b/custom_wave
+-    chmod 0666  /sys/bus/i2c/drivers/sih_haptic_688X/5-006b/custom_wave
+-
+-    # awinic_haptic for O10U
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/5-005a/f0_save
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/5-005a/osc_save
+-    chown system system /sys/bus/i2c/drivers/awinic_haptic/5-005a/custom_wave
+-    chmod 0666  /sys/bus/i2c/drivers/awinic_haptic/5-005a/custom_wave
+-
+-    #input X is allocated by the system to, and we can't know in advance how muchso try all of them
+-    # CIRRUS Haptic 0
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input0/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input0/calibration/f0_stored
+-
+-    # CIRRUS Haptic 1
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input1/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input1/calibration/f0_stored
+-
+-    # CIRRUS Haptic 2
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input2/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input2/calibration/f0_stored
+-
+-    # CIRRUS Haptic 3
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input3/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input3/calibration/f0_stored
+-
+-    # CIRRUS Haptic 4
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input4/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input4/calibration/f0_stored
+-
+-    # CIRRUS Haptic 5
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input5/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input5/calibration/f0_stored
+-
+-    # CIRRUS Haptic 6
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input6/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input6/calibration/f0_stored
+-
+-    # CIRRUS Haptic 7
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input7/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input7/calibration/f0_stored
+-
+-    # CIRRUS Haptic 8
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input8/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input8/calibration/f0_stored
+-
+-    # CIRRUS Haptic 9
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input9/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input9/calibration/f0_stored
+-
+-    # CIRRUS Haptic 10
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input10/calibration/redc_stored
+-    chown system system /sys/bus/i2c/drivers/cs40l26/13-0043/input/input10/calibration/f0_stored
+-
+-    # cal-file directory
+-    mkdir /mnt/vendor/persist/haptics 0755 system system
+-
+-service odm.vibratorfeature-hal-service /odm/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service
+-    class hal
+-    user root
+-    group root input audio
+-    onrestart restart vibratorfeature
+-    setenv RICHTAP_DEVICE_PATH /dev/qcom_haptic
+-    setenv ENV_RICHTAP_CONFIG_PATH /odm/etc/aac_richtap.config
+-    setenv LD_LIBRARY_PATH /vendor/lib64:/vendor/lib64/hw:/system/lib64:/sbin:/odm/lib64
+-    disabled
+-    seclabel u:r:recovery:s0
+-
+-on property:servicemanager.ready=true
+-    setprop vendor.haptic.calibrate.done 1
+-    # mode = interaction
+-    setprop vendor.aihaptic.interaction.transient_intensity 100
+-    setprop vendor.aihaptic.interaction.transient_sharpness 56
+-    setprop vendor.aihaptic.interaction.continuous_intensity 100
+-    setprop vendor.aihaptic.interaction.continuous_sharpness 56
+-    # mode = warn
+-    setprop vendor.aihaptic.warn.transient_intensity 100
+-    setprop vendor.aihaptic.warn.transient_sharpness 56
+-    setprop vendor.aihaptic.warn.continuous_intensity 65
+-    setprop vendor.aihaptic.warn.continuous_sharpness 56
++# R97 uses kernel input FF through TWRP; no OEM vibrator service or calibration writes.
+--- a/device/xiaomi/sm8850/recovery/root/vendor/bin/wait-adsp-ready.sh
++++ b/device/xiaomi/sm8850/recovery/root/vendor/bin/wait-adsp-ready.sh
+@@ -1,16 +1,2 @@
+-#!/system/bin/sh
+-
+-tries=0
+-while [ "$tries" -lt 60 ]; do
+-    state=$(cat /sys/class/remoteproc/remoteproc1/state 2>/dev/null)
+-    if [ "$state" = "running" ]; then
+-        setprop twrp.adsp.ready true
+-        exit 0
+-    fi
+-
+-    sleep 1
+-    tries=$((tries + 1))
+-done
+-
+-setprop twrp.adsp.ready false
++# Replaced by /r97-runtime/start-adsp.sh; no fixed remoteproc index.
+ exit 1
+--- a/device/xiaomi/sm8850/recovery/root/vendor/etc/init/android.hardware.health-service.qti.rc
++++ b/device/xiaomi/sm8850/recovery/root/vendor/etc/init/android.hardware.health-service.qti.rc
+@@ -1,4 +1,5 @@
+ service vendor.health-default /vendor/bin/hw/android.hardware.health-service.qti
++    disabled
+     class hal
+     user root
+     group root
+@@ -8,8 +9,8 @@
+     seclabel u:r:recovery:s0
+ 
+ service vendor.charger /vendor/bin/hw/android.hardware.health-service.qti --charger
++    disabled
+     class charger
+-    seclabel u:r:charger_vendor:s0
+     user root
+     group root wakelock input graphics
+     capabilities SYS_BOOT WAKE_ALARM BLOCK_SUSPEND
+--- a/bootable/recovery/etc/init.rc
++++ b/bootable/recovery/etc/init.rc
+@@ -1,3 +1,7 @@
++import /init.recovery.r97.rc
++import /system/etc/init
++import /vendor/etc/init
++import /odm/etc/init
+ import /init.recovery.logd.rc
+ import /init.recovery.ldconfig.rc
+ import /init.recovery.mksh.rc
+@@ -127,11 +131,13 @@
+     start console
+ 
+ service charger /system/bin/charger
++    disabled
+     critical
+     seclabel u:r:charger:s0
+     user root
+ 
+ service recovery /system/bin/recovery
++    disabled
+     socket recovery stream 422 system system
+     seclabel u:r:recovery:s0
+     user root

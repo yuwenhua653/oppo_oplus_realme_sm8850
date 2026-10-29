@@ -1,0 +1,30 @@
+name: Myron R97 TWRP source checks (not image build)
+
+on:
+  push:
+    branches: [codex/myron-r97-twrp]
+    paths:
+      - 'twrp/myron-r97/**'
+      - '.github/workflows/check-myron-twrp-r97.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          sparse-checkout: twrp/myron-r97
+          persist-credentials: false
+      - name: Validate pinned source inputs and shell syntax
+        run: python3 twrp/myron-r97/validate_source.py
+      - name: Exercise recovery startup success and failure paths
+        run: python3 twrp/myron-r97/test_runtime.py
+      - name: State qualification scope
+        run: |
+          echo 'Source checks only. No TWRP image was compiled or released.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Full build and exact recovery/PID1 pairing remain required.' >> "$GITHUB_STEP_SUMMARY"
