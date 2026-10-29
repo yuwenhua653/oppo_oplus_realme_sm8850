@@ -1,0 +1,72 @@
+name: Myron R97 full TWRP image build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/myron-r97-twrp]
+    paths:
+      - .github/workflows/build-myron-twrp-r97.yml
+      - twrp/myron-r97/ci/build-request.txt
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-r97-full-twrp
+  cancel-in-progress: false
+
+jobs:
+  recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      R97_BUILD_JOBS: '4'
+    steps:
+      - name: Checkout reviewed adaptation
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          sparse-checkout: twrp/myron-r97
+      - name: Validate public source controls (runtime added after CI)
+        shell: bash
+        run: bash twrp/myron-r97/ci/prepare-inputs.sh
+      - name: Prepare hosted runner
+        shell: bash
+        run: bash twrp/myron-r97/ci/prepare-runner.sh
+      - name: Sync pinned device and recovery sources
+        shell: bash
+        run: bash twrp/myron-r97/ci/sync-source.sh
+      - name: Compile recoveryimage
+        shell: bash
+        run: bash twrp/myron-r97/ci/compile.sh
+      - name: Collect compiler result and image metadata
+        shell: bash
+        run: python3 twrp/myron-r97/ci/collect-output.py
+      - name: Upload compile-only image (runtime and pairing still missing)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r97-COMPILE-ONLY-NOT-FLASHABLE-${{ github.run_id }}
+          path: ${{ runner.temp }}/r97-deliver/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+      - name: Preserve build evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r97-build-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/r97-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Report build scope
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo 'This workflow compiles a full recovery image.'
+            echo 'Private runtime modules are not uploaded to CI. The candidate is missing its operational runtime.'
+            echo 'The candidate requires local runtime injection, rebuilt PID1/vendor_boot pairing and independent verification before flashing.'
+            echo 'No GitHub release or flash-qualified package is created by this workflow.'
+          } >> "$GITHUB_STEP_SUMMARY"
