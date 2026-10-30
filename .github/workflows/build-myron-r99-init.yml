@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: myron-r99-recovery-init
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   recovery-init:
@@ -28,6 +28,7 @@ jobs:
         with:
           persist-credentials: false
           sparse-checkout: |
+            .github/workflows
             twrp/myron-r97
             tools/myron-r99
       - name: Validate exact source snapshot and selector tests
@@ -39,9 +40,22 @@ jobs:
       - name: Sync all 396 pinned source projects
         shell: bash
         run: bash tools/myron-r99/sync-source.sh
-      - name: Build baseline then Recovery-only init candidate
+      - name: Build and inspect known baseline init
         shell: bash
-        run: bash tools/myron-r99/compile.sh
+        run: bash tools/myron-r99/compile.sh baseline
+      - name: Preserve completed baseline before selector build
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r99-BASELINE-CHECKPOINT-NOT-FLASHABLE-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/r99-deliver/baseline/
+            ${{ runner.temp }}/r99-evidence/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+      - name: Build Recovery-only init candidate in same output tree
+        shell: bash
+        run: bash tools/myron-r99/compile.sh patched
       - name: Collect init binaries and compatibility evidence
         shell: bash
         run: python3 tools/myron-r99/inspect-init.py finalize
@@ -105,6 +119,6 @@ jobs:
             echo 'Two fixed-interface readiness helpers are also compiled as separate source-only candidates, without service or image integration.'
             echo 'No kernel, recoveryimage, bootimage, ROM dump or private runtime module is built or uploaded.'
             echo 'An uploaded init candidate is not a flash image. Baseline identity and local ELF/dependency/ramdisk checks remain required.'
-            echo 'The final qualification step fails if the baseline differs from the known REC init; candidate evidence is retained for investigation.'
+            echo 'The selector stage requires the known REC init baseline; a mismatched baseline is retained in its checkpoint and blocks the selector build.'
             echo 'The Android runtime and tested flash packages are not changed by this job.'
           } >> "$GITHUB_STEP_SUMMARY"

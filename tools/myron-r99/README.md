@@ -30,6 +30,19 @@ or its workflow, and supports manual dispatch. It builds only
 `init_second_stage.recovery` plus required dependencies. The initial full source
 sync and Soong graph are still needed on a new runner.
 
+Baseline and selector compilation are separate workflow steps on the same runner
+and output tree. The complete baseline binary, symbols and evidence are uploaded
+immediately before the selector build. This checkpoint is not a flash image or
+a full build cache. It protects completed evidence if a later runner shutdown
+prevents even `always()` cleanup steps from running; it cannot prevent shutdown.
+The selector stage requires the known baseline identity and unchanged original
+compiler preflight before applying its patch. Stage logs and bounded resource
+snapshots remain separate. Both stages retain the normal `m` build path.
+A newer reviewed push or manual run requests cancellation of the older run in
+the same concurrency group, including a run whose runner stopped while GitHub
+still reports it active. The group remains shared to avoid parallel builds;
+this cancellation request is not a fix for the runner shutdown itself.
+
 After preserving both init outputs, the same source checkout also compiles the
 fixed-interface `r99_readiness_broker` and `r99_readiness_client` targets. They are
 separate static native compiler candidates. No service, file/property context or
@@ -38,9 +51,9 @@ remove the already uploaded init evidence.
 
 No private ROM dumps, modules, runtime images or credentials are uploaded.
 Outputs are the original and modified init binaries and their source/ELF/library
-evidence. They cannot be flashed directly. A baseline hash mismatch fails the
-last qualification step after preserving candidate outputs for investigation;
-it is not silently accepted as equivalent.
+evidence. They cannot be flashed directly. A baseline hash mismatch is retained
+in the baseline checkpoint and then blocks the selector stage. Final baseline
+qualification also remains required; a mismatch is never accepted as equivalent.
 
 Keep the shared Android/REC boot setting Permissive until a locally assembled
 candidate and its independent source/ELF/image review are complete. The known
