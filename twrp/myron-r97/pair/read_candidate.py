@@ -95,7 +95,26 @@ def verify_candidate(path):
     image, entries = read_image(path)
     return verify_entries(entries, pin(image))
 
+def check_boot_layout(entries, allow_known_vendor_link=False):
+    """Match PID1's pre-mode empty_dir contract without weakening PID1."""
+    remove = set()
+    for name in ['system_dlkm', 'vendor_dlkm']:
+        need(name in entries, 'missing early boot directory: '+name)
+        row = entries[name]
+        need(stat.S_ISDIR(row['mode']) and row['uid']==row['gid']==0 and
+             not (row['mode'] & 0o022), 'early boot directory metadata: '+name)
+        children = {n for n in entries if n.startswith(name+'/')}
+        if allow_known_vendor_link and name=='vendor_dlkm' and children=={'vendor_dlkm/etc'}:
+            link=entries['vendor_dlkm/etc']
+            need(stat.S_ISLNK(link['mode']) and link['uid']==link['gid']==0 and
+                 link['data']==b'/vendor/vendor_dlkm/etc', 'unexpected vendor_dlkm/etc input')
+            remove.add('vendor_dlkm/etc')
+        else:
+            need(not children, 'PID1 early boot directory-not-empty: '+name)
+    return remove
+
 def verify_entries(entries, image_pin):
+    check_boot_layout(entries)
     need('R97-COMPILE-ONLY-NOT-FLASHABLE' not in entries, 'source-only compile candidate cannot be paired')
     need('init' in entries and stat.S_ISLNK(entries['init']['mode']) and
          entries['init']['data'] == b'/system/bin/init', 'original recovery /init link layout required')

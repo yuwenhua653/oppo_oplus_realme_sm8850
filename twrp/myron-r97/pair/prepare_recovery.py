@@ -7,7 +7,7 @@ import json
 import stat
 import sys
 from pathlib import Path
-from read_candidate import need, pin, read_image, verify_candidate, MODULE_PLAN_SHA256
+from read_candidate import need, pin, read_image, verify_candidate, MODULE_PLAN_SHA256, check_boot_layout
 
 def runtime_files(root):
     root = Path(root)
@@ -42,6 +42,7 @@ def prepare(candidate, runtime, image_tools, out):
     need(stat.S_ISLNK(before['init']['mode']) and before['init']['data'] == b'/system/bin/init', 'original /init link')
     marker = 'R97-COMPILE-ONLY-NOT-FLASHABLE'
     need(marker in before and stat.S_ISREG(before[marker]['mode']), 'source-only candidate marker required')
+    removals = {marker} | check_boot_layout(before, allow_known_vendor_link=True)
     files = runtime_files(runtime)
     sys.path.insert(0, str(Path(image_tools).resolve()))
     im = importlib.import_module('build_images')
@@ -62,7 +63,7 @@ def prepare(candidate, runtime, image_tools, out):
             replacements[target] = data
         else:
             additions.append((target, data, 0o100644))
-    packed, _, _, changes = im.rebuild_cpio(raw, lambda entry:entry['name'] == marker, replacements, additions)
+    packed, _, _, changes = im.rebuild_cpio(raw, lambda entry:entry['name'] in removals, replacements, additions)
     payload, _ = im.recovery_payload(image, codec.compress(packed, 9))
     assembled, avb = im.append_avb(payload, image, 'recovery', None)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -71,10 +72,11 @@ def prepare(candidate, runtime, image_tools, out):
     _, after = read_image(out)
     expected = {'r97-runtime/'+n for n in files}
     for n, row in before.items():
-        if n not in expected and n != marker:
+        if n not in expected and n not in removals:
             need(after[n] == row, 'non-runtime file changed: '+n)
-    need(set(after) == (set(before)-{marker})|expected|needed_dirs, 'recovery inventory')
+    need(set(after) == (set(before)-removals)|expected|needed_dirs, 'recovery inventory')
     reviewed.update({'ci_candidate': pin(image), 'local_injection_only': sorted(expected),
+                     'removed_compile_and_layout_entries': sorted(removals),
                      'AVB': avb, 'device_tested': False})
     (out.with_suffix('.review.json')).write_text(json.dumps(reviewed, indent=2)+'\n')
     return reviewed

@@ -4,7 +4,11 @@
 再生成匹配的 PID1 和 `vendor_boot`。公开仓库不含这些私有模块、原厂镜像或手机日志。
 
 编写本说明时，完整编译任务为 [40858026772](https://github.com/yuwenhua653/oppo_oplus_realme_sm8850/actions/runs/40858026772)，
-尚未返回可供装配的候选镜像。此前源码 CI 成功不能代表完整镜像编译成功。
+完整编译已成功。原 R97 测试包实测 Android 与 REC 卡首屏。2026-10-30 的 fix1
+修正新 REC 的 vendor_dlkm/etc 符号链接与 PID1 空目录要求的冲突；仅删这一记录，
+原 R97 vendor_boot 和三个 REC pin 文件保持不变。新版 verify_candidate 强制检查两个
+dlkm 根目录为空；prepare_recovery 仅识别并删除这条已确认的链接，其他非空布局会拒绝。
+fix1 已通过真实生产 empty_dir 回归及最终镜像独立回读，仍待真机验证。
 `test_injection.py` 使用 R95 构造临时测试输入验证装配链；它不编译 R97，
 测试镜像不会保留，也不构成刷机包或真机测试结果。
 
@@ -74,4 +78,20 @@ python3 "$PAIR/test_injection.py" \
   --runtime work/private/runtime --project twrp/myron-r97 \
   --toolchain work/toolchain/restored-toolchain.json \
   --image-tools "$PAIR/image-tools" --independent-reader "$PAIR/image-tools"
+```
+
+修复原 R97 测试镜像（输入总 SHA 必须精确匹配已发布 R97）：
+
+```bash
+python3 "$PAIR/fix_boot_layout.py" --source work/private/recovery_r97.img \
+  --vendor work/private/vendor_boot_r97.img --out work/fix1/recovery_r97_fix1.img
+```
+
+真实目录检查回归（只创建临时目录，无刷机）：
+
+```bash
+python3 "$PAIR/test_boot_layout.py" --native-dir "$PAIR/baseline-native" \
+  --reader-dir "$PAIR" --r95-image work/private/recovery_r95.img \
+  --r97-image work/private/recovery_r97.img --fixed-image work/fix1/recovery_r97_fix1.img \
+  --out work/fix1/PRODUCTION-FIX1-TEST.json
 ```

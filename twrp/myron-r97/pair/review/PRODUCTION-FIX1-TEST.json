@@ -1,0 +1,51 @@
+{
+  "status": "PASS_PRODUCTION_EMPTY_DIR_LAYOUT_REGRESSION",
+  "native_source_sha256": "326c784a750db829c1dd89af0190e5f6847bf34d358b9ab8c0c5b3ade2eb00fc",
+  "R95_recovery_sha256": "ed4b2d1d54ab4c8b381d7ccc989e5b3d93666b86f6e0553540b70e76dc5adfdc",
+  "R97_recovery_sha256": "a6c948213c352690dac05b12ea7aee4b55566d75d7a198be4403e5410f16dd01",
+  "fixed_recovery_sha256": "c40e22fcf52b8c2eb949aa06793d4e8dfcdddd8b0a206f4c5f5c39a13a2441c9",
+  "R95_layout": {
+    "system_dlkm": [],
+    "vendor_dlkm": []
+  },
+  "R97_layout": {
+    "system_dlkm": [],
+    "vendor_dlkm": [
+      "vendor_dlkm/etc"
+    ]
+  },
+  "unexpected_entry": {
+    "path": "vendor_dlkm/etc",
+    "mode": "0o120644",
+    "target": "/vendor/vendor_dlkm/etc"
+  },
+  "cases": [
+    {
+      "case": "actual_R95_empty_vendor_dlkm",
+      "production_result": "rc=0 errno=0 directory_not_empty=0 owner_normalized=0"
+    },
+    {
+      "case": "actual_R97_symlink_reproduces_directory_not_empty",
+      "production_result": "rc=-1 errno=22 directory_not_empty=1 owner_normalized=0"
+    },
+    {
+      "case": "later_same_type_directory_record_does_not_clear_child",
+      "production_result": "rc=-1 errno=22 directory_not_empty=1 owner_normalized=0"
+    },
+    {
+      "case": "remove_only_confirmed_symlink_restores_empty_contract",
+      "production_result": "rc=0 errno=0 directory_not_empty=0 owner_normalized=0"
+    },
+    {
+      "case": "unrelated_nonempty_content_still_rejected",
+      "production_result": "rc=-1 errno=22 directory_not_empty=1 owner_normalized=0"
+    },
+    {
+      "case": "actual_fixed_image_empty_vendor_dlkm",
+      "production_result": "rc=0 errno=0 directory_not_empty=0 owner_normalized=0"
+    }
+  ],
+  "PID1_modified": false,
+  "device_tested": false,
+  "host_owner_normalization": false
+}

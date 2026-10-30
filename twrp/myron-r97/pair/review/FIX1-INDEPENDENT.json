@@ -1,0 +1,47 @@
+{
+  "status": "PASS_INDEPENDENT_FIX1_STATIC_REVIEW",
+  "device_tested": false,
+  "recovery": {
+    "bytes": 104857600,
+    "sha256": "c40e22fcf52b8c2eb949aa06793d4e8dfcdddd8b0a206f4c5f5c39a13a2441c9"
+  },
+  "original_recovery_sha256": "a6c948213c352690dac05b12ea7aee4b55566d75d7a198be4403e5410f16dd01",
+  "removed_entries": [
+    "vendor_dlkm/etc"
+  ],
+  "removed_entry": {
+    "mode": "0o120644",
+    "uid": 0,
+    "gid": 0,
+    "target": "/vendor/vendor_dlkm/etc"
+  },
+  "added_entries": [],
+  "retained_records": 1352,
+  "retained_raw_records_and_order_byte_exact": true,
+  "all_three_REC_pins_unchanged": {
+    "system/bin/init": {
+      "bytes": 2760632,
+      "sha256": "34a9c7b745adc3a8a34b78f920d72d819924b9e48c5660f17e164eeaca4a0cce"
+    },
+    "system/bin/recovery": {
+      "bytes": 3270960,
+      "sha256": "f0c098ef0aef1fee864411cc4ecacf7c4f64631368572833ab97a7f8ec68cd1f"
+    },
+    "system/etc/init/hw/init.rc": {
+      "bytes": 8598,
+      "sha256": "cdce3a246f8a677ba5532eb70f32d2683eb588888bdd9ab3ad9e2f6bcc41b48d"
+    }
+  },
+  "header_unchanged_except_ramdisk_size": true,
+  "early_boot_root_directories_empty": [
+    "system_dlkm",
+    "vendor_dlkm"
+  ],
+  "vendor_boot": {
+    "bytes": 100663296,
+    "sha256": "333bdc24a41e2746de9303c15ce9ac86d112fd383587866e82b4c286e09e2cdc",
+    "unchanged": true
+  },
+  "AVB_internal_hash_verification": "Verifying image recovery_r97_fix1.img using embedded public key\nvbmeta: Successfully verified footer and NONE vbmeta struct in recovery_r97_fix1.img\nrecovery: Successfully verified sha256 hash of recovery.img for image of 64819200 bytes\n",
+  "source_review": "Exact released input pin; only proven link removal; PID1 guards retained; future preparation rejects unknown descendants."
+}
