@@ -820,4 +820,3 @@ int SetupSelinux(char** argv) {
 
 }  // namespace init
 }  // namespace android
-

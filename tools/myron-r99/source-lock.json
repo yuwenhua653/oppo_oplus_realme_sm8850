@@ -10,10 +10,15 @@
   "baseline_init_bytes": 2760632,
   "baseline_init_sha256": "34a9c7b745adc3a8a34b78f920d72d819924b9e48c5660f17e164eeaca4a0cce",
   "init_target": "init_second_stage.recovery",
-  "baseline_selinux_sha256": "d1d685a4f4616f4cf5d117bd09f3685a2a4267303431200ed27132718032acbe",
-  "baseline_android_bp_sha256": "2216f167ad714e6dba9e38bc90c1bd51c0b431dc6ff97c79a0d8ebea154e9cfd",
-  "candidate_selinux_sha256": "ced9918362d02835e30df8698bded6e6fda1ec98b31fbeb9c876abdc54f03bfe",
+  "baseline_selinux_sha256": "7bab348bce3f7bb8ea226dca37a4f1c2c879dd7f459e61affb2cf499f1e9e61d",
+  "baseline_android_bp_sha256": "8f1ce91eb84787eb0a3f1446e8136230722b028becc225ca0a1c4c8a6176948f",
+  "candidate_selinux_sha256": "8bb860efd70227fac36288fef2b10035294746b683c527a749ee7cb954f5ff34",
   "patch_sha256": "a0366619ef7554daa5df02ba5d6088af3729b260bf0320e46c404c83ad77e7f6",
   "private_runtime_uploaded": false,
-  "image_build_requested": false
+  "image_build_requested": false,
+  "baseline_selinux_git_blob": "1ccfb9a962623c903358be7dd4dfbdb1b4f661f9",
+  "baseline_android_bp_git_blob": "04ab1e92e70d595d3808929ffd23d758ba4a5f6a",
+  "baseline_selinux_bytes": 31553,
+  "baseline_android_bp_bytes": 17130,
+  "candidate_selinux_bytes": 31750
 }

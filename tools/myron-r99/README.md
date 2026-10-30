@@ -1,5 +1,12 @@
 # R99 Recovery init source build
 
+Source bytes are checked against both SHA256 and official Git blob identities
+after environment setup/lunch and before each compiler invocation. The baseline
+fixtures preserve upstream EOF bytes exactly. Source records are checked again
+after compilation. If any capture check fails, raw init/symbol outputs and
+actual source evidence are retained as unqualified diagnostics, with no success
+metadata and no change to the known baseline binary qualification.
+
 This build addresses the unobserved Recovery-header SELinux selector from the
 R98 phone test. It compiles the existing Recovery `init` from the successful
 396-project R97 snapshot, then rebuilds the same target with a Recovery-only

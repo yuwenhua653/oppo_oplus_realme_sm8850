@@ -46,6 +46,7 @@ jobs:
         shell: bash
         run: python3 tools/myron-r99/inspect-init.py finalize
       - name: Upload compiled init candidate for local inspection
+        id: init_artifact
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -83,6 +84,15 @@ jobs:
         with:
           name: myron-r99-init-build-evidence-${{ github.run_id }}
           path: ${{ runner.temp }}/r99-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+      - name: Preserve unqualified partial init outputs on failure
+        if: always() && steps.init_artifact.outcome != 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r99-UNQUALIFIED-INIT-DIAGNOSTICS-${{ github.run_id }}
+          path: ${{ runner.temp }}/r99-deliver/
           if-no-files-found: warn
           retention-days: 14
           compression-level: 6

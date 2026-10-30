@@ -15,6 +15,9 @@ lunch twrp_sm8850
 rc=$?
 [ "$rc" -eq 0 ] || exit "$rc"
 printf '%s\n' "TARGET_PRODUCT=$TARGET_PRODUCT" "TARGET_BUILD_VARIANT=$TARGET_BUILD_VARIANT" > "$evidence/product.txt"
+python3 "$adapt/source_checks.py" "$RUNNER_TEMP/r97-aosp" baseline "$evidence/baseline-precompile-source.json"
+rc=$?
+[ "$rc" -eq 0 ] || exit "$rc"
 m -j"${R99_BUILD_JOBS:-4}" init_second_stage.recovery
 rc=$?
 printf '%s\n' "$rc" > "$evidence/baseline-compiler-exit-code.txt"
@@ -26,6 +29,9 @@ python3 "$adapt/apply-selector.py" "$RUNNER_TEMP/r97-aosp"
 rc=$?
 [ "$rc" -eq 0 ] || exit "$rc"
 git -C system/core diff --binary -- init/selinux.cpp > "$evidence/system-core-selector.diff"
+python3 "$adapt/source_checks.py" "$RUNNER_TEMP/r97-aosp" patched "$evidence/patched-precompile-source.json"
+rc=$?
+[ "$rc" -eq 0 ] || exit "$rc"
 m -j"${R99_BUILD_JOBS:-4}" init_second_stage.recovery
 rc=$?
 printf '%s\n' "$rc" > "$evidence/patched-compiler-exit-code.txt"

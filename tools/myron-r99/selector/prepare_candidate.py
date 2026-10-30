@@ -9,8 +9,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-SELINUX_SHA = 'd1d685a4f4616f4cf5d117bd09f3685a2a4267303431200ed27132718032acbe'
-BP_SHA = '2216f167ad714e6dba9e38bc90c1bd51c0b431dc6ff97c79a0d8ebea154e9cfd'
+SELINUX_SHA = '7bab348bce3f7bb8ea226dca37a4f1c2c879dd7f459e61affb2cf499f1e9e61d'
+BP_SHA = '8f1ce91eb84787eb0a3f1446e8136230722b028becc225ca0a1c4c8a6176948f'
 COMMIT = 'b6e6bf192be2c4341d5dac41ccfa634d2d684816'
 
 

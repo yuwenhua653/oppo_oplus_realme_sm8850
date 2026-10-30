@@ -5,6 +5,7 @@ import json
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path, PurePosixPath
+from source_checks import identity
 
 ROOT = Path(__file__).resolve().parent
 
@@ -38,6 +39,9 @@ def main():
             ('selector/recovery-only-permissive.patch', 'patch_sha256')]
     for path, key in pins:
         assert digest(ROOT / path) == lock[key], path + ' changed'
+    for name, prefix in [('selinux.cpp','selinux'),('Android.bp','android_bp')]:
+        data = (ROOT/'selector/baseline'/name).read_bytes()
+        assert identity(data)['git_blob'] == lock['baseline_'+prefix+'_git_blob'], 'upstream Git blob mismatch: '+name
     assert lock['init_target'] == 'init_second_stage.recovery'
     assert not lock['private_runtime_uploaded'] and not lock['image_build_requested']
     forbidden = [p for p in ROOT.rglob('*') if p.is_file() and

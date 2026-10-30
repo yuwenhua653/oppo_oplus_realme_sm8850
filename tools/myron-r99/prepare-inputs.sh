@@ -11,6 +11,7 @@ python3 "$prior/validate_source.py"
 python3 "$prior/test_runtime.py"
 python3 "$prior/ci/apply-compile-only.py" --self-test
 python3 "$adapt/selector/prepare_candidate.py"
+python3 "$adapt/test-source-pipeline.py" "$prior" | tee "$RUNNER_TEMP/r99-evidence/SOURCE-PIPELINE-TESTS.json"
 cp "$adapt/source-lock.json" "$RUNNER_TEMP/r99-evidence/"
 cp "$adapt/selector/SOURCE-CANDIDATE-REVIEW.json" "$RUNNER_TEMP/r99-evidence/"
 git -C "$GITHUB_WORKSPACE" rev-parse HEAD > "$RUNNER_TEMP/r99-evidence/adaptation-commit.txt"

@@ -79,6 +79,43 @@ def section(p, wanted):
     raise ValueError('missing '+wanted)
 
 def capture(stage, source, evidence, deliver):
+    """Retain raw diagnostics before any qualification check can fail."""
+    evidence.mkdir(parents=True, exist_ok=True)
+    destination = deliver/stage
+    destination.mkdir(parents=True, exist_ok=True)
+    (evidence/(stage+'-init.json')).unlink(missing_ok=True)
+    product = source/'out/target/product/sm8850'
+    lock = json.loads((HERE/'source-lock.json').read_text())
+    diagnostic = {'stage':stage, 'status':'UNQUALIFIED_DIAGNOSTIC_CAPTURE',
+                  'flash_qualified':False, 'files':{}, 'source_files':{}}
+    if stage == 'baseline':
+        diagnostic['expected_known_baseline'] = {'bytes':lock['baseline_init_bytes'],'sha256':lock['baseline_init_sha256']}
+    for name, original in [('init',product/'recovery/root/system/bin/init'),
+                           ('init.unstripped.raw',product/'symbols/recovery/root/system/bin/init')]:
+        if original.is_file() and not original.is_symlink():
+            target = destination/name
+            shutil.copyfile(original,target)
+            diagnostic['files'][name] = identity(target)
+            result = subprocess.run(['readelf','-hW','-lW','-dW','-nW','-Ws',str(target)],capture_output=True)
+            (evidence/(stage+'-'+name+'-raw-readelf.txt')).write_bytes(result.stdout+result.stderr)
+            diagnostic['files'][name]['readelf_exit_code'] = result.returncode
+    for name in ('selinux.cpp','Android.bp'):
+        original = source/'system/core/init'/name
+        if original.is_file() and not original.is_symlink():
+            (evidence/(stage+'-actual-'+name)).write_bytes(original.read_bytes())
+            diagnostic['source_files'][name] = identity(original)
+    (destination/'UNQUALIFIED-CAPTURE.json').write_text(json.dumps(diagnostic,indent=2)+'\n')
+    (destination/'NOT-FLASHABLE.txt').write_text('Raw compiler diagnostics. Validation is incomplete until stage checks finish.\nNot a flash image; do not install or execute these files on a phone.\n')
+    try:
+        _capture_checked(stage,source,evidence,deliver)
+    except Exception as error:
+        diagnostic.update(status='CAPTURE_VALIDATION_FAILED',error_type=type(error).__name__,error=str(error))
+        (evidence/(stage+'-capture-failure.json')).write_text(json.dumps(diagnostic,indent=2)+'\n')
+        (destination/'UNQUALIFIED-CAPTURE.json').write_text(json.dumps(diagnostic,indent=2)+'\n')
+        raise
+
+def _capture_checked(stage, source, evidence, deliver):
+    from source_checks import check_source
     lock = json.loads((HERE/'source-lock.json').read_text())
     product = source/'out/target/product/sm8850'
     binary = product/'recovery/root/system/bin/init'
@@ -89,6 +126,7 @@ def capture(stage, source, evidence, deliver):
     copy = dst/'init'
     shutil.copyfile(binary, copy)
     info = identity(copy)
+    check_source(source,stage,lock,evidence/(stage+'-postcompile-source.json'))
     info['elf'] = elf_info(copy)
     info['source_selinux_sha256'] = identity(source/'system/core/init/selinux.cpp')['sha256']
     expected_source = lock['baseline_selinux_sha256' if stage == 'baseline' else 'candidate_selinux_sha256']
