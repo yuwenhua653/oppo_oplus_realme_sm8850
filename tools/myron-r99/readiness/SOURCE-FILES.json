@@ -1,0 +1,47 @@
+[
+  {
+    "path": "Android.bp",
+    "bytes": 685,
+    "sha256": "f54e61b7c4d4fd09382a2c8179824cca20a872940b669f85b9eabad94cefc9b4"
+  },
+  {
+    "path": "readiness.c",
+    "bytes": 5410,
+    "sha256": "1a0241b68ce45c162f74832e0ac603cd893224d983cacd457cd6560a2afd0154"
+  },
+  {
+    "path": "readiness.h",
+    "bytes": 1122,
+    "sha256": "47954c87a3c3defa16523cf01e6b228c8c418739e66910e836306393a4d3e59b"
+  },
+  {
+    "path": "android_io.c",
+    "bytes": 1510,
+    "sha256": "6716c55624fd304f21df8c25be49c6e7d24b19eaee2f9233111b39fc585c08fb"
+  },
+  {
+    "path": "android_io.h",
+    "bytes": 125,
+    "sha256": "3def8de9791cf7162762ad602f91c2149d4439b702a92ade48577df62b6772f1"
+  },
+  {
+    "path": "watchdog.c",
+    "bytes": 1041,
+    "sha256": "e2e99a08c2120760d14ce380455d5a2c0b1313567e71e69153798fe0bceb1698"
+  },
+  {
+    "path": "watchdog.h",
+    "bytes": 129,
+    "sha256": "5dee0faf174bf640691d67df23cac94e856492a6556b0a6b0f226cfcf872ba53"
+  },
+  {
+    "path": "broker_main.c",
+    "bytes": 1681,
+    "sha256": "392eb5ac64622421de96ea82b44b6d04884e44cf5b09b64621d8718767242bf3"
+  },
+  {
+    "path": "client_main.c",
+    "bytes": 661,
+    "sha256": "41c598bd9e0796642b491c83153d594ed7c06770019b47a3f35ec9b690c15377"
+  }
+]

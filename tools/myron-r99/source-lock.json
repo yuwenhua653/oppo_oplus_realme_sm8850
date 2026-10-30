@@ -1,0 +1,19 @@
+{
+  "repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+  "base_branch": "codex/myron-r97-twrp",
+  "base_commit": "a892316664509283928e73aa715d962d13ab598e",
+  "new_branch": "codex/myron-r99-selinux",
+  "original_manifest_commit": "814b553116ceedde197f70389cff9661d81d8337",
+  "resolved_manifest_sha256": "5cae42baf25198ae0541061d87a7284c30807c396e5bceb1610de113f2b3578d",
+  "project_count": 396,
+  "system_core_commit": "b6e6bf192be2c4341d5dac41ccfa634d2d684816",
+  "baseline_init_bytes": 2760632,
+  "baseline_init_sha256": "34a9c7b745adc3a8a34b78f920d72d819924b9e48c5660f17e164eeaca4a0cce",
+  "init_target": "init_second_stage.recovery",
+  "baseline_selinux_sha256": "d1d685a4f4616f4cf5d117bd09f3685a2a4267303431200ed27132718032acbe",
+  "baseline_android_bp_sha256": "2216f167ad714e6dba9e38bc90c1bd51c0b431dc6ff97c79a0d8ebea154e9cfd",
+  "candidate_selinux_sha256": "ced9918362d02835e30df8698bded6e6fda1ec98b31fbeb9c876abdc54f03bfe",
+  "patch_sha256": "a0366619ef7554daa5df02ba5d6088af3729b260bf0320e46c404c83ad77e7f6",
+  "private_runtime_uploaded": false,
+  "image_build_requested": false
+}

@@ -1,0 +1,100 @@
+name: Myron R99 Recovery init build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/myron-r99-selinux]
+    paths:
+      - .github/workflows/build-myron-r99-init.yml
+      - tools/myron-r99/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-r99-recovery-init
+  cancel-in-progress: false
+
+jobs:
+  recovery-init:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      R99_BUILD_JOBS: '4'
+    steps:
+      - name: Checkout reviewed public source controls
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            twrp/myron-r97
+            tools/myron-r99
+      - name: Validate exact source snapshot and selector tests
+        shell: bash
+        run: bash tools/myron-r99/prepare-inputs.sh
+      - name: Prepare hosted runner
+        shell: bash
+        run: bash tools/myron-r99/prepare-runner.sh
+      - name: Sync all 396 pinned source projects
+        shell: bash
+        run: bash tools/myron-r99/sync-source.sh
+      - name: Build baseline then Recovery-only init candidate
+        shell: bash
+        run: bash tools/myron-r99/compile.sh
+      - name: Collect init binaries and compatibility evidence
+        shell: bash
+        run: python3 tools/myron-r99/inspect-init.py finalize
+      - name: Upload compiled init candidate for local inspection
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r99-INIT-ONLY-NOT-FLASHABLE-${{ github.run_id }}
+          path: ${{ runner.temp }}/r99-deliver/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+      - name: Require known baseline identity
+        id: baseline_qualification
+        continue-on-error: true
+        shell: bash
+        run: python3 tools/myron-r99/inspect-init.py qualify
+      - name: Compile fixed-interface readiness helpers
+        shell: bash
+        run: bash tools/myron-r99/compile-readiness.sh
+      - name: Upload readiness compiler candidates
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r99-READINESS-COMPILE-ONLY-${{ github.run_id }}
+          path: ${{ runner.temp }}/r99-readiness-deliver/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+      - name: Enforce baseline qualification result
+        if: always() && steps.baseline_qualification.outcome == 'failure'
+        shell: bash
+        run: |
+          echo 'Known baseline init differed; candidates are retained for investigation and are not image-qualified.' >&2
+          exit 1
+      - name: Preserve evidence even on build or qualification failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r99-init-build-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/r99-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+      - name: Report build scope
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo 'This run builds init_second_stage.recovery and its dependencies twice: pinned baseline, then a Recovery-only selector patch.'
+            echo 'Two fixed-interface readiness helpers are also compiled as separate source-only candidates, without service or image integration.'
+            echo 'No kernel, recoveryimage, bootimage, ROM dump or private runtime module is built or uploaded.'
+            echo 'An uploaded init candidate is not a flash image. Baseline identity and local ELF/dependency/ramdisk checks remain required.'
+            echo 'The final qualification step fails if the baseline differs from the known REC init; candidate evidence is retained for investigation.'
+            echo 'The Android runtime and tested flash packages are not changed by this job.'
+          } >> "$GITHUB_STEP_SUMMARY"

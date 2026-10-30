@@ -1,0 +1,14 @@
+--- a/init/selinux.cpp
++++ b/init/selinux.cpp
+@@ -425,6 +425,11 @@
+ void SelinuxSetEnforcement() {
+     bool kernel_enforcing = (security_getenforce() == 1);
+     bool is_enforcing = IsEnforcing();
++#ifdef RECOVERY
++    // Android and Recovery share bootconfig on this device. Keep the
++    // existing Recovery permissive mode independent of the Android selector.
++    is_enforcing = false;
++#endif
+     if (kernel_enforcing != is_enforcing) {
+         if (security_setenforce(is_enforcing)) {
+             PLOG(FATAL) << "security_setenforce(" << (is_enforcing ? "true" : "false")

@@ -1,0 +1,51 @@
+#include <cassert>
+#include <iostream>
+#include <stdexcept>
+
+static int mode, configured, fail_set, get_calls, select_calls, set_calls, set_value, fatal_calls;
+static int security_getenforce() { ++get_calls; return mode; }
+static bool IsEnforcing() { ++select_calls; return configured != 0; }
+static int security_setenforce(int value) {
+    ++set_calls;
+    set_value = value;
+    if (fail_set) return -1;
+    mode = value;
+    return 0;
+}
+struct Fatal final : std::runtime_error { Fatal() : std::runtime_error("fatal") {} };
+struct FatalLog {
+    template<class T> FatalLog& operator<<(const T&) { return *this; }
+    ~FatalLog() noexcept(false) { ++fatal_calls; throw Fatal(); }
+};
+#define PLOG(level) FatalLog()
+
+/* PRODUCTION_FUNCTION */
+
+int main() {
+    int cases = 0;
+    for (int initial = 0; initial <= 1; ++initial) {
+        for (int selector = 0; selector <= 1; ++selector) {
+            for (int fail = 0; fail <= 1; ++fail) {
+                mode = initial; configured = selector; fail_set = fail;
+                get_calls = select_calls = set_calls = fatal_calls = 0;
+                set_value = -9;
+#ifdef RECOVERY
+                const int wanted = 0;
+#else
+                const int wanted = selector;
+#endif
+                const bool need_set = initial != wanted;
+                bool fatal = false;
+                try { SelinuxSetEnforcement(); } catch (const Fatal&) { fatal = true; }
+                assert(get_calls == 1 && select_calls == 1);
+                assert(set_calls == (need_set ? 1 : 0));
+                assert(set_value == (need_set ? wanted : -9));
+                assert(fatal == (need_set && fail));
+                assert(fatal_calls == (fatal ? 1 : 0));
+                assert(mode == (fatal ? initial : wanted));
+                ++cases;
+            }
+        }
+    }
+    std::cout << cases << " source-extracted enforcement cases PASS\n";
+}

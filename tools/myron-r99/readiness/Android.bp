@@ -1,0 +1,22 @@
+// Compile-only candidates. No init_rc or file_context installation is supplied
+// until the core-owned mount and property-context overlays are reviewed.
+cc_defaults {
+    name: "r99_readiness_defaults",
+    srcs: ["readiness.c", "android_io.c", "watchdog.c"],
+    c_std: "c11",
+    cflags: ["-Wall", "-Wextra", "-Werror", "-D_POSIX_C_SOURCE=200809L"],
+    static_executable: true,
+    compile_multilib: "64",
+    stl: "none",
+}
+cc_binary {
+    name: "r99_readiness_broker",
+    defaults: ["r99_readiness_defaults"],
+    srcs: ["broker_main.c"],
+}
+cc_binary {
+    name: "r99_readiness_client",
+    defaults: ["r99_readiness_defaults"],
+    srcs: ["client_main.c"],
+    vendor: true,
+}
