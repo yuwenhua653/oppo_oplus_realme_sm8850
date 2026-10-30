@@ -49,6 +49,18 @@ separate static native compiler candidates. No service, file/property context or
 phone-image integration is performed, and a readiness compile failure does not
 remove the already uploaded init evidence.
 
+Both helpers are built as core static Bionic executables and collected from
+`system/bin`. In this pinned recovery source tree, the vendor variants of
+`libc`, `libm` and `libdl` are LLNDK shared stubs, with no static link variant;
+a `vendor: true` static client therefore cannot link. Build output location is
+separate from the later reviewed runtime placement: the client still belongs
+under `/vendor_dlkm/r99/`, with its intended vendor SELinux domain and property
+contexts. The broker remains core-owned. No C/H logic, service placement or
+SELinux policy is changed by this build fix. Pre-sync regression checks cover
+the source inventory, build variant/output-path contract, the production shell's
+failure handling and collector acceptance/rejection. These are host checks;
+the Android/Bionic compile is still performed by this workflow.
+
 No private ROM dumps, modules, runtime images or credentials are uploaded.
 Outputs are the original and modified init binaries and their source/ELF/library
 evidence. They cannot be flashed directly. A baseline hash mismatch is retained

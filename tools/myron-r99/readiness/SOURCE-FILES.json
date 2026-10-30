@@ -1,8 +1,8 @@
 [
   {
     "path": "Android.bp",
-    "bytes": 685,
-    "sha256": "f54e61b7c4d4fd09382a2c8179824cca20a872940b669f85b9eabad94cefc9b4"
+    "bytes": 905,
+    "sha256": "4425649a8f74bb082a53d63135169c15747284811206c741b603c497b8fc46c3"
   },
   {
     "path": "readiness.c",

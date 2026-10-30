@@ -1,5 +1,8 @@
 // Compile-only candidates. No init_rc or file_context installation is supplied
 // until the core-owned mount and property-context overlays are reviewed.
+// Both standalone static candidates use core bionic variants available in this
+// recovery product. Runtime placement and SELinux domains are qualified later;
+// the Soong image variant must not be used as a substitute for those checks.
 cc_defaults {
     name: "r99_readiness_defaults",
     srcs: ["readiness.c", "android_io.c", "watchdog.c"],
@@ -18,5 +21,4 @@ cc_binary {
     name: "r99_readiness_client",
     defaults: ["r99_readiness_defaults"],
     srcs: ["client_main.c"],
-    vendor: true,
 }

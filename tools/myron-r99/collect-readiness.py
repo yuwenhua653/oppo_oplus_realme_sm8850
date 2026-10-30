@@ -40,7 +40,8 @@ def main():
     root=Path(os.environ['RUNNER_TEMP']);product=root/'r97-aosp/out/target/product/sm8850'
     deliver=root/'r99-readiness-deliver';deliver.mkdir(exist_ok=False)
     evidence=root/'r99-evidence';rows=[]
-    for name,location in [('r99_readiness_broker','system/bin'),('r99_readiness_client','vendor/bin')]:
+    # These are core-image static build outputs, not final phone install paths.
+    for name,location in [('r99_readiness_broker','system/bin'),('r99_readiness_client','system/bin')]:
         original=product/location/name
         if not original.is_file() or original.is_symlink():raise ValueError('missing native output '+name)
         target=deliver/name;shutil.copyfile(original,target)

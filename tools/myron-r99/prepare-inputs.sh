@@ -6,6 +6,7 @@ mkdir -p "$RUNNER_TEMP/r99-evidence" "$RUNNER_TEMP/r99-deliver"
 exec > >(tee "$RUNNER_TEMP/r99-evidence/input-check.log") 2>&1
 python3 "$adapt/validate-inputs.py"
 python3 "$adapt/prepare-readiness.py" --check-only
+python3 "$adapt/test-readiness-build.py" 2>&1 | tee "$RUNNER_TEMP/r99-evidence/READINESS-BUILD-TESTS.log"
 python3 "$adapt/test-controls.py" | tee "$RUNNER_TEMP/r99-evidence/CONTROL-TESTS.json"
 python3 "$adapt/test-capture.py" | tee "$RUNNER_TEMP/r99-evidence/CAPTURE-TESTS.json"
 python3 "$adapt/test-build-stages.py" | tee "$RUNNER_TEMP/r99-evidence/BUILD-STAGE-TESTS.json"
