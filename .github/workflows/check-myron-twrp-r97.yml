@@ -24,6 +24,8 @@ jobs:
         run: python3 twrp/myron-r97/validate_source.py
       - name: Exercise recovery startup success and failure paths
         run: python3 twrp/myron-r97/test_runtime.py
+      - name: Exercise fast module guard success and rejection paths
+        run: python3 twrp/myron-r97/pair/test_recovery_speed.py
       - name: State qualification scope
         run: |
           echo 'Source checks only. No TWRP image was compiled or released.' >> "$GITHUB_STEP_SUMMARY"
