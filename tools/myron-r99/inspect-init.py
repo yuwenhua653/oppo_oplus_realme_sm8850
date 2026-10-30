@@ -4,11 +4,13 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import shutil
 import struct
 import subprocess
 import sys
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 EXPECTED_NEEDED = sorted(['libbase.so', 'libcutils.so', 'libext4_utils.so', 'libfs_mgr.so',
@@ -19,6 +21,103 @@ EXPECTED_NEEDED = sorted(['libbase.so', 'libcutils.so', 'libext4_utils.so', 'lib
 def identity(p):
     with p.open('rb') as f:
         return {'bytes': p.stat().st_size, 'sha256': hashlib.file_digest(f, 'sha256').hexdigest()}
+
+def selected_toolchain(source):
+    """Verify the pinned Soong selection; never execute unrelated legacy Clang."""
+    projects = {(p.attrib.get('path') or p.attrib['name']): p.attrib['revision'] for p in
+                ET.parse(HERE/'resolved-manifest.xml').getroot().findall('project')}
+    heads = {}
+    for path in ('build/soong', 'prebuilts/clang/host/linux-x86'):
+        head = subprocess.check_output(['git', '-C', str(source/path),
+                                        'rev-parse', 'HEAD'], text=True).strip()
+        if head != projects[path]:
+            raise ValueError('toolchain project commit mismatch: '+path)
+        heads[path] = head
+    config = source/'build/soong/cc/config/global.go'
+    data = config.read_bytes()
+    blob = hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+    expected = subprocess.check_output(['git', '-C', str(source/'build/soong'),
+        'rev-parse', 'HEAD:cc/config/global.go'], text=True).strip()
+    if config.is_symlink() or blob != expected:
+        raise ValueError('Soong compiler selection source differs from pinned Git blob')
+    selections = {}
+    for name, env in [('ClangDefaultBase', 'LLVM_PREBUILTS_BASE'),
+                      ('ClangDefaultVersion', 'LLVM_PREBUILTS_VERSION')]:
+        values = re.findall(r'^\s*'+name+r'\s*=\s*"([^"\n]+)"\s*$', data.decode(), re.M)
+        if len(values) != 1:
+            raise ValueError('ambiguous Soong compiler selection: '+name)
+        if os.environ.get(env, values[0]) not in ('', values[0]):
+            raise ValueError('unreviewed compiler override: '+env)
+        selections[name] = values[0]
+    relative = Path(selections['ClangDefaultBase'])/'linux-x86'/selections['ClangDefaultVersion']/'bin/clang'
+    if relative.is_absolute() or '..' in relative.parts:
+        raise ValueError('compiler path escapes pinned source')
+    compiler = source/relative
+    if not compiler.is_file() or not compiler.resolve().is_relative_to(source.resolve()):
+        raise ValueError('selected compiler missing or escapes source')
+    try:
+        version = subprocess.run([str(compiler), '--version'], capture_output=True,
+                                 text=True, check=True, timeout=15)
+    except subprocess.CalledProcessError as error:
+        detail = ((error.stderr or '') + '\n' + (error.stdout or '')).strip()[:4096]
+        raise ValueError('selected compiler --version failed with exit '+str(error.returncode)+': '+detail) from error
+    if not version.stdout.strip() or 'clang version ' not in version.stdout.splitlines()[0]:
+        raise ValueError('selected compiler returned no Clang producer version')
+    return {'project_heads': heads, 'soong_config': {**identity(config), 'git_blob': blob},
+            'path': relative.as_posix(), **identity(compiler), 'version': version.stdout.strip(),
+            'selection': 'pinned Soong defaults; differing environment overrides rejected'}
+
+def preflight(source, evidence):
+    """Fail before compilation if selected compiler or inspection tools cannot run."""
+    report = {'status': 'PASS', 'selected_toolchain': selected_toolchain(source), 'inspection_tools': {}}
+    for name in ('readelf', 'aarch64-linux-gnu-objdump'):
+        tool = shutil.which(name)
+        if tool is None:
+            raise ValueError('required inspection tool missing: '+name)
+        version = subprocess.run([tool, '--version'], capture_output=True, text=True,
+                                 check=True, timeout=15)
+        report['inspection_tools'][name] = {'path': tool, 'version': version.stdout.splitlines()[0]}
+    evidence.mkdir(parents=True, exist_ok=True)
+    (evidence/'toolchain-preflight.json').write_text(json.dumps(report, indent=2)+'\n')
+    return report
+
+def _compile_command(source, selected, evidence, stage):
+    """Try Ninja's expanded command for the Recovery SELinux object."""
+    objects = sorted(p for p in (source/'out/soong/.intermediates/system/core/init/libinit').rglob('selinux.o')
+                     if any(x.startswith('android_recovery_') for x in p.parts) and p.is_file())
+    if len(objects) != 1:
+        raise ValueError('expected one compiled Recovery selinux.o, found '+str(len(objects)))
+    target = objects[0].relative_to(source).as_posix()
+    ninja = source/'prebuilts/build-tools/linux-x86/bin/ninja'
+    graph = 'out/soong/build.twrp_sm8850.ninja'
+    result = subprocess.run([str(ninja), '-f', graph, '-t', 'commands', target],
+                            cwd=source, capture_output=True, text=True, check=True, timeout=30)
+    commands = []
+    for line in result.stdout.splitlines():
+        tokens = shlex.split(line)
+        if '-c' in tokens and 'system/core/init/selinux.cpp' in tokens:
+            if '-o' in tokens and tokens[tokens.index('-o')+1:tokens.index('-o')+2] == [target]:
+                commands.append((line, tokens))
+    if len(commands) != 1:
+        raise ValueError('missing or ambiguous actual Recovery SELinux compile command')
+    command, tokens = commands[0]
+    compiler = str(Path(selected['path']).with_name('clang++'))
+    if compiler not in tokens or '-DRECOVERY' not in tokens:
+        raise ValueError('actual Recovery compiler/define differs from selected toolchain')
+    path = evidence/(stage+'-selinux-compile-command.txt')
+    path.write_text(command+'\n')
+    return {'object': target, 'compiler': compiler, 'recovery_define': True,
+            'expanded_command_sha256': identity(path)['sha256']}
+
+def compile_command(source, selected, evidence, stage):
+    # Graph/object layout is diagnostic only. Toolchain identity is instead
+    # required by the pinned config, selected executable, and matching-text ELF
+    # producer below; do not fail a completed compile on an optional query.
+    try:
+        return {'status': 'CAPTURED', **_compile_command(source, selected, evidence, stage)}
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        return {'status': 'UNAVAILABLE_DIAGNOSTIC', 'error_type': type(error).__name__,
+                'error': str(error), 'qualification_granted': False}
 
 def elf_info(p):
     data = p.read_bytes()
@@ -141,11 +240,14 @@ def _capture_checked(stage, source, evidence, deliver):
             raise ValueError('installed dependency missing: '+name)
         libs.append({'name':name, **identity(p)})
     info['installed_shared_libraries'] = libs
-    clangs = sorted(source.glob('prebuilts/clang/host/linux-x86/clang-*/bin/clang'))
-    info['available_clang_versions'] = []
-    for p in clangs:
-        version = subprocess.run([str(p), '--version'], capture_output=True, text=True, check=True)
-        info['available_clang_versions'].append({'path':p.relative_to(source).as_posix(), 'version':version.stdout.strip()})
+    info['selected_toolchain'] = selected_toolchain(source)
+    before = json.loads((evidence/'toolchain-preflight.json').read_text())
+    if before['selected_toolchain'] != info['selected_toolchain']:
+        raise ValueError('selected toolchain changed since preflight')
+    info['selinux_compile_command'] = compile_command(source, info['selected_toolchain'], evidence, stage)
+    info['clang_inventory'] = [{'path': p.relative_to(source).as_posix(),
+                                'executed': p.relative_to(source).as_posix() == info['selected_toolchain']['path']}
+        for p in sorted(source.glob('prebuilts/clang/host/linux-x86/clang-*/bin/clang'))]
     candidates = [product/'symbols/recovery/root/system/bin/init']
     candidates += sorted(source.glob('out/soong/.intermediates/system/core/init/init_second_stage.recovery/*/unstripped/init'))
     seen = set()
@@ -157,6 +259,11 @@ def _capture_checked(stage, source, evidence, deliver):
         if section(p, '.text') != section(copy, '.text'):
             continue
         elf_info(p)
+        producer = info['selected_toolchain']['version'].splitlines()[0]
+        comments = section(p, '.comment').decode().split('\0')
+        if producer not in comments:
+            raise ValueError('compiled ELF producer differs from selected compiler')
+        info['compiled_clang_producer'] = producer
         unstripped = dst/'init.unstripped'
         shutil.copyfile(p, unstripped)
         info['unstripped_evidence'] = {**identity(unstripped), 'text_section_matches':True,
@@ -164,6 +271,8 @@ def _capture_checked(stage, source, evidence, deliver):
         with (evidence/(stage+'-disassembly.txt')).open('w') as f:
             subprocess.run(['aarch64-linux-gnu-objdump','-dC',str(unstripped)], stdout=f, check=True)
         break
+    if 'compiled_clang_producer' not in info:
+        raise ValueError('matching-text symbols with selected compiler producer required')
     if stage == 'baseline':
         info['matches_known_REC_init'] = (info['bytes'] == lock['baseline_init_bytes'] and info['sha256'] == lock['baseline_init_sha256'])
     info['flash_qualified'] = False
@@ -197,7 +306,9 @@ def main():
     action = sys.argv[1]
     temp = Path(os.environ['RUNNER_TEMP'])
     evidence, deliver, source = temp/'r99-evidence', temp/'r99-deliver', temp/'r97-aosp'
-    if action in ('baseline','patched'):
+    if action == 'preflight':
+        print(json.dumps(preflight(source, evidence)))
+    elif action in ('baseline','patched'):
         capture(action, source, evidence, deliver)
     elif action == 'finalize':
         finalize(evidence, deliver)

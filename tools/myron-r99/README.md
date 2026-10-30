@@ -7,6 +7,14 @@ after compilation. If any capture check fails, raw init/symbol outputs and
 actual source evidence are retained as unqualified diagnostics, with no success
 metadata and no change to the known baseline binary qualification.
 
+Before compiling, the selected Clang from the pinned Soong configuration and
+the required ELF inspection tools must run successfully. Unused legacy Clang
+installations are listed without execution. After compiling, the selected
+compiler identity must remain unchanged and its producer string must appear
+in the matching-text symbol file. Optional Ninja command capture records any
+failure as diagnostic evidence. Capture regression tests cover the legacy
+compiler failure and the full metadata path through symbol disassembly.
+
 This build addresses the unobserved Recovery-header SELinux selector from the
 R98 phone test. It compiles the existing Recovery `init` from the successful
 396-project R97 snapshot, then rebuilds the same target with a Recovery-only

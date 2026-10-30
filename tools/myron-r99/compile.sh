@@ -15,6 +15,9 @@ lunch twrp_sm8850
 rc=$?
 [ "$rc" -eq 0 ] || exit "$rc"
 printf '%s\n' "TARGET_PRODUCT=$TARGET_PRODUCT" "TARGET_BUILD_VARIANT=$TARGET_BUILD_VARIANT" > "$evidence/product.txt"
+python3 "$adapt/inspect-init.py" preflight
+rc=$?
+[ "$rc" -eq 0 ] || exit "$rc"
 python3 "$adapt/source_checks.py" "$RUNNER_TEMP/r97-aosp" baseline "$evidence/baseline-precompile-source.json"
 rc=$?
 [ "$rc" -eq 0 ] || exit "$rc"

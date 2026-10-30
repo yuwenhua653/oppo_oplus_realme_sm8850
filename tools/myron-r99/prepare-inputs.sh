@@ -7,6 +7,7 @@ exec > >(tee "$RUNNER_TEMP/r99-evidence/input-check.log") 2>&1
 python3 "$adapt/validate-inputs.py"
 python3 "$adapt/prepare-readiness.py" --check-only
 python3 "$adapt/test-controls.py" | tee "$RUNNER_TEMP/r99-evidence/CONTROL-TESTS.json"
+python3 "$adapt/test-capture.py" | tee "$RUNNER_TEMP/r99-evidence/CAPTURE-TESTS.json"
 python3 "$prior/validate_source.py"
 python3 "$prior/test_runtime.py"
 python3 "$prior/ci/apply-compile-only.py" --self-test
