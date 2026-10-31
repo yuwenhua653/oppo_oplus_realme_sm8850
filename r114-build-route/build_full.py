@@ -14,6 +14,7 @@ import sys
 import time
 import dt_source_bridge
 import dt_sandbox
+import runtime_modules
 
 CORE_HEAD = '41a2024a9e2eb66ab0643a865d74943b4ee3cff8'
 BASE_HEAD = '7b74ce235cabd1f966a679c9fc03ceda1e6160f5'
@@ -127,11 +128,12 @@ def collect(root, output, paths, repo, clock):
         require(len(vermagic)==1 and vermagic[0].split()[0]==release,'Module vermagic mismatch: '+row['file'])
         modules.append({'name':elf['name'],'file':row['file'],'sha256':row['sha256'],'vermagic':vermagic[0]})
     require(len(modules)>=295,'Full module output unexpectedly small')
+    coverage=runtime_modules.check_coverage(repo,modules)
     names={Path(r['file']).name for r in selected}
     require({'myron-sm8850-overlay.dtbo','myron-audio-mtp.dtbo','myron-sm8850-camera-sensor.dtbo',
              'myron-sde-display-mtp-overlay.dtbo','Module.symvers'}<=names,'Missing full-build DT/kernel outputs')
     result={'kernel_release':release,'linux_banner':banner,'module_file_count':len(modules),
-            'unique_module_names':len({m['name'] for m in modules}),'modules':modules,'files':selected,
+            'unique_module_names':len({m['name'] for m in modules}),'modules':modules,'files':selected,'runtime_name_coverage':coverage,
             'flashable':False,'installed_module_abi_compatible':'NOT_CHECKED',
             'note':'All outputs from this stamped build. Includes reference/alternative modules; not an autoload list.'}
     write(output/'artifact-manifest.json',result)
@@ -208,6 +210,7 @@ def main():
             ('r82-build-route/apply_cnss.py',['--workspace',str(root)])]:
             runner.logged([sys.executable,'-B',str(repo/path),*arguments],root,reports/('r114-'+Path(path).parent.name+'.log'))
         # R80 forced-NSS trial is deliberately absent; R81 retains normal NSS.
+        runtime_modules.prepare(root,repo,reports)
         lock=json.loads((a.package/'sources.lock.json').read_text())
         before=source_snapshot(root,lock,reports)
         write(reports/'r114-prebuild-source-state.json',before)
@@ -216,7 +219,7 @@ def main():
         options=stamped_options(scope['options']);bazel=scope['bazel']
         targets=runner.build_targets(root,'full')
         targets=list(dict.fromkeys(targets+scope['contract']['core_targets']+
-                      [r['target'] for r in scope['contract']['validation_only_modules']]+[led.MODULE['target']]))
+                      [r['target'] for r in scope['contract']['validation_only_modules']]+[led.MODULE['target'],runtime_modules.TARGET]))
         require(FULL_TARGET in targets and '//common:kernel_aarch64_modules' in targets,'Full build graph required')
         clock=start_clock();state.update(clock);state['phase']='full_stamped_compile';write(reports/'r114-status.json',state)
         # Use the upstream stamp implementation. Its SOURCE_DATE_EPOCH override

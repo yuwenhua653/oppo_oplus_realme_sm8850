@@ -79,6 +79,18 @@ source inputs and compares them to the complete on-disk DTS/Kbuild/Makefile
 inventory. Missing inputs fail immediately, including any future nested package
 omissions. Compiled DT merge validation remains required afterward.
 
+Run 41202430688 completed the full configured build and DT checks. Assembly
+qualification then found that its 623 module files did not include the runtime
+`focaltech_myron` direct-touch driver. The inherited R94 preparation chain did
+not include that earlier standalone R58 addition; the generic `focaltech_fts`
+module is not its replacement. `runtime_modules.py` now adds the hash-locked
+existing R58 driver, Kconfig and registry entry after inherited preparation,
+and requests its target explicitly with the same stamped full build. Existing
+registry and configuration contents remain intact. Output acceptance now
+requires all 297 runtime module names, in addition to module version checks.
+This coverage list is not an autoload list and does not replace ABI checks or
+partition assembly validation. Previously successful outputs remain separate.
+
 Local preflights: `python3 -B r114-build-route/test_route.py` and
 `python3 -B r114-build-route/test_dt_source_bridge.py`.
 GitHub workflow: `.github/workflows/build-k90pm-full-r114.yml`.

@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch
 import build_full as b
 import dt_sandbox
+import runtime_modules
 
 HERE=Path(__file__).resolve().parent
 REFERENCE=HERE/'reference/workspace_status_stamp.py'
@@ -16,6 +17,40 @@ assert b.sha(REFERENCE)=='6ec292d3bc656a9403766bbbb367cc5856cbc9c5f495c3b6653e10
 upstream=b.load('r114_actual_upstream_stamp',REFERENCE)
 
 class Route(unittest.TestCase):
+    def test_runtime_touch_keeps_existing_registry_and_driver_source(self):
+        repo=HERE.parent
+        before,after=runtime_modules.inputs(repo)
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            for name,data in before.items():
+                if data is not None:
+                    p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+            runtime_modules.prepare(root,repo,root/'reports')
+            runtime_modules.prepare(root,repo,root/'reports')
+            for name,data in after.items():
+                self.assertEqual((root/name).read_bytes(),data)
+                if before[name] is not None:self.assertTrue(data.startswith(before[name]))
+            self.assertEqual((root/runtime_modules.SOC/'drivers/input/touchscreen/myron/focaltech_myron.c').read_bytes(),(repo/'r58-driver/focaltech_myron.c').read_bytes())
+
+    def test_runtime_touch_rejects_drift_before_any_source_write(self):
+        repo=HERE.parent;before,after=runtime_modules.inputs(repo)
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            for name,data in before.items():
+                if data is not None:
+                    p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+            p=root/runtime_modules.SOC/'configs/canoe_perf.bzl';p.write_bytes(p.read_bytes()+b'# drift\n')
+            with self.assertRaises(ValueError):runtime_modules.prepare(root,repo,root/'reports')
+            self.assertFalse((root/runtime_modules.SOC/'drivers/input/touchscreen/myron/focaltech_myron.c').exists())
+            name=runtime_modules.SOC+'drivers/xiaomi/myron/modules.bzl'
+            self.assertEqual((root/name).read_bytes(),before[name])
+
+    def test_runtime_coverage_rejects_missing_direct_touch(self):
+        names=runtime_modules.required_names(HERE.parent)
+        rows=[{'name':n} for n in sorted(names-{'focaltech_myron'})]
+        with self.assertRaisesRegex(ValueError,'focaltech_myron'):runtime_modules.check_coverage(HERE.parent,rows)
+        self.assertEqual(runtime_modules.check_coverage(HERE.parent,rows+[{'name':'focaltech_myron'}])['required_names'],297)
+
     def test_dt_sandbox_rejects_missing_fingerprint_and_accepts_complete_inputs(self):
         with tempfile.TemporaryDirectory() as td:
             dt=Path(td)
