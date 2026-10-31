@@ -29,7 +29,7 @@ jobs:
       CCACHE_NODEBUG: 'true'
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONUNBUFFERED: '1'
-      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r1
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r114-dt928
       PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
       BUILD_JOBS: ${{ inputs.jobs || '2' }}
       TZ: UTC
@@ -47,6 +47,14 @@ jobs:
           python3 -B r94-build-route/build_led.py --repo-root "$GITHUB_WORKSPACE" --check-inputs
           python3 -B r55-source/ci/extract_inputs.py --root "$GITHUB_WORKSPACE"
           python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/fastcheck_r12.py" --reports "$GITHUB_WORKSPACE/myron-fastchecks"
+          python3 -B r114-build-route/test_dt_source_bridge.py
+          python3 -B r114-build-route/dt_source_bridge.py migrate --repo "$GITHUB_WORKSPACE"
+
+      - name: Verify locked device tree is retrievable before toolchain sync
+        run: |
+          set -euo pipefail
+          python3 "$PACKAGE_DIR/sync_sources.py" --workspace "$WORKSPACE_DIR" --jobs 1 --only vendor/qcom/sm8850-devicetrees
+          python3 -B r114-build-route/dt_source_bridge.py normalize --repo "$GITHUB_WORKSPACE" --workspace "$WORKSPACE_DIR"
 
       - name: Prepare hosted runner
         run: |
@@ -60,12 +68,12 @@ jobs:
       - name: Sync locked kernel, drivers and toolchains
         run: |
           set -euo pipefail
-          python3 r61-build-route/sync_with_retry.py --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR" --jobs 4
+          python3 -B r114-build-route/dt_source_bridge.py sync --repo "$GITHUB_WORKSPACE" --workspace "$WORKSPACE_DIR" --jobs 4
 
       - name: Prepare inherited build hooks
         run: |
           set -euo pipefail
-          python3 r55-source/ci/prepare_legacy.py
+          python3 -B r114-build-route/dt_source_bridge.py legacy --repo "$GITHUB_WORKSPACE" --workspace "$WORKSPACE_DIR"
 
       - name: Compile full stamped kernel, GKI, device modules and DT outputs
         run: |

@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 import time
+import dt_source_bridge
 
 CORE_HEAD = '41a2024a9e2eb66ab0643a865d74943b4ee3cff8'
 BASE_HEAD = '7b74ce235cabd1f966a679c9fc03ceda1e6160f5'
@@ -139,6 +140,42 @@ def collect(root, output, paths, repo, clock):
     (output/'NOT-A-FLASH-PACKAGE.txt').write_text('红米 K90PM / myron 完整源码编译产物。新版本模块需与新内核成套装配；本目录不是刷机包，也不是自动加载清单。\n')
     return {k:result[k] for k in ('kernel_release','linux_banner','module_file_count','unique_module_names')}
 
+def dt_inputs(output, names):
+    manifest=json.loads((output/'artifact-manifest.json').read_text())
+    require(manifest.get('flashable') is False,'DT inputs must be non-flashable')
+    result=[]
+    for name in names:
+        rows=[r for r in manifest['files'] if Path(r['file']).name==name]
+        require(bool(rows),'Missing DT merge input: '+name)
+        paths=[]
+        for row in rows:
+            rel=Path(row['file']);path=(output/rel).resolve()
+            require(not rel.is_absolute() and '..' not in rel.parts and path.is_relative_to(output.resolve()),'Unsafe DT input path')
+            require(path.is_file() and sha(path)==row['sha256'],'DT input hash mismatch: '+name)
+            paths.append(path)
+        require(len({sha(p) for p in paths})==1,'Conflicting DT merge inputs: '+name)
+        result.append(paths[0])
+    return result
+
+def validate_dt(root, repo, output, reports):
+    dt_source_bridge.migrate(repo,verify=True)
+    sys.path.insert(0,str(repo/'myron-adaptation-r12/dt'))
+    validator=load('r114_dt_validator',repo/'myron-adaptation-r12/dt/validate_dt.py')
+    report={'success':False,'merge_passed':False,'flashable':False,'hardware_tested':False,
+            'scope':'Diagnostic composition; preserve OEM DTB/DTBO during partition assembly'}
+    try:
+        require(git(root/dt_source_bridge.DT,'rev-parse','HEAD')==validator.DT_REVISION,'Unexpected DT revision')
+        tool_dir=root/'integration-cache/myron-r114-dt-tools'
+        report['tool_provenance']=validator.build_tools(root,tool_dir)
+        inputs=dt_inputs(output,validator.INPUTS)
+        validator.merge_and_check(inputs,tool_dir,reports/'r114-dt-merge',report)
+        report['success']=True
+    except Exception as error:
+        report['error']=str(error)
+        raise
+    finally:
+        write(reports/'r114-dt-merge.json',report)
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     for n in ('workspace','package','baseline','r18','repo-root'):ap.add_argument('--'+n,type=Path,required=True)
@@ -157,7 +194,7 @@ def main():
         require(led.pin((repo/'r92-build-route/build_pd_provider.py').read_bytes())['sha256']==led.R92_ENGINE_SHA,'R92 engine changed')
         sys.path.insert(0,str(repo/'r92-build-route'))
         parent=load('r114_r92',repo/'r92-build-route/build_pd_provider.py')
-        boundary=parent.Boundary(repo);boundary.check(repo)
+        boundary=dt_source_bridge.boundary(parent.Boundary,repo);boundary.check(repo)
         state['phase']='prepare_existing_driver_fixes';write(reports/'r114-status.json',state)
         scope=led.prepare(boundary,a,reports,state)
         led.patch_source(root,repo/'r94-build-route',patch)
@@ -197,6 +234,9 @@ def main():
         after=source_snapshot(root,lock,reports/'postbuild')
         require(before==after,'Tracked/nonignored source state changed during compilation')
         state.update(collect(root,root/'integration-artifacts/r114-full',out.stdout.splitlines(),repo,clock))
+        state.update(compiled=True,phase='validate_compiled_dt_merge')
+        write(reports/'r114-status.json',state)
+        validate_dt(root,repo,root/'integration-artifacts/r114-full',reports)
         state.update(success=True,compiled=True,phase='full_compile_verified_pending_packaging')
     except Exception as e:
         state.update(phase='failed',error=str(e));print('R114 ERROR:',e,file=sys.stderr)

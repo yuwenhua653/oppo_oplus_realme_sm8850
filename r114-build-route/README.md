@@ -42,5 +42,29 @@ after the build succeeds. This workflow does not flash or create a release.
 The latest device SELinux and Recovery integration is retained locally for
 that assembly stage; its derived files are not publicly uploaded by this job.
 
-Local preflight: `python3 -B r114-build-route/test_route.py`.
+The original R13 DTS commit `8b86fedda64183338411f9751f5e62ce25997620`
+is no longer retrievable. The explicit migration pins candidate
+`928b59fcca6306aaba39343a474dc5930d8f424d` (tree
+`3da2d6f5050abf14d97ab7503d7c94cf8188288c`). This includes the immediate
+build-error fix after the initial Myron platform-map commit, but excludes later
+OS4 changes. ACK, LineageOS SoC/modules and every other source pin remain unchanged.
+
+`dt_source_bridge.py` verifies the immutable R18 archive and its nested R13 and
+platform archives before deriving five extracted metadata/revision-guard edits.
+It normalizes three build files to exact historical preimages and checks 123
+archived hashes/blobs before legacy patches. The original legacy helpers remain
+hash checked; their DTS revision and the two derived collection-manifest hashes
+are adapted in memory. Driver contracts, source HEAD/origin verification and
+bundle checks remain active. The new lock hash is
+`0c420df07cbc9d1e44de020cc1e3b8ac74510003a6fca12ce4c9798991db1a7a`.
+
+This is not proof of complete historical DTS equivalence: the archive does not
+contain old hashes for every Myron board/charging/touch/camera/display source.
+The compiled diagnostic composition must pass the R13 libfdt overlay merge,
+audio-provider and touch-framework checks. Equal duplicate DT outputs may be
+deduplicated for that check; conflicting bytes fail. OEM DTB/DTBO must remain in
+later partition assembly until replacement images are separately qualified.
+
+Local preflights: `python3 -B r114-build-route/test_route.py` and
+`python3 -B r114-build-route/test_dt_source_bridge.py`.
 GitHub workflow: `.github/workflows/build-k90pm-full-r114.yml`.

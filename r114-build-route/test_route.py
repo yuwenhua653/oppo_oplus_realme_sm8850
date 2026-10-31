@@ -70,4 +70,23 @@ class Route(unittest.TestCase):
             self.assertIn(value,source)
         self.assertNotIn('r80-build-route/apply_wifi.py',source)
 
+    def test_dt_merge_inputs_reject_conflicts_corruption_and_escape(self):
+        with tempfile.TemporaryDirectory() as td:
+            output=Path(td)/'output';output.mkdir()
+            rows=[]
+            for folder in ('one','two'):
+                p=output/folder/'test.dtbo';p.parent.mkdir();p.write_bytes(b'same')
+                rows.append({'file':str(p.relative_to(output)),'sha256':b.sha(p)})
+            manifest=output/'artifact-manifest.json'
+            b.write(manifest,{'flashable':False,'files':rows})
+            self.assertEqual(len(b.dt_inputs(output,['test.dtbo'])),1)
+            p.write_bytes(b'corrupted')
+            with self.assertRaisesRegex(ValueError,'hash mismatch'):b.dt_inputs(output,['test.dtbo'])
+            rows[-1]['sha256']=b.sha(p)
+            b.write(manifest,{'flashable':False,'files':rows})
+            with self.assertRaisesRegex(ValueError,'Conflicting'):b.dt_inputs(output,['test.dtbo'])
+            rows[-1]['file']='../test.dtbo'
+            b.write(manifest,{'flashable':False,'files':rows})
+            with self.assertRaisesRegex(ValueError,'Unsafe'):b.dt_inputs(output,['test.dtbo'])
+
 if __name__=='__main__':unittest.main(verbosity=2)
