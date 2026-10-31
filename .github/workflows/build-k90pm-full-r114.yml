@@ -1,0 +1,103 @@
+name: K90PM myron R114 full kernel and modules
+
+on:
+  push:
+    branches: [codex/myron-r61-battery]
+    paths:
+      - .github/workflows/build-k90pm-full-r114.yml
+      - r114-build-route/**
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Parallel compile jobs
+        type: choice
+        default: '2'
+        options: ['2', '4']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: k90pm-r114-full-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CCACHE_NODEBUG: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-platform-r1
+      PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
+      BUILD_JOBS: ${{ inputs.jobs || '2' }}
+      TZ: UTC
+    steps:
+      - name: Checkout integration sources
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Verify build route and inherited inputs before source sync
+        run: |
+          set -euo pipefail
+          python3 -B r114-build-route/test_route.py
+          python3 -B r94-build-route/check_inputs.py
+          python3 -B r94-build-route/build_led.py --repo-root "$GITHUB_WORKSPACE" --check-inputs
+          python3 -B r55-source/ci/extract_inputs.py --root "$GITHUB_WORKSPACE"
+          python3 "$GITHUB_WORKSPACE/myron-adaptation-r12/fastcheck_r12.py" --reports "$GITHUB_WORKSPACE/myron-fastchecks"
+
+      - name: Prepare hosted runner
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config patch
+          df -h .
+          free -h
+
+      - name: Sync locked kernel, drivers and toolchains
+        run: |
+          set -euo pipefail
+          python3 r61-build-route/sync_with_retry.py --package "$PACKAGE_DIR" --workspace "$WORKSPACE_DIR" --jobs 4
+
+      - name: Prepare inherited build hooks
+        run: |
+          set -euo pipefail
+          python3 r55-source/ci/prepare_legacy.py
+
+      - name: Compile full stamped kernel, GKI, device modules and DT outputs
+        run: |
+          set -euo pipefail
+          unset CCACHE_DEBUG
+          python3 -B r114-build-route/build_full.py \
+            --workspace "$WORKSPACE_DIR" --package "$PACKAGE_DIR" \
+            --baseline "$GITHUB_WORKSPACE/myron-adaptation-r12" \
+            --r18 "$GITHUB_WORKSPACE/myron-boot-r18" \
+            --repo-root "$GITHUB_WORKSPACE" --jobs "$BUILD_JOBS"
+
+      - name: Upload build reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: k90pm-myron-r114-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.WORKSPACE_DIR }}/integration-reports/
+            ${{ env.PACKAGE_DIR }}/sources.lock.json
+            r114-build-route/
+            .github/workflows/build-k90pm-full-r114.yml
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload complete verified compile outputs
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: k90pm-myron-r114-full-compile-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-artifacts/r114-full/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
