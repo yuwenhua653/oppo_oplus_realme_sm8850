@@ -13,6 +13,7 @@ import subprocess
 import sys
 import time
 import dt_source_bridge
+import dt_sandbox
 
 CORE_HEAD = '41a2024a9e2eb66ab0643a865d74943b4ee3cff8'
 BASE_HEAD = '7b74ce235cabd1f966a679c9fc03ceda1e6160f5'
@@ -197,6 +198,7 @@ def main():
         boundary=dt_source_bridge.boundary(parent.Boundary,repo);boundary.check(repo)
         state['phase']='prepare_existing_driver_fixes';write(reports/'r114-status.json',state)
         scope=led.prepare(boundary,a,reports,state)
+        dt_sandbox.apply(root,reports)
         led.patch_source(root,repo/'r94-build-route',patch)
         runner=scope['runner']
         for path,arguments in [
@@ -227,6 +229,9 @@ def main():
         write(reports/'r114-commands.json',commands)
         for stage in ('kconfig','config'):
             runner.logged(commands[stage],root,reports/('r114-'+stage+'.log'))
+        state['phase']='verify_dt_sandbox_inputs';write(reports/'r114-status.json',state)
+        dt_sandbox.preflight(root,reports,bazel,options)
+        state['phase']='full_stamped_compile';write(reports/'r114-status.json',state)
         runner.logged(commands['build'],root,reports/'r114-full-build.log')
         out=subprocess.run(commands['outputs'],cwd=root,capture_output=True,text=True)
         (reports/'r114-cquery.txt').write_text(out.stdout);(reports/'r114-cquery.log').write_text(out.stderr)

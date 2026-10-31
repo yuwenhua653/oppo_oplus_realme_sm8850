@@ -65,6 +65,20 @@ audio-provider and touch-framework checks. Equal duplicate DT outputs may be
 deduplicated for that check; conflicting bytes fail. OEM DTB/DTBO must remain in
 later partition assembly until replacement images are separately qualified.
 
+Run 41198548518 passed source synchronization and inherited preparation, then
+failed the DT target because `qcom/fingerprint/BUILD.bazel` creates a nested
+Bazel package. The parent recursive glob omitted that directory, even though
+the old make/source-path checks could see its files on disk. The reported
+missing fingerprint Makefile was a sandbox-input failure.
+
+`dt_sandbox.py` now checks both BUILD preimages, replaces the unused standalone
+fingerprint DT rule with an explicit source filegroup, and adds that group to
+the parent ACK `kernel_dtstree`. It leaves all DTS and driver contents intact.
+Before the full build, a real configured Bazel query enumerates the DT rule's
+source inputs and compares them to the complete on-disk DTS/Kbuild/Makefile
+inventory. Missing inputs fail immediately, including any future nested package
+omissions. Compiled DT merge validation remains required afterward.
+
 Local preflights: `python3 -B r114-build-route/test_route.py` and
 `python3 -B r114-build-route/test_dt_source_bridge.py`.
 GitHub workflow: `.github/workflows/build-k90pm-full-r114.yml`.

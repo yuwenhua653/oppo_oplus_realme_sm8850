@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import build_full as b
+import dt_sandbox
 
 HERE=Path(__file__).resolve().parent
 REFERENCE=HERE/'reference/workspace_status_stamp.py'
@@ -15,6 +16,18 @@ assert b.sha(REFERENCE)=='6ec292d3bc656a9403766bbbb367cc5856cbc9c5f495c3b6653e10
 upstream=b.load('r114_actual_upstream_stamp',REFERENCE)
 
 class Route(unittest.TestCase):
+    def test_dt_sandbox_rejects_missing_fingerprint_and_accepts_complete_inputs(self):
+        with tempfile.TemporaryDirectory() as td:
+            dt=Path(td)
+            for name in ('Makefile','qcom/fingerprint/Kbuild','qcom/fingerprint/Makefile',
+                         'qcom/fingerprint/canoe-fingerprint.dts','qcom/fingerprint/canoe-fingerprint.dtsi'):
+                p=dt/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('fixture')
+            expected=dt_sandbox.expected_inputs(dt)
+            self.assertEqual(len(expected),5)
+            with self.assertRaisesRegex(ValueError,'fingerprint/Kbuild'):
+                dt_sandbox.check_inputs(expected,dt_sandbox.DT+'/Makefile\n')
+            self.assertTrue(dt_sandbox.check_inputs(expected,'\n'.join(sorted(expected)))['success'])
+
     def test_real_git_commit_and_dirty_suffix(self):
         with tempfile.TemporaryDirectory() as td, patch.dict(os.environ,{'BUILD_NUMBER':''}):
             p=Path(td)
