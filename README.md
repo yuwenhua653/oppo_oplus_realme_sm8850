@@ -77,14 +77,17 @@ build does not discard local edits or invent a clean version for uncommitted cod
 
 ## R118 device-tree-only follow-up
 
-The lock now selects DTS `0d015de10a547545b053acb7df2a097996bf011d`: v1 camera
+The lock now selects DTS `feff8ac781caca95799d642f79a6bfa23a17e639`: v1 camera
 collection, optional GPU fuse references, and Myron LPASS/SoundWire provider fixes.
 Common kernel and all module source commits are unchanged. The R115 binary outputs
 remain evidence for their original lock only; do not relabel them as an R118 build.
 A new full build is still required for outputs claiming this updated lock.
 
 Device-owned DT-only compilation and validation live under `kernel/` on
-`myron/device-cnb-source`. They can compile the 27 profile inputs using only the
+`myron/device-cnb-source`. They can compile the 32 profile inputs using only the
 four pinned source projects. OEM DT remains the ROM default while the two CanoeP
 thermal-profile ID mappings are under review. No full build is triggered by this
 lock-only diagnostic update (`[skip ci]`); normal full-build dispatch remains available.
+
+The follow-up also collects existing MMRM, hardware fence, IPC, mailbox, fingerprint
+helper and WCN786x DT components; the device profile respects OEM variant coverage.
