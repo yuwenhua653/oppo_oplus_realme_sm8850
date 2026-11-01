@@ -1,0 +1,62 @@
+name: K90PM committed source full build
+
+on:
+  push:
+    branches: [myron/kernel-6.12]
+    paths:
+      - '*.py'
+      - '*.json'
+      - metadata.BUILD.bazel
+      - .github/workflows/build-kernel.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-committed-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      CCACHE_NODEBUG: 'true'
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Test timestamp validation before source sync
+        run: python3 -B test_build.py
+      - name: Prepare hosted runner
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config patch
+      - name: Build committed kernel and modules
+        run: python3 -B build.py --jobs 2 --ram-mb 10000
+      - name: Upload build reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-clean-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            kernel_workspace/integration-reports/
+            sources.lock.json
+            source-provenance.json
+          retention-days: 14
+      - name: Preserve compiled outputs including validation failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-compile-outputs-check-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: kernel_workspace/integration-artifacts/
+          include-hidden-files: true
+          if-no-files-found: warn
+          compression-level: 1
+          retention-days: 7

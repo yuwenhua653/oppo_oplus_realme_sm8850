@@ -1,11 +1,6 @@
 name: K90PM R115 publish source and clean build
 
 on:
-  push:
-    branches: [codex/myron-r61-battery]
-    paths:
-      - r115-source/**
-      - .github/workflows/publish-k90pm-source-r115.yml
   workflow_dispatch:
 
 permissions:
@@ -103,13 +98,13 @@ jobs:
             sources.lock.json
             source-provenance.json
           retention-days: 14
-      - name: Upload full kernel and modules
-        if: success()
+      - name: Preserve compile outputs even when validation fails
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: myron-r115-clean-full-${{ github.run_id }}-${{ github.run_attempt }}
-          path: kernel_workspace/integration-artifacts/full/
+          name: myron-r115-outputs-check-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: kernel_workspace/integration-artifacts/
           include-hidden-files: true
-          if-no-files-found: error
+          if-no-files-found: warn
           compression-level: 1
           retention-days: 7

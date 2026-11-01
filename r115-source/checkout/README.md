@@ -60,9 +60,16 @@ runtime module names. These are compilation outputs, not a flash package.
 Boot, vendor_boot and Recovery assembly must use matching modules and preserve
 the separately validated SELinux/Recovery configuration and OEM DTB/DTBO.
 
-The `K90PM R115 publish source and clean build` Actions workflow on the
-`codex/myron-r61-battery` integration branch checks out this entry commit
-on a separate clean runner and runs the same `build.py` command.
+The `K90PM committed source full build` Actions workflow in this branch runs
+the same `build.py` command directly. It does not rerun source migration.
+Before external modules are built, the real Image version and UTC build time
+are checked. The full build reuses that compiled kernel through Bazel's cache.
+Timestamp validation compares the exact UTC second and accepts GNU date's
+space-padded day field. It does not substitute the commit date or accept a
+different build time. Kernel diagnostics and collected outputs are uploaded
+even if later validation fails; check `validation-status.json` and the job
+result before using any output. An uploaded artifact alone is not proof of
+successful validation.
 
 For development, commit changes on the relevant source branch and update that
 project's full SHA in the lock file before building in a new workspace. The

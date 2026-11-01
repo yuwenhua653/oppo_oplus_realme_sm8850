@@ -49,7 +49,8 @@ def start_clock(now=None):
     epoch = int(time.time() if now is None else now)
     stamp = datetime.datetime.fromtimestamp(epoch, datetime.timezone.utc)
     os.environ['SOURCE_DATE_EPOCH'] = str(epoch)
-    os.environ['KBUILD_BUILD_TIMESTAMP'] = stamp.strftime('%a %b %d %H:%M:%S UTC %Y')
+    # Kleaf _setup_env.sh regenerates this using GNU date (space-padded day).
+    os.environ['KBUILD_BUILD_TIMESTAMP'] = stamp.strftime('%a %b %e %H:%M:%S UTC %Y')
     for key in ('FAKETIME', 'FAKESTAT', 'LD_PRELOAD', 'LOCALVERSION', 'BUILD_NUMBER'):
         require(not os.environ.get(key), 'Unexpected time/version override: ' + key)
     return {'epoch': epoch, 'started_utc': stamp.isoformat(),
@@ -69,12 +70,24 @@ def verify_banner(image, release, clock):
     matching = [b.decode('utf-8', 'replace') for b in banners if b.startswith(expected)]
     require(len(set(matching)) == 1, 'Expected one matching built Image banner')
     banner = matching[0]
-    require(clock['kbuild_timestamp'] in banner, 'Image build date differs from actual build epoch')
+    # Compare the actual UTC second, not %d (01) versus GNU date's %e ( 1).
+    match = re.search(r'((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+'
+                      r'(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+'
+                      r'\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+UTC\s+\d{4})$', banner)
+    require(match is not None, 'Missing UTC timestamp in Image banner: ' + banner)
+    observed = datetime.datetime.strptime(' '.join(match[1].split()), '%a %b %d %H:%M:%S UTC %Y')
+    observed = observed.replace(tzinfo=datetime.timezone.utc)
+    require(observed.strftime('%a') == match[1].split()[0], 'Incorrect weekday in Image banner: ' + banner)
+    require(int(observed.timestamp()) == clock['epoch'],
+            'Image build date differs from actual build epoch: expected ' + clock['started_utc'] +
+            ', observed ' + observed.isoformat() + '; banner=' + banner)
     return banner
 
 def collect(root, output, paths, entry, clock, common_head):
     require(not output.exists(), 'Fresh full-build output required')
     output.mkdir(parents=True)
+    write(output/'validation-status.json', {'verified': False, 'flashable': False,
+          'note': 'Compilation outputs; validation is incomplete until this record says verified=true.'})
     selected=[]
     allowed={'Image','Image.gz','Image.lz4','System.map','Module.symvers','kernel.release',
              'modules.builtin','modules.builtin.modinfo','kernel_aarch64_dot_config','.config'}
@@ -118,6 +131,8 @@ def collect(root, output, paths, entry, clock, common_head):
         'baseline_sources_included':False,'recovery_image_in_this_artifact':False,
         'selinux_and_recovery_assembly':'Separate partition assembly is required; this repository builds kernel and modules'})
     (output/'NOT-A-FLASH-PACKAGE.txt').write_text('红米 K90PM / myron 完整源码编译产物。新版本模块需与新内核成套装配；本目录不是刷机包，也不是自动加载清单。\n')
+    write(output/'validation-status.json', {'verified': True, 'flashable': False,
+          'kernel_release': release, 'linux_banner': banner, 'runtime_name_coverage': coverage})
     return {k:result[k] for k in ('kernel_release','linux_banner','module_file_count','unique_module_names')}
 
 
@@ -145,6 +160,47 @@ def logged(command, root, path):
             if not line.startswith('DEBUG:'):
                 print(line, end='', flush=True)
         require(proc.wait() == 0, 'Build command failed; see ' + str(path))
+
+
+def query_outputs(command, root, reports, name):
+    result = subprocess.run(command, cwd=root, capture_output=True, text=True)
+    (reports / (name + '.txt')).write_text(result.stdout)
+    (reports / (name + '.log')).write_text(result.stderr)
+    require(result.returncode == 0, 'Output enumeration failed: ' + name)
+    return result.stdout.splitlines()
+
+
+def check_kernel_before_modules(root, paths, head, clock, reports):
+    """Check the real Image before spending time compiling external modules."""
+    record = {'verified': False, 'flashable': False, 'expected_epoch': clock['epoch'],
+              'expected_utc': clock['started_utc'], 'common_commit': head}
+    output = root / 'integration-artifacts/kernel-diagnostic'
+    output.mkdir(parents=True, exist_ok=True)
+    write(output / 'validation-status.json', record)
+    try:
+        files = {'Image': [], 'kernel.release': []}
+        for name in paths:
+            rel = Path(name)
+            require(not rel.is_absolute() and '..' not in rel.parts, 'Unsafe Bazel output')
+            if rel.name in files and (root / rel).is_file():
+                files[rel.name].append(root / rel)
+        for name, sources in files.items():
+            require(len({sha(p) for p in sources}) == 1, 'Missing/conflicting kernel output: ' + name)
+            shutil.copy2(sources[0], output / name)
+        release = (output / 'kernel.release').read_text().strip()
+        record['kernel_release'] = release
+        record['linux_banners'] = [b.decode('utf-8', 'replace') for b in
+            re.findall(rb'Linux version [^\x00\r\n]{1,1024}', (output / 'Image').read_bytes())]
+        validate_release(release, head)
+        record['linux_banner'] = verify_banner(output / 'Image', release, clock)
+        record['verified'] = True
+    except Exception as error:
+        record['error'] = str(error)
+        raise
+    finally:
+        write(reports / 'kernel-preflight.json', record)
+        write(output / 'validation-status.json', record)
+    return record
 
 
 def main():
@@ -199,6 +255,9 @@ def main():
         commands = {
             'kconfig': bazel + ['build'] + options + ['//vendor/qcom/sm8850:kconfig.msm.generated'],
             'config': bazel + ['build'] + options + ['//vendor/qcom/sm8850:canoe_perf_config'],
+            'kernel': bazel + ['build'] + options + ['//common:kernel_aarch64', '//myron_artifact_metadata:kernel_release'],
+            'kernel_outputs': bazel + ['cquery'] + options + ['--output=files',
+                'deps(set(//common:kernel_aarch64 //myron_artifact_metadata:kernel_release))'],
             'build': bazel + ['build'] + options + targets,
             'outputs': bazel + ['cquery'] + options + ['--output=files', 'deps(set(' + ' '.join(targets) + '))'],
         }
@@ -206,14 +265,21 @@ def main():
         for name in ('kconfig', 'config'):
             logged(commands[name], root, reports / (name + '.log'))
         dt_sandbox.preflight(root, reports, bazel, options)
+        state['phase'] = 'kernel_timestamp_preflight'
+        write(reports / 'build-status.json', state)
+        logged(commands['kernel'], root, reports / 'kernel-build.log')
+        kernel_paths = query_outputs(commands['kernel_outputs'], root, reports, 'kernel-outputs')
+        kernel = check_kernel_before_modules(root, kernel_paths, head, clock, reports)
+        state.update(kernel_compiled=True, kernel_release=kernel['kernel_release'],
+                     linux_banner=kernel['linux_banner'], phase='compile_all_modules')
+        write(reports / 'build-status.json', state)
         logged(commands['build'], root, reports / 'full-build.log')
+        state.update(compiled=True, phase='validate_full_outputs')
         state['compile_elapsed_seconds'] = round(time.monotonic() - compile_start, 3)
-        result = subprocess.run(commands['outputs'], cwd=root, capture_output=True, text=True)
-        (reports / 'outputs.txt').write_text(result.stdout)
-        (reports / 'outputs.log').write_text(result.stderr)
-        require(result.returncode == 0, 'Output enumeration failed')
+        write(reports / 'build-status.json', state)
+        paths = query_outputs(commands['outputs'], root, reports, 'outputs')
         require(check_sources(root, lock) == before, 'Sources changed during compilation')
-        state.update(collect(root, root / 'integration-artifacts/full', result.stdout.splitlines(),
+        state.update(collect(root, root / 'integration-artifacts/full', paths,
                              entry, clock, head))
         state.update(success=True, compiled=True, phase='verified_clean_source_build')
     except Exception as error:
