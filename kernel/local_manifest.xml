@@ -4,7 +4,7 @@
   <project name="yuwenhua653/oppo_oplus_realme_sm8850"
            path="kernel/xiaomi/myron-build"
            remote="myron-source"
-           revision="ff31bb42e8b96c2b6017b1da2ea6841f57488737"
+           revision="eff369c241c9219757bb04f46899d21a5ed14d5c"
            upstream="refs/heads/myron/kernel-6.12"
            clone-depth="1" />
 </manifest>

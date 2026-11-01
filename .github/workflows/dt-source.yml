@@ -60,7 +60,7 @@ jobs:
           MYRON_TEST_FDTOVERLAYMERGE: ${{ github.workspace }}/host-dtc/fdtoverlaymerge
           MYRON_TEST_MKDTBOIMG: ${{ github.workspace }}/host-libufdt/utils/src/mkdtboimg.py
         run: python3 -B kernel/test_source_dt.py
-      - name: Compile only the 27 DT inputs from pinned sources
+      - name: Compile only the 32 DT inputs from pinned sources
         run: python3 -B kernel/compile_dt.py --entry entry --workspace dt-workspace --output dt-compiled --sync
       - name: Audit applicable variants and report blocked IDs
         run: |

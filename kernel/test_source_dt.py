@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
  @unittest.skipUnless(FULL, 'Set MYRON_TEST_FULL to the verified R115 output directory')
  def test_current_source_rejected(self):
   profile=json.loads((P.parent/'dt-profile.json').read_text());files,missing=m.catalog(pathlib.Path(FULL),profile);trees,errors=m.preflight(files,profile,missing)
-  self.assertEqual(missing,['canoe-camera.dtbo']);self.assertTrue(any('gpu_niden_en' in e.get('symbols',[]) for e in errors))
+  self.assertEqual(missing,['canoe-camera.dtbo','canoe-fingerprint.dtbo','canoe-hw-fence.dtbo','canoe-mmrm.dtbo','canoe-smem-mailbox.dtbo','canoe-synx.dtbo']);self.assertTrue(any('gpu_niden_en' in e.get('symbols',[]) for e in errors))
  @unittest.skipUnless(FULL, 'Set MYRON_TEST_FULL to the verified R115 output directory')
  def test_no_stale_images_after_failure(self):
   with tempfile.TemporaryDirectory() as t:

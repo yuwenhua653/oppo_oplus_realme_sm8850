@@ -45,7 +45,9 @@ def main():
             dst = target / 'kernel' / path.name
             if dst.exists() and dst.read_bytes() != path.read_bytes():
                 digest = hashlib.sha256(dst.read_bytes()).hexdigest()
-                if previous.get(path.name) != digest:
+                known = previous.get(path.name, [])
+                known = [known] if isinstance(known, str) else known
+                if digest not in known:
                     sys.exit('Existing adapter differs: ' + str(dst))
             writes[dst] = path.read_bytes()
     android = target / 'Android.mk'

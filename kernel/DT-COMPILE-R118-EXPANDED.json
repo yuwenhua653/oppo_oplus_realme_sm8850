@@ -1,0 +1,261 @@
+{
+  "completed_utc": "2026-11-01T08:30:49Z",
+  "device_tested": false,
+  "dts_commit": "feff8ac781caca95799d642f79a6bfa23a17e639",
+  "entry_commit": "eff369c241c9219757bb04f46899d21a5ed14d5c",
+  "files": [
+    {
+      "bytes": 7718,
+      "file": "canoe-audio.dtbo",
+      "sha256": "3aa478a78328724873222862ffb0d67db30b581f5fc234e0c59356c20991d70a",
+      "source": "qcom/audio/canoe-audio.dts"
+    },
+    {
+      "bytes": 84111,
+      "file": "canoe-camera-v2.dtbo",
+      "sha256": "9f04aebd3b9666745d440a345dbe29462572b0c25dc16c363ba9c2075cf0647e",
+      "source": "qcom/camera/canoe-camera-v2.dts"
+    },
+    {
+      "bytes": 85443,
+      "file": "canoe-camera.dtbo",
+      "sha256": "88f355721aeb1dbb2a07f587f28b99e8ab6aae78a729d4974dc6f075d2854c61",
+      "source": "qcom/camera/canoe-camera.dts"
+    },
+    {
+      "bytes": 9165,
+      "file": "canoe-dsp.dtbo",
+      "sha256": "b0ba1e0e47db5f1f3b33fc6ff043acb778bb61d399c52596e5fec8386e52c64a",
+      "source": "qcom/dsp/canoe/canoe-dsp.dts"
+    },
+    {
+      "bytes": 9843,
+      "file": "canoe-dsp_v2.dtbo",
+      "sha256": "68a7809bc1d876f3e00b9aae7c94c476988c244fefb02da4e46585d0a35e74b2",
+      "source": "qcom/dsp/canoe/canoe-dsp_v2.dts"
+    },
+    {
+      "bytes": 6390,
+      "file": "canoe-eva.dtbo",
+      "sha256": "e0674d71c7f472efa5154bb1f99f3d1b527e14f86cb7d5291f02517574d3aef0",
+      "source": "qcom/eva/canoe-eva.dts"
+    },
+    {
+      "bytes": 870,
+      "file": "canoe-fingerprint.dtbo",
+      "sha256": "a2b116fb0877ee75696410c13c40b3e6ca64db78b7de8f6f6319433b8488c983",
+      "source": "qcom/fingerprint/canoe-fingerprint.dts"
+    },
+    {
+      "bytes": 10066,
+      "file": "canoe-gpu.dtbo",
+      "sha256": "3191ce9d82de41316724272630d23e9a34baf85e185b0853844952dffa174f13",
+      "source": "qcom/graphics/gpu/canoe-gpu.dts"
+    },
+    {
+      "bytes": 2866,
+      "file": "canoe-hfi-core.dtbo",
+      "sha256": "32675728046fe0e6aa194c58bd29218d4f5f1076e1667562074cdf8657e11b3d",
+      "source": "qcom/mm/hfi_core/canoe-hfi-core.dts"
+    },
+    {
+      "bytes": 1427,
+      "file": "canoe-hw-fence.dtbo",
+      "sha256": "5dc26b70ffb798a1c33e869e72dd51e73e455ec40af423684ceb3bfa1e727894",
+      "source": "qcom/mm/hw_fence/canoe-hw-fence.dts"
+    },
+    {
+      "bytes": 6764,
+      "file": "canoe-ipa.dtbo",
+      "sha256": "41cbab7ec52ba5670a703454268a0341be5a35e5e8ab2d516dbc1f6d71d1a13f",
+      "source": "qcom/data/canoe-ipa.dts"
+    },
+    {
+      "bytes": 1604,
+      "file": "canoe-mmrm.dtbo",
+      "sha256": "fc39bb4aaac1b8fe5a96b243323b25eea87858f0ecd9027e3a74fdf391cff5fb",
+      "source": "qcom/mmrm/canoe/canoe-mmrm.dts"
+    },
+    {
+      "bytes": 8913,
+      "file": "canoe-peach-cnss.dtbo",
+      "sha256": "2d213d5a5b3f2a197926cdd6e494292f5007958032f6ac7d9006e551666c94bd",
+      "source": "qcom/wlan/canoe-peach-cnss.dts"
+    },
+    {
+      "bytes": 33732,
+      "file": "canoe-sde.dtbo",
+      "sha256": "552a7751f0f56e0de1d408345d48c4bf2a1cb4ac735a17132318463ecfa3aeef",
+      "source": "qcom/display/display/canoe-sde.dts"
+    },
+    {
+      "bytes": 1162,
+      "file": "canoe-smem-mailbox.dtbo",
+      "sha256": "8c555c3b84f1a788dc86fe87af2c9c9b4dfbe6c3f37e2a8d5e652b6cdd26c24b",
+      "source": "qcom/data/canoe-smem-mailbox.dts"
+    },
+    {
+      "bytes": 9693,
+      "file": "canoe-synx.dtbo",
+      "sha256": "636bffbd2530b0db7c3994e21cf1b2dd1e796754bc1a7fbe8e9f1593edd17662",
+      "source": "qcom/synx/synx/canoe-synx.dts"
+    },
+    {
+      "bytes": 444837,
+      "file": "canoe-tp-v2.dtb",
+      "sha256": "54d192d98ecb3efcf18237a5d0280e9a8afa92d07075e7e0dc421c6921c533a1",
+      "source": "qcom/canoe-tp-v2.dts"
+    },
+    {
+      "bytes": 444382,
+      "file": "canoe-tp.dtb",
+      "sha256": "ccbdab3273acbfff286ec5a3c550ba023c6e909650b22666bdea3597c528e7b6",
+      "source": "qcom/canoe-tp.dts"
+    },
+    {
+      "bytes": 18257,
+      "file": "canoe-v2-gpu.dtbo",
+      "sha256": "b059e858c3944c3d267591b0d937c5f74ae5b2c57150b9bc79d69fe1ff63b35a",
+      "source": "qcom/graphics/gpu/canoe-v2-gpu.dts"
+    },
+    {
+      "bytes": 444823,
+      "file": "canoe-v2.dtb",
+      "sha256": "8dd3cb280b7f537547d8cffb6245b847d73665affa29f24f2ef9a1f787c1b918",
+      "source": "qcom/canoe-v2.dts"
+    },
+    {
+      "bytes": 6359,
+      "file": "canoe-vidc-v2.dtbo",
+      "sha256": "7b3f601dc27e2a262e23bd8860c426e2aaeab34105d7681cbf79d32ef1256938",
+      "source": "qcom/video/canoe-vidc-v2.dts"
+    },
+    {
+      "bytes": 6319,
+      "file": "canoe-vidc.dtbo",
+      "sha256": "47ea6f9f28c65ceaa96a4ec998d9903bca767219645efb83f959ea2e439c15c4",
+      "source": "qcom/video/canoe-vidc.dts"
+    },
+    {
+      "bytes": 4931,
+      "file": "canoe-wcn786x-bt.dtbo",
+      "sha256": "12ad9f0d9cd2a6a53038dab3a6880c7486ca65498c0d27de66ef27f4f0c75c58",
+      "source": "qcom/bt/canoe-wcn786x-bt.dts"
+    },
+    {
+      "bytes": 444362,
+      "file": "canoe.dtb",
+      "sha256": "489235c436ab0e366174ffa81358185a908731ba371e1b2fd56dc0c1cfec14a6",
+      "source": "qcom/canoe.dts"
+    },
+    {
+      "bytes": 444837,
+      "file": "canoep-tp-v2.dtb",
+      "sha256": "f1f9c6795036fd4749a16b3c502dbf8479c1a8475c43f8888a6c1aa86777c8f9",
+      "source": "qcom/canoep-tp-v2.dts"
+    },
+    {
+      "bytes": 444382,
+      "file": "canoep-tp.dtb",
+      "sha256": "9f9ed57bc3063bcd4b6b3520aa05e333b537def5f5e1537ace168cc7ad1877db",
+      "source": "qcom/canoep-tp.dts"
+    },
+    {
+      "bytes": 444823,
+      "file": "canoep-v2.dtb",
+      "sha256": "252215a49329233ca37ae247751306f8b65b737af6418f7beff825c51b8e5591",
+      "source": "qcom/canoep-v2.dts"
+    },
+    {
+      "bytes": 444362,
+      "file": "canoep.dtb",
+      "sha256": "8c5dbd51aafdd66e2de20c9816423cc8151281add18c5688f4ded7867df1373b",
+      "source": "qcom/canoep.dts"
+    },
+    {
+      "bytes": 66084,
+      "file": "myron-audio-mtp.dtbo",
+      "sha256": "6966b541bc6f4ace656612bda51f393e3da068e83652262e2151f92b323def1c",
+      "source": "qcom/audio/myron-audio-mtp.dts"
+    },
+    {
+      "bytes": 317622,
+      "file": "myron-sde-display-mtp-overlay.dtbo",
+      "sha256": "46e7276e80dfc06e0e821da84306b8cb3914c163db85e6c95edbfb47649b7c48",
+      "source": "qcom/display/display/myron-sde-display-mtp-overlay.dts"
+    },
+    {
+      "bytes": 27143,
+      "file": "myron-sm8850-camera-sensor.dtbo",
+      "sha256": "4fb760bc0ae42554bcf1d7a341a4d1bbf64f1dcbdf3b277fc55ecc6a540860ee",
+      "source": "qcom/camera/myron-sm8850-camera-sensor.dts"
+    },
+    {
+      "bytes": 138234,
+      "file": "myron-sm8850-overlay.dtbo",
+      "sha256": "0ab5bc21a50f4de9cdf41668fc792e87d685df4d7e3d92b52a700f001d0433e2",
+      "source": "qcom/myron-sm8850-overlay.dtso"
+    }
+  ],
+  "full_kernel_compiled": false,
+  "kind": "host-dtc-only",
+  "source_lock_sha256": "f00ca779dee516fe9c5a7987060503a3999240b56ae4f55335f91328110f4f7d",
+  "sources": {
+    "common": {
+      "branch": "myron/common-android16-6.12",
+      "commit": "6af5fb53d676bc20d6eaeabe31c1b7418c38a679",
+      "name": "kernel/common",
+      "path": "common",
+      "tree": "fe8aa52dd28945bfc87f7e85285160bbb9e407f9",
+      "upstream": {
+        "commit": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+        "url": "https://android.googlesource.com/kernel/common"
+      },
+      "url": "https://github.com/yuwenhua653/oppo_oplus_realme_sm8850.git"
+    },
+    "vendor/qcom/sm8850": {
+      "branch": "myron/sm8850",
+      "commit": "cba60332e49c0978aa83c8bb77bf157893c14fb6",
+      "path": "vendor/qcom/sm8850",
+      "tree": "647bb24c5fc011e1e38ba38a312f79bdebd8fe91",
+      "upstream": {
+        "commit": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+        "url": "https://github.com/LineageOS/android_kernel_qcom_sm8850.git"
+      },
+      "url": "https://github.com/yuwenhua653/oppo_oplus_realme_sm8850.git"
+    },
+    "vendor/qcom/sm8850-devicetrees": {
+      "branch": "myron/sm8850-devicetrees",
+      "commit": "feff8ac781caca95799d642f79a6bfa23a17e639",
+      "path": "vendor/qcom/sm8850-devicetrees",
+      "tree": "3e4ace11aeedb10d1b50d9f800fa30f0bd774a49",
+      "upstream": {
+        "commit": "928b59fcca6306aaba39343a474dc5930d8f424d",
+        "url": "https://github.com/lolipuru/android_kernel_xiaomi_sm8850-devicetrees.git"
+      },
+      "url": "https://github.com/yuwenhua653/oppo_oplus_realme_sm8850.git"
+    },
+    "vendor/qcom/sm8850-modules": {
+      "branch": "myron/sm8850-modules",
+      "commit": "b2877f865a4fc591ce15223059062dc0162e058b",
+      "path": "vendor/qcom/sm8850-modules",
+      "tree": "a3b2af088858d52acbbf5d20ee2a61ef809c620c",
+      "upstream": {
+        "commit": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+        "url": "https://github.com/LineageOS/android_kernel_qcom_sm8850-modules.git"
+      },
+      "url": "https://github.com/yuwenhua653/oppo_oplus_realme_sm8850.git"
+    }
+  },
+  "started_utc": "2026-11-01T08:30:44Z",
+  "tools": {
+    "dtc": {
+      "sha256": "0ef74efe9f0de6c50a9792050247e55a18e0f674219bd4bb09927cd3c653f388",
+      "version": "Version: DTC 1.7.0"
+    },
+    "x86_64-linux-gnu-cpp-13": {
+      "sha256": "a1d872b2ddb58bfdce21e16e2ecfdf9ca4aec921f7106523101759bfaa913c6f",
+      "version": "x86_64-linux-gnu-cpp-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+    }
+  }
+}
