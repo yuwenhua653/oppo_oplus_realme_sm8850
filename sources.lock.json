@@ -19,7 +19,7 @@
       "source": "build/kernel/kleaf/bzlmod/bazel.WORKSPACE.bzlmod"
     }
   ],
-  "profile": "myron-r115-clean-source",
+  "profile": "myron-r118-dt-source",
   "projects": [
     {
       "commit": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
@@ -351,9 +351,9 @@
     },
     {
       "branch": "myron/sm8850-devicetrees",
-      "commit": "9956353d359e30561eac7d33c71e2ffb1afeb700",
+      "commit": "0d015de10a547545b053acb7df2a097996bf011d",
       "path": "vendor/qcom/sm8850-devicetrees",
-      "tree": "af0e6140dc3f699c44297e41c22d652fcda5f19d",
+      "tree": "831f04f7896f1b78cb9625634cc640d5e2b083bf",
       "upstream": {
         "commit": "928b59fcca6306aaba39343a474dc5930d8f424d",
         "url": "https://github.com/lolipuru/android_kernel_xiaomi_sm8850-devicetrees.git"
