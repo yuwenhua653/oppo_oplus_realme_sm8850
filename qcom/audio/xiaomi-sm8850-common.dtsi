@@ -1,0 +1,5 @@
+#include "canoe-audio-overlay.dtsi"
+
+&cdc_dmic67_gpios {
+	status = "disabled";
+};

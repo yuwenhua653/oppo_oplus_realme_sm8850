@@ -1,0 +1,16 @@
+# ACK kernel_dtstree inputs for the existing fingerprint DTS package.
+# The parent glob cannot cross this Bazel package boundary.
+filegroup(
+    name = "ack_dt_sources",
+    srcs = glob([
+        "**/*.dts",
+        "**/*.dtsi",
+        "**/*.dtso",
+        "**/*.h",
+        "**/*.mk",
+        "**/Kbuild",
+        "**/Makefile",
+        "bindings/**/*",
+    ]),
+    visibility = ["//visibility:public"],
+)

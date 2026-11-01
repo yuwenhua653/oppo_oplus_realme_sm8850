@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "shikra.dtsi"
+#include "shikra-pmic-overlay-pm4125.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. Shikra IQS SoC";
+	compatible = "qcom,shikra-iqs";
+	qcom,msm-id = <759 0x10000>;
+};
