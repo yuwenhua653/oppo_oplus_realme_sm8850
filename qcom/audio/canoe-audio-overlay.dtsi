@@ -12,25 +12,31 @@
 &lpass_cdc {
 
 
-	va_macro: va-macro@7660000 {
+	va-macro@7660000 {
+
+		va_swr_master {
 
 			wcd939x_tx_slave: wcd939x-tx-slave {
 				compatible = "qcom,wcd939x-slave";
 				reg = <0x0E 0x01170223>;
 			};
 
+		};
 	};
 
-	rx_macro: rx-macro@6AC0000 {
+	rx-macro@6AC0000 {
+
+		rx_swr_master {
 
 			wcd939x_rx_slave: wcd939x-rx-slave {
 				compatible = "qcom,wcd939x-slave";
 				reg = <0x0E 0x01170224>;
 			};
 
+		};
 	};
 
-	wsa_macro: wsa-macro@6B00000 {
+	wsa-macro@6B00000 {
 
 		wsa_data_fs_ctl_reg = <0x6B6F000>;
 
@@ -38,6 +44,8 @@
 		qcom,wsa-rloads= <2>, <2>;
 		qcom,wsa-system-gains= <0 9>, <0 9>;
 
+
+		wsa_swr_master {
 
 			wsa884x_0220: wsa884x@02170220 {
 				compatible = "qcom,wsa884x";
@@ -77,15 +85,18 @@
 				sound-name-prefix = "SpkrRight";
 			};
 
+		};
 	};
 
-	wsa2_macro: wsa2-macro@6AA0000 {
+	wsa2-macro@6AA0000 {
 
 		wsa_data_fs_ctl_reg = <0x6B6F000>;
 
 		qcom,wsa-bat-cfgs= <1>, <1>;
 		qcom,wsa-rloads= <2>, <2>;
 		qcom,wsa-system-gains= <0 9>, <0 9>;
+
+		wsa2_swr_master {
 
 			wsa884x_2_0220: wsa884x@02170220 {
 				status = "disabled";
@@ -135,6 +146,7 @@
 				qcom,rx_swr_vi_ch_map = <2 0x02 0x03 1200000 SPKR_L_VI>;
 			};
 
+		};
 	};
 
 	wcd939x_codec: wcd939x-codec {

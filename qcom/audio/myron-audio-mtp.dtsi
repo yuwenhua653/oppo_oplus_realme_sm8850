@@ -40,7 +40,24 @@
 	};
 };
 
+/* Myron uses external TFA amplifiers and WSA2 SoundWire haptics. */
+&wcd939x_codec { status = "disabled"; };
+&wsa_macro { status = "ok"; };
+&swr0 { status = "disabled"; };
+&wsa884x_0220 { status = "disabled"; };
+&wsa884x_0221 { status = "disabled"; };
+&wsa2_macro { status = "ok"; };
+&swr3 { status = "ok"; };
+&swr_haptics { status = "ok"; };
+
 &canoe_snd {
+	qcom,model = "canoe-mtp-snd-card";
+	qcom,tdm-audio-intf = <1>;
+	qcom,wsa-max-devs = <0>;
+	asoc-codec = <&stub_codec>, <&lpass_cdc>,
+		<&wcd939x_codec>, <&swr_haptics>;
+	asoc-codec-names = "msm-stub-codec.1", "lpass-cdc",
+		"wcd939x_codec", "swr-haptics";
 	qcom,audio-routing =
 		"TX DMIC0", "Digital Mic0",
 		"TX DMIC1", "Digital Mic1",

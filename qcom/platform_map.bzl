@@ -143,6 +143,7 @@ _platform_map = {
             {"name": "canoe-rumi-overlay.dtbo"},
             # SoC providers required before the Myron board components.
             {"name": "canoe-audio.dtbo"},
+            {"name": "canoe-camera.dtbo"},
             {"name": "canoe-camera-v2.dtbo"},
             {"name": "canoe-sde.dtbo"},
             {"name": "myron-sm8850-overlay.dtbo"},

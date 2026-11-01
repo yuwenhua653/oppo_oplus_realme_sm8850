@@ -1,57 +1,14 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
-/* Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
- * Selected provider nodes from lpass-cdc-gpio.dtsi at DT commit
- * 8b86fedda64183338411f9751f5e62ce25997620, with Myron status values.
- * Keep reference-board codec, amplifier and routing policy out of this layer.
- */
+/* Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. */
 
-&spf_core_platform {
-	wcd939x_rst_gpio: msm_cdc_pinctrl@32 {
-		status = "disabled";
-		compatible = "qcom,msm-cdc-pinctrl";
-		pinctrl-names = "aud_active", "aud_sleep";
-		pinctrl-0 = <&wcd939x_reset_active>;
-		pinctrl-1 = <&wcd939x_reset_sleep>;
-	};
+/* Common LPASS hardware providers; board routing stays in Myron's layer. */
+#include "lpass-audio-cdc-1.0.dtsi"
+#include "lpass-audio-bt-swr.dtsi"
+#include "lpass-cdc-gpio.dtsi"
+#include "canoe-audio-lpass-reg.dtsi"
 
-	cdc_dmic01_gpios: cdc_dmic01_pinctrl {
-		status = "ok";
-		compatible = "qcom,msm-cdc-pinctrl";
-		pinctrl-names = "aud_active", "aud_sleep";
-		pinctrl-0 = <&lpi_dmic0_clk_active &lpi_dmic0_data_active>;
-		pinctrl-1 = <&lpi_dmic0_clk_sleep &lpi_dmic0_data_sleep>;
-		qcom,lpi-gpios;
-		#gpio-cells = <0>;
-	};
-
-	cdc_dmic23_gpios: cdc_dmic23_pinctrl {
-		status = "ok";
-		compatible = "qcom,msm-cdc-pinctrl";
-		pinctrl-names = "aud_active", "aud_sleep";
-		pinctrl-0 = <&lpi_dmic1_clk_active &lpi_dmic1_data_active>;
-		pinctrl-1 = <&lpi_dmic1_clk_sleep &lpi_dmic1_data_sleep>;
-		qcom,lpi-gpios;
-		#gpio-cells = <0>;
-	};
-
-	cdc_dmic45_gpios: cdc_dmic45_pinctrl {
-		status = "ok";
-		compatible = "qcom,msm-cdc-pinctrl";
-		pinctrl-names = "aud_active", "aud_sleep";
-		pinctrl-0 = <&lpi_dmic2_clk_active &lpi_dmic2_data_active>;
-		pinctrl-1 = <&lpi_dmic2_clk_sleep &lpi_dmic2_data_sleep>;
-		qcom,lpi-gpios;
-		#gpio-cells = <0>;
-	};
-
-	cdc_dmic67_gpios: cdc_dmic67_pinctrl {
-		status = "disabled";
-		compatible = "qcom,msm-cdc-pinctrl";
-		pinctrl-names = "aud_active", "aud_sleep";
-		pinctrl-0 = <&lpi_dmic3_clk_active &lpi_dmic3_data_active>;
-		pinctrl-1 = <&lpi_dmic3_clk_sleep &lpi_dmic3_data_sleep>;
-		qcom,lpi-gpios;
-		#gpio-cells = <0>;
-	};
-
-};
+&wcd939x_rst_gpio { status = "disabled"; };
+&cdc_dmic01_gpios { status = "ok"; };
+&cdc_dmic23_gpios { status = "ok"; };
+&cdc_dmic45_gpios { status = "ok"; };
+&cdc_dmic67_gpios { status = "disabled"; };
