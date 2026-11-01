@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="myron-source" fetch="https://github.com/" />
+  <project name="yuwenhua653/oppo_oplus_realme_sm8850"
+           path="kernel/xiaomi/myron-build"
+           remote="myron-source"
+           revision="35b9d149db371891a6045397eeabd7fcaabd3b52"
+           upstream="refs/heads/myron/kernel-6.12"
+           clone-depth="1" />
+</manifest>

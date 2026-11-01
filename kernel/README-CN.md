@@ -1,0 +1,91 @@
+# 红米 K90PM（myron）ROM 内核源码编译接入
+
+本改动基于 Evolution X `cnb` 的 myron `941665af189930742a02deb258583ec697a7e8ec`，
+配合原 `sm8850-common` `98310d6cb945d6ca3d76a8bf2932dc83b0f65b0a`。
+只增加 myron 设备层构建规则，common、vendor/lineage、build/make、平台策略均不修改。
+
+ROM 的 `kernel`、模块打包和镜像目标现在依赖 `kernel/build.mk` 中的源码构建规则。
+该规则调用已成功完整编译的 `myron/kernel-6.12` 入口，锁定提交
+`35b9d149db371891a6045397eeabd7fcaabd3b52`，使用其 53 项精确依赖和 54 项 Kleaf 目标。
+没有复制下载的 Image，没有使用旧 `.ko`，没有在 ROM 内再次执行内核源码迁移补丁。
+
+`TARGET_NO_KERNEL_OVERRIDE=true` 用于关闭进化 X 的旧 make/defconfig 构建器，
+内核编译由本设备 Android.mk 接管。`MYRON_KERNEL_SOURCE` 是实际 ACK 源码目录。
+`TARGET_KERNEL_SOURCE` 在这个配置下仅供现有 `generated_kernel_headers` 使用，
+继续指向原 Qualcomm 用户空间 UAPI 导出目录；它不决定 Image/模块的来源。
+
+## 接入现有 ROM 源码
+
+已有 SELinux、Recovery、相机等改动时，使用独立目录中的本设备分支合并，避免替换整个设备树：
+
+```sh
+git clone --single-branch --branch myron/device-cnb-source \
+  https://github.com/yuwenhua653/oppo_oplus_realme_sm8850.git /tmp/myron-source-adapter
+python3 /tmp/myron-source-adapter/kernel/apply_source_build.py /你的/evo/源码目录
+python3 /tmp/myron-source-adapter/kernel/apply_source_build.py /你的/evo/源码目录 --apply
+```
+
+合并脚本保留原 BoardConfig 中内核块以外的内容及全部 sepolicy 文件。
+内核块本身存在额外本地改动时会停止并显示原因，不会强制覆盖。
+重复应用不产生修改。完整设备分支也可以用于全新 checkout，但它不包含你本地额外的策略改动。
+
+在 ROM 根目录拉取编译入口。已有 `kernel/xiaomi/myron-build` 项目时，修改现有 manifest 的
+revision 为上述提交，不要再增加同路径项目；尚不存在时：
+
+```sh
+mkdir -p .repo/local_manifests
+cp device/xiaomi/myron/kernel/local_manifest.xml .repo/local_manifests/myron-source.xml
+repo sync -c kernel/xiaomi/myron-build
+```
+
+保留 `kernel/xiaomi/myron-prebuilt` 依赖：目前仅使用其中 OEM DTB/DTBO 和既有 UAPI 头文件。
+其原 `kernel`、`vendor_dlkm/*.ko`、`vendor_ramdisk/*.ko`、`system_dlkm/*.ko` 已不再作为构建输入。
+本轮检查的 OEM 仓库提交是 `9999f765b53876bf7a013a4fde5221153ad570fc`。
+
+第一次切换请用新 OUT_DIR，避免旧预编译模块和旧版本目录残留到增量输出：
+
+```sh
+export OUT_DIR=out-myron-source
+python3 -B device/xiaomi/myron/kernel/rom_kernel.py prepare \
+  --workspace "$OUT_DIR/target/product/myron/obj/MYRON_KERNEL/workspace" --jobs 4
+source build/envsetup.sh
+# 使用你当前 cnb checkout 已正常使用的 lineage_myron lunch 组合。
+# lunch ...
+m kernel
+# 或执行平时的 ROM 打包目标；它同样会先构建内核和模块。
+```
+
+`prepare` 只同步并检查源码、工具链，不编译内核。后续 `m` 自动编译。
+可通过构建参数 `MYRON_KERNEL_JOBS=4 MYRON_KERNEL_RAM_MB=16000` 调整资源；
+默认 2 个任务 / 10000 MB。宿主为 x86-64 Ubuntu，内核工作区至少预留 100 GB，
+完整 ROM 另需其正常磁盘和内存空间。内核工具链与 ROM 用户空间 Clang 独立，均按原有配置使用。
+
+## 模块与增量检查
+
+`modules.json` 固定 297 个源码模块提供者，明确选择 ACK 的 zram/zsmalloc，
+不选择同名 Qualcomm 参考实现。Android 使用标准模块规则生成 depmod 和加载清单：
+
+- system_dlkm：3 个 GKI 模块，保留签名；vendor_dlkm：294 个模块。
+- vendor ramdisk 与 Recovery：234 个模块，加载清单分别为 114 / 234 项。
+- vendor 常规加载清单：225 项；诊断用 readonly 模块随产物保留但不主动加载。
+
+加载清单以公开 OEM 清单和源码模块依赖构建，去重并补齐依赖；源触摸、背光和对应音频提供者
+使用实际源码模块名。没有可用且已选定源码提供者的 OEM 条目在 JSON 中逐项列出，
+不会偷偷回填旧版本模块。这里没有宣称每个被排除模块都不影响功能。
+
+每次构建检查入口提交、53 个源码仓库是否干净、全部输出哈希、vermagic、依赖清单、
+内核与模块符号 CRC。改动源码必须先提交并更新 lock；依赖变化需复审并更新模块目录。
+未改动且已验证的源码编译结果会复用；缺失或被篡改的缓存停止，不降级使用旧内核。
+版本来自真实 common 提交，时间来自实际构建开始时间，保留表示 4 KiB 页的 `-4k`。
+
+## 当前验证与边界
+
+已用成功的 R115 完整编译产物运行适配器：297 个模块、18,543 项导入 CRC 检查通过。
+另用实际 Kati/Ninja 和当前进化 X 模块规则验证干净输出目录的内核及四组模块依赖图。
+这不是完整 Soong/ROM 构建；本轮没有生成新的 ROM，也没有新真机测试。
+
+尤其：本次设备构建规则不是 R115 三镜像包的源码复现。R115 的定制早期加载器、
+DSP/VPP/ready broker、Recovery 独立运行时尚未全部整理进公开设备树；本次不会移植或覆盖它们。
+已有 R113 设备策略保留，但不能据此宣称完整 R110/R115 行为已在 ROM 源码中复现。
+首次源码 ROM 的模块加载时序、快充、DSP/相机、Recovery 等仍须完整编译和真机回归。
+不要将生成的单独 boot 或 dlkm 与旧版模块分开刷入；先完成匹配整包验证。

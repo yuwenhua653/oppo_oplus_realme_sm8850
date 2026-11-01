@@ -1,0 +1,4335 @@
+{
+  "schema": 1,
+  "entry_commit": "35b9d149db371891a6045397eeabd7fcaabd3b52",
+  "upstream_myron": "941665af189930742a02deb258583ec697a7e8ec",
+  "upstream_common": "98310d6cb945d6ca3d76a8bf2932dc83b0f65b0a",
+  "stock_commit": "9999f765b53876bf7a013a4fde5221153ad570fc",
+  "modules": {
+    "adsp_loader_dlkm": {
+      "file": "adsp_loader_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_adsp_loader_dlkm/adsp_loader_dlkm.ko",
+      "depends": [
+        "rproc_qcom_common",
+        "spf_core_dlkm"
+      ],
+      "gki": false
+    },
+    "altmode_glink": {
+      "file": "altmode-glink.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/altmode-glink/altmode-glink.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "qti_pmic_glink"
+      ],
+      "gki": false
+    },
+    "arm_smmu": {
+      "file": "arm_smmu.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/iommu/arm/arm-smmu/arm_smmu/arm_smmu.ko",
+      "depends": [
+        "iommu_logger",
+        "qcom_iommu_util",
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "arm_smmu_pmu": {
+      "file": "arm_smmu_pmu.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/perf/arm_smmu_pmu/arm_smmu_pmu.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "audio_pkt_dlkm": {
+      "file": "audio_pkt_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_audio_pkt_dlkm/audio_pkt_dlkm.ko",
+      "depends": [
+        "audpkt_ion_dlkm",
+        "gpr_dlkm",
+        "qcom_ipc_logging",
+        "spf_core_dlkm"
+      ],
+      "gki": false
+    },
+    "audio_prm_dlkm": {
+      "file": "audio_prm_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_audio_prm_dlkm/audio_prm_dlkm.ko",
+      "depends": [
+        "gpr_dlkm",
+        "q6_notifier_dlkm",
+        "spf_core_dlkm"
+      ],
+      "gki": false
+    },
+    "audpkt_ion_dlkm": {
+      "file": "audpkt_ion_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_audpkt_ion_dlkm/audpkt_ion_dlkm.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "bcl_pmic5": {
+      "file": "bcl_pmic5.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/thermal/qcom/bcl_pmic5/bcl_pmic5.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "bq27z561": {
+      "file": "bq27z561.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561/bq27z561.ko",
+      "depends": [
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_fg_ic_ops",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "bt_fm_swr": {
+      "file": "bt_fm_swr.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/bt-kernel/canoe_perf_bt_fm_swr/bt_fm_swr.ko",
+      "depends": [
+        "btfmcodec",
+        "btpower",
+        "swr_dlkm"
+      ],
+      "gki": false
+    },
+    "btfmcodec": {
+      "file": "btfmcodec.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/bt-kernel/canoe_perf_btfmcodec/btfmcodec.ko",
+      "depends": [
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "btpower": {
+      "file": "btpower.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/bt-kernel/canoe_perf_btpower/btpower.ko",
+      "depends": [
+        "cnss_utils",
+        "pinctrl_msm",
+        "qcom_aoss",
+        "rfkill"
+      ],
+      "gki": false
+    },
+    "cambistmclkcc_canoe": {
+      "file": "cambistmclkcc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/cambistmclkcc-canoe/cambistmclkcc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "camcc_alor": {
+      "file": "camcc-alor.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/camcc-alor/camcc-alor.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "camcc_canoe": {
+      "file": "camcc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/camcc-canoe/camcc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "camera": {
+      "file": "camera.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/camera-kernel/canoe_perf_camera/camera.ko",
+      "depends": [
+        "clk_qcom",
+        "crm_v2",
+        "leds_qcom_flash",
+        "llcc_qcom",
+        "mdt_loader",
+        "mem_buf_dev",
+        "msm_mmrm",
+        "qcom_iommu_util",
+        "qcom_rpmh",
+        "qcom_scm",
+        "qcom_spmi_wled",
+        "qcom_va_minidump",
+        "smcinvoke_dlkm",
+        "smmu_proxy_dlkm",
+        "socinfo",
+        "synx_driver"
+      ],
+      "gki": false
+    },
+    "cfg80211": {
+      "file": "cfg80211.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/net/wireless/cfg80211/cfg80211.ko",
+      "depends": [
+        "rfkill"
+      ],
+      "gki": false
+    },
+    "charger_partition": {
+      "file": "charger_partition.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_shared_memory/charger_partition/charger_partition.ko",
+      "depends": [
+        "mca_event",
+        "mca_log",
+        "mca_strategy_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "clk_dummy": {
+      "file": "clk-dummy.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/clk-dummy/clk-dummy.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "clk_qcom": {
+      "file": "clk-qcom.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/clk-qcom/clk-qcom.ko",
+      "depends": [
+        "crm_v2",
+        "gdsc_regulator",
+        "icc_clk",
+        "minidump"
+      ],
+      "gki": false
+    },
+    "clk_rpmh": {
+      "file": "clk-rpmh.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/clk-rpmh/clk-rpmh.ko",
+      "depends": [
+        "clk_qcom",
+        "cmd_db",
+        "qcom_rpmh"
+      ],
+      "gki": false
+    },
+    "clk_scmi": {
+      "file": "clk-scmi.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/clk-scmi/clk-scmi.ko",
+      "depends": [],
+      "gki": false
+    },
+    "cmd_db": {
+      "file": "cmd-db.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/cmd-db/cmd-db.ko",
+      "depends": [],
+      "gki": false
+    },
+    "cnss2": {
+      "file": "cnss2.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/canoe_perf_cnss2/cnss2.ko",
+      "depends": [
+        "cmd_db",
+        "cnss_plat_ipc_qmi_svc",
+        "cnss_prealloc",
+        "cnss_utils",
+        "hwid",
+        "memory_dump_v2",
+        "mhi",
+        "minidump",
+        "pci_msm_drv",
+        "pinctrl_msm",
+        "qcom_aoss",
+        "qcom_ipc_logging",
+        "qcom_ramdump",
+        "qmi_helpers",
+        "smem",
+        "wlan_firmware_service"
+      ],
+      "gki": false
+    },
+    "cnss_nl": {
+      "file": "cnss_nl.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/canoe_perf_cnss_nl/cnss_nl.ko",
+      "depends": [],
+      "gki": false
+    },
+    "cnss_plat_ipc_qmi_svc": {
+      "file": "cnss_plat_ipc_qmi_svc.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/canoe_perf_cnss_plat_ipc_qmi_svc/cnss_plat_ipc_qmi_svc.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "qmi_helpers"
+      ],
+      "gki": false
+    },
+    "cnss_prealloc": {
+      "file": "cnss_prealloc.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/canoe_perf_cnss_prealloc/cnss_prealloc.ko",
+      "depends": [],
+      "gki": false
+    },
+    "cnss_utils": {
+      "file": "cnss_utils.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/canoe_perf_cnss_utils/cnss_utils.ko",
+      "depends": [
+        "smem_mailbox"
+      ],
+      "gki": false
+    },
+    "coresight": {
+      "file": "coresight.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/hwtracing/coresight/coresight/coresight.ko",
+      "depends": [],
+      "gki": false
+    },
+    "cpu_hotplug": {
+      "file": "cpu_hotplug.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/thermal/qcom/cpu_hotplug/cpu_hotplug.ko",
+      "depends": [],
+      "gki": false
+    },
+    "cpu_phys_log_map": {
+      "file": "cpu_phys_log_map.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/cpu_phys_log_map/cpu_phys_log_map.ko",
+      "depends": [],
+      "gki": false
+    },
+    "cpucp_fast": {
+      "file": "cpucp_fast.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/cpucp_fast/cpucp_fast.ko",
+      "depends": [
+        "cpu_phys_log_map",
+        "qcom_scmi_client",
+        "sched_walt"
+      ],
+      "gki": false
+    },
+    "cqhci": {
+      "file": "cqhci.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/mmc/host/cqhci/cqhci.ko",
+      "depends": [],
+      "gki": false
+    },
+    "crm_v2": {
+      "file": "crm-v2.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/crm-v2/crm-v2.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "dcvs_fp": {
+      "file": "dcvs_fp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/dcvs/dcvs_fp/dcvs_fp.ko",
+      "depends": [
+        "cmd_db",
+        "qcom_rpmh"
+      ],
+      "gki": false
+    },
+    "debug_regulator": {
+      "file": "debug-regulator.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/regulator/debug-regulator/debug-regulator.ko",
+      "depends": [],
+      "gki": false
+    },
+    "debug_symbol": {
+      "file": "debug_symbol.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/debug_symbol/debug_symbol.ko",
+      "depends": [],
+      "gki": false
+    },
+    "debugcc_canoe": {
+      "file": "debugcc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/debugcc-canoe/debugcc-canoe.ko",
+      "depends": [
+        "clk_dummy",
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "deferred_free_helper": {
+      "file": "deferred-free-helper.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/dma-buf/heaps/deferred-free-helper/deferred-free-helper.ko",
+      "depends": [],
+      "gki": false
+    },
+    "dispcc_canoe": {
+      "file": "dispcc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/dispcc-canoe/dispcc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "drm_display_helper": {
+      "file": "drm_display_helper.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/gpu/drm/display/drm_display_helper/drm_display_helper.ko",
+      "depends": [],
+      "gki": false
+    },
+    "dwc3_msm": {
+      "file": "dwc3-msm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/dwc3/dwc3-msm/dwc3-msm.ko",
+      "depends": [
+        "clk_qcom",
+        "qcom_ipc_logging",
+        "redriver",
+        "repeater",
+        "wcd_usbss_i2c"
+      ],
+      "gki": false
+    },
+    "eom_driver": {
+      "file": "eom_driver.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/eom/eom_driver/eom_driver.ko",
+      "depends": [],
+      "gki": false
+    },
+    "eud": {
+      "file": "eud.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/eud/eud.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "evacc_canoe": {
+      "file": "evacc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/evacc-canoe/evacc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "focaltech_myron": {
+      "file": "focaltech_myron.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/input/touchscreen/myron/focaltech_myron/focaltech_myron.ko",
+      "depends": [],
+      "gki": false
+    },
+    "frpc_adsprpc": {
+      "file": "frpc-adsprpc.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/dsp-kernel/canoe_perf_frpc-adsprpc/frpc-adsprpc.ko",
+      "depends": [
+        "mem_buf_dev",
+        "pdr_interface",
+        "qcom_glink",
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "fsa4480_i2c": {
+      "file": "fsa4480_i2c.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/fsa4480_i2c/fsa4480_i2c.ko",
+      "depends": [
+        "qti_regmap_debugfs"
+      ],
+      "gki": false
+    },
+    "gcc_alor": {
+      "file": "gcc-alor.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/gcc-alor/gcc-alor.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "gcc_canoe": {
+      "file": "gcc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/gcc-canoe/gcc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "gdsc_regulator": {
+      "file": "gdsc-regulator.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/gdsc-regulator/gdsc-regulator.ko",
+      "depends": [
+        "debug_regulator",
+        "proxy_consumer"
+      ],
+      "gki": false
+    },
+    "gh_arm_drv": {
+      "file": "gh_arm_drv.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/arch/arm64/gunyah/gh_arm_drv/gh_arm_drv.ko",
+      "depends": [],
+      "gki": false
+    },
+    "gh_dbl": {
+      "file": "gh_dbl.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/virt/gunyah/gh_dbl/gh_dbl.ko",
+      "depends": [],
+      "gki": false
+    },
+    "gh_irq_lend": {
+      "file": "gh_irq_lend.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/virt/gunyah/gh_irq_lend/gh_irq_lend.ko",
+      "depends": [
+        "gh_rm_drv"
+      ],
+      "gki": false
+    },
+    "gh_mem_notifier": {
+      "file": "gh_mem_notifier.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/virt/gunyah/gh_mem_notifier/gh_mem_notifier.ko",
+      "depends": [
+        "gh_rm_drv"
+      ],
+      "gki": false
+    },
+    "gh_msgq": {
+      "file": "gh_msgq.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/virt/gunyah/gh_msgq/gh_msgq.ko",
+      "depends": [],
+      "gki": false
+    },
+    "gh_rm_drv": {
+      "file": "gh_rm_drv.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/virt/gunyah/gh_rm_drv/gh_rm_drv.ko",
+      "depends": [
+        "gh_arm_drv",
+        "gh_dbl",
+        "gh_msgq",
+        "qcom_scm",
+        "secure_buffer"
+      ],
+      "gki": false
+    },
+    "gh_rm_heap_manager": {
+      "file": "gh_rm_heap_manager.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/virt/gunyah/gh_rm_heap_manager/gh_rm_heap_manager.ko",
+      "depends": [
+        "gh_rm_drv",
+        "mem_prot"
+      ],
+      "gki": false
+    },
+    "gh_vcpu_mgr": {
+      "file": "gh_vcpu_mgr.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/virt/gunyah/gh_vcpu_mgr/gh_vcpu_mgr.ko",
+      "depends": [
+        "gh_rm_drv"
+      ],
+      "gki": false
+    },
+    "gic_intr_routing": {
+      "file": "gic_intr_routing.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/gic_intr_routing/gic_intr_routing.ko",
+      "depends": [
+        "cpu_phys_log_map",
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "glink_pkt": {
+      "file": "glink_pkt.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/rpmsg/glink_pkt/glink_pkt.ko",
+      "depends": [
+        "qcom_glink",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "governor_gpubw_mon": {
+      "file": "governor_gpubw_mon.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/devfreq/governor_gpubw_mon/governor_gpubw_mon.ko",
+      "depends": [],
+      "gki": false
+    },
+    "governor_msm_adreno_ro": {
+      "file": "governor_msm_adreno_ro.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/devfreq/governor_msm_adreno_ro/governor_msm_adreno_ro.ko",
+      "depends": [],
+      "gki": false
+    },
+    "governor_msm_adreno_tz": {
+      "file": "governor_msm_adreno_tz.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/devfreq/governor_msm_adreno_tz/governor_msm_adreno_tz.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "gpr_dlkm": {
+      "file": "gpr_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_gpr_dlkm/gpr_dlkm.ko",
+      "depends": [
+        "q6_notifier_dlkm",
+        "snd_event_dlkm"
+      ],
+      "gki": false
+    },
+    "gpucc_canoe": {
+      "file": "gpucc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/gpucc-canoe/gpucc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "gsim": {
+      "file": "gsim.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/dataipa/canoe_perf_gsim/gsim.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "qcom_va_minidump"
+      ],
+      "gki": false
+    },
+    "hdcp_qseecom_dlkm": {
+      "file": "hdcp_qseecom_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/securemsm-kernel/canoe_perf_hdcp_qseecom_dlkm/hdcp_qseecom_dlkm.ko",
+      "depends": [
+        "qcom_scm",
+        "qseecom_proxy",
+        "smcinvoke_dlkm"
+      ],
+      "gki": false
+    },
+    "hdmi_dlkm": {
+      "file": "hdmi_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_hdmi_dlkm/hdmi_dlkm.ko",
+      "depends": [
+        "msm_ext_display"
+      ],
+      "gki": false
+    },
+    "hwid": {
+      "file": "hwid.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/misc/hwid/hwid/hwid.ko",
+      "depends": [
+        "socinfo"
+      ],
+      "gki": false
+    },
+    "i2c_msm_geni": {
+      "file": "i2c-msm-geni.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/i2c/busses/i2c-msm-geni/i2c-msm-geni.ko",
+      "depends": [
+        "msm_gpi",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "icc_bcm_voter": {
+      "file": "icc-bcm-voter.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/interconnect/qcom/icc-bcm-voter/icc-bcm-voter.ko",
+      "depends": [
+        "crm_v2",
+        "qcom_rpmh"
+      ],
+      "gki": false
+    },
+    "icc_clk": {
+      "file": "icc-clk.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/interconnect/icc-clk/icc-clk.ko",
+      "depends": [],
+      "gki": false
+    },
+    "icc_debug": {
+      "file": "icc-debug.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/interconnect/qcom/icc-debug/icc-debug.ko",
+      "depends": [],
+      "gki": false
+    },
+    "icc_rpmh": {
+      "file": "icc-rpmh.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/interconnect/qcom/icc-rpmh/icc-rpmh.ko",
+      "depends": [
+        "cmd_db",
+        "icc_bcm_voter",
+        "icc_debug",
+        "socinfo"
+      ],
+      "gki": false
+    },
+    "iommu_logger": {
+      "file": "iommu-logger.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/iommu/iommu-logger/iommu-logger.ko",
+      "depends": [],
+      "gki": false
+    },
+    "ipam": {
+      "file": "ipam.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/dataipa/canoe_perf_ipam/ipam.ko",
+      "depends": [
+        "gsim",
+        "mdt_loader",
+        "qcom_aoss",
+        "qcom_iommu_util",
+        "qcom_ipc_logging",
+        "qcom_ramdump",
+        "qcom_scm",
+        "qcom_va_minidump",
+        "qmi_helpers",
+        "rmnet_mem",
+        "rproc_qcom_common",
+        "smem",
+        "usb_f_gsi"
+      ],
+      "gki": false
+    },
+    "ipclite": {
+      "file": "ipclite.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/synx-kernel/canoe_perf_ipclite_synx/ipclite.ko",
+      "depends": [],
+      "gki": false
+    },
+    "leds_qcom_flash": {
+      "file": "leds-qcom-flash.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/leds/flash/leds-qcom-flash/leds-qcom-flash.ko",
+      "depends": [
+        "qti_battery_charger"
+      ],
+      "gki": false
+    },
+    "llcc_qcom": {
+      "file": "llcc-qcom.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/llcc-qcom/llcc-qcom.ko",
+      "depends": [
+        "socinfo"
+      ],
+      "gki": false
+    },
+    "lpass_bt_swr_dlkm": {
+      "file": "lpass_bt_swr_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_lpass_bt_swr_dlkm/lpass_bt_swr_dlkm.ko",
+      "depends": [
+        "snd_event_dlkm",
+        "spf_core_dlkm",
+        "swr_ctrl_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "lpass_cdc_dlkm": {
+      "file": "lpass_cdc_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_lpass_cdc_dlkm/lpass_cdc_dlkm.ko",
+      "depends": [
+        "qti_regmap_debugfs",
+        "snd_event_dlkm",
+        "spf_core_dlkm"
+      ],
+      "gki": false
+    },
+    "lpass_cdc_rx_macro_dlkm": {
+      "file": "lpass_cdc_rx_macro_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_lpass_cdc_rx_macro_dlkm/lpass_cdc_rx_macro_dlkm.ko",
+      "depends": [
+        "lpass_cdc_dlkm",
+        "swr_ctrl_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "lpass_cdc_tx_macro_dlkm": {
+      "file": "lpass_cdc_tx_macro_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_lpass_cdc_tx_macro_dlkm/lpass_cdc_tx_macro_dlkm.ko",
+      "depends": [
+        "lpass_cdc_dlkm"
+      ],
+      "gki": false
+    },
+    "lpass_cdc_va_macro_dlkm": {
+      "file": "lpass_cdc_va_macro_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_lpass_cdc_va_macro_dlkm/lpass_cdc_va_macro_dlkm.ko",
+      "depends": [
+        "lpass_cdc_dlkm",
+        "swr_ctrl_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "lpass_cdc_wsa2_macro_dlkm": {
+      "file": "lpass_cdc_wsa2_macro_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_lpass_cdc_wsa2_macro_dlkm/lpass_cdc_wsa2_macro_dlkm.ko",
+      "depends": [
+        "lpass_cdc_dlkm",
+        "swr_ctrl_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "lpass_cdc_wsa_macro_dlkm": {
+      "file": "lpass_cdc_wsa_macro_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_lpass_cdc_wsa_macro_dlkm/lpass_cdc_wsa_macro_dlkm.ko",
+      "depends": [
+        "lpass_cdc_dlkm",
+        "swr_ctrl_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "machine_dlkm": {
+      "file": "machine_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_machine_dlkm/machine_dlkm.ko",
+      "depends": [
+        "audio_prm_dlkm",
+        "fsa4480_i2c",
+        "lpass_cdc_dlkm",
+        "lpass_cdc_rx_macro_dlkm",
+        "snd_event_dlkm",
+        "socinfo",
+        "spf_core_dlkm",
+        "wcd9378_dlkm",
+        "wcd937x_dlkm",
+        "wcd939x_dlkm",
+        "wcd_core_dlkm",
+        "wcd_usbss_i2c",
+        "wsa883x_dlkm",
+        "wsa884x_dlkm"
+      ],
+      "gki": false
+    },
+    "mbhc_dlkm": {
+      "file": "mbhc_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_mbhc_dlkm/mbhc_dlkm.ko",
+      "depends": [
+        "fsa4480_i2c",
+        "wcd_usbss_i2c"
+      ],
+      "gki": false
+    },
+    "mca_adsp_glink": {
+      "file": "mca_adsp_glink.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_adsp_glink/mca_adsp_glink.ko",
+      "depends": [
+        "mca_log",
+        "qti_pmic_glink"
+      ],
+      "gki": false
+    },
+    "mca_basic_wireless": {
+      "file": "mca_basic_wireless.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless/mca_basic_wireless.ko",
+      "depends": [
+        "mca_charge_interface",
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_loadsw_class",
+        "mca_platform_wireless_class",
+        "mca_protocol_pd_class",
+        "mca_smart_charge",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs",
+        "mca_voter",
+        "mca_wireless_revchg",
+        "mca_workqueue"
+      ],
+      "gki": false
+    },
+    "mca_bmd": {
+      "file": "mca_bmd.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_bmd/mca_bmd.ko",
+      "depends": [
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_wireless_class",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_buckchg_jeita": {
+      "file": "mca_buckchg_jeita.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita/mca_buckchg_jeita.ko",
+      "depends": [
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_fg_ic_ops",
+        "mca_platform_loadsw_class",
+        "mca_smart_charge",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_voter"
+      ],
+      "gki": false
+    },
+    "mca_business_battery_comp": {
+      "file": "mca_business_battery_comp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_business/business_battery/mca_business_battery_comp/mca_business_battery_comp.ko",
+      "depends": [
+        "mca_event",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_strategy_fg_class",
+        "mca_voter"
+      ],
+      "gki": false
+    },
+    "mca_business_charger_comp": {
+      "file": "mca_business_charger_comp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_business/business_charger/mca_business_charger_comp/mca_business_charger_comp.ko",
+      "depends": [
+        "charger_partition",
+        "fsa4480_i2c",
+        "mca_charge_mievent",
+        "mca_connector_antiburn",
+        "mca_event",
+        "mca_log",
+        "mca_lpd_detect",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_wireless_class",
+        "mca_protocol_class",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs",
+        "mca_wireless_revchg"
+      ],
+      "gki": false
+    },
+    "mca_charge_interface": {
+      "file": "mca_charge_interface.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_charge_interface/mca_charge_interface.ko",
+      "depends": [
+        "mca_event",
+        "mca_log",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_charge_mievent": {
+      "file": "mca_charge_mievent.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_charge_mievent/mca_charge_mievent.ko",
+      "depends": [
+        "mca_event",
+        "mca_log",
+        "miev"
+      ],
+      "gki": false
+    },
+    "mca_charger_thermal": {
+      "file": "mca_charger_thermal.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal/mca_charger_thermal.ko",
+      "depends": [
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_fg_ic_ops",
+        "mca_protocol_class",
+        "mca_qcom_smem",
+        "mca_smart_charge",
+        "mca_strategy_class",
+        "mca_sysfs",
+        "mca_voter"
+      ],
+      "gki": false
+    },
+    "mca_connector_antiburn": {
+      "file": "mca_connector_antiburn.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_connector_antiburn/mca_connector_antiburn.ko",
+      "depends": [
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_protocol_class",
+        "mca_protocol_pd_class",
+        "mca_sysfs",
+        "mca_workqueue"
+      ],
+      "gki": false
+    },
+    "mca_event": {
+      "file": "mca_event.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_event/mca_event.ko",
+      "depends": [
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_hwid": {
+      "file": "mca_hwid.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_hwid/mca_hwid.ko",
+      "depends": [
+        "hwid",
+        "mca_log"
+      ],
+      "gki": false
+    },
+    "mca_ibat_ocp_monitor": {
+      "file": "mca_ibat_ocp_monitor.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_ibat_ocp_monitor/mca_ibat_ocp_monitor.ko",
+      "depends": [
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_fg_ic_ops",
+        "mca_platform_loadsw_class",
+        "mca_platform_wireless_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_log": {
+      "file": "mca_log.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_log/mca_log.ko",
+      "depends": [
+        "mca_event",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_lpd_detect": {
+      "file": "mca_lpd_detect.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_lpd_detect/mca_lpd_detect.ko",
+      "depends": [
+        "mca_log",
+        "mca_platform_buckchg_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_parse_dts": {
+      "file": "mca_parse_dts.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_parse_dts/mca_parse_dts.ko",
+      "depends": [
+        "mca_log"
+      ],
+      "gki": false
+    },
+    "mca_path_control": {
+      "file": "mca_path_control.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_path_control/mca_path_control.ko",
+      "depends": [
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_wireless_class",
+        "mca_sysfs",
+        "mca_wireless_revchg"
+      ],
+      "gki": false
+    },
+    "mca_pd_auth": {
+      "file": "mca_pd_auth.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_pd/mca_pd_auth/mca_pd_auth.ko",
+      "depends": [
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_log",
+        "mca_platform_buckchg_class",
+        "mca_protocol_pd_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_platform_bc12_class": {
+      "file": "mca_platform_bc12_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_bc12_class/mca_platform_bc12_class.ko",
+      "depends": [
+        "mca_log",
+        "mca_protocol_class",
+        "mca_protocol_pd_class"
+      ],
+      "gki": false
+    },
+    "mca_platform_buckchg_class": {
+      "file": "mca_platform_buckchg_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class/mca_platform_buckchg_class.ko",
+      "depends": [],
+      "gki": false
+    },
+    "mca_platform_cp_class": {
+      "file": "mca_platform_cp_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_cp_class/mca_platform_cp_class.ko",
+      "depends": [
+        "mca_log",
+        "mca_parse_dts",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_platform_fg_ic_ops": {
+      "file": "mca_platform_fg_ic_ops.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops/mca_platform_fg_ic_ops.ko",
+      "depends": [],
+      "gki": false
+    },
+    "mca_platform_loadsw_class": {
+      "file": "mca_platform_loadsw_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_loadsw_class/mca_platform_loadsw_class.ko",
+      "depends": [
+        "mca_log",
+        "mca_parse_dts",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_platform_wireless_class": {
+      "file": "mca_platform_wireless_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_platform/mca_platform_wireless_class/mca_platform_wireless_class.ko",
+      "depends": [
+        "mca_log",
+        "mca_parse_dts",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_protocol_class": {
+      "file": "mca_protocol_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_protocol/mca_protocol_class/mca_protocol_class.ko",
+      "depends": [],
+      "gki": false
+    },
+    "mca_protocol_pd_class": {
+      "file": "mca_protocol_pd_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_protocol/protocol_pd/mca_protocol_pd_class/mca_protocol_pd_class.ko",
+      "depends": [
+        "mca_event",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_protocol_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_protocol_qc_class": {
+      "file": "mca_protocol_qc_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_protocol/protocol_qc/mca_protocol_qc_class/mca_protocol_qc_class.ko",
+      "depends": [
+        "mca_protocol_class"
+      ],
+      "gki": false
+    },
+    "mca_qcom_smem": {
+      "file": "mca_qcom_smem.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_qcom_smem/mca_qcom_smem.ko",
+      "depends": [
+        "mca_log",
+        "smem"
+      ],
+      "gki": false
+    },
+    "mca_qcom_subpmic_proxy": {
+      "file": "mca_qcom_subpmic_proxy.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.ko",
+      "depends": [
+        "mca_adsp_glink",
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_bc12_class",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_protocol_pd_class",
+        "mca_protocol_qc_class",
+        "mca_strategy_class"
+      ],
+      "gki": false
+    },
+    "mca_qcom_sysfs": {
+      "file": "mca_qcom_sysfs.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs/mca_qcom_sysfs.ko",
+      "depends": [
+        "mca_basic_wireless",
+        "mca_charger_thermal",
+        "mca_log",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_wireless_class",
+        "mca_protocol_class",
+        "mca_protocol_pd_class",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_wireless_revchg"
+      ],
+      "gki": false
+    },
+    "mca_quick_wireless": {
+      "file": "mca_quick_wireless.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless/mca_quick_wireless.ko",
+      "depends": [
+        "mca_basic_wireless",
+        "mca_charge_interface",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_fg_ic_ops",
+        "mca_platform_loadsw_class",
+        "mca_platform_wireless_class",
+        "mca_smart_charge",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_voter"
+      ],
+      "gki": false
+    },
+    "mca_smart_charge": {
+      "file": "mca_smart_charge.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_smart_charge/mca_smart_charge/mca_smart_charge.ko",
+      "depends": [
+        "charger_partition",
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs",
+        "mca_voter"
+      ],
+      "gki": false
+    },
+    "mca_strategy_buckchg": {
+      "file": "mca_strategy_buckchg.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg/mca_strategy_buckchg.ko",
+      "depends": [
+        "mca_charge_interface",
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_fg_ic_ops",
+        "mca_platform_loadsw_class",
+        "mca_protocol_class",
+        "mca_protocol_pd_class",
+        "mca_qcom_smem",
+        "mca_smart_charge",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_voter",
+        "mca_wireless_revchg",
+        "mca_workqueue"
+      ],
+      "gki": false
+    },
+    "mca_strategy_class": {
+      "file": "mca_strategy_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/mca_strategy_class/mca_strategy_class.ko",
+      "depends": [],
+      "gki": false
+    },
+    "mca_strategy_fg_class": {
+      "file": "mca_strategy_fg_class.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_class/mca_strategy_fg_class.ko",
+      "depends": [],
+      "gki": false
+    },
+    "mca_strategy_fg_comp": {
+      "file": "mca_strategy_fg_comp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_comp/mca_strategy_fg_comp.ko",
+      "depends": [
+        "charger_partition",
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_fg_ic_ops",
+        "mca_platform_loadsw_class",
+        "mca_protocol_class",
+        "mca_protocol_pd_class",
+        "mca_qcom_smem",
+        "mca_smart_charge",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs",
+        "mca_voter",
+        "mca_workqueue"
+      ],
+      "gki": false
+    },
+    "mca_strategy_quickchg": {
+      "file": "mca_strategy_quickchg.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg/mca_strategy_quickchg.ko",
+      "depends": [
+        "mca_charge_interface",
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_fg_ic_ops",
+        "mca_platform_loadsw_class",
+        "mca_protocol_class",
+        "mca_protocol_pd_class",
+        "mca_protocol_qc_class",
+        "mca_smart_charge",
+        "mca_strategy_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs",
+        "mca_voter"
+      ],
+      "gki": false
+    },
+    "mca_sysfs": {
+      "file": "mca_sysfs.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_sysfs/mca_sysfs.ko",
+      "depends": [],
+      "gki": false
+    },
+    "mca_vbat_ovp_monitor": {
+      "file": "mca_vbat_ovp_monitor.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_monitor/mca_vbat_ovp_monitor/mca_vbat_ovp_monitor.ko",
+      "depends": [
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_wireless_class",
+        "mca_strategy_fg_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "mca_voter": {
+      "file": "mca_voter.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_voter/mca_voter.ko",
+      "depends": [
+        "mca_log"
+      ],
+      "gki": false
+    },
+    "mca_wireless_revchg": {
+      "file": "mca_wireless_revchg.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_wireless_revchg/mca_wireless_revchg.ko",
+      "depends": [
+        "mca_charge_mievent",
+        "mca_event",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_buckchg_class",
+        "mca_platform_cp_class",
+        "mca_platform_wireless_class",
+        "mca_protocol_class",
+        "mca_strategy_class",
+        "mca_sysfs",
+        "mca_voter"
+      ],
+      "gki": false
+    },
+    "mca_workqueue": {
+      "file": "mca_workqueue.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_common/mca_workqueue/mca_workqueue.ko",
+      "depends": [
+        "mca_log"
+      ],
+      "gki": false
+    },
+    "mdt_loader": {
+      "file": "mdt_loader.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/mdt_loader/mdt_loader.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "mem_buf": {
+      "file": "mem_buf.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/mem_buf/mem_buf/mem_buf.ko",
+      "depends": [
+        "mem_buf_dev",
+        "mem_buf_msgq"
+      ],
+      "gki": false
+    },
+    "mem_buf_dev": {
+      "file": "mem_buf_dev.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/mem_buf/mem_buf_dev/mem_buf_dev.ko",
+      "depends": [
+        "gh_mem_notifier",
+        "gh_rm_drv",
+        "gh_rm_heap_manager",
+        "secure_buffer"
+      ],
+      "gki": false
+    },
+    "mem_buf_msgq": {
+      "file": "mem_buf_msgq.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/mem_buf/mem_buf_msgq/mem_buf_msgq.ko",
+      "depends": [
+        "gh_msgq",
+        "mem_buf_dev"
+      ],
+      "gki": false
+    },
+    "mem_prot": {
+      "file": "mem-prot.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/mem-prot/mem-prot.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "memory_dump_v2": {
+      "file": "memory_dump_v2.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/memory_dump_v2/memory_dump_v2.ko",
+      "depends": [
+        "minidump",
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "mhi": {
+      "file": "mhi.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/bus/mhi/host/mhi/mhi.ko",
+      "depends": [
+        "pci_msm_drv",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "mi_fp": {
+      "file": "mi_fp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/input/fingerprint/mi_fp/mi_fp.ko",
+      "depends": [
+        "panel_event_notifier"
+      ],
+      "gki": false
+    },
+    "miev": {
+      "file": "miev.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/misc/miev/miev/miev.ko",
+      "depends": [],
+      "gki": false
+    },
+    "minidump": {
+      "file": "minidump.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/minidump/minidump.ko",
+      "depends": [
+        "debug_symbol",
+        "qcom_dma_heaps",
+        "smem"
+      ],
+      "gki": false
+    },
+    "msm_dma_iommu_mapping": {
+      "file": "msm_dma_iommu_mapping.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/iommu/msm_dma_iommu_mapping/msm_dma_iommu_mapping.ko",
+      "depends": [],
+      "gki": false
+    },
+    "msm_drm": {
+      "file": "msm_drm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/display-drivers/canoe_perf_msm_drm/msm_drm.ko",
+      "depends": [
+        "altmode_glink",
+        "clk_qcom",
+        "crm_v2",
+        "drm_display_helper",
+        "dwc3_msm",
+        "fsa4480_i2c",
+        "gh_irq_lend",
+        "gh_mem_notifier",
+        "gh_msgq",
+        "gh_rm_drv",
+        "hdcp_qseecom_dlkm",
+        "llcc_qcom",
+        "mem_buf_dev",
+        "msm_dma_iommu_mapping",
+        "msm_ext_display",
+        "msm_hfi_core",
+        "msm_hw_fence",
+        "panel_event_notifier",
+        "pinctrl_msm",
+        "qcom_iommu_util",
+        "qcom_ipc_logging",
+        "qcom_rpmh",
+        "qcom_scm",
+        "qcom_va_minidump",
+        "smmu_proxy_dlkm",
+        "socinfo",
+        "spmi_pmic_arb",
+        "sync_fence",
+        "synx_driver",
+        "wcd_usbss_i2c"
+      ],
+      "gki": false
+    },
+    "msm_eva": {
+      "file": "msm-eva.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/eva-kernel/canoe_perf_msm-eva/msm-eva.ko",
+      "depends": [
+        "frpc_adsprpc",
+        "gh_msgq",
+        "gh_rm_drv",
+        "llcc_qcom",
+        "mdt_loader",
+        "mem_buf_dev",
+        "msm_mmrm",
+        "qcom_scm",
+        "synx_driver"
+      ],
+      "gki": false
+    },
+    "msm_ext_display": {
+      "file": "msm_ext_display.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/mm-drivers/msm_ext_display/canoe_perf_msm_ext_display/msm_ext_display.ko",
+      "depends": [],
+      "gki": false
+    },
+    "msm_geni_serial": {
+      "file": "msm_geni_serial.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/tty/serial/msm_geni_serial/msm_geni_serial.ko",
+      "depends": [
+        "msm_gpi",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "msm_gpi": {
+      "file": "msm_gpi.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/dma/qcom/msm_gpi/msm_gpi.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "smem"
+      ],
+      "gki": false
+    },
+    "msm_hfi_core": {
+      "file": "msm_hfi_core.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/mm-drivers/hfi_core/canoe_perf_msm_hfi_core/msm_hfi_core.ko",
+      "depends": [
+        "mdt_loader",
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "msm_hw_fence": {
+      "file": "msm_hw_fence.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/mm-drivers/hw_fence/canoe_perf_msm_hw_fence/msm_hw_fence.ko",
+      "depends": [
+        "gh_dbl",
+        "gh_rm_drv",
+        "qcom_scm",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "msm_kgsl": {
+      "file": "msm_kgsl.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/graphics-kernel/canoe_perf_msm_kgsl/msm_kgsl.ko",
+      "depends": [
+        "clk_qcom",
+        "cmd_db",
+        "coresight",
+        "llcc_qcom",
+        "mdt_loader",
+        "mem_buf_dev",
+        "minidump",
+        "msm_performance",
+        "msm_sysstats",
+        "qcom_aoss",
+        "qcom_dcvs",
+        "qcom_iommu_util",
+        "qcom_scm",
+        "qcom_va_minidump",
+        "secure_buffer",
+        "socinfo",
+        "synx_driver"
+      ],
+      "gki": false
+    },
+    "msm_mmrm": {
+      "file": "msm-mmrm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/mmrm-driver/canoe_perf_msm-mmrm/msm-mmrm.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "msm_performance": {
+      "file": "msm_performance.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/msm_performance/msm_performance.ko",
+      "depends": [
+        "qcom_pmu_lib",
+        "sched_walt"
+      ],
+      "gki": false
+    },
+    "msm_qmp": {
+      "file": "msm_qmp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/mailbox/msm_qmp/msm_qmp.ko",
+      "depends": [
+        "qcom_aoss",
+        "qcom_ipc_logging",
+        "smem"
+      ],
+      "gki": false
+    },
+    "msm_sharedmem": {
+      "file": "msm_sharedmem.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/uio/msm_sharedmem/msm_sharedmem/msm_sharedmem.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "msm_sysstats": {
+      "file": "msm_sysstats.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/kernel/msm_sysstats/msm_sysstats.ko",
+      "depends": [
+        "qcom_dma_heaps"
+      ],
+      "gki": false
+    },
+    "myron_bq_readonly": {
+      "file": "myron_bq_readonly.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_bq_readonly/myron_bq_readonly.ko",
+      "depends": [],
+      "gki": false
+    },
+    "myron_mca_readonly": {
+      "file": "myron_mca_readonly.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/myron_mca_readonly/myron_mca_readonly/myron_mca_readonly.ko",
+      "depends": [
+        "qti_pmic_glink"
+      ],
+      "gki": false
+    },
+    "nb7vpq904m": {
+      "file": "nb7vpq904m.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/redriver/nb7vpq904m/nb7vpq904m.ko",
+      "depends": [
+        "redriver"
+      ],
+      "gki": false
+    },
+    "nvmem_qcom_spmi_sdam": {
+      "file": "nvmem_qcom-spmi-sdam.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/nvmem/nvmem_qcom-spmi-sdam/nvmem_qcom-spmi-sdam.ko",
+      "depends": [],
+      "gki": false
+    },
+    "nvmem_qfprom": {
+      "file": "nvmem_qfprom.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/nvmem/nvmem_qfprom/nvmem_qfprom.ko",
+      "depends": [],
+      "gki": false
+    },
+    "nxp_nci": {
+      "file": "nxp-nci.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/nxp/opensource/driver/canoe_perf_nxp-nci/nxp-nci.ko",
+      "depends": [
+        "pinctrl_msm",
+        "qcom_ipc_logging",
+        "smcinvoke_dlkm"
+      ],
+      "gki": false
+    },
+    "panel_event_notifier": {
+      "file": "panel_event_notifier.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/panel_event_notifier/panel_event_notifier.ko",
+      "depends": [],
+      "gki": false
+    },
+    "pci_msm_drv": {
+      "file": "pci-msm-drv.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/pci/controller/pci-msm-drv/pci-msm-drv.ko",
+      "depends": [
+        "clk_qcom",
+        "crm_v2",
+        "pcie_pdc",
+        "pinctrl_msm",
+        "qcom_ipc_logging",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "pcie_pdc": {
+      "file": "pcie-pdc.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/pcie-pdc/pcie-pdc.ko",
+      "depends": [],
+      "gki": false
+    },
+    "pdr_interface": {
+      "file": "pdr_interface.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/pdr_interface/pdr_interface.ko",
+      "depends": [
+        "qcom_pdr_msg",
+        "qmi_helpers",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "phy_generic": {
+      "file": "phy-generic.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/phy/phy-generic/phy-generic.ko",
+      "depends": [],
+      "gki": false
+    },
+    "phy_msm_m31_eusb2": {
+      "file": "phy-msm-m31-eusb2.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/phy/phy-msm-m31-eusb2/phy-msm-m31-eusb2.ko",
+      "depends": [
+        "qcom_scm",
+        "repeater"
+      ],
+      "gki": false
+    },
+    "phy_msm_snps_hs": {
+      "file": "phy-msm-snps-hs.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/phy/phy-msm-snps-hs/phy-msm-snps-hs.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "phy_msm_ssusb_qmp": {
+      "file": "phy-msm-ssusb-qmp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/phy/phy-msm-ssusb-qmp/phy-msm-ssusb-qmp.ko",
+      "depends": [
+        "eom_driver"
+      ],
+      "gki": false
+    },
+    "phy_qcom_ufs": {
+      "file": "phy-qcom-ufs.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/phy/qualcomm/phy-qcom-ufs/phy-qcom-ufs.ko",
+      "depends": [],
+      "gki": false
+    },
+    "phy_qcom_ufs_qmp_v4_canoe": {
+      "file": "phy-qcom-ufs-qmp-v4-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/phy/qualcomm/phy-qcom-ufs-qmp-v4-canoe/phy-qcom-ufs-qmp-v4-canoe.ko",
+      "depends": [
+        "phy_qcom_ufs"
+      ],
+      "gki": false
+    },
+    "phy_qcom_ufs_qrbtc_sdm845": {
+      "file": "phy-qcom-ufs-qrbtc-sdm845.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/phy/qualcomm/phy-qcom-ufs-qrbtc-sdm845/phy-qcom-ufs-qrbtc-sdm845.ko",
+      "depends": [
+        "phy_qcom_ufs"
+      ],
+      "gki": false
+    },
+    "pinctrl_alor": {
+      "file": "pinctrl-alor.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/pinctrl/qcom/pinctrl-alor/pinctrl-alor.ko",
+      "depends": [
+        "pinctrl_msm"
+      ],
+      "gki": false
+    },
+    "pinctrl_canoe": {
+      "file": "pinctrl-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/pinctrl/qcom/pinctrl-canoe/pinctrl-canoe.ko",
+      "depends": [
+        "pinctrl_msm"
+      ],
+      "gki": false
+    },
+    "pinctrl_chora": {
+      "file": "pinctrl-chora.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/pinctrl/qcom/pinctrl-chora/pinctrl-chora.ko",
+      "depends": [
+        "pinctrl_msm"
+      ],
+      "gki": false
+    },
+    "pinctrl_lpi_dlkm": {
+      "file": "pinctrl_lpi_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_pinctrl_lpi_dlkm/pinctrl_lpi_dlkm.ko",
+      "depends": [
+        "machine_dlkm",
+        "q6_notifier_dlkm",
+        "snd_event_dlkm",
+        "spf_core_dlkm"
+      ],
+      "gki": false
+    },
+    "pinctrl_msm": {
+      "file": "pinctrl-msm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/pinctrl/qcom/pinctrl-msm/pinctrl-msm.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "pinctrl_spmi_gpio": {
+      "file": "pinctrl-spmi-gpio.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/pinctrl/qcom/pinctrl-spmi-gpio/pinctrl-spmi-gpio.ko",
+      "depends": [],
+      "gki": false
+    },
+    "pm8941_pwrkey": {
+      "file": "pm8941-pwrkey.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/input/misc/pm8941-pwrkey/pm8941-pwrkey.ko",
+      "depends": [],
+      "gki": false
+    },
+    "pmic_pon_log": {
+      "file": "pmic-pon-log.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/pmic-pon-log/pmic-pon-log.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "proxy_consumer": {
+      "file": "proxy-consumer.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/regulator/proxy-consumer/proxy-consumer.ko",
+      "depends": [],
+      "gki": false
+    },
+    "q6_dlkm": {
+      "file": "q6_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_q6_dlkm/q6_dlkm.ko",
+      "depends": [],
+      "gki": false
+    },
+    "q6_notifier_dlkm": {
+      "file": "q6_notifier_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_q6_notifier_dlkm/q6_notifier_dlkm.ko",
+      "depends": [
+        "q6_pdr_dlkm",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "q6_pdr_dlkm": {
+      "file": "q6_pdr_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_q6_pdr_dlkm/q6_pdr_dlkm.ko",
+      "depends": [
+        "pdr_interface"
+      ],
+      "gki": false
+    },
+    "qca_cld3_peach_v2": {
+      "file": "qca_cld3_peach_v2.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/wlan/qcacld-3.0/canoe_perf_qca_cld_peach-v2/qca_cld3_peach_v2.ko",
+      "depends": [
+        "cfg80211",
+        "cnss2",
+        "cnss_nl",
+        "cnss_prealloc",
+        "cnss_utils",
+        "ipam",
+        "qcom_iommu_util",
+        "qcom_va_minidump",
+        "qmi_helpers",
+        "rproc_qcom_common",
+        "sched_walt"
+      ],
+      "gki": false
+    },
+    "qcom_adsp_pd_protocol": {
+      "file": "qcom_adsp_pd_protocol.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_protocol/protocol_pd/qcom_tcpc/qcom_adsp_pd_protocol/qcom_adsp_pd_protocol.ko",
+      "depends": [
+        "mca_adsp_glink",
+        "mca_event",
+        "mca_log",
+        "mca_protocol_pd_class"
+      ],
+      "gki": false
+    },
+    "qcom_aoss": {
+      "file": "qcom_aoss.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_aoss/qcom_aoss.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "qcom_cpu_vendor_hooks": {
+      "file": "qcom_cpu_vendor_hooks.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_cpu_vendor_hooks/qcom_cpu_vendor_hooks.ko",
+      "depends": [
+        "debug_symbol"
+      ],
+      "gki": false
+    },
+    "qcom_cpucp": {
+      "file": "qcom_cpucp.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_cpucp/qcom_cpucp.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_dcvs": {
+      "file": "qcom-dcvs.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/dcvs/qcom-dcvs/qcom-dcvs.ko",
+      "depends": [
+        "dcvs_fp"
+      ],
+      "gki": false
+    },
+    "qcom_dload_mode": {
+      "file": "qcom-dload-mode.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/reset/qcom-dload-mode/qcom-dload-mode.ko",
+      "depends": [
+        "minidump",
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "qcom_dma_heaps": {
+      "file": "qcom_dma_heaps.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/dma-buf/heaps/qcom_dma_heaps/qcom_dma_heaps.ko",
+      "depends": [
+        "deferred_free_helper",
+        "mem_buf_dev",
+        "msm_dma_iommu_mapping",
+        "qcom_scm",
+        "secure_buffer"
+      ],
+      "gki": false
+    },
+    "qcom_glink": {
+      "file": "qcom_glink.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/rpmsg/qcom_glink/qcom_glink.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "qcom_glink_smem": {
+      "file": "qcom_glink_smem.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/rpmsg/qcom_glink_smem/qcom_glink_smem.ko",
+      "depends": [
+        "qcom_glink",
+        "qcom_ipc_logging",
+        "smem"
+      ],
+      "gki": false
+    },
+    "qcom_hv_haptics": {
+      "file": "qcom-hv-haptics.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/input/misc/qcom-hv-haptics/qcom-hv-haptics.ko",
+      "depends": [
+        "qti_battery_charger",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "qcom_hwspinlock": {
+      "file": "qcom_hwspinlock.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/hwspinlock/qcom_hwspinlock/qcom_hwspinlock.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_ice": {
+      "file": "qcom_ice.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_ice/qcom_ice.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "qcom_iommu_debug": {
+      "file": "qcom_iommu_debug.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/iommu/qcom_iommu_debug/qcom_iommu_debug.ko",
+      "depends": [
+        "qcom_iommu_util",
+        "qcom_scm",
+        "secure_buffer"
+      ],
+      "gki": false
+    },
+    "qcom_iommu_util": {
+      "file": "qcom_iommu_util.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/iommu/qcom_iommu_util/qcom_iommu_util.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "qcom_ipc_logging": {
+      "file": "qcom_ipc_logging.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/kernel/trace/qcom_ipc_logging/qcom_ipc_logging.ko",
+      "depends": [
+        "minidump"
+      ],
+      "gki": false
+    },
+    "qcom_ipcc": {
+      "file": "qcom-ipcc.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/mailbox/qcom-ipcc/qcom-ipcc.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_llcc_pmu": {
+      "file": "qcom_llcc_pmu.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/perf/qcom_llcc_pmu/qcom_llcc_pmu.ko",
+      "depends": [
+        "cpu_phys_log_map"
+      ],
+      "gki": false
+    },
+    "qcom_logbuf_boot_log": {
+      "file": "qcom_logbuf_boot_log.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_logbuf_boot_log/qcom_logbuf_boot_log.ko",
+      "depends": [
+        "minidump"
+      ],
+      "gki": false
+    },
+    "qcom_logbuf_vendor_hooks": {
+      "file": "qcom_logbuf_vendor_hooks.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_logbuf_vendor_hooks/qcom_logbuf_vendor_hooks.ko",
+      "depends": [
+        "debug_symbol",
+        "minidump"
+      ],
+      "gki": false
+    },
+    "qcom_pdc": {
+      "file": "qcom-pdc.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/irqchip/qcom-pdc/qcom-pdc.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "qcom_pdr_msg": {
+      "file": "qcom_pdr_msg.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_pdr_msg/qcom_pdr_msg.ko",
+      "depends": [
+        "qmi_helpers"
+      ],
+      "gki": false
+    },
+    "qcom_pil_info": {
+      "file": "qcom_pil_info.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/remoteproc/qcom_pil_info/qcom_pil_info.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_pmu_lib": {
+      "file": "qcom-pmu-lib.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/dcvs/qcom-pmu-lib/qcom-pmu-lib.ko",
+      "depends": [
+        "cpu_phys_log_map",
+        "qcom_llcc_pmu",
+        "qcom_scmi_client"
+      ],
+      "gki": false
+    },
+    "qcom_pon": {
+      "file": "qcom-pon.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/reset/qcom-pon/qcom-pon.ko",
+      "depends": [
+        "reboot_mode"
+      ],
+      "gki": false
+    },
+    "qcom_q6v5": {
+      "file": "qcom_q6v5.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/remoteproc/qcom_q6v5/qcom_q6v5.ko",
+      "depends": [
+        "qcom_aoss",
+        "qcom_sysmon",
+        "rproc_qcom_common",
+        "smem"
+      ],
+      "gki": false
+    },
+    "qcom_q6v5_pas": {
+      "file": "qcom_q6v5_pas.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/remoteproc/qcom_q6v5_pas/qcom_q6v5_pas.ko",
+      "depends": [
+        "mdt_loader",
+        "qcom_pil_info",
+        "qcom_q6v5",
+        "qcom_ramdump",
+        "qcom_scm",
+        "qcom_sysmon",
+        "rproc_qcom_common",
+        "smem"
+      ],
+      "gki": false
+    },
+    "qcom_ramdump": {
+      "file": "qcom_ramdump.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_ramdump/qcom_ramdump.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_reboot_reason": {
+      "file": "qcom-reboot-reason.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/reset/qcom-reboot-reason/qcom-reboot-reason.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_rpmh": {
+      "file": "qcom_rpmh.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_rpmh/qcom_rpmh.ko",
+      "depends": [
+        "cmd_db",
+        "crm_v2",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "qcom_scm": {
+      "file": "qcom-scm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/firmware/qcom/qcom-scm/qcom-scm.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_scmi_client": {
+      "file": "qcom_scmi_client.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/dcvs/qcom_scmi_client/qcom_scmi_client.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_scmi_vendor": {
+      "file": "qcom_scmi_vendor.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/firmware/arm_scmi/qcom_scmi_vendor/qcom_scmi_vendor.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_sdei": {
+      "file": "qcom_sdei.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_sdei/qcom_sdei.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_smd": {
+      "file": "qcom_smd.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/rpmsg/qcom_smd/qcom_smd.ko",
+      "depends": [
+        "smem"
+      ],
+      "gki": false
+    },
+    "qcom_soc_wdt": {
+      "file": "qcom_soc_wdt.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_soc_wdt/qcom_soc_wdt.ko",
+      "depends": [
+        "qcom_wdt_core"
+      ],
+      "gki": false
+    },
+    "qcom_spmi_adc5_gen3": {
+      "file": "qcom-spmi-adc5-gen3.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/iio/adc/qcom-spmi-adc5-gen3/qcom-spmi-adc5-gen3.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "qcom_vadc_common"
+      ],
+      "gki": false
+    },
+    "qcom_spmi_pmic": {
+      "file": "qcom-spmi-pmic.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/mfd/qcom-spmi-pmic/qcom-spmi-pmic.ko",
+      "depends": [
+        "qti_regmap_debugfs"
+      ],
+      "gki": false
+    },
+    "qcom_spmi_wled": {
+      "file": "qcom-spmi-wled.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/video/backlight/qcom-spmi-wled/qcom-spmi-wled.ko",
+      "depends": [
+        "qti_battery_charger"
+      ],
+      "gki": false
+    },
+    "qcom_sysmon": {
+      "file": "qcom_sysmon.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/remoteproc/qcom_sysmon/qcom_sysmon.ko",
+      "depends": [
+        "qmi_helpers",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "qcom_tsens": {
+      "file": "qcom_tsens.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/thermal/qcom/qcom_tsens/qcom_tsens.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "qcom_va_minidump": {
+      "file": "qcom_va_minidump.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_va_minidump/qcom_va_minidump.ko",
+      "depends": [
+        "minidump"
+      ],
+      "gki": false
+    },
+    "qcom_vadc_common": {
+      "file": "qcom-vadc-common.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/iio/adc/qcom-vadc-common/qcom-vadc-common.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qcom_wdt_core": {
+      "file": "qcom_wdt_core.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qcom_wdt_core/qcom_wdt_core.ko",
+      "depends": [
+        "minidump",
+        "qcom_scm",
+        "qcom_sdei"
+      ],
+      "gki": false
+    },
+    "qmi_helpers": {
+      "file": "qmi_helpers.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qmi_helpers/qmi_helpers.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "qnoc_alor": {
+      "file": "qnoc-alor.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/interconnect/qcom/qnoc-alor/qnoc-alor.ko",
+      "depends": [
+        "icc_rpmh",
+        "qnoc_qos"
+      ],
+      "gki": false
+    },
+    "qnoc_canoe": {
+      "file": "qnoc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/interconnect/qcom/qnoc-canoe/qnoc-canoe.ko",
+      "depends": [
+        "icc_rpmh",
+        "qnoc_qos"
+      ],
+      "gki": false
+    },
+    "qnoc_qos": {
+      "file": "qnoc-qos.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/interconnect/qcom/qnoc-qos/qnoc-qos.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qrtr": {
+      "file": "qrtr.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/net/qrtr/qrtr/qrtr.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "qrtr_mhi": {
+      "file": "qrtr-mhi.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/net/qrtr/qrtr-mhi/qrtr-mhi.ko",
+      "depends": [
+        "mhi",
+        "qrtr"
+      ],
+      "gki": false
+    },
+    "qrtr_smd": {
+      "file": "qrtr-smd.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/net/qrtr/qrtr-smd/qrtr-smd.ko",
+      "depends": [
+        "qcom_glink",
+        "qrtr"
+      ],
+      "gki": false
+    },
+    "qseecom_proxy": {
+      "file": "qseecom_proxy.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/misc/qseecom_proxy/qseecom_proxy.ko",
+      "depends": [],
+      "gki": false
+    },
+    "qti_battery_charger": {
+      "file": "qti_battery_charger.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/qti_battery_charger/qti_battery_charger.ko",
+      "depends": [
+        "panel_event_notifier",
+        "qti_pmic_glink"
+      ],
+      "gki": false
+    },
+    "qti_fixed_regulator": {
+      "file": "qti-fixed-regulator.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/regulator/qti-fixed-regulator/qti-fixed-regulator.ko",
+      "depends": [
+        "debug_regulator",
+        "proxy_consumer"
+      ],
+      "gki": false
+    },
+    "qti_pmic_glink": {
+      "file": "qti_pmic_glink.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/qti_pmic_glink/qti_pmic_glink.ko",
+      "depends": [
+        "pdr_interface",
+        "qcom_ipc_logging",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "qti_regmap_debugfs": {
+      "file": "qti-regmap-debugfs.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/base/regmap/qti-regmap-debugfs/qti-regmap-debugfs.ko",
+      "depends": [],
+      "gki": false
+    },
+    "reboot_mode": {
+      "file": "reboot-mode.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/reset/reboot-mode/reboot-mode.ko",
+      "depends": [],
+      "gki": false
+    },
+    "redriver": {
+      "file": "redriver.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/redriver/redriver/redriver.ko",
+      "depends": [],
+      "gki": false
+    },
+    "repeater": {
+      "file": "repeater.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/repeater/repeater/repeater.ko",
+      "depends": [],
+      "gki": false
+    },
+    "repeater_qti_pmic_eusb2": {
+      "file": "repeater-qti-pmic-eusb2.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/repeater/repeater-qti-pmic-eusb2/repeater-qti-pmic-eusb2.ko",
+      "depends": [
+        "repeater"
+      ],
+      "gki": false
+    },
+    "rfkill": {
+      "file": "rfkill.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/common/kernel_aarch64/net/rfkill/rfkill.ko",
+      "depends": [],
+      "gki": true
+    },
+    "rmnet_core": {
+      "file": "rmnet_core.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/datarmnet/canoe_perf_rmnet_core/rmnet_core.ko",
+      "depends": [
+        "ipam",
+        "qmi_helpers",
+        "rmnet_ctl",
+        "rmnet_mem"
+      ],
+      "gki": false
+    },
+    "rmnet_ctl": {
+      "file": "rmnet_ctl.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/datarmnet/canoe_perf_rmnet_ctl/rmnet_ctl.ko",
+      "depends": [
+        "ipam",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "rmnet_mem": {
+      "file": "rmnet_mem.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/mem/canoe_perf_rmnet_mem/rmnet_mem.ko",
+      "depends": [],
+      "gki": false
+    },
+    "rmnet_perf": {
+      "file": "rmnet_perf.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/perf/canoe_perf_perf/rmnet_perf.ko",
+      "depends": [
+        "rmnet_core"
+      ],
+      "gki": false
+    },
+    "rmnet_shs": {
+      "file": "rmnet_shs.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/datarmnet-ext/shs/canoe_perf_shs/rmnet_shs.ko",
+      "depends": [
+        "rmnet_core",
+        "sched_walt"
+      ],
+      "gki": false
+    },
+    "rpmh_regulator": {
+      "file": "rpmh-regulator.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/regulator/rpmh-regulator/rpmh-regulator.ko",
+      "depends": [
+        "cmd_db",
+        "debug_regulator",
+        "proxy_consumer",
+        "qcom_ipc_logging",
+        "qcom_rpmh"
+      ],
+      "gki": false
+    },
+    "rproc_qcom_common": {
+      "file": "rproc_qcom_common.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/remoteproc/rproc_qcom_common/rproc_qcom_common.ko",
+      "depends": [
+        "qcom_glink",
+        "qcom_glink_smem",
+        "qcom_smd",
+        "smem"
+      ],
+      "gki": false
+    },
+    "rtc_pm8xxx": {
+      "file": "rtc-pm8xxx.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/rtc/rtc-pm8xxx/rtc-pm8xxx.ko",
+      "depends": [],
+      "gki": false
+    },
+    "sc8581": {
+      "file": "sc8581.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581/sc8581.ko",
+      "depends": [
+        "mca_event",
+        "mca_hwid",
+        "mca_log",
+        "mca_parse_dts",
+        "mca_platform_cp_class",
+        "mca_sysfs"
+      ],
+      "gki": false
+    },
+    "sched_walt": {
+      "file": "sched-walt.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/kernel/sched/walt/sched-walt/sched-walt.ko",
+      "depends": [
+        "socinfo"
+      ],
+      "gki": false
+    },
+    "sdca_registers_dlkm": {
+      "file": "sdca_registers_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_sdca_registers_dlkm/sdca_registers_dlkm.ko",
+      "depends": [],
+      "gki": false
+    },
+    "sdhci_msm": {
+      "file": "sdhci-msm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/mmc/host/sdhci-msm/sdhci-msm.ko",
+      "depends": [
+        "clk_qcom",
+        "cqhci",
+        "pinctrl_msm",
+        "qcom_ice",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "secure_buffer": {
+      "file": "secure_buffer.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/secure_buffer/secure_buffer.ko",
+      "depends": [
+        "qcom_scm"
+      ],
+      "gki": false
+    },
+    "sg": {
+      "file": "sg.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/scsi/sg/sg.ko",
+      "depends": [],
+      "gki": false
+    },
+    "si_core_module": {
+      "file": "si_core_module.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/firmware/qcom/si_core/si_core_module/si_core_module.ko",
+      "depends": [
+        "mem_buf_dev",
+        "qcom_scm",
+        "qseecom_proxy"
+      ],
+      "gki": false
+    },
+    "smcinvoke_dlkm": {
+      "file": "smcinvoke_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/securemsm-kernel/canoe_perf_smcinvoke_dlkm/smcinvoke_dlkm.ko",
+      "depends": [
+        "qcom_scm",
+        "qseecom_proxy",
+        "si_core_module"
+      ],
+      "gki": false
+    },
+    "smem": {
+      "file": "smem.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/smem/smem.ko",
+      "depends": [],
+      "gki": false
+    },
+    "smem_mailbox": {
+      "file": "smem-mailbox.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/data-kernel/drivers/smem-mailbox/canoe_perf_smem_mailbox/smem-mailbox.ko",
+      "depends": [
+        "smem"
+      ],
+      "gki": false
+    },
+    "smmu_proxy_dlkm": {
+      "file": "smmu_proxy_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/securemsm-kernel/canoe_perf_smmu_proxy_dlkm/smmu_proxy_dlkm.ko",
+      "depends": [
+        "gh_msgq",
+        "mem_buf_dev",
+        "qcom_dma_heaps",
+        "smcinvoke_dlkm"
+      ],
+      "gki": false
+    },
+    "smp2p": {
+      "file": "smp2p.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/smp2p/smp2p.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "smem"
+      ],
+      "gki": false
+    },
+    "snd_event_dlkm": {
+      "file": "snd_event_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_snd_event_dlkm/snd_event_dlkm.ko",
+      "depends": [],
+      "gki": false
+    },
+    "socinfo": {
+      "file": "socinfo.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/socinfo/socinfo.ko",
+      "depends": [
+        "smem"
+      ],
+      "gki": false
+    },
+    "spf_core_dlkm": {
+      "file": "spf_core_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_spf_core_dlkm/spf_core_dlkm.ko",
+      "depends": [
+        "gpr_dlkm"
+      ],
+      "gki": false
+    },
+    "spi_msm_geni": {
+      "file": "spi-msm-geni.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/spi/spi-msm-geni/spi-msm-geni.ko",
+      "depends": [
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "spmi_pmic_arb": {
+      "file": "spmi-pmic-arb.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/spmi/spmi-pmic-arb/spmi-pmic-arb.ko",
+      "depends": [],
+      "gki": false
+    },
+    "stub_dlkm": {
+      "file": "stub_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_stub_dlkm/stub_dlkm.ko",
+      "depends": [],
+      "gki": false
+    },
+    "stub_regulator": {
+      "file": "stub-regulator.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/regulator/stub-regulator/stub-regulator.ko",
+      "depends": [
+        "debug_regulator"
+      ],
+      "gki": false
+    },
+    "swr_ctrl_dlkm": {
+      "file": "swr_ctrl_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_swr_ctrl_dlkm/swr_ctrl_dlkm.ko",
+      "depends": [
+        "spf_core_dlkm",
+        "swr_dlkm"
+      ],
+      "gki": false
+    },
+    "swr_dlkm": {
+      "file": "swr_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_swr_dlkm/swr_dlkm.ko",
+      "depends": [],
+      "gki": false
+    },
+    "swr_haptics_dlkm": {
+      "file": "swr_haptics_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_swr_haptics_dlkm/swr_haptics_dlkm.ko",
+      "depends": [
+        "qti_battery_charger",
+        "rproc_qcom_common",
+        "swr_dlkm"
+      ],
+      "gki": false
+    },
+    "sync_fence": {
+      "file": "sync_fence.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/mm-drivers/sync_fence/canoe_perf_sync_fence/sync_fence.ko",
+      "depends": [],
+      "gki": false
+    },
+    "synx_driver": {
+      "file": "synx-driver.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/synx-kernel/canoe_perf_synx-driver_synx/synx-driver.ko",
+      "depends": [
+        "ipclite",
+        "msm_hw_fence",
+        "rproc_qcom_common"
+      ],
+      "gki": false
+    },
+    "tcsrcc_canoe": {
+      "file": "tcsrcc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/tcsrcc-canoe/tcsrcc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "tfa98xx_dlkm": {
+      "file": "tfa98xx_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm/tfa98xx_dlkm.ko",
+      "depends": [],
+      "gki": false
+    },
+    "thermal_pause": {
+      "file": "thermal_pause.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/thermal/qcom/thermal_pause/thermal_pause.ko",
+      "depends": [
+        "sched_walt"
+      ],
+      "gki": false
+    },
+    "ucsi_qti_glink": {
+      "file": "ucsi_qti_glink.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/typec/ucsi/ucsi_qti_glink/ucsi_qti_glink.ko",
+      "depends": [
+        "qcom_ipc_logging",
+        "qti_pmic_glink"
+      ],
+      "gki": false
+    },
+    "ufs_qcom": {
+      "file": "ufs-qcom.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/ufs/host/ufs-qcom/ufs-qcom.ko",
+      "depends": [
+        "clk_qcom",
+        "minidump",
+        "phy_qcom_ufs",
+        "qcom_ice",
+        "qcom_ipc_logging",
+        "sched_walt",
+        "ufshcd_crypto_qti"
+      ],
+      "gki": false
+    },
+    "ufshcd_crypto_qti": {
+      "file": "ufshcd-crypto-qti.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/ufs/host/ufshcd-crypto-qti/ufshcd-crypto-qti.ko",
+      "depends": [
+        "qcom_ice"
+      ],
+      "gki": false
+    },
+    "usb_f_gsi": {
+      "file": "usb_f_gsi.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/usb/gadget/function/usb_f_gsi/usb_f_gsi.ko",
+      "depends": [
+        "dwc3_msm",
+        "qcom_ipc_logging"
+      ],
+      "gki": false
+    },
+    "videocc_canoe": {
+      "file": "videocc-canoe.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/clk/qcom/videocc-canoe/videocc-canoe.ko",
+      "depends": [
+        "clk_qcom"
+      ],
+      "gki": false
+    },
+    "wcd9378_dlkm": {
+      "file": "wcd9378_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wcd9378_dlkm/wcd9378_dlkm.ko",
+      "depends": [
+        "mbhc_dlkm",
+        "qti_regmap_debugfs",
+        "sdca_registers_dlkm",
+        "swr_dlkm",
+        "wcd9xxx_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "wcd937x_dlkm": {
+      "file": "wcd937x_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wcd937x_dlkm/wcd937x_dlkm.ko",
+      "depends": [
+        "mbhc_dlkm",
+        "qti_regmap_debugfs",
+        "swr_dlkm",
+        "wcd9xxx_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "wcd939x_dlkm": {
+      "file": "wcd939x_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wcd939x_dlkm/wcd939x_dlkm.ko",
+      "depends": [
+        "mbhc_dlkm",
+        "qti_regmap_debugfs",
+        "swr_dlkm",
+        "wcd939x_slave_dlkm",
+        "wcd9xxx_dlkm",
+        "wcd_core_dlkm",
+        "wcd_usbss_i2c"
+      ],
+      "gki": false
+    },
+    "wcd939x_slave_dlkm": {
+      "file": "wcd939x_slave_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wcd939x_slave_dlkm/wcd939x_slave_dlkm.ko",
+      "depends": [
+        "swr_dlkm"
+      ],
+      "gki": false
+    },
+    "wcd9xxx_dlkm": {
+      "file": "wcd9xxx_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wcd9xxx_dlkm/wcd9xxx_dlkm.ko",
+      "depends": [
+        "audio_prm_dlkm"
+      ],
+      "gki": false
+    },
+    "wcd_core_dlkm": {
+      "file": "wcd_core_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wcd_core_dlkm/wcd_core_dlkm.ko",
+      "depends": [
+        "pinctrl_msm"
+      ],
+      "gki": false
+    },
+    "wcd_usbss_i2c": {
+      "file": "wcd_usbss_i2c.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850/canoe_perf/drivers/soc/qcom/wcd_usbss_i2c/wcd_usbss_i2c.ko",
+      "depends": [
+        "qti_regmap_debugfs"
+      ],
+      "gki": false
+    },
+    "wlan_firmware_service": {
+      "file": "wlan_firmware_service.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/wlan/platform/canoe_perf_wlan_firmware_service/wlan_firmware_service.ko",
+      "depends": [
+        "qmi_helpers"
+      ],
+      "gki": false
+    },
+    "wsa883x_dlkm": {
+      "file": "wsa883x_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wsa883x_dlkm/wsa883x_dlkm.ko",
+      "depends": [
+        "qti_regmap_debugfs",
+        "swr_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "wsa884x_dlkm": {
+      "file": "wsa884x_dlkm.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/vendor/qcom/sm8850-modules/qcom/opensource/audio-kernel/canoe_perf_wsa884x_dlkm/wsa884x_dlkm.ko",
+      "depends": [
+        "qti_regmap_debugfs",
+        "swr_dlkm",
+        "wcd_core_dlkm"
+      ],
+      "gki": false
+    },
+    "zram": {
+      "file": "zram.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/common/kernel_aarch64/drivers/block/zram/zram.ko",
+      "depends": [
+        "zsmalloc"
+      ],
+      "gki": true
+    },
+    "zsmalloc": {
+      "file": "zsmalloc.ko",
+      "source": "objects/bazel-out/aarch64-fastbuild/bin/common/kernel_aarch64/mm/zsmalloc.ko",
+      "depends": [],
+      "gki": true
+    }
+  },
+  "groups": {
+    "system": [
+      "rfkill",
+      "zram",
+      "zsmalloc"
+    ],
+    "vendor": [
+      "adsp_loader_dlkm",
+      "altmode_glink",
+      "arm_smmu",
+      "arm_smmu_pmu",
+      "audio_pkt_dlkm",
+      "audio_prm_dlkm",
+      "audpkt_ion_dlkm",
+      "bcl_pmic5",
+      "bq27z561",
+      "bt_fm_swr",
+      "btfmcodec",
+      "btpower",
+      "cambistmclkcc_canoe",
+      "camcc_alor",
+      "camcc_canoe",
+      "camera",
+      "cfg80211",
+      "charger_partition",
+      "clk_dummy",
+      "clk_qcom",
+      "clk_rpmh",
+      "clk_scmi",
+      "cmd_db",
+      "cnss2",
+      "cnss_nl",
+      "cnss_plat_ipc_qmi_svc",
+      "cnss_prealloc",
+      "cnss_utils",
+      "coresight",
+      "cpu_hotplug",
+      "cpu_phys_log_map",
+      "cpucp_fast",
+      "cqhci",
+      "crm_v2",
+      "dcvs_fp",
+      "debug_regulator",
+      "debug_symbol",
+      "debugcc_canoe",
+      "deferred_free_helper",
+      "dispcc_canoe",
+      "drm_display_helper",
+      "dwc3_msm",
+      "eom_driver",
+      "eud",
+      "evacc_canoe",
+      "focaltech_myron",
+      "frpc_adsprpc",
+      "fsa4480_i2c",
+      "gcc_alor",
+      "gcc_canoe",
+      "gdsc_regulator",
+      "gh_arm_drv",
+      "gh_dbl",
+      "gh_irq_lend",
+      "gh_mem_notifier",
+      "gh_msgq",
+      "gh_rm_drv",
+      "gh_rm_heap_manager",
+      "gh_vcpu_mgr",
+      "gic_intr_routing",
+      "glink_pkt",
+      "governor_gpubw_mon",
+      "governor_msm_adreno_ro",
+      "governor_msm_adreno_tz",
+      "gpr_dlkm",
+      "gpucc_canoe",
+      "gsim",
+      "hdcp_qseecom_dlkm",
+      "hdmi_dlkm",
+      "hwid",
+      "i2c_msm_geni",
+      "icc_bcm_voter",
+      "icc_clk",
+      "icc_debug",
+      "icc_rpmh",
+      "iommu_logger",
+      "ipam",
+      "ipclite",
+      "leds_qcom_flash",
+      "llcc_qcom",
+      "lpass_bt_swr_dlkm",
+      "lpass_cdc_dlkm",
+      "lpass_cdc_rx_macro_dlkm",
+      "lpass_cdc_tx_macro_dlkm",
+      "lpass_cdc_va_macro_dlkm",
+      "lpass_cdc_wsa2_macro_dlkm",
+      "lpass_cdc_wsa_macro_dlkm",
+      "machine_dlkm",
+      "mbhc_dlkm",
+      "mca_adsp_glink",
+      "mca_basic_wireless",
+      "mca_bmd",
+      "mca_buckchg_jeita",
+      "mca_business_battery_comp",
+      "mca_business_charger_comp",
+      "mca_charge_interface",
+      "mca_charge_mievent",
+      "mca_charger_thermal",
+      "mca_connector_antiburn",
+      "mca_event",
+      "mca_hwid",
+      "mca_ibat_ocp_monitor",
+      "mca_log",
+      "mca_lpd_detect",
+      "mca_parse_dts",
+      "mca_path_control",
+      "mca_pd_auth",
+      "mca_platform_bc12_class",
+      "mca_platform_buckchg_class",
+      "mca_platform_cp_class",
+      "mca_platform_fg_ic_ops",
+      "mca_platform_loadsw_class",
+      "mca_platform_wireless_class",
+      "mca_protocol_class",
+      "mca_protocol_pd_class",
+      "mca_protocol_qc_class",
+      "mca_qcom_smem",
+      "mca_qcom_subpmic_proxy",
+      "mca_qcom_sysfs",
+      "mca_quick_wireless",
+      "mca_smart_charge",
+      "mca_strategy_buckchg",
+      "mca_strategy_class",
+      "mca_strategy_fg_class",
+      "mca_strategy_fg_comp",
+      "mca_strategy_quickchg",
+      "mca_sysfs",
+      "mca_vbat_ovp_monitor",
+      "mca_voter",
+      "mca_wireless_revchg",
+      "mca_workqueue",
+      "mdt_loader",
+      "mem_buf",
+      "mem_buf_dev",
+      "mem_buf_msgq",
+      "mem_prot",
+      "memory_dump_v2",
+      "mhi",
+      "mi_fp",
+      "miev",
+      "minidump",
+      "msm_dma_iommu_mapping",
+      "msm_drm",
+      "msm_eva",
+      "msm_ext_display",
+      "msm_geni_serial",
+      "msm_gpi",
+      "msm_hfi_core",
+      "msm_hw_fence",
+      "msm_kgsl",
+      "msm_mmrm",
+      "msm_performance",
+      "msm_qmp",
+      "msm_sharedmem",
+      "msm_sysstats",
+      "myron_bq_readonly",
+      "myron_mca_readonly",
+      "nb7vpq904m",
+      "nvmem_qcom_spmi_sdam",
+      "nvmem_qfprom",
+      "nxp_nci",
+      "panel_event_notifier",
+      "pci_msm_drv",
+      "pcie_pdc",
+      "pdr_interface",
+      "phy_generic",
+      "phy_msm_m31_eusb2",
+      "phy_msm_snps_hs",
+      "phy_msm_ssusb_qmp",
+      "phy_qcom_ufs",
+      "phy_qcom_ufs_qmp_v4_canoe",
+      "phy_qcom_ufs_qrbtc_sdm845",
+      "pinctrl_alor",
+      "pinctrl_canoe",
+      "pinctrl_chora",
+      "pinctrl_lpi_dlkm",
+      "pinctrl_msm",
+      "pinctrl_spmi_gpio",
+      "pm8941_pwrkey",
+      "pmic_pon_log",
+      "proxy_consumer",
+      "q6_dlkm",
+      "q6_notifier_dlkm",
+      "q6_pdr_dlkm",
+      "qca_cld3_peach_v2",
+      "qcom_adsp_pd_protocol",
+      "qcom_aoss",
+      "qcom_cpu_vendor_hooks",
+      "qcom_cpucp",
+      "qcom_dcvs",
+      "qcom_dload_mode",
+      "qcom_dma_heaps",
+      "qcom_glink",
+      "qcom_glink_smem",
+      "qcom_hv_haptics",
+      "qcom_hwspinlock",
+      "qcom_ice",
+      "qcom_iommu_debug",
+      "qcom_iommu_util",
+      "qcom_ipc_logging",
+      "qcom_ipcc",
+      "qcom_llcc_pmu",
+      "qcom_logbuf_boot_log",
+      "qcom_logbuf_vendor_hooks",
+      "qcom_pdc",
+      "qcom_pdr_msg",
+      "qcom_pil_info",
+      "qcom_pmu_lib",
+      "qcom_pon",
+      "qcom_q6v5",
+      "qcom_q6v5_pas",
+      "qcom_ramdump",
+      "qcom_reboot_reason",
+      "qcom_rpmh",
+      "qcom_scm",
+      "qcom_scmi_client",
+      "qcom_scmi_vendor",
+      "qcom_sdei",
+      "qcom_smd",
+      "qcom_soc_wdt",
+      "qcom_spmi_adc5_gen3",
+      "qcom_spmi_pmic",
+      "qcom_spmi_wled",
+      "qcom_sysmon",
+      "qcom_tsens",
+      "qcom_va_minidump",
+      "qcom_vadc_common",
+      "qcom_wdt_core",
+      "qmi_helpers",
+      "qnoc_alor",
+      "qnoc_canoe",
+      "qnoc_qos",
+      "qrtr",
+      "qrtr_mhi",
+      "qrtr_smd",
+      "qseecom_proxy",
+      "qti_battery_charger",
+      "qti_fixed_regulator",
+      "qti_pmic_glink",
+      "qti_regmap_debugfs",
+      "reboot_mode",
+      "redriver",
+      "repeater",
+      "repeater_qti_pmic_eusb2",
+      "rmnet_core",
+      "rmnet_ctl",
+      "rmnet_mem",
+      "rmnet_perf",
+      "rmnet_shs",
+      "rpmh_regulator",
+      "rproc_qcom_common",
+      "rtc_pm8xxx",
+      "sc8581",
+      "sched_walt",
+      "sdca_registers_dlkm",
+      "sdhci_msm",
+      "secure_buffer",
+      "sg",
+      "si_core_module",
+      "smcinvoke_dlkm",
+      "smem",
+      "smem_mailbox",
+      "smmu_proxy_dlkm",
+      "smp2p",
+      "snd_event_dlkm",
+      "socinfo",
+      "spf_core_dlkm",
+      "spi_msm_geni",
+      "spmi_pmic_arb",
+      "stub_dlkm",
+      "stub_regulator",
+      "swr_ctrl_dlkm",
+      "swr_dlkm",
+      "swr_haptics_dlkm",
+      "sync_fence",
+      "synx_driver",
+      "tcsrcc_canoe",
+      "tfa98xx_dlkm",
+      "thermal_pause",
+      "ucsi_qti_glink",
+      "ufs_qcom",
+      "ufshcd_crypto_qti",
+      "usb_f_gsi",
+      "videocc_canoe",
+      "wcd9378_dlkm",
+      "wcd937x_dlkm",
+      "wcd939x_dlkm",
+      "wcd939x_slave_dlkm",
+      "wcd9xxx_dlkm",
+      "wcd_core_dlkm",
+      "wcd_usbss_i2c",
+      "wlan_firmware_service",
+      "wsa883x_dlkm",
+      "wsa884x_dlkm"
+    ],
+    "vendor_load": [
+      "debug_symbol",
+      "deferred_free_helper",
+      "gh_arm_drv",
+      "gh_dbl",
+      "gh_msgq",
+      "qcom_scm",
+      "secure_buffer",
+      "gh_rm_drv",
+      "gh_mem_notifier",
+      "mem_prot",
+      "gh_rm_heap_manager",
+      "mem_buf_dev",
+      "msm_dma_iommu_mapping",
+      "qcom_dma_heaps",
+      "smem",
+      "minidump",
+      "qcom_ipc_logging",
+      "crm_v2",
+      "debug_regulator",
+      "proxy_consumer",
+      "gdsc_regulator",
+      "icc_clk",
+      "clk_qcom",
+      "pcie_pdc",
+      "pinctrl_msm",
+      "qcom_glink",
+      "qcom_glink_smem",
+      "qcom_smd",
+      "rproc_qcom_common",
+      "pci_msm_drv",
+      "mhi",
+      "governor_gpubw_mon",
+      "governor_msm_adreno_tz",
+      "governor_msm_adreno_ro",
+      "drm_display_helper",
+      "coresight",
+      "qcom_vadc_common",
+      "qcom_spmi_adc5_gen3",
+      "pm8941_pwrkey",
+      "panel_event_notifier",
+      "qmi_helpers",
+      "qcom_pdr_msg",
+      "pdr_interface",
+      "qti_pmic_glink",
+      "qti_battery_charger",
+      "qcom_hv_haptics",
+      "leds_qcom_flash",
+      "mi_fp",
+      "nvmem_qfprom",
+      "pinctrl_spmi_gpio",
+      "reboot_mode",
+      "qcom_pon",
+      "mca_sysfs",
+      "mca_event",
+      "mca_log",
+      "mca_charge_interface",
+      "miev",
+      "mca_charge_mievent",
+      "socinfo",
+      "hwid",
+      "mca_hwid",
+      "mca_voter",
+      "mca_parse_dts",
+      "mca_workqueue",
+      "mca_platform_buckchg_class",
+      "mca_strategy_fg_class",
+      "mca_business_battery_comp",
+      "mca_strategy_class",
+      "charger_partition",
+      "qti_regmap_debugfs",
+      "fsa4480_i2c",
+      "mca_protocol_class",
+      "mca_protocol_pd_class",
+      "mca_connector_antiburn",
+      "mca_lpd_detect",
+      "mca_platform_cp_class",
+      "mca_platform_wireless_class",
+      "mca_wireless_revchg",
+      "mca_business_charger_comp",
+      "mca_platform_fg_ic_ops",
+      "mca_platform_loadsw_class",
+      "mca_protocol_qc_class",
+      "mca_smart_charge",
+      "mca_strategy_quickchg",
+      "mca_qcom_smem",
+      "mca_strategy_buckchg",
+      "mca_charger_thermal",
+      "mca_buckchg_jeita",
+      "mca_strategy_fg_comp",
+      "mca_pd_auth",
+      "mca_basic_wireless",
+      "mca_quick_wireless",
+      "mca_platform_bc12_class",
+      "mca_path_control",
+      "mca_vbat_ovp_monitor",
+      "mca_ibat_ocp_monitor",
+      "mca_bmd",
+      "mca_adsp_glink",
+      "mca_qcom_subpmic_proxy",
+      "qcom_adsp_pd_protocol",
+      "sc8581",
+      "bq27z561",
+      "mca_qcom_sysfs",
+      "qti_fixed_regulator",
+      "qcom_pil_info",
+      "qcom_aoss",
+      "qcom_sysmon",
+      "qcom_q6v5",
+      "mdt_loader",
+      "qcom_ramdump",
+      "qcom_q6v5_pas",
+      "glink_pkt",
+      "altmode_glink",
+      "eud",
+      "cpu_phys_log_map",
+      "qcom_llcc_pmu",
+      "qcom_scmi_client",
+      "qcom_pmu_lib",
+      "sched_walt",
+      "msm_performance",
+      "qcom_va_minidump",
+      "smp2p",
+      "wcd_usbss_i2c",
+      "spi_msm_geni",
+      "msm_gpi",
+      "msm_geni_serial",
+      "msm_sharedmem",
+      "redriver",
+      "repeater",
+      "dwc3_msm",
+      "usb_f_gsi",
+      "phy_generic",
+      "phy_msm_m31_eusb2",
+      "eom_driver",
+      "phy_msm_ssusb_qmp",
+      "nb7vpq904m",
+      "repeater_qti_pmic_eusb2",
+      "ucsi_qti_glink",
+      "gh_irq_lend",
+      "msm_sysstats",
+      "qrtr",
+      "qrtr_mhi",
+      "qrtr_smd",
+      "cfg80211",
+      "cmd_db",
+      "cnss_plat_ipc_qmi_svc",
+      "cnss_prealloc",
+      "smem_mailbox",
+      "cnss_utils",
+      "memory_dump_v2",
+      "wlan_firmware_service",
+      "cnss2",
+      "cnss_nl",
+      "gsim",
+      "qcom_iommu_util",
+      "rmnet_mem",
+      "ipam",
+      "qca_cld3_peach_v2",
+      "q6_pdr_dlkm",
+      "q6_notifier_dlkm",
+      "snd_event_dlkm",
+      "gpr_dlkm",
+      "spf_core_dlkm",
+      "audpkt_ion_dlkm",
+      "audio_pkt_dlkm",
+      "q6_dlkm",
+      "adsp_loader_dlkm",
+      "audio_prm_dlkm",
+      "lpass_cdc_dlkm",
+      "swr_dlkm",
+      "swr_ctrl_dlkm",
+      "wcd_core_dlkm",
+      "lpass_cdc_rx_macro_dlkm",
+      "mbhc_dlkm",
+      "sdca_registers_dlkm",
+      "wcd9xxx_dlkm",
+      "wcd9378_dlkm",
+      "wcd937x_dlkm",
+      "wcd939x_slave_dlkm",
+      "wcd939x_dlkm",
+      "wsa883x_dlkm",
+      "wsa884x_dlkm",
+      "machine_dlkm",
+      "pinctrl_lpi_dlkm",
+      "stub_dlkm",
+      "tfa98xx_dlkm",
+      "swr_haptics_dlkm",
+      "msm_ext_display",
+      "hdmi_dlkm",
+      "lpass_cdc_wsa2_macro_dlkm",
+      "lpass_cdc_wsa_macro_dlkm",
+      "lpass_cdc_va_macro_dlkm",
+      "lpass_cdc_tx_macro_dlkm",
+      "lpass_bt_swr_dlkm",
+      "btpower",
+      "btfmcodec",
+      "bt_fm_swr",
+      "llcc_qcom",
+      "msm_mmrm",
+      "qcom_rpmh",
+      "qcom_spmi_wled",
+      "qseecom_proxy",
+      "si_core_module",
+      "smcinvoke_dlkm",
+      "smmu_proxy_dlkm",
+      "ipclite",
+      "msm_hw_fence",
+      "synx_driver",
+      "camera",
+      "rmnet_ctl",
+      "rmnet_core",
+      "rmnet_perf",
+      "rmnet_shs",
+      "hdcp_qseecom_dlkm",
+      "msm_hfi_core",
+      "spmi_pmic_arb",
+      "sync_fence",
+      "msm_drm",
+      "frpc_adsprpc",
+      "msm_eva",
+      "nxp_nci",
+      "dcvs_fp",
+      "qcom_dcvs",
+      "msm_kgsl",
+      "focaltech_myron"
+    ],
+    "ramdisk": [
+      "gh_arm_drv",
+      "qti_regmap_debugfs",
+      "debug_symbol",
+      "deferred_free_helper",
+      "gh_dbl",
+      "gh_msgq",
+      "qcom_scm",
+      "secure_buffer",
+      "gh_rm_drv",
+      "gh_mem_notifier",
+      "mem_prot",
+      "gh_rm_heap_manager",
+      "mem_buf_dev",
+      "msm_dma_iommu_mapping",
+      "qcom_dma_heaps",
+      "smem",
+      "minidump",
+      "qcom_ipc_logging",
+      "crm_v2",
+      "debug_regulator",
+      "proxy_consumer",
+      "gdsc_regulator",
+      "icc_clk",
+      "clk_qcom",
+      "cambistmclkcc_canoe",
+      "camcc_alor",
+      "camcc_canoe",
+      "clk_dummy",
+      "cmd_db",
+      "qcom_rpmh",
+      "clk_rpmh",
+      "debugcc_canoe",
+      "dispcc_canoe",
+      "evacc_canoe",
+      "gcc_alor",
+      "gcc_canoe",
+      "gpucc_canoe",
+      "tcsrcc_canoe",
+      "videocc_canoe",
+      "clk_scmi",
+      "msm_gpi",
+      "qcom_scmi_vendor",
+      "qseecom_proxy",
+      "si_core_module",
+      "qcom_hwspinlock",
+      "i2c_msm_geni",
+      "icc_bcm_voter",
+      "icc_debug",
+      "socinfo",
+      "icc_rpmh",
+      "qnoc_qos",
+      "qnoc_canoe",
+      "qnoc_alor",
+      "iommu_logger",
+      "qcom_iommu_util",
+      "arm_smmu",
+      "qcom_iommu_debug",
+      "qcom_pdc",
+      "qcom_aoss",
+      "msm_qmp",
+      "qcom_ipcc",
+      "qcom_spmi_pmic",
+      "hwid",
+      "miev",
+      "cqhci",
+      "pinctrl_msm",
+      "qcom_ice",
+      "sdhci_msm",
+      "nvmem_qcom_spmi_sdam",
+      "cpu_phys_log_map",
+      "qcom_llcc_pmu",
+      "arm_smmu_pmu",
+      "phy_qcom_ufs",
+      "phy_qcom_ufs_qmp_v4_canoe",
+      "phy_qcom_ufs_qrbtc_sdm845",
+      "pinctrl_canoe",
+      "pinctrl_alor",
+      "pinctrl_chora",
+      "qcom_dload_mode",
+      "qcom_reboot_reason",
+      "rpmh_regulator",
+      "stub_regulator",
+      "rtc_pm8xxx",
+      "sg",
+      "dcvs_fp",
+      "qcom_dcvs",
+      "qcom_scmi_client",
+      "qcom_pmu_lib",
+      "mem_buf_msgq",
+      "mem_buf",
+      "gic_intr_routing",
+      "llcc_qcom",
+      "mdt_loader",
+      "memory_dump_v2",
+      "qcom_sdei",
+      "pmic_pon_log",
+      "qcom_cpucp",
+      "sched_walt",
+      "cpucp_fast",
+      "qcom_cpu_vendor_hooks",
+      "qcom_logbuf_boot_log",
+      "qcom_logbuf_vendor_hooks",
+      "qcom_wdt_core",
+      "qcom_soc_wdt",
+      "spmi_pmic_arb",
+      "bcl_pmic5",
+      "cpu_hotplug",
+      "qcom_tsens",
+      "thermal_pause",
+      "ufshcd_crypto_qti",
+      "ufs_qcom",
+      "gh_vcpu_mgr",
+      "qrtr",
+      "smcinvoke_dlkm",
+      "zsmalloc",
+      "zram",
+      "pcie_pdc",
+      "qcom_glink",
+      "qcom_glink_smem",
+      "qcom_smd",
+      "rproc_qcom_common",
+      "pci_msm_drv",
+      "mhi",
+      "governor_gpubw_mon",
+      "governor_msm_adreno_tz",
+      "governor_msm_adreno_ro",
+      "drm_display_helper",
+      "coresight",
+      "qcom_vadc_common",
+      "qcom_spmi_adc5_gen3",
+      "pm8941_pwrkey",
+      "panel_event_notifier",
+      "qmi_helpers",
+      "qcom_pdr_msg",
+      "pdr_interface",
+      "qti_pmic_glink",
+      "qti_battery_charger",
+      "qcom_hv_haptics",
+      "leds_qcom_flash",
+      "mi_fp",
+      "nvmem_qfprom",
+      "pinctrl_spmi_gpio",
+      "reboot_mode",
+      "qcom_pon",
+      "mca_sysfs",
+      "mca_event",
+      "mca_log",
+      "mca_charge_interface",
+      "mca_charge_mievent",
+      "mca_hwid",
+      "mca_voter",
+      "mca_parse_dts",
+      "mca_workqueue",
+      "mca_platform_buckchg_class",
+      "mca_strategy_fg_class",
+      "mca_business_battery_comp",
+      "mca_strategy_class",
+      "charger_partition",
+      "fsa4480_i2c",
+      "mca_protocol_class",
+      "mca_protocol_pd_class",
+      "mca_connector_antiburn",
+      "mca_lpd_detect",
+      "mca_platform_cp_class",
+      "mca_platform_wireless_class",
+      "mca_wireless_revchg",
+      "mca_business_charger_comp",
+      "mca_platform_fg_ic_ops",
+      "mca_platform_loadsw_class",
+      "mca_protocol_qc_class",
+      "mca_smart_charge",
+      "mca_strategy_quickchg",
+      "mca_qcom_smem",
+      "mca_strategy_buckchg",
+      "mca_charger_thermal",
+      "mca_buckchg_jeita",
+      "mca_strategy_fg_comp",
+      "mca_pd_auth",
+      "mca_basic_wireless",
+      "mca_quick_wireless",
+      "mca_platform_bc12_class",
+      "mca_path_control",
+      "mca_vbat_ovp_monitor",
+      "mca_ibat_ocp_monitor",
+      "mca_bmd",
+      "mca_adsp_glink",
+      "mca_qcom_subpmic_proxy",
+      "qcom_adsp_pd_protocol",
+      "sc8581",
+      "bq27z561",
+      "mca_qcom_sysfs",
+      "qti_fixed_regulator",
+      "qcom_pil_info",
+      "qcom_sysmon",
+      "qcom_q6v5",
+      "qcom_ramdump",
+      "qcom_q6v5_pas",
+      "glink_pkt",
+      "altmode_glink",
+      "eud",
+      "msm_performance",
+      "qcom_va_minidump",
+      "smp2p",
+      "wcd_usbss_i2c",
+      "spi_msm_geni",
+      "msm_geni_serial",
+      "msm_sharedmem",
+      "redriver",
+      "repeater",
+      "dwc3_msm",
+      "usb_f_gsi",
+      "phy_generic",
+      "phy_msm_m31_eusb2",
+      "eom_driver",
+      "phy_msm_ssusb_qmp",
+      "nb7vpq904m",
+      "repeater_qti_pmic_eusb2",
+      "ucsi_qti_glink",
+      "gh_irq_lend",
+      "msm_sysstats",
+      "qrtr_mhi",
+      "qrtr_smd",
+      "hdcp_qseecom_dlkm",
+      "msm_ext_display",
+      "msm_hfi_core",
+      "msm_hw_fence",
+      "smmu_proxy_dlkm",
+      "sync_fence",
+      "ipclite",
+      "synx_driver",
+      "msm_drm",
+      "msm_mmrm",
+      "focaltech_myron",
+      "qcom_spmi_wled"
+    ],
+    "boot_load": [
+      "gh_arm_drv",
+      "qti_regmap_debugfs",
+      "debug_symbol",
+      "deferred_free_helper",
+      "gh_dbl",
+      "gh_msgq",
+      "qcom_scm",
+      "secure_buffer",
+      "gh_rm_drv",
+      "gh_mem_notifier",
+      "mem_prot",
+      "gh_rm_heap_manager",
+      "mem_buf_dev",
+      "msm_dma_iommu_mapping",
+      "qcom_dma_heaps",
+      "smem",
+      "minidump",
+      "qcom_ipc_logging",
+      "crm_v2",
+      "debug_regulator",
+      "proxy_consumer",
+      "gdsc_regulator",
+      "icc_clk",
+      "clk_qcom",
+      "cambistmclkcc_canoe",
+      "camcc_alor",
+      "camcc_canoe",
+      "clk_dummy",
+      "cmd_db",
+      "qcom_rpmh",
+      "clk_rpmh",
+      "debugcc_canoe",
+      "dispcc_canoe",
+      "evacc_canoe",
+      "gcc_alor",
+      "gcc_canoe",
+      "gpucc_canoe",
+      "tcsrcc_canoe",
+      "videocc_canoe",
+      "clk_scmi",
+      "msm_gpi",
+      "qcom_scmi_vendor",
+      "qseecom_proxy",
+      "si_core_module",
+      "qcom_hwspinlock",
+      "i2c_msm_geni",
+      "icc_bcm_voter",
+      "icc_debug",
+      "socinfo",
+      "icc_rpmh",
+      "qnoc_qos",
+      "qnoc_canoe",
+      "qnoc_alor",
+      "iommu_logger",
+      "qcom_iommu_util",
+      "arm_smmu",
+      "qcom_iommu_debug",
+      "qcom_pdc",
+      "qcom_aoss",
+      "msm_qmp",
+      "qcom_ipcc",
+      "qcom_spmi_pmic",
+      "hwid",
+      "miev",
+      "cqhci",
+      "pinctrl_msm",
+      "qcom_ice",
+      "sdhci_msm",
+      "nvmem_qcom_spmi_sdam",
+      "cpu_phys_log_map",
+      "qcom_llcc_pmu",
+      "arm_smmu_pmu",
+      "phy_qcom_ufs",
+      "phy_qcom_ufs_qmp_v4_canoe",
+      "phy_qcom_ufs_qrbtc_sdm845",
+      "pinctrl_canoe",
+      "pinctrl_alor",
+      "pinctrl_chora",
+      "qcom_dload_mode",
+      "qcom_reboot_reason",
+      "rpmh_regulator",
+      "stub_regulator",
+      "rtc_pm8xxx",
+      "sg",
+      "dcvs_fp",
+      "qcom_dcvs",
+      "qcom_scmi_client",
+      "qcom_pmu_lib",
+      "mem_buf_msgq",
+      "mem_buf",
+      "gic_intr_routing",
+      "llcc_qcom",
+      "mdt_loader",
+      "memory_dump_v2",
+      "qcom_sdei",
+      "pmic_pon_log",
+      "qcom_cpucp",
+      "sched_walt",
+      "cpucp_fast",
+      "qcom_cpu_vendor_hooks",
+      "qcom_logbuf_boot_log",
+      "qcom_logbuf_vendor_hooks",
+      "qcom_wdt_core",
+      "qcom_soc_wdt",
+      "spmi_pmic_arb",
+      "bcl_pmic5",
+      "cpu_hotplug",
+      "qcom_tsens",
+      "thermal_pause",
+      "ufshcd_crypto_qti",
+      "ufs_qcom",
+      "gh_vcpu_mgr",
+      "qrtr",
+      "smcinvoke_dlkm"
+    ],
+    "recovery_load": [
+      "gh_arm_drv",
+      "qti_regmap_debugfs",
+      "debug_symbol",
+      "deferred_free_helper",
+      "gh_dbl",
+      "gh_msgq",
+      "qcom_scm",
+      "secure_buffer",
+      "gh_rm_drv",
+      "gh_mem_notifier",
+      "mem_prot",
+      "gh_rm_heap_manager",
+      "mem_buf_dev",
+      "msm_dma_iommu_mapping",
+      "qcom_dma_heaps",
+      "smem",
+      "minidump",
+      "qcom_ipc_logging",
+      "crm_v2",
+      "debug_regulator",
+      "proxy_consumer",
+      "gdsc_regulator",
+      "icc_clk",
+      "clk_qcom",
+      "cambistmclkcc_canoe",
+      "camcc_alor",
+      "camcc_canoe",
+      "clk_dummy",
+      "cmd_db",
+      "qcom_rpmh",
+      "clk_rpmh",
+      "debugcc_canoe",
+      "dispcc_canoe",
+      "evacc_canoe",
+      "gcc_alor",
+      "gcc_canoe",
+      "gpucc_canoe",
+      "tcsrcc_canoe",
+      "videocc_canoe",
+      "clk_scmi",
+      "msm_gpi",
+      "qcom_scmi_vendor",
+      "qseecom_proxy",
+      "si_core_module",
+      "qcom_hwspinlock",
+      "i2c_msm_geni",
+      "icc_bcm_voter",
+      "icc_debug",
+      "socinfo",
+      "icc_rpmh",
+      "qnoc_qos",
+      "qnoc_canoe",
+      "qnoc_alor",
+      "iommu_logger",
+      "qcom_iommu_util",
+      "arm_smmu",
+      "qcom_iommu_debug",
+      "qcom_pdc",
+      "qcom_aoss",
+      "msm_qmp",
+      "qcom_ipcc",
+      "qcom_spmi_pmic",
+      "hwid",
+      "miev",
+      "cqhci",
+      "pinctrl_msm",
+      "qcom_ice",
+      "sdhci_msm",
+      "nvmem_qcom_spmi_sdam",
+      "cpu_phys_log_map",
+      "qcom_llcc_pmu",
+      "arm_smmu_pmu",
+      "phy_qcom_ufs",
+      "phy_qcom_ufs_qmp_v4_canoe",
+      "phy_qcom_ufs_qrbtc_sdm845",
+      "pinctrl_canoe",
+      "pinctrl_alor",
+      "pinctrl_chora",
+      "qcom_dload_mode",
+      "qcom_reboot_reason",
+      "rpmh_regulator",
+      "stub_regulator",
+      "rtc_pm8xxx",
+      "sg",
+      "dcvs_fp",
+      "qcom_dcvs",
+      "qcom_scmi_client",
+      "qcom_pmu_lib",
+      "mem_buf_msgq",
+      "mem_buf",
+      "gic_intr_routing",
+      "llcc_qcom",
+      "mdt_loader",
+      "memory_dump_v2",
+      "qcom_sdei",
+      "pmic_pon_log",
+      "qcom_cpucp",
+      "sched_walt",
+      "cpucp_fast",
+      "qcom_cpu_vendor_hooks",
+      "qcom_logbuf_boot_log",
+      "qcom_logbuf_vendor_hooks",
+      "qcom_wdt_core",
+      "qcom_soc_wdt",
+      "spmi_pmic_arb",
+      "bcl_pmic5",
+      "cpu_hotplug",
+      "qcom_tsens",
+      "thermal_pause",
+      "ufshcd_crypto_qti",
+      "ufs_qcom",
+      "gh_vcpu_mgr",
+      "qrtr",
+      "zsmalloc",
+      "zram",
+      "pcie_pdc",
+      "qcom_glink",
+      "qcom_glink_smem",
+      "qcom_smd",
+      "rproc_qcom_common",
+      "pci_msm_drv",
+      "mhi",
+      "governor_gpubw_mon",
+      "governor_msm_adreno_tz",
+      "governor_msm_adreno_ro",
+      "drm_display_helper",
+      "coresight",
+      "qcom_vadc_common",
+      "qcom_spmi_adc5_gen3",
+      "pm8941_pwrkey",
+      "panel_event_notifier",
+      "qmi_helpers",
+      "qcom_pdr_msg",
+      "pdr_interface",
+      "qti_pmic_glink",
+      "qti_battery_charger",
+      "qcom_hv_haptics",
+      "leds_qcom_flash",
+      "mi_fp",
+      "nvmem_qfprom",
+      "pinctrl_spmi_gpio",
+      "reboot_mode",
+      "qcom_pon",
+      "mca_sysfs",
+      "mca_event",
+      "mca_log",
+      "mca_charge_interface",
+      "mca_charge_mievent",
+      "mca_hwid",
+      "mca_voter",
+      "mca_parse_dts",
+      "mca_workqueue",
+      "mca_platform_buckchg_class",
+      "mca_strategy_fg_class",
+      "mca_business_battery_comp",
+      "mca_strategy_class",
+      "charger_partition",
+      "fsa4480_i2c",
+      "mca_protocol_class",
+      "mca_protocol_pd_class",
+      "mca_connector_antiburn",
+      "mca_lpd_detect",
+      "mca_platform_cp_class",
+      "mca_platform_wireless_class",
+      "mca_wireless_revchg",
+      "mca_business_charger_comp",
+      "mca_platform_fg_ic_ops",
+      "mca_platform_loadsw_class",
+      "mca_protocol_qc_class",
+      "mca_smart_charge",
+      "mca_strategy_quickchg",
+      "mca_qcom_smem",
+      "mca_strategy_buckchg",
+      "mca_charger_thermal",
+      "mca_buckchg_jeita",
+      "mca_strategy_fg_comp",
+      "mca_pd_auth",
+      "mca_basic_wireless",
+      "mca_quick_wireless",
+      "mca_platform_bc12_class",
+      "mca_path_control",
+      "mca_vbat_ovp_monitor",
+      "mca_ibat_ocp_monitor",
+      "mca_bmd",
+      "mca_adsp_glink",
+      "mca_qcom_subpmic_proxy",
+      "qcom_adsp_pd_protocol",
+      "sc8581",
+      "bq27z561",
+      "mca_qcom_sysfs",
+      "qti_fixed_regulator",
+      "qcom_pil_info",
+      "qcom_sysmon",
+      "qcom_q6v5",
+      "qcom_ramdump",
+      "qcom_q6v5_pas",
+      "glink_pkt",
+      "altmode_glink",
+      "eud",
+      "msm_performance",
+      "qcom_va_minidump",
+      "smp2p",
+      "wcd_usbss_i2c",
+      "spi_msm_geni",
+      "msm_geni_serial",
+      "msm_sharedmem",
+      "redriver",
+      "repeater",
+      "dwc3_msm",
+      "usb_f_gsi",
+      "phy_generic",
+      "phy_msm_m31_eusb2",
+      "eom_driver",
+      "phy_msm_ssusb_qmp",
+      "nb7vpq904m",
+      "repeater_qti_pmic_eusb2",
+      "ucsi_qti_glink",
+      "gh_irq_lend",
+      "msm_sysstats",
+      "qrtr_mhi",
+      "qrtr_smd",
+      "smcinvoke_dlkm",
+      "hdcp_qseecom_dlkm",
+      "msm_ext_display",
+      "msm_hfi_core",
+      "msm_hw_fence",
+      "smmu_proxy_dlkm",
+      "sync_fence",
+      "ipclite",
+      "synx_driver",
+      "msm_drm",
+      "msm_mmrm",
+      "focaltech_myron",
+      "qcom_spmi_wled"
+    ]
+  },
+  "excluded_stock_modules": {
+    "boot": [
+      "mem_object.ko",
+      "qcom_tzmem.ko",
+      "perf_helper.ko",
+      "mi-power.ko",
+      "dio_dma_mapper.ko",
+      "iorap2.ko",
+      "mi_memory.ko",
+      "swinfo.ko",
+      "boottime.ko",
+      "unfairmem.ko",
+      "scene_swappiness.ko",
+      "cpq.ko",
+      "mi_wq_dynamic_priority.ko",
+      "fault_report.ko",
+      "millet_core.ko",
+      "millet_binder.ko",
+      "binder_gki.ko",
+      "millet_oem_cgroup.ko",
+      "millet_hs.ko",
+      "millet_sig.ko",
+      "millet_pkg.ko",
+      "mi_schedule.ko",
+      "metis.ko",
+      "migt.ko",
+      "mist.ko",
+      "miloadtrace.ko",
+      "perfmgr.ko",
+      "mi_damon.ko",
+      "mi_mempool.ko",
+      "mi_mem_epoll.ko",
+      "mi_mem_limit.ko",
+      "mi_proc_exit.ko",
+      "dynamic_readahead.ko",
+      "bootinfo.ko",
+      "debug_ext.ko"
+    ],
+    "recovery": [
+      "mem_object.ko",
+      "qcom_tzmem.ko",
+      "perf_helper.ko",
+      "mi-power.ko",
+      "dio_dma_mapper.ko",
+      "iorap2.ko",
+      "mi_memory.ko",
+      "swinfo.ko",
+      "boottime.ko",
+      "unfairmem.ko",
+      "scene_swappiness.ko",
+      "cpq.ko",
+      "mi_wq_dynamic_priority.ko",
+      "fault_report.ko",
+      "millet_core.ko",
+      "millet_binder.ko",
+      "binder_gki.ko",
+      "millet_oem_cgroup.ko",
+      "millet_hs.ko",
+      "millet_sig.ko",
+      "millet_pkg.ko",
+      "mi_schedule.ko",
+      "metis.ko",
+      "migt.ko",
+      "mist.ko",
+      "miloadtrace.ko",
+      "perfmgr.ko",
+      "mi_damon.ko",
+      "mi_mempool.ko",
+      "mi_mem_epoll.ko",
+      "mi_mem_limit.ko",
+      "mi_proc_exit.ko",
+      "dynamic_readahead.ko",
+      "mhi_dev_satellite.ko",
+      "mhi_dev_uci.ko",
+      "rdbg.ko",
+      "debugcc-alor.ko",
+      "qcom_lpm.ko",
+      "qcom-rng.ko",
+      "bam_dma.ko",
+      "qcom_edac.ko",
+      "lt9611uxc.ko",
+      "hwmon.ko",
+      "qti_amoled_ecm.ko",
+      "qti_btl.ko",
+      "coresight-csr.ko",
+      "coresight-cti.ko",
+      "coresight-dummy.ko",
+      "coresight-funnel.ko",
+      "coresight-replicator.ko",
+      "coresight-qmi.ko",
+      "coresight-remote-etm.ko",
+      "coresight-tmc-sec.ko",
+      "coresight-stm.ko",
+      "coresight-tgu.ko",
+      "coresight-tmc.ko",
+      "coresight-tpda.ko",
+      "coresight-tpdm.ko",
+      "coresight-trace-noc.ko",
+      "coresight-uetm.ko",
+      "stm_console.ko",
+      "stm_core.ko",
+      "stm_ftrace.ko",
+      "stm_heartbeat.ko",
+      "stm_p_ost.ko",
+      "i3c-master-msm-geni.ko",
+      "qti-glink-adc.ko",
+      "msm_show_resume_irq.ko",
+      "leds-qcom-lpg.ko",
+      "ledtrig-pattern.ko",
+      "leds-qpnp-vibrator-ldo.ko",
+      "qcom-i2c-pmic.ko",
+      "mi_ntsync.ko",
+      "phy-qcom-eusb2-repeater.ko",
+      "phy-qcom-m31-eusb2.ko",
+      "phy-qcom-qmp-combo.ko",
+      "pinctrl-spmi-mpp.ko",
+      "mca_business_misc_comp.ko",
+      "mca_platform_base.ko",
+      "mca_qcom_panel.ko",
+      "sc8531.ko",
+      "hl7603.ko",
+      "nuvolta_1671.ko",
+      "sc96281_charger.ko",
+      "sc7601.ko",
+      "qptf.ko",
+      "qti_power_telemetry.ko",
+      "qti_ptd_share.ko",
+      "qcom-amoled-regulator.ko",
+      "qti-ocp-notifier.ko",
+      "qcom_spss.ko",
+      "qcom_glink_spss.ko",
+      "slimbus.ko",
+      "slim-qcom-ngd-ctrl.ko",
+      "bwmon.ko",
+      "memlat.ko",
+      "heap_mem_ext_v01.ko",
+      "msm_memshare.ko",
+      "sps_drv.ko",
+      "mpam.ko",
+      "cpu_mpam.ko",
+      "platform_mpam.ko",
+      "mpam_msc.ko",
+      "mpam_msc_slc.ko",
+      "slc_mpam.ko",
+      "adsp_sleepmon.ko",
+      "boot_stats.ko",
+      "cdsprm.ko",
+      "charger-ulog-glink.ko",
+      "cpucp_log.ko",
+      "cpuss_telemetry.ko",
+      "dcc_v2.ko",
+      "dmesg_dumper.ko",
+      "qcom_fdcvs.ko",
+      "gh_tlmm_vm_mem_access.ko",
+      "glink_probe.ko",
+      "hung_task_enh.ko",
+      "llcc_heuristics.ko",
+      "mem-offline.ko",
+      "mem-hooks.ko",
+      "microdump_collector.ko",
+      "msm_show_epoch.ko",
+      "qcom_pd_mapper.ko",
+      "pmic-glink-debug.ko",
+      "qcom_cache_allocation.ko",
+      "qcom_cpuss_sleep_stats_v4.ko",
+      "qcom_dynamic_ramoops.ko",
+      "qcom_lpm_monitor.ko",
+      "qcom_stats.ko",
+      "qcom_voltage_adj.ko",
+      "qsee_ipc_irq_bridge.ko",
+      "qti_battery_debug.ko",
+      "slc_perfmon.ko",
+      "smp2p_sleepstate.ko",
+      "sysmon_subsystem_stats.ko",
+      "sys_pm_vx.ko",
+      "qcom-pmic-ecid.ko",
+      "spmi-pmic-arb-debug.ko",
+      "mi_thermal_interface.ko",
+      "bcl_soc.ko",
+      "ddr_cdev.ko",
+      "qcom-spmi-temp-alarm.ko",
+      "qti_cpufreq_cdev.ko",
+      "qti_devfreq_cdev.ko",
+      "qti_qmi_cdev.ko",
+      "qti_qmi_sensor_v2.ko",
+      "qti_userspace_cdev.ko",
+      "thermal_config.ko",
+      "qti_thermal_vendor_hooks.ko",
+      "qti_dynamic_hw_trip.ko",
+      "lmh_stats.ko",
+      "hvc_gunyah.ko",
+      "f_fs_ipc_log.ko",
+      "usb_f_ccid.ko",
+      "usb_f_cdev.ko",
+      "usb_f_qdss.ko",
+      "phy-qcom-emu.ko",
+      "gh_ctrl.ko",
+      "gh_panic_notifier.ko",
+      "gh_rm_booster.ko",
+      "gunyah_trace.ko",
+      "ufs_ffu.ko",
+      "ir-spi.ko",
+      "mi_memcheck.ko",
+      "hypsys_netlink.ko",
+      "dump_display.ko",
+      "kshrink_slabd.ko",
+      "mtdoops.ko",
+      "binder_prio.ko",
+      "mi_trace.ko",
+      "printk_enhance.ko",
+      "mi_stack.ko",
+      "mi_ubt.ko",
+      "mi_ubt_test.ko",
+      "bootmonitor.ko",
+      "hangdetect.ko",
+      "io_monitor.ko",
+      "gpio-mi-t1.ko",
+      "powersave.ko",
+      "gpu_stats.ko",
+      "gpu_freq_stats.ko",
+      "common.ko",
+      "qrtr-gunyah.ko",
+      "snd-usb-audio-qmi.ko",
+      "bootinfo.ko",
+      "debug_ext.ko"
+    ],
+    "vendor": [
+      "mhi_dev_satellite.ko",
+      "mhi_dev_uci.ko",
+      "rdbg.ko",
+      "debugcc-alor.ko",
+      "qcom_lpm.ko",
+      "qcom-rng.ko",
+      "bam_dma.ko",
+      "qcom_edac.ko",
+      "lt9611uxc.ko",
+      "hwmon.ko",
+      "qti_amoled_ecm.ko",
+      "qti_btl.ko",
+      "coresight-csr.ko",
+      "coresight-cti.ko",
+      "coresight-dummy.ko",
+      "coresight-funnel.ko",
+      "coresight-replicator.ko",
+      "coresight-qmi.ko",
+      "coresight-remote-etm.ko",
+      "coresight-tmc-sec.ko",
+      "coresight-stm.ko",
+      "coresight-tgu.ko",
+      "coresight-tmc.ko",
+      "coresight-tpda.ko",
+      "coresight-tpdm.ko",
+      "coresight-trace-noc.ko",
+      "coresight-uetm.ko",
+      "stm_console.ko",
+      "stm_core.ko",
+      "stm_ftrace.ko",
+      "stm_heartbeat.ko",
+      "stm_p_ost.ko",
+      "i3c-master-msm-geni.ko",
+      "qti-glink-adc.ko",
+      "msm_show_resume_irq.ko",
+      "leds-qcom-lpg.ko",
+      "ledtrig-pattern.ko",
+      "leds-qpnp-vibrator-ldo.ko",
+      "qcom-i2c-pmic.ko",
+      "mi_ntsync.ko",
+      "phy-qcom-eusb2-repeater.ko",
+      "phy-qcom-m31-eusb2.ko",
+      "phy-qcom-qmp-combo.ko",
+      "pinctrl-spmi-mpp.ko",
+      "mca_business_misc_comp.ko",
+      "mca_platform_base.ko",
+      "mca_qcom_panel.ko",
+      "sc8531.ko",
+      "hl7603.ko",
+      "nuvolta_1671.ko",
+      "sc96281_charger.ko",
+      "sc7601.ko",
+      "qptf.ko",
+      "qti_power_telemetry.ko",
+      "qti_ptd_share.ko",
+      "qcom-amoled-regulator.ko",
+      "qti-ocp-notifier.ko",
+      "qcom_spss.ko",
+      "qcom_glink_spss.ko",
+      "slimbus.ko",
+      "slim-qcom-ngd-ctrl.ko",
+      "bwmon.ko",
+      "memlat.ko",
+      "heap_mem_ext_v01.ko",
+      "msm_memshare.ko",
+      "sps_drv.ko",
+      "mpam.ko",
+      "cpu_mpam.ko",
+      "platform_mpam.ko",
+      "mpam_msc.ko",
+      "mpam_msc_slc.ko",
+      "slc_mpam.ko",
+      "adsp_sleepmon.ko",
+      "boot_stats.ko",
+      "cdsprm.ko",
+      "charger-ulog-glink.ko",
+      "cpucp_log.ko",
+      "cpuss_telemetry.ko",
+      "dcc_v2.ko",
+      "dmesg_dumper.ko",
+      "qcom_fdcvs.ko",
+      "gh_tlmm_vm_mem_access.ko",
+      "glink_probe.ko",
+      "hung_task_enh.ko",
+      "llcc_heuristics.ko",
+      "mem-offline.ko",
+      "mem-hooks.ko",
+      "microdump_collector.ko",
+      "msm_show_epoch.ko",
+      "qcom_pd_mapper.ko",
+      "pmic-glink-debug.ko",
+      "qcom_cache_allocation.ko",
+      "qcom_cpuss_sleep_stats_v4.ko",
+      "qcom_dynamic_ramoops.ko",
+      "qcom_lpm_monitor.ko",
+      "qcom_stats.ko",
+      "qcom_voltage_adj.ko",
+      "qsee_ipc_irq_bridge.ko",
+      "qti_battery_debug.ko",
+      "slc_perfmon.ko",
+      "smp2p_sleepstate.ko",
+      "sysmon_subsystem_stats.ko",
+      "sys_pm_vx.ko",
+      "qcom-pmic-ecid.ko",
+      "spmi-pmic-arb-debug.ko",
+      "mi_thermal_interface.ko",
+      "bcl_soc.ko",
+      "ddr_cdev.ko",
+      "qcom-spmi-temp-alarm.ko",
+      "qti_cpufreq_cdev.ko",
+      "qti_devfreq_cdev.ko",
+      "qti_qmi_cdev.ko",
+      "qti_qmi_sensor_v2.ko",
+      "qti_userspace_cdev.ko",
+      "thermal_config.ko",
+      "qti_thermal_vendor_hooks.ko",
+      "qti_dynamic_hw_trip.ko",
+      "lmh_stats.ko",
+      "hvc_gunyah.ko",
+      "f_fs_ipc_log.ko",
+      "usb_f_ccid.ko",
+      "usb_f_cdev.ko",
+      "usb_f_qdss.ko",
+      "phy-qcom-emu.ko",
+      "gh_ctrl.ko",
+      "gh_panic_notifier.ko",
+      "gh_rm_booster.ko",
+      "gunyah_trace.ko",
+      "ufs_ffu.ko",
+      "ir-spi.ko",
+      "mi_memcheck.ko",
+      "hypsys_netlink.ko",
+      "dump_display.ko",
+      "kshrink_slabd.ko",
+      "mtdoops.ko",
+      "binder_prio.ko",
+      "mi_trace.ko",
+      "printk_enhance.ko",
+      "mi_stack.ko",
+      "mi_ubt.ko",
+      "mi_ubt_test.ko",
+      "bootmonitor.ko",
+      "hangdetect.ko",
+      "io_monitor.ko",
+      "gpio-mi-t1.ko",
+      "powersave.ko",
+      "gpu_stats.ko",
+      "gpu_freq_stats.ko",
+      "common.ko",
+      "mac80211.ko",
+      "qrtr-gunyah.ko",
+      "snd-usb-audio-qmi.ko",
+      "sla.ko",
+      "miwill.ko",
+      "minet.ko",
+      "miicmpfilter.ko",
+      "mibbr.ko",
+      "ftun.ko",
+      "quic.ko",
+      "matt.ko",
+      "qca_cld3_kiwi_v2.ko",
+      "qca_cld3_wcn7750.ko",
+      "icnss2.ko",
+      "cs35l43_dlkm.ko",
+      "tas25xx_dlkm.ko",
+      "swr_dmic_dlkm.ko",
+      "wcd938x_dlkm.ko",
+      "wcd938x_slave_dlkm.ko",
+      "wcd9378_slave_dlkm.ko",
+      "qmp_dlkm.ko",
+      "simple_amp_dlkm.ko",
+      "radio-i2c-rtc6226-qca.ko",
+      "btfm_slim_codec.ko",
+      "cameramsger.ko",
+      "cameralog.ko",
+      "mi_cam.ko",
+      "ipanetm.ko",
+      "rmnet_offload.ko",
+      "rmnet_perf_tether.ko",
+      "rmnet_wlan.ko",
+      "rmnet_aps.ko",
+      "rmnet_sch.ko",
+      "stm_st54se_gpio.ko",
+      "hardwareinfo.ko",
+      "mitee_dlkm.ko",
+      "stm_nfc_i2c.ko",
+      "qcedev-mod_dlkm.ko",
+      "qcrypto-msm_dlkm.ko",
+      "qce50_dlkm.ko",
+      "qrng_dlkm.ko",
+      "tmecom-intf_dlkm.ko",
+      "tz_log_dlkm.ko",
+      "spcom.ko",
+      "spss_utils.ko",
+      "ipclite_test.ko",
+      "msm_video.ko",
+      "spi_cnss_proto.ko",
+      "tango32.ko",
+      "focaltech_touch_3683.ko",
+      "xiaomi_touch.ko"
+    ]
+  },
+  "notes": [
+    "297 source providers selected; alternative Qualcomm zram/zsmalloc excluded.",
+    "Load order is a ROM integration candidate, not a reproduction of R115 custom early-init runtime.",
+    "OEM-only optional modules without a selected source provider are explicitly listed, never copied as old binaries."
+  ]
+}

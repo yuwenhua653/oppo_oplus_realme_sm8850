@@ -1,0 +1,30 @@
+{
+  "status": "DEVICE_KERNEL_SOURCE_INTEGRATION_CHECKED_NOT_FULL_ROM_BUILT",
+  "device": "Redmi K90PM / myron",
+  "source_entry": "35b9d149db371891a6045397eeabd7fcaabd3b52",
+  "upstream": {
+    "myron": "941665af189930742a02deb258583ec697a7e8ec",
+    "sm8850-common": "98310d6cb945d6ca3d76a8bf2932dc83b0f65b0a",
+    "vendor_evolution": "60867a0c44d04f752e4966bd275da94d1f609c29",
+    "build": "75f33f854b8f750c46b5fd666457cea5c3636a65",
+    "manifest": "16cc234b9d4e619dc702831d5ed49da90ce791aa",
+    "stock-kernel": "9999f765b53876bf7a013a4fde5221153ad570fc",
+    "kati": "feba7adbbd1572c6291ecf6d0d9b1256800acbef"
+  },
+  "checks": {
+    "r115_output_stage": true,
+    "selected_module_names": 297,
+    "import_crc_checks": 18543,
+    "adapter_tests": 8,
+    "merge_preserves_R113_BoardConfig": true,
+    "merge_preserves_other_policy_files": true,
+    "merge_idempotent": true,
+    "merge_rejects_conflicting_adapter": true,
+    "kati_ninja_clean_output_graph": true,
+    "upstream_module_packaging_macro_graph": true,
+    "full_soong_rom_build": false,
+    "new_kernel_compilation_this_round": false,
+    "new_device_test": false
+  },
+  "publication_scope": "Public upstream device files and new build adapter only; no private R110/R113 derived policy/runtime files."
+}
