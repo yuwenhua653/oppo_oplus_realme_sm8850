@@ -1,0 +1,6 @@
+config MIEV
+	tristate "Xiaomi misight event (miev) log channel"
+	help
+	  Xiaomi MiSight event log char device. Provides the cdev_tevent_*
+	  kernel API used by charge/haptic/usb drivers to report fault and
+	  telemetry events to the misight userspace daemon via /dev/miev.

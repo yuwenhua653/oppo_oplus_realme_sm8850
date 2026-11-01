@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config MYRON_TFA98XX
+	tristate "Myron TFA98xx source port (experimental)"
+	depends on I2C && SND_SOC && OF && GPIOLIB
+	select REGMAP_I2C
+	default n
+	help
+	  Review-only port of MiCode onyx-v-oss v6.13. Hardware firmware,
+	  revision and ASoC machine contracts must be confirmed before use.
