@@ -1,0 +1,1564 @@
+[
+  {
+    "files": [],
+    "head": "e114b907efb6c8ef513617cc13fdc0f87c46abde",
+    "path": "build/kernel",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [
+      {
+        "path": "arch/arm64/configs/gki_defconfig",
+        "sha256": "9f9e13e14874e49b3a1d7dc3cff1e5cb0fd9000fdc47c37e6a230c85f3d1c4ce"
+      },
+      {
+        "path": "modules.bzl",
+        "sha256": "11c24f70748c40e3b2fb9dafb9873938f7624dd37a1f03fcb0ba9f24d7741ebe"
+      },
+      {
+        "path": "scripts/Makefile.dtbs",
+        "sha256": "1ef69e4fdd0c17d0c69a914d96cc37af6b250cbc47bc23f073e0906d0ee3258e"
+      }
+    ],
+    "head": "41a2024a9e2eb66ab0643a865d74943b4ee3cff8",
+    "path": "common",
+    "tracked_diff_sha256": "f5faba2352239e3e7a4202a84794709077e4982866d0b85e4c542a61446926cb"
+  },
+  {
+    "files": [],
+    "head": "45977ff0bb27e608bdf6357438d69ccaccddf2d8",
+    "path": "common-modules/wonder",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "3040c774a67513afe8cb3afcf14678fd77442f72",
+    "path": "common-modules/trusty",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "00277701203bdfb6c5255afcc0948d29fe3e0248",
+    "path": "common-modules/virtio-media",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "b19861150ed8d9d858e8999684f2160501e2dfd8",
+    "path": "common-modules/virtual-device",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "77c95e8253c2c82ffd4fee92c0ad9f5ac1e8ca04",
+    "path": "prebuilts/clang/host/linux-x86",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "81777ac458f7a91041c810dff65d1cdf3f41d790",
+    "path": "prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "574765b494f226284968a8d156437e4c932aad61",
+    "path": "prebuilts/build-tools",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "c03d5bc912878cdcbdc38fcb003e94116b978956",
+    "path": "prebuilts/clang-tools",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "811c6e2938d53b3c318d7635b03931601a68c765",
+    "path": "prebuilts/kernel-build-tools",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "5c78b1e636b2bf68d46a6980437590fddca64147",
+    "path": "prebuilts/rust",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "167f905b0c2bf311fedb039e8b30840176750ae8",
+    "path": "tools/mkbootimg",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "b43dc974b874d58e939c51c774276d3ed173e4e1",
+    "path": "prebuilts/jdk/jdk11",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "e535051ebc04204cec44bde38f62385d63180388",
+    "path": "prebuilts/ndk-r26",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "8dd5e09d5faf27a871e8654ddaa2d2af7c696578",
+    "path": "external/libcap-ng",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "9a2ead0b5a377a75849cb0656aa553b5452a7080",
+    "path": "external/libcap",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "5716f9a0bd746eab4771e443196e3a783c114405",
+    "path": "external/bazel-contrib-bazel_features",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "8dc2399ac318aaa8318e5041de9c66945539f09b",
+    "path": "external/bazel-skylib",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "5fbb731d1654da0cc0a51b6c4dc213ef69a30b9d",
+    "path": "external/bazelbuild-bazel-central-registry",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "6d0e9339ebcce217bd6cc45d81f8612ce78ab761",
+    "path": "external/bazelbuild-platforms",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "07fd761ee642018946a1cf51c69be663190140a6",
+    "path": "external/bazelbuild-rules_cc",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "48d5273aeec5d79939b6db8ed317d870fd967189",
+    "path": "external/bazelbuild-rules_license",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "8b19e046ffc9db31eda9ae9334476532b5e848ef",
+    "path": "external/bazelbuild-rules_pkg",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "c198cb06e0374124467250b3de653d7159f333d1",
+    "path": "external/bazelbuild-rules_python",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "b6d7e81a4e27a5f0106668fb71b05d6784dbde6f",
+    "path": "external/bazelbuild-rules_rust",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "50c6599d83e03a746845ddd2b6ba7ff8d5e57fe0",
+    "path": "external/bazelbuild-rules_shell",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "36b3259addca1297dad9e00de002cb4a9c85766a",
+    "path": "external/python/absl-py",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "f2a717445d3a8a1aaa5aeef1cb2e9a4bc739e9b1",
+    "path": "external/lz4",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "9bc9fa17d499ddde88b77820f6d063e16c0cdd42",
+    "path": "external/pigz",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "0696100f220f78a264e49933bfaf05c7c54873d5",
+    "path": "external/toybox",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "0664e5ce6422f79bfedf299477f19c6f532cdc3d",
+    "path": "external/zlib",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "610a2d4f13c64608d21b083177838368c9fcb1cc",
+    "path": "external/zopfli",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "8c45c63be6930565b6f0a7e72f6be8e4620f0e92",
+    "path": "test/ltp",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "699721d9a6bade4de53edc9bb8a268ce2887f53e",
+    "path": "bootable/libbootloader",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "9565b5ee790a4ae7acd0c6c04a2b3e0c7eeced3c",
+    "path": "bootable/recovery",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "54fd6939e177f8ff529b10183254802c76df6d08",
+    "path": "external/arm-trusted-firmware",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "a7c15a79ae2a19e60457adf77e2b0bc89266f163",
+    "path": "external/avb",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "e55d258ece08fee65442ec0a8a03021d439717b6",
+    "path": "external/boringssl",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "a36a1bcac7ec7ac9be29d8b0b5e669d53f7886f7",
+    "path": "external/compiler-rt",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "edd020ac81db8c68a7dfd38d5993001aeadedd5e",
+    "path": "external/dtc",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "1601937b4c0e9246c28026f981443a7915899ead",
+    "path": "external/libufdt",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "8ac4c3ed37ef698a90ab1fd63d66dcf517c77c4b",
+    "path": "external/open-dice",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "f881b3cc4b93cf3eff6ff9d97adee8921b21c58a",
+    "path": "external/elfutils",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "cbeab5d01811d23ea488efc07f2c31f7c53024e2",
+    "path": "external/googletest",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "df4ee8f9c746727a9f5a3e7785aa776f28401fb7",
+    "path": "external/rust/android-crates-io",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "22ce981acab277a6809f53856ee2733d282bea31",
+    "path": "external/rust/crates/smoltcp",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "9a1191933a795a8aedd67e358a9df492d36345d5",
+    "path": "external/rust/crates/zune-inflate",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "8e06e1900a87cb8eb666ed4cd92105f53ad87254",
+    "path": "prebuilts/fuchsia_sdk",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [],
+    "head": "a3b721a32242006b59cb12bd62c9133632af3a2d",
+    "path": "system/core",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "files": [
+      {
+        "path": "BUILD.bazel",
+        "sha256": "50d93f1dc71a301506dc35d9fc5b6886df0d61e49673adb472f35eb030d40e51"
+      },
+      {
+        "path": "Kconfig.msm",
+        "sha256": "d0b06fce76f621f07c9db5981ba904f7e29d864b0be7fc2cf0adbedb35f1ecf8"
+      },
+      {
+        "path": "common_sources.bzl",
+        "sha256": "20b0f1ba28f14700be6cca8e59801fa803a05517f5efccf8ecc7b132509017c7"
+      },
+      {
+        "path": "configs/canoe_perf.bzl",
+        "sha256": "2aefccfe7ef5a8d65349172f10aeb01d0993d87fa28e998d0e497721873b0f76"
+      },
+      {
+        "path": "drivers/iio/adc/qcom-spmi-adc5-gen3.c",
+        "sha256": "562626cf8268131977b0aa2929be3e98ce304e8e9a1a61af72956686167b949d"
+      },
+      {
+        "path": "drivers/input/fingerprint/mi_fp/fp_driver.c",
+        "sha256": "5b3838769d154d68d2d92f7d2b3f4e40e8373b4930af6a503b49715bf20c2cda"
+      },
+      {
+        "path": "drivers/input/fingerprint/mi_fp/fp_driver.h",
+        "sha256": "a6764f45ae99f176d23a485cf194b169516777b723f5ccff6f80ddd9d2607efe"
+      },
+      {
+        "path": "drivers/input/fingerprint/mi_fp/fp_input.c",
+        "sha256": "9f6e2fa8a4dbfb10912ad3f9d7e987bcb0aece5efe32f118e338f3d95fc6446a"
+      },
+      {
+        "path": "drivers/input/fingerprint/mi_fp/fp_netlink.c",
+        "sha256": "ba90ad760654a318cec994ba60014062a15c4357e5348772cdfb6676edd8ac84"
+      },
+      {
+        "path": "drivers/input/fingerprint/mi_fp/fp_platform.c",
+        "sha256": "5f6f5ad2dc12ab7a8272149a5b2b172a2fc398d55e7ca2b6744cfed14db966e4"
+      },
+      {
+        "path": "drivers/input/fingerprint/mi_fp/fp_ultra.h",
+        "sha256": "4964db5293861af0934a9c520555c7bfda809c27a53411947139424a8aecdf92"
+      },
+      {
+        "path": "drivers/input/touchscreen/myron/focaltech_myron.c",
+        "sha256": "7b1e96763e9ed6cc357bc3329eb8fab3ff59c14b259d12ecf9e8c1effe1e22e4"
+      },
+      {
+        "path": "drivers/input/touchscreen/myron/fts_myron_frame.h",
+        "sha256": "98411331d40e4a7f6fde72f43cd3262fbfed14577fc236777ae2064b46371e73"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/Kconfig",
+        "sha256": "2ad5f79f9163c2ddca119e18304fecd964bd6918c6ede903aa034fc2cc075d2a"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch.h",
+        "sha256": "915e565d6c18e1a16a534890c000f54bf37faa42f37880758b571bb1b7d8c33f"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_core.c",
+        "sha256": "6cf01618a24ef2ad9be96af39b7d9b83e541e01ed7f2219e42316cbd60c38c7d"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_device.c",
+        "sha256": "d09e768d4d0d3632098383a1b6edb5e734ef64cd5c2a3822ef5ee1513bc223b9"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_evdev.c",
+        "sha256": "84e6acb5a06bd4892005489306eba7e62ff50f0978a4cd4cb3915c3dc3487326"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_knock_data.c",
+        "sha256": "33cf972f34f9e71e58bce8e3b751f76c2bc89a25d82c20564dd733f9e3edc974"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_mode.c",
+        "sha256": "59a17a2ae145eb19561f7cd0ad10f2db44208f3e00d70c360c69b0d61e07052a"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_operations.c",
+        "sha256": "c09a6087e6da044cf320046ac6e8f6e8f23ed364473e17f999968d514efd659c"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_proc.c",
+        "sha256": "d48bd6211302a897f5174d564622f1127e576a943b224dc80820a8b0288a9977"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_sys.c",
+        "sha256": "f9d48b43f34cd9c28b82eb82be9aa58034b5afa9bc4296b0d8576f69525cc61a"
+      },
+      {
+        "path": "drivers/input/touchscreen/xiaomi/xiaomi_touch_type_common.h",
+        "sha256": "996933f03b8d9b4bd47fdba85712202e0602a5b881d5d2ff5f5cde1350cf6cef"
+      },
+      {
+        "path": "drivers/ir-spi/ir-spi.c",
+        "sha256": "8b2ed62c0cc357e8527e1e34d10eb0113918f7c658bfcc39fed162322b4c1efe"
+      },
+      {
+        "path": "drivers/leds/flash/leds-qcom-flash.c",
+        "sha256": "d702d8c0777ae2893bcea2af9b051e83cf81ea7bf4deaa83fe9269167b9c8f92"
+      },
+      {
+        "path": "drivers/misc/hwid/Kconfig",
+        "sha256": "a3e6940050ec3583db049626b367eff0edc9d881a7c2e58e3fe0ff1bf25673a0"
+      },
+      {
+        "path": "drivers/misc/hwid/Makefile",
+        "sha256": "35e8935ef881114a1e7819a0031038c3c2ca7eb5deafdcea71919113bc146797"
+      },
+      {
+        "path": "drivers/misc/hwid/hwid.c",
+        "sha256": "bf9da3e02041599782c8c930e7b4b98f908c6736e86ac90cdacf94b97a86836d"
+      },
+      {
+        "path": "drivers/misc/hwid/hwid.h",
+        "sha256": "28a90e94c08854b74fa577e252be741ec49f166d571dba456c4d5994e5675fa8"
+      },
+      {
+        "path": "drivers/misc/miev/Kconfig",
+        "sha256": "88a59fd3d72c729f1a20c411e28ccf1d0e70c438594cf4b462951b79c7c87628"
+      },
+      {
+        "path": "drivers/misc/miev/Makefile",
+        "sha256": "489c5a2a80c482afd873600d63f3f057fbafd51d5fb86132e1441d3cf4393406"
+      },
+      {
+        "path": "drivers/misc/miev/midevice.c",
+        "sha256": "15925bb15d84045a8f9f2dcc589bea242337201f33f58d509c71898289b41a42"
+      },
+      {
+        "path": "drivers/misc/miev/midevice.h",
+        "sha256": "58fa9105d4af28717aa54342bdb9243706036f0a63fa47b2204598de4559d116"
+      },
+      {
+        "path": "drivers/misc/miev/mievent.c",
+        "sha256": "458a952c7da9e56e8c9ddba73378d7a5369a19dee653d15a73cdf4d6720ee235"
+      },
+      {
+        "path": "drivers/misc/st54se/st54spi_gpio.c",
+        "sha256": "95cee327360d31f12e2be191fbeb3b1d55a51377b8b84e757e668b935f887e99"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_adsp_glink.h",
+        "sha256": "061d28f45136c071e790054ee18600f452642bcc024013641a48d6e6ae31f00b"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_charge_interface.h",
+        "sha256": "5f512052c02614eb458438d76e9d4c7a2b5ba1c1eb7f2c5472aa3c21bd2858f0"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_charge_mievent.h",
+        "sha256": "ffb2c76ee75a1bcff720fc887115dafdd7fe70c2bca96990c2bd41853263edcc"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_event.h",
+        "sha256": "040a945128d47f4214620890f301c160cd58745c57c90c87a3e9b9b88c0e3502"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_hwid.h",
+        "sha256": "07e0c73bfa4421a18311c15ff752742a8492fa5d3bfcdce718643e0d292129ef"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_log.h",
+        "sha256": "9e9d20d8a643c5ad504519df1be1246f809ceb8afd4a4a658b91098bef88c699"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_panel.h",
+        "sha256": "10addbdf238cb1a49d005df3a3f02cde4cd58dbc15eee96b56355342742f2776"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_parse_dts.h",
+        "sha256": "265e441e980e7a55039bad259108af6ace9244822d0239a75cd7f237f691bbd3"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_smem.h",
+        "sha256": "832481f821fae6a3e3016fb1583d0c30639f8db7c87c70412a15ad478a9f2115"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_sysfs.h",
+        "sha256": "ad00897981c0ae91d04ecf08bd0ada234511264174975bbe160f4db5f01cb6fc"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_voter.h",
+        "sha256": "67e550cc7bc54fcebe38050a0a92ad221964517e2fb25a8940b6185f14571ce5"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/common/mca_workqueue.h",
+        "sha256": "89445d5db123b4ace2137399403fa62e8b9b4a166927c88902b115f98026f7c0"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/hardware/hw_path_control.h",
+        "sha256": "c3aae18770f908530300f20930b715f69296ffe3378be4f0a4bd376c0e84ddda"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/platform/platform_bc12_class.h",
+        "sha256": "12628607b2e48a3437a8466af478956348fda176eb6fbe7a7c526fbb9eb32615"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/platform/platform_buckchg_class.h",
+        "sha256": "942f68201b55087e86d75757479ef99c786c87bcf9737ae1452ffca58f25088d"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/platform/platform_cp_class.h",
+        "sha256": "cf5812c3b9afcfe26e66f46fcd791327de862ef923cf34e9b67fa75840aa7ade"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/platform/platform_fg_ic_ops.h",
+        "sha256": "4f747e4c91436578fc03eaa061deb7b617625189f570690c141118a47f3336b6"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/platform/platform_loadsw_class.h",
+        "sha256": "df7a16ca15cebecb0d376da65b8a77d88332e787054adcde33ea69c9c534533b"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/platform/platform_wireless_class.h",
+        "sha256": "8fefa76c95960a53336467e2812ae7d79a2e694db66546a07111c9e84e5146c8"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/protocol/protocol_class.h",
+        "sha256": "4b6102eb6fac2462f7b1fc73a26cbfe87bf6aa4f482426b48de9448f5725170b"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/protocol/protocol_pd_class.h",
+        "sha256": "e98566c6fcdccdfdc9c0a81a04ba0da0aff2bc317cc3bf38e08327de1037dbda"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/protocol/protocol_qc_class.h",
+        "sha256": "0b1340efe2f759b36a4344c90df79190ea1e90a7965c20bbf5d93142ed74744b"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/shared_memory/charger_partition_class.h",
+        "sha256": "9a6e71ff11e27387e215c3ffd2313674e4d80c9aebdf4337b715f9ef4c94c9e5"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/smartchg/smart_chg_class.h",
+        "sha256": "d202c5005d88b2aac08769698d4274e4f2cdd451ee0bc0c36714972a5e8528fa"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/strategy/strategy_class.h",
+        "sha256": "9fcb4b58ededd33ca9682913f7324a6e4103c3580b15753cb86bc72dcbb5e0c7"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/strategy/strategy_fg_class.h",
+        "sha256": "7341dd7caac59ee6f575853df95394a7da58095f9c5cccf116715700546e734a"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/strategy/strategy_soc_limit.h",
+        "sha256": "d3d844560ff13b8d4747d0da08714daccbce7983ae606e6f8a84becbf8572871"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/strategy/strategy_soc_limit_stepper.h",
+        "sha256": "ab21147ac52507b582d025ce42153a4c990356590ff1a66af1bfd55254103c48"
+      },
+      {
+        "path": "drivers/power/supply/mca/include/mca/strategy/strategy_wireless_class.h",
+        "sha256": "d019b150c0533ce3ffa56ea9a6ef7922ab2e57fcaca4fff46697288ba02af8b4"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_battery/inc/mca_battery_psy.h",
+        "sha256": "0353b2513910a8020daad582e22a55692af062370155bc4b24b1ec04b6177c2d"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_battery/inc/mca_business_battery.h",
+        "sha256": "385788004bec91d833ec9a84d58be9e4d9b324bcf229ac4c1d17df1d3dea32b9"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_battery/mca_battery_psy.c",
+        "sha256": "eee0529a3385c3ce46cd2c55615d1fe1777f33327f0d634486004df12f272391"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_battery/mca_business_battery.c",
+        "sha256": "a03176fe020675aab5370c8be867307840f4009c26193d9582cfac2007f920ae"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_charger/inc/mca_business_charger.h",
+        "sha256": "894c4d3254e58e465261bdd9500f0288feb7eaa3fe06805d20e431fcdff52b7a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_charger/inc/mca_charger_usb_psy.h",
+        "sha256": "48f3689cd7f6e3d76434e6669228b86d7cdbb0696a16cb2463b11cd924e31fe3"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_charger/inc/mca_charger_wireless_psy.h",
+        "sha256": "c679f4848594928d231a39220ca4bd2c2cf4da9b98f694cf21ea0d822abe53ad"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_charger/mca_business_charger.c",
+        "sha256": "1498dd4a0c7764ef0cb1de5b6f3eb23de6bb87664d599667653098012866e5d9"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_charger/mca_charger_usb_psy.c",
+        "sha256": "efb237b5f3fed68faf4eecc4510b6c1aec0e0dc2a7e116ed8a20434450da551e"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_charger/mca_charger_wireless_psy.c",
+        "sha256": "5f3a2486b9eaf09e7f1b64e560938df56be3c63b2a805d32b2165a166f7447c6"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_misc/inc/mca_business_misc.h",
+        "sha256": "244955ed4f4eb5ea18fd6d8c7a0ecfb376a8ecab48c187ab7d72c301ccc8268b"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_misc/mca_business_misc.c",
+        "sha256": "d7184bb65e7899a78e10ebabae5b214dcde6ece2045d9eecca7fd0375bef08a4"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_business/business_misc/mca_business_votable.c",
+        "sha256": "68ac14a41062b9472f25e69e075f771f5d1ec1fb315a5d656da97fd4ae673d7e"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_adsp_glink.c",
+        "sha256": "b766aba518a331a2833f40caa402bfb767f59149e8c593699a27d14034115df5"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_charge_interface.c",
+        "sha256": "17d21567da2004fc42b7f80c8f6861cecb19b8d2afa0f87ac5bbc5a08c67c933"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_charge_mievent.c",
+        "sha256": "f9455343f4c749224dfb3b0e1dbc8550161225f8269a4ec386ab57e2578f02d9"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_event.c",
+        "sha256": "0d86f09b15340025c0cfa1d5429a3daba82d686ade7c24f95d431e6faead4ac0"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_hwid.c",
+        "sha256": "505b5d47fc5d2980d694ad0fa186132649cea63eaf64846398c27adaae77e269"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_log.c",
+        "sha256": "abe9d0179c8a1adcdb92d31ab20ac88a2a44630e001708db49a5f53be75a1b68"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_parse_dts.c",
+        "sha256": "9d51b3a00340decb5f3419eef2ed7542f07d7b3c2c20d3cfa9f3c23c6271440b"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_qcom_panel.c",
+        "sha256": "76c22f74b999c1101f978460d6805c95bf3d989b19d3cb6e27d6a641be128bad"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_qcom_smem.c",
+        "sha256": "794881cbf0ae9291f8236e3301fb77ca4ed5d5f1f1c8f9b58a9c2323373054d9"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_sysfs.c",
+        "sha256": "6f2548899315cf1c9a1b003f874b8521cecb9a7240536b6186659fdb097b3f5a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_voter.c",
+        "sha256": "baf05d9bc58d9f65967c3da187ff82474961f90beddd215634a5cbc052c0ee19"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_common/mca_workqueue.c",
+        "sha256": "309a83eeeee3e6bc4dbbe1fbb94365c4a177de67e8a81687cce63042c0fe7b2c"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/boost_ic/hl7603/Makefile",
+        "sha256": "79ea93101c4eb35a8e131d9ba4ad5f4c6a9ebc18d9f7908d10c44c49d7b930e2"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/boost_ic/hl7603/hl7603.c",
+        "sha256": "5503ef8a40c3739af11e7bedd63fff56e876ccec5bc7226ba0d381bcc68cbea6"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/boost_ic/hl7603/inc/hl7603.h",
+        "sha256": "68e8d9a1cd28419682cfb00166ceba93a6fd4c240137fea2e10e2f233206dc16"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/Makefile",
+        "sha256": "0b35c3522ec0c78e05451ac6af82039ebe27ecbe2d419703b63b7c92a2187c8e"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/inc/sc8581.h",
+        "sha256": "e8a0de8eef9ef28536ecbe4b55a2b7f53493102a3dd64841f61c010d3df50393"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/inc/sc8581_reg.h",
+        "sha256": "5f41c0a60f099139e43b4ca609ff58bb76cbc9da9cb4003286f75f7878b3b9bd"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581.c",
+        "sha256": "fa70fd99eea0a11e4e9700d14a75e769b6bfde452e29bbde6c529b1af82b4da2"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/Makefile",
+        "sha256": "d2d9da96b4a8dba4ad20ad95d4d43445ea37d130e5cfdb8e175a76d46ef72103"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561.c",
+        "sha256": "53db4a95167708dd5410c951a6119d562eace7ab94fff341cb8d68cbe04f9925"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561.h",
+        "sha256": "1322e421e2bb6a90deacc47f2af235f91ccc8b92ee65958318e3cfda83364843"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/inc/bq27z561_nfg1000_fw.h",
+        "sha256": "28b05c73a06587b6534ba532a3ee2ba30da10e888fd1b16c1a26590e9276bbb6"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/wireless_ic/sc96281/Makefile",
+        "sha256": "4a553617610da5d90053a8299fb26a57bd5a9ea002dbc20c3721286334a07a8d"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/wireless_ic/sc96281/inc/sc96281_firmware.h",
+        "sha256": "bc5b9efd9fa10d3a4e28cad5c5c715b3edae12b524bffcb0f20ed5e99a205d2f"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/wireless_ic/sc96281/inc/sc96281_mtp_program.h",
+        "sha256": "2bf41e6c681c1f50a442a2f7fc0a2a1127d7490fdffa617291ea0b39d4494733"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/wireless_ic/sc96281/inc/sc96281_pgm.h",
+        "sha256": "d8783e6287fd0d807ca9915ab9354b222f9f2d5bb0ea6879f545d54a96ba66c2"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/wireless_ic/sc96281/inc/sc96281_reg.h",
+        "sha256": "4c4f15e9060c18c2181687d136578a281d4fee200c2625487a3d8684721c5b6a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/wireless_ic/sc96281/sc96281_core.c",
+        "sha256": "b770e9d4c8ed1974fecd3015ecb70efa72ab57a7d8460f9f4f6f0f58739b47e2"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_ic/wireless_ic/sc96281/sc96281_mtp_program.c",
+        "sha256": "2204eeaee56ad4eb7731cfe53c4d3d4d6da74351364139375dea906a18c351a3"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/inc/mca_bmd.h",
+        "sha256": "eed33a65f76ba79ce057554fce8d92be2d97e67c82e0f77c6dbd3058f2fe7a33"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/inc/mca_connector_antiburn.h",
+        "sha256": "761eace02f36c7bd9a7bd50c3f16eb298f63288fbe57f018dfe295eb94bf4000"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/inc/mca_ibat_ocp_monitor.h",
+        "sha256": "e3b7774863cd5f69a510f2a839485e4d88a2fc3b43d86dc96f5b89c8592dfee7"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/inc/mca_lpd_detect.h",
+        "sha256": "834a17799ba91b5a330d70440537e3fbd6feb8da5aac0615445d0df1919423aa"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/inc/mca_path_control.h",
+        "sha256": "d2398482d10b1168df8910090eaa62c00354d45611cc46cdb0ef6e6d7960a608"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/inc/mca_vbat_ovp_monitor.h",
+        "sha256": "91ac6ec0c81a18ca575c41148b4811cdc319caef4df2e7f7278a74493fd53235"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/mca_bmd.c",
+        "sha256": "fb40dc26c39312516ac650e7faa8ec9b22d5d0dd59327320774fc6ff8c1adb2b"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/mca_connector_antiburn.c",
+        "sha256": "05135b00e89a75c83ddad003a717ac6ad58df5cdb88e57bb1870ac23a2e84a1a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/mca_ibat_ocp_monitor.c",
+        "sha256": "f0d02d8383ce4220cc5d273cab6147aaa53d0e9911a59579f41e269f86ac37b1"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/mca_lpd_detect.c",
+        "sha256": "448e3b2bd8f0a42b6adb456b3475cf3d8fed656db2f20f01c68a6ef1b4fd9b7a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/mca_path_control.c",
+        "sha256": "a9459415fafb49803222caf91c7c16e4152b2470287c2795eca4b9be8448bf35"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_hardware_monitor/mca_vbat_ovp_monitor.c",
+        "sha256": "096629880bf24f6eeb01847eb7c1d40c20fe0408626e563acf2a61a40bcfbd56"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_platform/mca_platform_base.c",
+        "sha256": "2044f2520a0cf17af4e177ad7859bfba02f0f153057711051db62c985d7ae834"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_platform/mca_platform_bc12_class.c",
+        "sha256": "26bbb4c34dc0ce8554b237f96bd227e23ed91b59b3dbe5a2520e977588294218"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class.c",
+        "sha256": "4c03057826da89e7f2158b9f2615108010ab86315cd7b7aa9a1ec5a0c7cda271"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_platform/mca_platform_cp_class.c",
+        "sha256": "cb150a5198d70d5248d0b5818c7ef2d2922270bf6fad53b5d0e8cc8e6902541a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops.c",
+        "sha256": "adb660858a78786fd76e11e2518d9b8204f0a71eb005934acac7f7cd45e52b18"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_platform/mca_platform_loadsw_class.c",
+        "sha256": "cc4366e89f437bfae4b5266a85ebd7c8eab2c8165c93ccc653cfcd29d8babb8a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_platform/mca_platform_wireless_class.c",
+        "sha256": "29210bc749cb4b809db2930057b4839580a4392ca1da5a3e70a91c4622b7b5d1"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_protocol/mca_protocol_class.c",
+        "sha256": "c9f526f5d017c9cdf34d839caa7d686d60698380b6b4c7595d7d06f8b6c38baa"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_protocol/protocol_pd/mca_protocol_pd_class.c",
+        "sha256": "42fa1194f7dd2390e58ea8a3102c4cdf1b6c7070a7a668b83576d191f4dbdfe8"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_protocol/protocol_pd/qcom_tcpc/qcom_adsp_pd_protocol.c",
+        "sha256": "2a03a0666f7955277948a5232f1fae7bdae1d87172f87fa79771f28618926cae"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_protocol/protocol_qc/mca_protocol_qc_class.c",
+        "sha256": "0c54219a858ed09e9950e46e6dc1c9419de9113119746f29be46eb81be95bbab"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy.c",
+        "sha256": "0a6abfc0db98dcc572042c7ab91a11c16d684b381d0f845463a5f7351c3d2a99"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs.c",
+        "sha256": "9f1c261b7e087a5f90053150c1a3c95b57db728d83f1e905f59d785e1b6d9dad"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_shared_memory/charger_partition.c",
+        "sha256": "44a70082a3eb052a8bc137f56cb7ca4a854c2560d4b956f1db058eb3bda2b44b"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_shared_memory/inc/charger_partition.h",
+        "sha256": "a308215a69cc55b7ba6c0970441e95397bdec2cae5c5073e0e3597fad0e3f0fe"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_smart_charge/inc/mca_smart_charge.h",
+        "sha256": "55527ea1866f8ff5b5586e490dc72bcee6c98bc52717c6e6a8591d52f277a61b"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_smart_charge/mca_smart_charge.c",
+        "sha256": "41a27f520b7307e472e41e7659ee3a2dcd902947a5f664d6cc84b9a78ffb120c"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/mca_strategy_class.c",
+        "sha256": "797cff72be1d0eba2d82cfdac35119ea8627ad32260d7820df6dced04fe885d0"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/inc/mca_buckchg_jeita.h",
+        "sha256": "08724760334bc4bfeefca0ea8904c0de46806f542d54a019fdc48bb3c526570b"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/inc/mca_charger_thermal.h",
+        "sha256": "b11da9e0d3fba8a491b7ec3a1366e371035fc00a7347eb4a5341752c055fbd97"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/inc/mca_quick_charger.h",
+        "sha256": "43167af5e7662752bcd963e9e23c65dc2869dadc9e0d94ddd4ce4a50641d0401"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/inc/mca_strategy_buckchg.h",
+        "sha256": "03eb12c6e121c78dc0035162b74e432eed8f4c41665014a3c039a0db3f8719c2"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita.c",
+        "sha256": "5b43ee7ffc9c62cb9371b394dd72cbb5e77ff066d538ec19bbd599f18100bb98"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal.c",
+        "sha256": "6399aaf45f75093e4258a738459febb83c773f30c38c99ec6541791feb0d6169"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg.c",
+        "sha256": "d30335d6bbc64e522c28fe799d41ecd0946688f4654ca86ff94a88165a6c54b7"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg.c",
+        "sha256": "fe577d79307914d0e5d4d8585bf44db2d125e7151b65da87614042e40ee2c0e5"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/inc/mca_battery_shutdown.h",
+        "sha256": "1d9584ea84fa42eb9da038119bd12bdc4a747097f5169ab5b6ecd0dd7d4f9d43"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/inc/mca_soc_limit.h",
+        "sha256": "0a4268f2497c06942913433a733ad8063a82971e2053105792192e125ee5e6e6"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/inc/mca_soc_smooth.h",
+        "sha256": "efa6c2ba00d7cc0816e250e2ce920684c638e8577676d3dd8d3edd9fafd05874"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/inc/strategy_fg.h",
+        "sha256": "66c4acb91f17128286cd79eaaeb3398157d77ec8d8edbf0e4f758af49db3df45"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/inc/xm_battery_auth.h",
+        "sha256": "b8a928dd69bfe992d45ae6d76a73ff3174b59f0fea0c1bae47961d91281c8ed6"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/mca_battery_shutdown.c",
+        "sha256": "ad4e52cdf5a3a0727577bb41aa5883e409f517bb3e2224f01d9627584487dddc"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/mca_soc_smooth.c",
+        "sha256": "fa147e6ad95ffe161cb12a0a38a92013239f02fbb3acdfdfbedae02bacb33b2d"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg.c",
+        "sha256": "f65f40ebec8fb46bb0fcf9b3209951c0a6ab0be1a419e3c6769adfac3fa49bb0"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_class.c",
+        "sha256": "bfd42e8ff196c7f266163dd96aa3601a27e858c1ac4081e9b9706d51077fd2c1"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_pd/mca_pd_auth.c",
+        "sha256": "1cbd9b06dd640de069fb1a2920b74899873654347c402705d83603e120d64233"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_pd/pd_auth.h",
+        "sha256": "14ae84af30a030ba17cd313d6728e76c4640ec885ace6f176edf6f9f916fe1ef"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_wireless/inc/mca_basic_wireless.h",
+        "sha256": "d7aef8185d9b6fd7bfcdea4c8f909afd847558411e858dc84089a4ae0133669a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_wireless/inc/mca_quick_wireless.h",
+        "sha256": "7b40de68d0092e2f3206cd9ddde0197bce99280c5d3e6c303de0da4a7b4badf0"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_wireless/inc/mca_wireless_revchg.h",
+        "sha256": "d6793e57fd645f05caa14668e81cc5920da9e8f4ebb0ebfb76e76b4fb5f7641b"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless.c",
+        "sha256": "16bda336742f34791e02ef907d999f069ac217a522036c1a4ce36f6dfb4d5e7a"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless.c",
+        "sha256": "9b901b70948e846b94b7ee0b76f5a99808d45bf03f5d0e603ebd6345aca7e8df"
+      },
+      {
+        "path": "drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_wireless_revchg.c",
+        "sha256": "027dc5bec8202ca8570ae3e23aac9e7ff397a0f9262da93ef9a8357e5d13eb7f"
+      },
+      {
+        "path": "drivers/power/supply/myron_bq_readonly.c",
+        "sha256": "0879527df1e0b482554834829fe5a560431d215e27e19838d886b6c75e9f0945"
+      },
+      {
+        "path": "drivers/power/supply/myron_mca_readonly/myron_mca_readonly.c",
+        "sha256": "f26fea6565773663fd1491f1c5df4b0a1004f2cef1ebfb9fd1226552de751776"
+      },
+      {
+        "path": "drivers/power/supply/qti_battery_charger.c",
+        "sha256": "d80d832edb44ead03e79748c3c7419f3f82f2ad73a2a1c6fd63e14d9f650acd3"
+      },
+      {
+        "path": "drivers/remoteproc/qcom_q6v5_pas.c",
+        "sha256": "caf8b7e6ab2786b3cea57b7bd15528f8823409bddcebd8bcb83e63bae14c0723"
+      },
+      {
+        "path": "drivers/soc/qcom/qti_pmic_glink.c",
+        "sha256": "e766099f52c4905cef5b79e9b8203afbd33aaf303f60c6856d75fb9fb3299999"
+      },
+      {
+        "path": "drivers/thermal/myron_buck_thermal.c",
+        "sha256": "b4a54111dac86447b527859f96a57aa4cc5b83ada2f49472c9d37b4803eb9be5"
+      },
+      {
+        "path": "drivers/xiaomi/mi_stack/mi_stack.c",
+        "sha256": "59dedbfd36fb4ac8e3ee4fb554719aeb3dbffaad5ce6599854b5e9ef405f1183"
+      },
+      {
+        "path": "drivers/xiaomi/mi_ubt/mi_ubt.c",
+        "sha256": "b8e4e42f4dc8c4f2e9209f9dc7119c1d765f7b99ae66dcb91ae7c3af46028f6e"
+      },
+      {
+        "path": "drivers/xiaomi/myron/Kconfig",
+        "sha256": "930af72c5cb59fe4542dd4004195fcc8900ce3f08426300464610e249f1bc3b4"
+      },
+      {
+        "path": "drivers/xiaomi/myron/modules.bzl",
+        "sha256": "1c1b5d19cada11a9840bec41b8897e7f5536345f3a1140ccfb8108da0938d816"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/Kconfig",
+        "sha256": "71463371f9c4153aee687a495afbcbfe4bcc511a84b463aec5868f766bcba524"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/config.h",
+        "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/dbgprint.h",
+        "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa.h",
+        "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa1_tfafieldnames.h",
+        "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa2_tfafieldnames_N1C.h",
+        "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames.h",
+        "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9865_tfafieldnames_A2.h",
+        "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa986x_tfafieldnames.h",
+        "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa986xn2_tfafieldnames.h",
+        "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9872_device_genregs_POR.h",
+        "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9872_tfafieldnames.h",
+        "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames.h",
+        "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9873_tfafieldnames_B0.h",
+        "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9874_tfafieldnames.h",
+        "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames.h",
+        "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9875_tfafieldnames_A1.h",
+        "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9878_tfafieldnames.h",
+        "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9887_tfafieldnames.h",
+        "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9890_tfafieldnames.h",
+        "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9891_genregs.h",
+        "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9891_tfafieldnames.h",
+        "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames.h",
+        "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9894_tfafieldnames_N2.h",
+        "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9896_tfafieldnames.h",
+        "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx.h",
+        "sha256": "620c0a22bdc9054e88db42d0da3d233c3a8bfffe225d1cd7b98ae9408313810d"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_genregs_N1C.h",
+        "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_parameters.h",
+        "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa98xx_tfafieldnames.h",
+        "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9912_device_genregs.h",
+        "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa9912_tfafieldnames.h",
+        "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa_container.h",
+        "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa_device.h",
+        "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa_dsp_fw.h",
+        "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa_ext.h",
+        "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/inc/tfa_service.h",
+        "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/config.h",
+        "sha256": "b9c33ae1cef8f761a83cd8ccab051d73fddfc8dac8633a90ee75d463bccc230b"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/dbgprint.h",
+        "sha256": "89e3be2879ac5ce0cc3b88f02cae97f0cb4373483c0877a2ff1ef0dbd05a6e36"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa.h",
+        "sha256": "49ef7219dfff2b62fe64fe2bc41f4e07031104c6bc08049421373b1b85392b19"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa1_tfafieldnames.h",
+        "sha256": "c8e3b52dd15c3a29db5e325f81d2b4727d083f3448dae4582b9125567f837e96"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa2_tfafieldnames_N1C.h",
+        "sha256": "b983769797e565ad7fb69845b09804eb6b014f6e22a2ee238d332b35e2b3c58c"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames.h",
+        "sha256": "e13513edb532c6f0a75d90b4130f910e302a6c052f20b50640e75a197d800bcc"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9865_tfafieldnames_A2.h",
+        "sha256": "450e63a135e257e11e48294c0a4ab55fe439e734aecbd81866a857160bdc9767"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa986x_tfafieldnames.h",
+        "sha256": "7801136900771a95d558e0be4acb125b185c0cd74f074505c177ae4226948931"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa986xn2_tfafieldnames.h",
+        "sha256": "ea5c47889503d5c7bd28fbca6a39008b4826118cac210f194fb33e0a6cb13fde"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9872_device_genregs_POR.h",
+        "sha256": "c5f2f448b17a20510bb40649a70d9361866e0643f50286a4af33de79d0efc485"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9872_tfafieldnames.h",
+        "sha256": "02c7bc8552ac46eb51ecf1085283ed00c788088db6b55cec524495fa6e991899"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames.h",
+        "sha256": "176fe40f238b268399a81619066483614b1e68ac084bf8a81e9a929ae7b1805a"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9873_tfafieldnames_B0.h",
+        "sha256": "9bd8313aa3dc16ca15afbaac7f1eb04699984bb2b2760e6f94e6b3338b831817"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9874_tfafieldnames.h",
+        "sha256": "bbf57bbb5846da48a7fce4478b443c5c3f4704d080b2992c4502a00b3fa64078"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames.h",
+        "sha256": "c2cee617e129246fac85ee5e0fb14a093a88582c883abd2c333985fee0056993"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9875_tfafieldnames_A1.h",
+        "sha256": "02f91070ede6d9a116ee788d916b06a26a5431ff2deff6f3d823bd3ffe9c9b4b"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9878_tfafieldnames.h",
+        "sha256": "ca8eab4f82c57b8f28441a65e7a92e718aab6452ea3963581325fd50f946a21a"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9887_tfafieldnames.h",
+        "sha256": "7a1e32f9872d52faecf57394c179dc55b751a57cfb162469b746c22112014558"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9890_tfafieldnames.h",
+        "sha256": "78f961b74ecec149c9c6069658328efa6b4ce3312cd8b47da83a3d0421828b1c"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9891_genregs.h",
+        "sha256": "73bd3e81268f102e727e41c3d0a6bae853a6ce17c2321577cc3c85605dab75bc"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9891_tfafieldnames.h",
+        "sha256": "339e77cc5c0207e4c580cf088fe53fe2ce20cc6757e5c7fa5bcab91a91e1589b"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames.h",
+        "sha256": "8dace5e243279155a7a0bf80260673f0f6897d1246d7a85722371193dc037280"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9894_tfafieldnames_N2.h",
+        "sha256": "72a3bf526a15c7aa87d82a14b4f2c5a2fbe729e7f1c5ea72dc80502c05fad115"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9896_tfafieldnames.h",
+        "sha256": "79070c0d54575515da6d70bc0bc1a3bbc953ddd55cad7f8842a01c320c4998e6"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa98xx.c",
+        "sha256": "5a3e03dfb391dd9a4c980355d56ad1ecbaed3e50e0aa94f1d0c75feb17b91402"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa98xx.h",
+        "sha256": "f7fed4942c9c7494de39666938de5f58b9dd849c864e07f87f717e404a53a3d5"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa98xx_genregs_N1C.h",
+        "sha256": "22de537cb1e5f34b16761994546877d47c90ce2a0b1332f710399c50fccc756a"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa98xx_parameters.h",
+        "sha256": "54d4103accf25f0c4ef18e1088ba5897216aa292802106089d2d531a5e286fca"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa98xx_tfafieldnames.h",
+        "sha256": "213e09d0aa41775915e46b88ddd80d402cddf0c383c709de2bdcc30a8ad230c9"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9912_device_genregs.h",
+        "sha256": "4c7087560167787abe0a187f12ebddff021706b73a98706511e2a060fe49a8ea"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa9912_tfafieldnames.h",
+        "sha256": "984a86c25ba0a02efa7a5b6198326545e8538ef5bffb3b5e05f145d6167cf987"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_container.c",
+        "sha256": "33f87ce6af7cfd33ca65605cfdf0c61983fd7a5aad9114090aa67eddcad91bdd"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_container.h",
+        "sha256": "35f4d285a5e88cde04059ed28da48be6fe16c85f595066861893932f189017bd"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_device.h",
+        "sha256": "fca9b78d96c24a86c4af1b6294cd300a18b2443c8e2cc53e5000e5dcf386e122"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_dsp.c",
+        "sha256": "380319dd0b2021f6da015ae2729debb8a3dda24023315c8a24a39d0d395d837a"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_dsp_fw.h",
+        "sha256": "2ca941047f54783ddef821b0cbbe9478c7f8e28079b4f4f3ff5e2226eb4a8664"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_ext.h",
+        "sha256": "99924f5ecd2bc5d5e3dfcb69983cfc9a9ef45d6f7f09c3a11d9d32c134bb42c1"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_init.c",
+        "sha256": "f4f5dbde1504a3389a3b2ee96b02dd7bd208922686eb89a721b4488dd7cd518e"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_internal.h",
+        "sha256": "8ae9bbddaa368c0356c80089792fd056633c5a903c061136a46d853aed9ef00e"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/tfa_service.h",
+        "sha256": "ee260fc690b6088ae8401e222ffc259b39c89271a8228b9fa30889907f3e5ce8"
+      },
+      {
+        "path": "drivers/xiaomi/myron_tfa98xx/src/versions.h",
+        "sha256": "a1aab449831d366426e83c639924b21962633abd9d9e44b32ff9990df40f8c28"
+      },
+      {
+        "path": "drivers/xiaomi/printk_enhance/printk_enhance.c",
+        "sha256": "2852f37e7d4c9162b1dada6b1694a31b045345226029d548f773444b91c798cf"
+      },
+      {
+        "path": "include/linux/soc/qcom/panel_event_notifier.h",
+        "sha256": "784481c7e1a01ab5d619f66eddcb70f9e5ba44c4c407fb2c3534e8176c822fab"
+      },
+      {
+        "path": "include/linux/soc/qcom/qti_pmic_glink.h",
+        "sha256": "b12e923464df2b0f46a872d7be168856adaac0e00b2d7c83c123fc18f5418baa"
+      },
+      {
+        "path": "include/miev/mievent.h",
+        "sha256": "dbce6df15cf6080663d8e355a637a60bbba5f1bf572da2013b9e2fcdd4a334ee"
+      },
+      {
+        "path": "kleaf-scripts/dtbs.bzl",
+        "sha256": "aa313cd28cc2b72c27ac8e71914479324c71f83b17c4817fb00ebef1d063262c"
+      },
+      {
+        "path": "kleaf-scripts/techpack_modules.bzl",
+        "sha256": "25030df3c7654e668ecc3b8fe8eecc5b294a6d44c812d85727e17481203ee277"
+      },
+      {
+        "path": "modules.bzl",
+        "sha256": "f8a5db1104df78ca2825796e1abd4db523b01adb55010275cc8b3dd8a736a6fb"
+      }
+    ],
+    "head": "557159b6a0d06f1c6f07ec4c1f22bc9309a113e4",
+    "path": "vendor/qcom/sm8850",
+    "tracked_diff_sha256": "5b7ee72450b5f1c104f2dfb1b173cccecd2453ee7f1ded722a570edebc33616b"
+  },
+  {
+    "files": [
+      {
+        "path": "qcom/opensource/audio-kernel/asoc/audio_machine.c",
+        "sha256": "6f8448bc782c020e65896aa64e6bea50acea22c75d349ed353b157e4d8d7246e"
+      },
+      {
+        "path": "qcom/opensource/camera-kernel/drivers/cam_req_mgr/cam_req_mgr_dev.c",
+        "sha256": "7ae61432177df297cc24986fd67d3210c11bdabcdefe44d677861f8ee78339ac"
+      },
+      {
+        "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/cam_csiphy_soc.c",
+        "sha256": "0cf08aa9251967a9d56e72fcef879eacdd192515c3830fa1fbcd205c88d115af"
+      },
+      {
+        "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_csiphy/include/cam_csiphy_2_4_0_hwreg.h",
+        "sha256": "989c05eae6a88be028156319d9a9d50e77983de3152ee1583d65596626ed9d40"
+      },
+      {
+        "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_cmn_header.h",
+        "sha256": "1f9c97949f27488900433484e6ee03b050befdabc09238aa755fde7e1d49ae60"
+      },
+      {
+        "path": "qcom/opensource/camera-kernel/drivers/cam_sensor_module/cam_sensor_utils/cam_sensor_util.c",
+        "sha256": "6ec178c883e0b0edb1ef3491e8dd6585e59b8cf26b7c1574ed7b903c6f52427f"
+      },
+      {
+        "path": "qcom/opensource/datarmnet-ext/perf/rmnet_perf_main.c",
+        "sha256": "4596ccb65232f747a82b67d42fa14a67902707c4b93bac317ac7754efa7f6bf6"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/display_modules.bzl",
+        "sha256": "19a6639a60621cd9284b4c7d35b16710293e743f68a4773b0f422f4adfe79b03"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/dp/dp_display.c",
+        "sha256": "fe049856ab69cd6c9f3626e40c4acf7b2f165fcdba0cb18dcba95730b58ac9d6"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/dsi/dsi_display.c",
+        "sha256": "a864fd0c076aa68436627d1a61fdeaa2ad65f20551451d1ef55e866514e1f5b4"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/dsi/dsi_drm.c",
+        "sha256": "98f030119d8fb031efba190b8b0f8a3d0d644cbb1d11175160653f6fe264c1ca"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/dsi/dsi_panel.c",
+        "sha256": "1151b2bbabc4dc9f646e092c074b94d65440f88be048aeba7207aa62f8901271"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/dsi/myron_flatmode.h",
+        "sha256": "45fe8e5cd903f7e6687da01299b79297bf8179a59dbf3c025d7e636c371fce49"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/dsi/myron_mi_clone.c",
+        "sha256": "87850477542f4aeb4a3640bd127c8363cf0468f6b897008b50af20dc7accb92a"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/dsi/myron_mi_clone_state.h",
+        "sha256": "4f5f0ce8bbc5c90d640f565283b6aa9265e4ac30e6168a3ad766511992088f4c"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/sde/sde_connector.c",
+        "sha256": "ceef0addc000f88197dd8620295186f3d464f7dfd90beabd6804c513d6756f4b"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/sde/sde_fence.c",
+        "sha256": "1e0d9d60bae9325c87fd67b945f7c06836f6d97f45ffd818f39332ef52ebccd6"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/sde/sde_hw_dspp.c",
+        "sha256": "89ea69a4bbf44324d0d1a1a294db31914be72851c7c298551ab243f556e20e5c"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/sde/sde_kms.c",
+        "sha256": "cc9a30fa0c18daf9d39400b58a39670d15fedec016c2819cbb3915340e0f2d80"
+      },
+      {
+        "path": "qcom/opensource/display-drivers/msm/sde/sde_rm.c",
+        "sha256": "9d122b7dd51bff2f37b8a6d2dc24fcf8490a4f2bd58c0eb9b8560c2b1f56b981"
+      },
+      {
+        "path": "qcom/opensource/wlan/platform/cnss2/qmi.c",
+        "sha256": "1b4a75f7dd8dea9385e5c33cdf3440e01b5cb2ac224ae3442467ddd45a078a61"
+      },
+      {
+        "path": "qcom/opensource/wlan/platform/wlan_platform_modules.bzl",
+        "sha256": "598b25828d0c32e81157cd67451694dc456b30bb463f720320d601d8b42dc1dd"
+      },
+      {
+        "path": "qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/lim/lim_utils.c",
+        "sha256": "38ad6d3ad157bd7a2943507293a5e76f986204bfe1302ffa151a3fe83a5f6c04"
+      },
+      {
+        "path": "qcom/opensource/wlan/qcacld-3.0/core/mac/src/pe/sch/sch_beacon_process.c",
+        "sha256": "e12a9005617f8ff74170225f9291a1fb79925d59a6961abb4cc2870c4c15a020"
+      }
+    ],
+    "head": "f2ecb6a09ea56bd8ec9a0bfd2e97f45e200ab322",
+    "path": "vendor/qcom/sm8850-modules",
+    "tracked_diff_sha256": "600ae14e26ddd7cd19985a1c3ee3a0aff79fe339758efe8683eba32c77cccef8"
+  },
+  {
+    "files": [
+      {
+        "path": "BUILD.bazel",
+        "sha256": "5bb6e990fbff00c0c170840cec613e948f0574cf3c9fc532711ed6167319202c"
+      },
+      {
+        "path": "Makefile",
+        "sha256": "ffb2c9a8fd63a1e4e067161f722728460c3c21331846fd0678dc8fe73abed606"
+      },
+      {
+        "path": "qcom/Makefile",
+        "sha256": "5ca550e50904c0c29ce785ed23cff6276dd50ac8012ffc23220eaa423497cc1f"
+      },
+      {
+        "path": "qcom/alor-interposer-common.dtsi",
+        "sha256": "1db1a0bf08b3422459e6c2f278ad1b9e607fe15b5080ac6514bd78f9a54e5e0a"
+      },
+      {
+        "path": "qcom/audio/Kbuild",
+        "sha256": "1d8a8fc0c0484a2852fdab59139aae3d8df511ec1d3294c4cdd54cc6efacc3f7"
+      },
+      {
+        "path": "qcom/audio/myron-audio-mtp.dtsi",
+        "sha256": "d2246ad31b445937b79915844b8fa05adbc1183782d6308c7a0d7b21539d47e4"
+      },
+      {
+        "path": "qcom/audio/myron-audio-providers.dtsi",
+        "sha256": "5f1a4f8a162097a0deeb157f858af1e778604a26e4ed272a2a77767c2b46cc1b"
+      },
+      {
+        "path": "qcom/bt/Kbuild",
+        "sha256": "247fd5c8656d99676b946a96316f6840eeeb62632055e39f6699e4c36e19a5e0"
+      },
+      {
+        "path": "qcom/camera/Kbuild",
+        "sha256": "f9b4190f45f32cbfefbfb7b4d1a16e364ca918e92b19010a9c2b8de9e8d17e32"
+      },
+      {
+        "path": "qcom/camera/config/canoe.mk",
+        "sha256": "31371de10e31b530f3bd76166e67b9496b556c21929262a0870a7779572f5041"
+      },
+      {
+        "path": "qcom/data/Kbuild",
+        "sha256": "dc503f5773380facdb3f750866aac0b8c07b72555427b6e766db6859642dee49"
+      },
+      {
+        "path": "qcom/display/Kbuild",
+        "sha256": "5fb4032418810aa19efda5a530b03bce66d136105d7b295d081875c606b96a28"
+      },
+      {
+        "path": "qcom/dsp/Kbuild",
+        "sha256": "6cf1aef4def41d79996c055e7af74fd45f20db9cc0f22814d0864de8a3647068"
+      },
+      {
+        "path": "qcom/eSE/Kbuild",
+        "sha256": "d332c14829c703d4837aef444bfa9b14bc7f94a172e30071c12a419e57a447cd"
+      },
+      {
+        "path": "qcom/eva/Kbuild",
+        "sha256": "749fabca03effcd47bfd89d2d887522f9560b7d1c6ae66ffd998fef0f9af4638"
+      },
+      {
+        "path": "qcom/fingerprint/BUILD.bazel",
+        "sha256": "926b5890927ff27824644f8dc44206a4d8c50f7251582866e017c3ea69805ff1"
+      },
+      {
+        "path": "qcom/fingerprint/Kbuild",
+        "sha256": "09c7fc3d39b55f3c7ffbe3246c1357d20ca0c64e916d392ef0812dbca915ee76"
+      },
+      {
+        "path": "qcom/graphics/Kbuild",
+        "sha256": "7a5b124c1e7af84f4c6366739ca1b0331be6d58f2283e48fb4f9d24d5bc36718"
+      },
+      {
+        "path": "qcom/mm/Kbuild",
+        "sha256": "28fa3512d2d2236037358d78e2e080d7474cd328723c155f59db6bb6b97ec6c6"
+      },
+      {
+        "path": "qcom/mmrm/Kbuild",
+        "sha256": "2e52f1da3319d1cff081ed1fbcbd3c789e717ff65a525dbcf9568a925eaa4b55"
+      },
+      {
+        "path": "qcom/nfc/Kbuild",
+        "sha256": "b2e2f277ead11ea71910140f3f44e4303a056750f89c3944c7428deb9ff2c0e9"
+      },
+      {
+        "path": "qcom/platform_map.bzl",
+        "sha256": "c83d691204d8f8201540f7af75809fbf454a2371d5eedc35f6d14799ecfeff03"
+      },
+      {
+        "path": "qcom/securemsm/Kbuild",
+        "sha256": "32567c2c4c229926b7beb58e2334d86e48ffc8283e0a21bd01ab43a1e14b5e4b"
+      },
+      {
+        "path": "qcom/synx/Kbuild",
+        "sha256": "8fced27e26918ecc3d8eb6dbeeef67ff1d112a3642f6001841fc992a11ddd3f9"
+      },
+      {
+        "path": "qcom/video/Kbuild",
+        "sha256": "7c5bef5d3523b26ab4556642d4a618bbe1f0be69f9e1123bbdc6bbf35e155a41"
+      },
+      {
+        "path": "qcom/wlan/Kbuild",
+        "sha256": "abae3099dc2370f5c333e71af74f77b858803d154d252585768e95a125fb7366"
+      }
+    ],
+    "head": "928b59fcca6306aaba39343a474dc5930d8f424d",
+    "path": "vendor/qcom/sm8850-devicetrees",
+    "tracked_diff_sha256": "0255bdc3cadda4ff6a0933d82b107e88af350d94e10d03dd6024869cfb7fed45"
+  }
+]

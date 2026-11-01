@@ -1,0 +1,115 @@
+name: K90PM R115 publish source and clean build
+
+on:
+  push:
+    branches: [codex/myron-r61-battery]
+    paths:
+      - r115-source/**
+      - .github/workflows/publish-k90pm-source-r115.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: k90pm-r115-source-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    outputs:
+      entry_commit: ${{ steps.publish.outputs.entry_commit }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      WORKSPACE_DIR: ${{ github.workspace }}/kernel_workspace/myron-source-export
+      PACKAGE_DIR: ${{ github.workspace }}/myron-qcom-platform-r1
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check source publication and build entry
+        run: python3 -B r115-source/test_source.py
+      - name: Extract and verify public historical source inputs
+        run: |
+          set -euo pipefail
+          python3 -B r55-source/ci/extract_inputs.py --root "$GITHUB_WORKSPACE"
+          python3 -B r114-build-route/dt_source_bridge.py migrate --repo "$GITHUB_WORKSPACE"
+          python3 "$PACKAGE_DIR/sync_sources.py" --workspace "$WORKSPACE_DIR" --jobs 1 --only vendor/qcom/sm8850-devicetrees
+          python3 -B r114-build-route/dt_source_bridge.py normalize --repo "$GITHUB_WORKSPACE" --workspace "$WORKSPACE_DIR"
+      - name: Prepare hosted runner
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config patch
+      - name: Sync exact R114 source dependencies
+        run: python3 -B r114-build-route/dt_source_bridge.py sync --repo "$GITHUB_WORKSPACE" --workspace "$WORKSPACE_DIR" --jobs 4
+      - name: Reconstruct inherited R114 sources
+        run: python3 -B r114-build-route/dt_source_bridge.py legacy --repo "$GITHUB_WORKSPACE" --workspace "$WORKSPACE_DIR"
+      - name: Verify byte equivalence and publish complete source branches
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 -B r115-source/publish.py \
+            --repo-root "$GITHUB_WORKSPACE" --workspace "$WORKSPACE_DIR" \
+            --package "$PACKAGE_DIR" --baseline "$GITHUB_WORKSPACE/myron-adaptation-r12" \
+            --r18 "$GITHUB_WORKSPACE/myron-boot-r18"
+      - name: Upload source publication reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r115-source-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.WORKSPACE_DIR }}/integration-reports/
+          if-no-files-found: warn
+          retention-days: 14
+
+  clean-build:
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      CCACHE_NODEBUG: 'true'
+      TZ: UTC
+    steps:
+      - name: Fetch published build entry on fresh runner
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.publish.outputs.entry_commit }}
+          persist-credentials: false
+      - name: Prepare hosted runner
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update
+          sudo apt-get install -y git python3 build-essential bc bison flex libssl-dev libelf-dev libncurses-dev zstd lz4 rsync zip unzip cpio pkg-config patch
+      - name: Build directly from published source commits
+        run: python3 -B build.py --jobs 2 --ram-mb 10000
+      - name: Upload clean build reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r115-clean-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            kernel_workspace/integration-reports/
+            sources.lock.json
+            source-provenance.json
+          retention-days: 14
+      - name: Upload full kernel and modules
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-r115-clean-full-${{ github.run_id }}-${{ github.run_attempt }}
+          path: kernel_workspace/integration-artifacts/full/
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
