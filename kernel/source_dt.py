@@ -73,10 +73,25 @@ def pairs(value):
     return {tuple(values[i:i+2]) for i in range(0, len(values), 2)}
 
 
-def catalog(full, profile):
+def catalog(full, profile, build_status=None):
+    require(build_status is not None, '--full requires --build-status from the matching kernel build')
+    require(build_status.is_file() and not build_status.is_symlink(), 'Missing/redirected kernel build status')
+    provenance = json.loads(build_status.read_text())
+    require(provenance.get('success') is True, 'Kernel build status is not successful')
+    entry = json.loads((HERE / 'modules.json').read_text())['entry_commit']
+    require(provenance.get('entry_commit') == entry, 'Full kernel entry mismatch')
+    sources = provenance.get('sources')
+    require(isinstance(sources, list) and all(isinstance(row, dict) for row in sources),
+            'Missing/invalid kernel source provenance')
+    dts = [row.get('commit') for row in sources if row.get('path') == 'vendor/qcom/sm8850-devicetrees']
+    require(dts == [profile['dts_commit']], 'Full kernel DTS revision mismatch')
     status = json.loads((full / 'validation-status.json').read_text())
     require(status.get('verified') is True, 'Unverified compiler output')
     manifest = json.loads((full / 'artifact-manifest.json').read_text())
+    for field in ('kernel_release', 'linux_banner'):
+        value = provenance.get(field)
+        require(isinstance(value, str) and bool(value) and status.get(field) == value and manifest.get(field) == value,
+                'Full kernel ' + field + ' mismatch')
     wanted = {x['file'] for x in profile['bases']} | set(profile['board_overlays'])
     wanted |= {n for x in profile['bases'] for n in x['overlays']}
     files = {}
@@ -94,7 +109,49 @@ def catalog(full, profile):
     return files, sorted(wanted - files.keys())
 
 
-def preflight(files, profile, missing):
+def compiled_catalog(compiled, profile):
+    manifest = json.loads((compiled / 'dt-compile.json').read_text())
+    require(manifest['kind'] == 'host-dtc-only', 'Unexpected compilation provenance')
+    require(manifest['dts_commit'] == profile['dts_commit'], 'DTS revision mismatch')
+    require(manifest['entry_commit'] == json.loads((HERE / 'modules.json').read_text())['entry_commit'], 'Kernel entry mismatch')
+    files = {}
+    for row in manifest['files']:
+        name = row['file']
+        require(Path(name).name == name and name not in files, 'Invalid DT filename')
+        path = compiled / name
+        require(path.is_file() and not path.is_symlink() and path.resolve().is_relative_to(compiled.resolve()), 'Missing/redirected DT')
+        require(path.stat().st_size == row['bytes'] and sha(path) == row['sha256'], 'DT hash mismatch')
+        files[name] = path
+    wanted = {b['file'] for b in profile['bases']} | set(profile['board_overlays'])
+    wanted |= {n for b in profile['bases'] for n in b['overlays']}
+    return files, sorted(wanted - files.keys())
+
+
+def reviewed_rules(profile):
+    # Deliberately narrower than ABL's general foundry-zero fallback. Adding a
+    # device/revision requires another source review, not an arbitrary mask.
+    allowed = {((0x1010295, rev), (0x1000295, rev)) for rev in (0x10000, 0x20000)}
+    rules = set()
+    for rule in profile.get('reviewed_foundry_zero', []):
+        pair = (tuple(rule['base_msm_id']), tuple(rule['overlay_msm_id']))
+        require(pair in allowed and pair not in rules and rule.get('evidence') == 'DT-ID-MATCHING.md',
+                'Unreviewed or duplicate foundry mapping')
+        rules.add(pair)
+    return rules
+
+
+def overlay_match(base_id, overlay_ids, rules):
+    identity = tuple(base_id)
+    if identity in overlay_ids:
+        return 'exact', identity
+    for source, target in sorted(rules):
+        if identity == source and target in overlay_ids:
+            return 'reviewed_foundry_zero', target
+    return None, None
+
+
+def preflight(files, profile, missing, matches=None):
+    rules = reviewed_rules(profile)
     trees = {n: fdt(p.read_bytes()) for n, p in files.items()}
     errors = [{'kind': 'missing_compiled_input', 'file': n} for n in missing]
     for base in profile['bases']:
@@ -117,9 +174,14 @@ def preflight(files, profile, missing):
             if absent:
                 errors.append({'kind': 'unresolved_symbols', 'base': name, 'overlay': overlay, 'symbols': absent})
             ids = tree['/'].get('qcom,msm-id')
-            if ids and tuple(base['msm_id']) not in pairs(ids):
-                errors.append({'kind': 'soc_id_mapping_requires_review', 'base': name, 'overlay': overlay,
-                               'note': 'No implicit SoC/SKU mask or revision substitution is permitted.'})
+            if ids:
+                kind, selected = overlay_match(base['msm_id'], pairs(ids), rules)
+                if kind is None:
+                    errors.append({'kind': 'soc_id_mapping_requires_review', 'base': name, 'overlay': overlay,
+                                   'note': 'No implicit SoC/OEM ID mask or revision substitution is permitted.'})
+                elif kind == 'reviewed_foundry_zero' and matches is not None:
+                    matches.append({'base': name, 'overlay': overlay, 'kind': kind,
+                                    'base_msm_id': base['msm_id'], 'overlay_msm_id': list(selected)})
     return trees, errors
 
 
@@ -214,7 +276,10 @@ def assemble(files, trees, profile, output, tools):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--full', required=True, type=Path)
+    inputs = p.add_mutually_exclusive_group(required=True)
+    inputs.add_argument('--full', type=Path)
+    inputs.add_argument('--compiled', type=Path, help='Hash-checked DT-only output; does not attest a full kernel build')
+    p.add_argument('--build-status', type=Path, help='Matching integration-reports/build-status.json; required with --full')
     p.add_argument('--output', required=True, type=Path)
     p.add_argument('--profile', type=Path, default=HERE / 'dt-profile.json')
     p.add_argument('--fdtoverlay', default='fdtoverlay')
@@ -229,15 +294,25 @@ def main():
         path = a.output / name
         require(not path.is_symlink(), 'Redirected image output')
         path.unlink(missing_ok=True)
-    report = {'success': False, 'device_tested': False, 'full_rom_compiled': False, 'errors': []}
+    report = {'success': False, 'device_tested': False, 'full_rom_compiled': False,
+              'input_kind': 'host-dtc-only' if a.compiled else 'full-kernel-output',
+              'flash_package': False, 'errors': [], 'reviewed_matches': []}
     try:
         profile = json.loads(a.profile.read_text())
-        files, missing = catalog(a.full, profile)
-        trees, errors = preflight(files, profile, missing)
+        require(not (a.compiled and a.build_status), '--build-status is only valid with --full')
+        files, missing = compiled_catalog(a.compiled, profile) if a.compiled else catalog(a.full, profile, a.build_status)
+        trees, errors = preflight(files, profile, missing, report['reviewed_matches'])
+        if a.compiled:
+            report['compile_manifest_sha256'] = sha(a.compiled / 'dt-compile.json')
+        else:
+            report['build_status_sha256'] = sha(a.build_status)
         report.update(profile_sha256=sha(a.profile), inputs={n: sha(v) for n, v in files.items()}, errors=errors,
                       base_count=len(profile['bases']), source_dts_commit=profile['dts_commit'])
         require(not errors, 'DT preflight blocked: see source-dt-report.json')
         report['images'] = assemble(files, trees, profile, a.output, a)
+        report['variants'] = [{'base': b['file'], 'status': 'structural_checks_passed',
+                               'merged_sha256': sha(a.output / 'work' / ('merged-%02d.dtb' % i))}
+                              for i, b in enumerate(profile['bases'])]
         report['success'] = True
     except (ValueError, OSError, KeyError, struct.error) as error:
         report['failure'] = str(error)

@@ -1,61 +1,57 @@
-# R118：补齐 DT 源码缺口，继续保留刷机门禁
+# R119：八变体源码 DT 装配
 
-目标：红米 K90PM / myron。默认 `MYRON_DT_MODE=oem`。
+目标：红米 K90PM / myron。默认仍为 `MYRON_DT_MODE=oem`，源码模式需真机验证。
 
-本轮源码修复已经写入 DTS 分支：
-`feff8ac781caca95799d642f79a6bfa23a17e639`。
-内核入口锁定为 `eff369c241c9219757bb04f46899d21a5ed14d5c`；ACK 与模块源码提交未变。
-R115 产物仍属于原锁定版本，不能冒充本次新源码的完整内核产物。
+## 本轮变化
 
-## 已修复
+两个 CanoeP 温控变体原始 MSM-ID `0x1010295` 保持不变。根据高通 ABL 的明确
+foundry-zero 回退实现，只为 v1/v2 两个已核实 ID 对允许组件匹配；芯片编号、OEM 高位
+及版本必须相同。相机和显示已有精确 ID，继续优先精确匹配。
+规则、固定版本的原始依据和证据边界见 [DT-ID-MATCHING.md](DT-ID-MATCHING.md)。
+未放宽硬件提供者、GPU 版本、音频寄存器、震动路径或输出容器检查。
 
-- 收集 v1 `canoe-camera.dtbo`，保留 v1/v2 分开选择。
-- 移除 Canoe QFPROM 不存在的两个可选 GPU 熔丝引用。它们是 NVMEM 单元，不是时钟。
-  锁定模块源码 `b2877f8` 的 `adreno_read_fuse()` 对 `-ENOENT` 返回 0。
-- 恢复 LPASS 宏模块、时钟、SoundWire 控制器、GPIO 及寄存器定义。
-- 将 SoundWire 从设备放回相应 master 下；保留 Myron TFA 功放、WSA2 震动和板级路由。
-- 调整板级 overlay 次序：Myron 提供者在前，peach WLAN/BT 在后，消除合并后的前向未解析引用。
-- 按硬件版本检查 GPU：v1 为 `gen8-2-0`，v2 为 `gen8-2-1`。
-- 校验音频宏寄存器和震动从设备所在路径，防止只有 compatible 名称的空节点被误判通过。
+DTS 保持 `feff8ac781caca95799d642f79a6bfa23a17e639`，
+内核入口保持 `eff369c241c9219757bb04f46899d21a5ed14d5c`。
+R118 已补齐的相机、音频、GPU、MMRM、fence、SYNX、SMEM mailbox、指纹辅助及
+WCN786x 蓝牙组件都纳入本轮装配。没有修改 ROM 通用源码或内核源码。
 
-- 补入 MMRM、hardware fence、SYNX/IPCLite、SMEM mailbox 和指纹辅助 overlay。
-  后两项只用于 Canoe，与公开原厂基础 DT 的变体覆盖范围一致。
-- 蓝牙改选原厂同名 `qcom,wcn786x` 组件，保留 L6K 供电；不因 WLAN 使用 peach 就假定蓝牙也是 peach。
+`source_dt.py --compiled` 可从经过哈希/来源检查的 DT 专项编译产物装配原始镜像；
+ROM 构建使用 `--full` 路径，并显式传入 `--build-status`：入口提交、DTS 提交、
+构建成功状态及内核版本/时间横幅必须与产物一致，旧全量产物不能作为新源码的证明。
+CI 改为全部八变体通过才成功，不再把“诊断完成但仍有阻塞”显示为通过。
+成功后上传 `dtb.img`、`dtbo.img`、编译来源和装配报告。
+这些是原始构建输入，不是含 boot/vendor_boot/AVB 的可刷包。
 
 ## 验证范围
 
-使用四个锁定的源码项目和真实 CPP/DTC 编译 32 个输入，不重编 Image 或内核模块。
-其中 23 个未修改输入，与 R115 完整构建产物的 FDT 节点/属性逐项相同。
-相机及新增组件缺失产物、GPU 悬空引用已经清零。
-Canoe v1 与公开原厂合并树比较，缺少的 5 个 compatible 节点均为禁用备用 codec/测试节点；
-未发现缺少的启用 compatible 节点。这是节点覆盖检查，不是所有属性或功能等价保证。
-六个可直接匹配 ID 的变体通过真实合并、提供者检查及容器回读。
-诊断用临时容器会自动删除，不输出可刷镜像。
-新增构建入口/源码清洁检查、实际工具版本/哈希、构建起止时间和产物哈希记录。
+本地使用 R118 锁定源码已编译的 32 个输入执行真实合并，不重复编译 Image/模块。
+本轮报告见 `DT-CHECK-R119.json`；输入来源见 `DT-COMPILE-R118-EXPANDED.json`。
+八变体必须完整通过；28 条 foundry-zero 使用记录独立保留在报告中。
+另外检查八段 DTB 顺序和身份、单项 DTBO 表及其板级元数据，保留旧六变体结果比较。
+九项装配器测试覆盖错误匹配、哈希/版本篡改、硬件缺失、GPU 版本、禁用父节点、
+寄存器值、旧镜像失效及八变体容器回读。
+旧 R117/R118 适配器升级支持精确哈希白名单，拒绝覆盖未知本地改动。
 
-## 剩余阻塞
+完整 ROM 编译、新入口的完整内核编译及本轮真机验证尚未进行。
+现有 R115 全量产物属于旧入口，不能冒充新入口的完整产物。
+原厂两个温控基础 DT 组件较少，本轮补全也不能据此认定与原厂行为等价。
 
-`canoep-tp.dtb` / `canoep-tp-v2.dtb` 使用 `0x1010295`，而 14 类组件列出 `0x1000295`，
-共 28 条跨变体记录。原厂基础 DT 也包含前者，不能简单当作拼写错误修改。
-旧高通 MSM-ID 文档说明了 foundry 为 0 的回退语义，但这还不足以证明本机 ABL 的
-选择行为和当前构建脚本完全一致，因此没有自动掩码、扩大 ID 或改变发布的 8 变体集合。
-生产装配器仍拒绝该完整 profile，默认原厂 DT 不变。
-
-`audit_dt.py` 的成功退出表示诊断完成；只有报告中的 `all_variants_passed=true`
-才表示整个 profile 通过静态检查。该字段目前为 false，亦不能代替真机测试。
-完整 ROM 编译和本轮真机验证均未进行。
-
-## 重现
+## 重现和接入
 
 ```sh
 python3 -B kernel/compile_dt.py --entry /锁定的内核入口 \
   --workspace /单独的DT源码目录 --output /单独的DT产物目录 --sync
-python3 -B kernel/audit_dt.py --compiled /单独的DT产物目录 \
-  --report /单独的报告目录/audit.json
+python3 -B kernel/source_dt.py --compiled /单独的DT产物目录 \
+  --output /单独的DT镜像目录
 ```
 
 主机需要 `cpp`、`dtc`、`fdtoverlay`、`fdtoverlaymerge`、`fdtput` 和 `mkdtboimg`。
-工具可通过同名参数指定。GitHub 的 `dt-source.yml` 固定合并工具提交并上传诊断附件，
-不生成刷机包，也不触发约 90 分钟的完整内核构建。
+合并工具可用同名参数指定；专项 CI 固定工具源码提交。
 
-旧的 `DT-CHECK-R115.json` 是 R117 的历史失败记录；首轮结果见 `DT-CHECK-R118.json`，32 输入的最终扩展结果见 `DT-CHECK-R118-EXPANDED.json`。
+设备层的 ROM 构建接入已经存在：完成 README 的适配器合并和源码同步后，
+使用 `m myron-source-dt-check` 构建/检查完整内核配套的 DT；
+测试源码模式时使用 `m MYRON_DT_MODE=source <当前ROM打包目标>`。
+它依赖本次入口对应的 Image/模块构建，不会把专项目录的镜像当作全量内核缓存。
+保持 OEM 为默认，待匹配整包完成真机回归后再考虑切换默认值。
+
+历史 R115/R118 报告保留用于追溯，不能把其中旧阻塞状态当作本轮结果。

@@ -74,5 +74,26 @@
     "canoe_v1_missing_enabled_compatible_nodes_vs_oem": 0,
     "first_dt_ci_run": "https://github.com/yuwenhua653/oppo_oplus_realme_sm8850/actions/runs/41288797296",
     "first_dt_ci_conclusion": "success"
+  },
+  "r119": {
+    "source_dt_checks_passed": true,
+    "default_dt_mode": "oem",
+    "source_dt_adapter_tests_passed": 9,
+    "dt_inputs": 32,
+    "variants_structurally_passed": 8,
+    "variants_blocked_by_ids": 0,
+    "reviewed_foundry_matches": 28,
+    "base_ids_preserved": true,
+    "prior_six_merged_outputs_unchanged": true,
+    "full_kernel_recompiled": false,
+    "full_rom_compiled": false,
+    "device_tested": false,
+    "raw_dt_images_emitted": true,
+    "flash_package_emitted": false,
+    "source_dt_report": "DT-CHECK-R119.json",
+    "input_provenance": "DT-COMPILE-R118-EXPANDED.json",
+    "r117_r118_upgrade_preserves_policy": true,
+    "full_output_provenance_gate": true,
+    "old_r115_full_output_rejected": true
   }
 }

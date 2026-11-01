@@ -5,7 +5,7 @@
 只增加 myron 设备层构建规则，common、vendor/lineage、build/make、平台策略均不修改。
 
 ROM 的 `kernel`、模块打包和镜像目标现在依赖 `kernel/build.mk` 中的源码构建规则。
-该规则调用已成功完整编译的 `myron/kernel-6.12` 入口，锁定提交
+该规则调用 `myron/kernel-6.12` 入口，锁定提交
 `eff369c241c9219757bb04f46899d21a5ed14d5c`，使用其 53 项精确依赖和 54 项 Kleaf 目标。
 没有复制下载的 Image，没有使用旧 `.ko`，没有在 ROM 内再次执行内核源码迁移补丁。
 
@@ -40,8 +40,8 @@ repo sync -c kernel/xiaomi/myron-build
 
 保留 `kernel/xiaomi/myron-prebuilt` 依赖：目前仅使用其中 OEM DTB/DTBO 和既有 UAPI 头文件。
 其原 `kernel`、`vendor_dlkm/*.ko`、`vendor_ramdisk/*.ko`、`system_dlkm/*.ko` 已不再作为构建输入。
-R117 新增源码 DT 的装配规则和检查目标，但当前源码存在明确缺口，默认仍为 `MYRON_DT_MODE=oem`。
-具体证据、使用方式和阻塞见 [DT-STATUS.md](DT-STATUS.md)。不要直接切换 source 模式后刷机。
+源码 DT 的装配规则、检查目标和八变体 ID 规则已补齐；默认仍为 `MYRON_DT_MODE=oem`，等待匹配整包真机回归。
+具体证据、使用方式和剩余验证见 [DT-STATUS.md](DT-STATUS.md)。不要直接切换 source 模式后刷机。
 本轮检查的 OEM 仓库提交是 `9999f765b53876bf7a013a4fde5221153ad570fc`。
 
 第一次切换请用新 OUT_DIR，避免旧预编译模块和旧版本目录残留到增量输出：
@@ -93,10 +93,10 @@ DSP/VPP/ready broker、Recovery 独立运行时尚未全部整理进公开设备
 首次源码 ROM 的模块加载时序、快充、DSP/相机、Recovery 等仍须完整编译和真机回归。
 不要将生成的单独 boot 或 dlkm 与旧版模块分开刷入；先完成匹配整包验证。
 
-## R118 DT 专项验证
+## R119 DT 专项验证
 
 最新进度和准确验证范围见 [DT-STATUS.md](DT-STATUS.md)。
-32 个 DT 输入可独立从锁定源码编译。六个变体通过静态合并；两个 CanoeP 温控变体仍被 ID 门禁阻止。
-`compile_dt.py` / `audit_dt.py` 与 GitHub 专项工作流不会编译 Image、模块或完整 ROM。
-内核入口已更新 DTS 锁，现有 R115 全量产物不满足新入口身份检查，需要新全量构建才能作为其产物使用。
-保持默认 OEM DT，尚不要将本轮诊断输出用于刷机。
+32 个 DT 输入可独立从锁定源码编译；八变体使用严格硬件检查和有限 foundry-zero 匹配。
+专项 CI 必须全部通过才输出原始 DTB/DTBO；不会编译 Image、模块或完整 ROM。
+原始 DT 镜像不是可刷整包，默认 OEM DT 保持到真机回归完成。
+现有 R115 全量产物不满足新入口身份检查，需要新全量构建才能作为其产物使用。

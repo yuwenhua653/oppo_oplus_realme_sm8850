@@ -1,4 +1,4 @@
-name: Myron DT source compile and gap audit
+name: Myron DT source compile and assembly
 
 on:
   push:
@@ -62,20 +62,33 @@ jobs:
         run: python3 -B kernel/test_source_dt.py
       - name: Compile only the 32 DT inputs from pinned sources
         run: python3 -B kernel/compile_dt.py --entry entry --workspace dt-workspace --output dt-compiled --sync
-      - name: Audit applicable variants and report blocked IDs
+      - name: Assemble all eight variants with strict hardware checks
         run: |
-          python3 -B kernel/audit_dt.py --compiled dt-compiled --report dt-reports/audit.json \
+          python3 -B kernel/source_dt.py --compiled dt-compiled --output dt-images \
             --fdtoverlaymerge "$GITHUB_WORKSPACE/host-dtc/fdtoverlaymerge" \
             --mkdtboimg "$GITHUB_WORKSPACE/host-libufdt/utils/src/mkdtboimg.py"
-          python3 - <<'PY'
+          python3 - <<'PYREPORT'
           import json, os
-          report = json.load(open('dt-reports/audit.json'))
+          report = json.load(open('dt-images/source-dt-report.json'))
+          assert report['success'] and report['base_count'] == 8
+          assert len(report['variants']) == 8 and not report['errors']
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
-              print('DT compilation and diagnostic audit completed.', file=output)
-              print('All variants passed: ' + str(report['all_variants_passed']), file=output)
-              print('Unresolved preflight records: ' + str(len(report['preflight_errors'])), file=output)
-              print('No flash images emitted. Device testing and full ROM compilation have not run.', file=output)
-          PY
+              print('32 source DT inputs compiled; all 8 variants passed structural checks.', file=output)
+              print('Reviewed foundry-zero matches: ' + str(len(report['reviewed_matches'])), file=output)
+              print('Raw DT images emitted. This is not a flash package or a full kernel/ROM build.', file=output)
+              print('Hardware validation is still required; default ROM DT mode remains OEM.', file=output)
+          PYREPORT
+      - name: Upload complete raw DT images (not a flash package)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-source-dt-raw-${{ github.run_id }}
+          path: |
+            dt-images/dtb.img
+            dt-images/dtbo.img
+            dt-images/source-dt-report.json
+            dt-compiled/dt-compile.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload DT diagnostics (not a flash package)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -86,5 +99,5 @@ jobs:
             dt-compiled/*.dtbo
             dt-compiled/*.log
             dt-compiled/dt-compile.json
-            dt-reports/
+            dt-images/source-dt-report.json
           retention-days: 14

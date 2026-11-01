@@ -1,0 +1,471 @@
+{
+  "base_count": 8,
+  "compile_manifest_sha256": "76b0e30c02e6e3dd77521ad54a131e696431332c41e1a09d0e801ad7b5996081",
+  "device_tested": false,
+  "errors": [],
+  "flash_package": false,
+  "full_rom_compiled": false,
+  "images": {
+    "dtb.img": "826ad73500b22ad6c24c3c7cb52ddbd116407a7f3c6660c47bb63f1935a8e1bd",
+    "dtbo.img": "641d75e09e84a487d33841c4e81492b7337328abf7f5f848d5d34ab617e35140"
+  },
+  "independent_readback": {
+    "dtb_count": 8,
+    "dtbo_table_passed": true,
+    "original_order_and_ids_preserved": true,
+    "previous_six_merged_hashes_unchanged": [
+      "canoe-tp-v2.dtb",
+      "canoe-tp.dtb",
+      "canoe-v2.dtb",
+      "canoe.dtb",
+      "canoep-v2.dtb",
+      "canoep.dtb"
+    ]
+  },
+  "input_kind": "host-dtc-only",
+  "inputs": {
+    "canoe-audio.dtbo": "3aa478a78328724873222862ffb0d67db30b581f5fc234e0c59356c20991d70a",
+    "canoe-camera-v2.dtbo": "9f04aebd3b9666745d440a345dbe29462572b0c25dc16c363ba9c2075cf0647e",
+    "canoe-camera.dtbo": "88f355721aeb1dbb2a07f587f28b99e8ab6aae78a729d4974dc6f075d2854c61",
+    "canoe-dsp.dtbo": "b0ba1e0e47db5f1f3b33fc6ff043acb778bb61d399c52596e5fec8386e52c64a",
+    "canoe-dsp_v2.dtbo": "68a7809bc1d876f3e00b9aae7c94c476988c244fefb02da4e46585d0a35e74b2",
+    "canoe-eva.dtbo": "e0674d71c7f472efa5154bb1f99f3d1b527e14f86cb7d5291f02517574d3aef0",
+    "canoe-fingerprint.dtbo": "a2b116fb0877ee75696410c13c40b3e6ca64db78b7de8f6f6319433b8488c983",
+    "canoe-gpu.dtbo": "3191ce9d82de41316724272630d23e9a34baf85e185b0853844952dffa174f13",
+    "canoe-hfi-core.dtbo": "32675728046fe0e6aa194c58bd29218d4f5f1076e1667562074cdf8657e11b3d",
+    "canoe-hw-fence.dtbo": "5dc26b70ffb798a1c33e869e72dd51e73e455ec40af423684ceb3bfa1e727894",
+    "canoe-ipa.dtbo": "41cbab7ec52ba5670a703454268a0341be5a35e5e8ab2d516dbc1f6d71d1a13f",
+    "canoe-mmrm.dtbo": "fc39bb4aaac1b8fe5a96b243323b25eea87858f0ecd9027e3a74fdf391cff5fb",
+    "canoe-peach-cnss.dtbo": "2d213d5a5b3f2a197926cdd6e494292f5007958032f6ac7d9006e551666c94bd",
+    "canoe-sde.dtbo": "552a7751f0f56e0de1d408345d48c4bf2a1cb4ac735a17132318463ecfa3aeef",
+    "canoe-smem-mailbox.dtbo": "8c555c3b84f1a788dc86fe87af2c9c9b4dfbe6c3f37e2a8d5e652b6cdd26c24b",
+    "canoe-synx.dtbo": "636bffbd2530b0db7c3994e21cf1b2dd1e796754bc1a7fbe8e9f1593edd17662",
+    "canoe-tp-v2.dtb": "54d192d98ecb3efcf18237a5d0280e9a8afa92d07075e7e0dc421c6921c533a1",
+    "canoe-tp.dtb": "ccbdab3273acbfff286ec5a3c550ba023c6e909650b22666bdea3597c528e7b6",
+    "canoe-v2-gpu.dtbo": "b059e858c3944c3d267591b0d937c5f74ae5b2c57150b9bc79d69fe1ff63b35a",
+    "canoe-v2.dtb": "8dd3cb280b7f537547d8cffb6245b847d73665affa29f24f2ef9a1f787c1b918",
+    "canoe-vidc-v2.dtbo": "7b3f601dc27e2a262e23bd8860c426e2aaeab34105d7681cbf79d32ef1256938",
+    "canoe-vidc.dtbo": "47ea6f9f28c65ceaa96a4ec998d9903bca767219645efb83f959ea2e439c15c4",
+    "canoe-wcn786x-bt.dtbo": "12ad9f0d9cd2a6a53038dab3a6880c7486ca65498c0d27de66ef27f4f0c75c58",
+    "canoe.dtb": "489235c436ab0e366174ffa81358185a908731ba371e1b2fd56dc0c1cfec14a6",
+    "canoep-tp-v2.dtb": "f1f9c6795036fd4749a16b3c502dbf8479c1a8475c43f8888a6c1aa86777c8f9",
+    "canoep-tp.dtb": "9f9ed57bc3063bcd4b6b3520aa05e333b537def5f5e1537ace168cc7ad1877db",
+    "canoep-v2.dtb": "252215a49329233ca37ae247751306f8b65b737af6418f7beff825c51b8e5591",
+    "canoep.dtb": "8c5dbd51aafdd66e2de20c9816423cc8151281add18c5688f4ded7867df1373b",
+    "myron-audio-mtp.dtbo": "6966b541bc6f4ace656612bda51f393e3da068e83652262e2151f92b323def1c",
+    "myron-sde-display-mtp-overlay.dtbo": "46e7276e80dfc06e0e821da84306b8cb3914c163db85e6c95edbfb47649b7c48",
+    "myron-sm8850-camera-sensor.dtbo": "4fb760bc0ae42554bcf1d7a341a4d1bbf64f1dcbdf3b277fc55ecc6a540860ee",
+    "myron-sm8850-overlay.dtbo": "0ab5bc21a50f4de9cdf41668fc792e87d685df4d7e3d92b52a700f001d0433e2"
+  },
+  "profile_sha256": "ec299e69392788b2e4b5d70aa697dbc4efbb62b3d390636ec5ae5fe0747fba75",
+  "reviewed_matches": [
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-audio.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-dsp_v2.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-eva.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-v2-gpu.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-hfi-core.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-vidc-v2.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-mmrm.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-hw-fence.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-synx.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "myron-sm8850-overlay.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "myron-audio-mtp.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "myron-sde-display-mtp-overlay.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-peach-cnss.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-wcn786x-bt.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-audio.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-dsp.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-eva.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-gpu.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-hfi-core.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-vidc.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-mmrm.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-hw-fence.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-synx.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "myron-sm8850-overlay.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "myron-audio-mtp.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "myron-sde-display-mtp-overlay.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-peach-cnss.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "kind": "reviewed_foundry_zero",
+      "overlay": "canoe-wcn786x-bt.dtbo",
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ]
+    }
+  ],
+  "source_dts_commit": "feff8ac781caca95799d642f79a6bfa23a17e639",
+  "success": true,
+  "variants": [
+    {
+      "base": "canoe-tp-v2.dtb",
+      "merged_sha256": "8f856a280be16c5dc92e02be7752c7bf5cbcb83b1a6739435276f10898a26bc4",
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoe-tp.dtb",
+      "merged_sha256": "7c67c156eb67411e5115208801ddc9a120892319f7917d6343815b4b810e64ce",
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoe-v2.dtb",
+      "merged_sha256": "8c0247d711d977a1b2a1aeb04c4f7462e4fe99544de76af9e75dd8b0831d0f9c",
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoe.dtb",
+      "merged_sha256": "68e1d0dbcc3a0b017f22afe2e1b07c0129b70b6093ffd913ac7fd694430b5d15",
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "merged_sha256": "1109f49bc9743ca8e7d32fbd3fa34ab6e290095c9fc7b1f5538570423cabb7c9",
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "merged_sha256": "0d95a7b20d2026442cfa6b086a942a92912bab193e75118482f97d977b9822c6",
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoep-v2.dtb",
+      "merged_sha256": "bab20c71273b0139b50c7a97702f33ff1399dd69d1a1c18fb0e78b41d1d64a90",
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoep.dtb",
+      "merged_sha256": "dc53a532fdd9541941ee2a1832af198c5691d7ce4881f8c450949dd1ac36fab2",
+      "status": "structural_checks_passed"
+    }
+  ]
+}

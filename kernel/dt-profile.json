@@ -315,5 +315,29 @@
         4028039712
       ]
     }
-  }
+  },
+  "reviewed_foundry_zero": [
+    {
+      "base_msm_id": [
+        16843413,
+        65536
+      ],
+      "overlay_msm_id": [
+        16777877,
+        65536
+      ],
+      "evidence": "DT-ID-MATCHING.md"
+    },
+    {
+      "base_msm_id": [
+        16843413,
+        131072
+      ],
+      "overlay_msm_id": [
+        16777877,
+        131072
+      ],
+      "evidence": "DT-ID-MATCHING.md"
+    }
+  ]
 }

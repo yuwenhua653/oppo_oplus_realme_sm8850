@@ -20,26 +20,14 @@ def main():
     a.report.parent.mkdir(parents=True, exist_ok=True)
     a.report.unlink(missing_ok=True)
     profile = json.loads((HERE / 'dt-profile.json').read_text())
-    manifest = json.loads((a.compiled / 'dt-compile.json').read_text())
-    dt.require(manifest['kind'] == 'host-dtc-only', 'Unexpected compilation provenance')
-    dt.require(manifest['dts_commit'] == profile['dts_commit'], 'DTS revision mismatch')
-    dt.require(manifest['entry_commit'] == json.loads((HERE / 'modules.json').read_text())['entry_commit'], 'Kernel entry mismatch')
-    files = {}
-    for row in manifest['files']:
-        name = row['file']
-        dt.require(Path(name).name == name and name not in files, 'Invalid DT filename')
-        path = a.compiled / name
-        dt.require(path.is_file() and not path.is_symlink(), 'Missing/redirected DT')
-        dt.require(path.stat().st_size == row['bytes'] and dt.sha(path) == row['sha256'], 'DT hash mismatch')
-        files[name] = path
-    wanted = {b['file'] for b in profile['bases']} | set(profile['board_overlays'])
-    wanted |= {n for b in profile['bases'] for n in b['overlays']}
-    trees, errors = dt.preflight(files, profile, sorted(wanted - files.keys()))
+    files, missing = dt.compiled_catalog(a.compiled, profile)
+    matches = []
+    trees, errors = dt.preflight(files, profile, missing, matches)
     report = {'kind': 'dt-only-audit', 'device_tested': False, 'full_kernel_compiled': False,
         'flash_images_emitted': False, 'profile_sha256': dt.sha(HERE / 'dt-profile.json'),
         'compile_manifest_sha256': dt.sha(a.compiled / 'dt-compile.json'),
         'dts_commit': profile['dts_commit'], 'preflight_errors': errors,
-        'compiled_inputs': len(files), 'variants': []}
+        'compiled_inputs': len(files), 'variants': [], 'reviewed_matches': matches}
     try:
         # ID-blocked variants stay blocked. Do not remove the production gate or mutate their IDs.
         blocked = {e.get('base') for e in errors}
@@ -67,8 +55,8 @@ def main():
     a.report.parent.mkdir(parents=True, exist_ok=True)
     a.report.write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')
     print(json.dumps(report, indent=2))
-    # CI distinguishes completed diagnostics with documented blockers from tool/structural failures.
-    return 0 if report['audit_completed'] else 1
+    # An incomplete profile is a failure, even if diagnostics completed.
+    return 0 if report['all_variants_passed'] else 1
 
 
 if __name__ == '__main__':

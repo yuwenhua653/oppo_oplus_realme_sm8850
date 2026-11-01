@@ -31,7 +31,7 @@ myron_dt_tools := $(HOST_OUT_EXECUTABLES)/fdtoverlay $(HOST_OUT_EXECUTABLES)/fdt
 .KATI_RESTAT: $(myron_source_dtb)
 $(myron_source_dtb): .KATI_IMPLICIT_OUTPUTS := $(myron_source_dtbo)
 $(myron_source_dtb): $(myron_kernel_image) $(DEVICE_PATH)/kernel/source_dt.py $(DEVICE_PATH)/kernel/dt-profile.json $(myron_dt_tools) myron-source-dt-force
-	/usr/bin/python3 -B $(DEVICE_PATH)/kernel/source_dt.py --full $(MYRON_KERNEL_WORKSPACE)/integration-artifacts/full --output $(MYRON_SOURCE_DT_OUT) --fdtoverlay $(HOST_OUT_EXECUTABLES)/fdtoverlay --fdtoverlaymerge $(HOST_OUT_EXECUTABLES)/fdtoverlaymerge --fdtput $(HOST_OUT_EXECUTABLES)/fdtput --mkdtboimg $(HOST_OUT_EXECUTABLES)/mkdtboimg
+	/usr/bin/python3 -B $(DEVICE_PATH)/kernel/source_dt.py --full $(MYRON_KERNEL_WORKSPACE)/integration-artifacts/full --build-status $(MYRON_KERNEL_WORKSPACE)/integration-reports/build-status.json --output $(MYRON_SOURCE_DT_OUT) --fdtoverlay $(HOST_OUT_EXECUTABLES)/fdtoverlay --fdtoverlaymerge $(HOST_OUT_EXECUTABLES)/fdtoverlaymerge --fdtput $(HOST_OUT_EXECUTABLES)/fdtput --mkdtboimg $(HOST_OUT_EXECUTABLES)/mkdtboimg
 
 myron-source-dt-check: $(myron_source_dtb) $(myron_source_dtbo)
 
