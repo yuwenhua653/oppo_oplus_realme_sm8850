@@ -1,0 +1,303 @@
+{
+  "base_count": 8,
+  "device_tested": false,
+  "errors": [
+    {
+      "file": "canoe-camera.dtbo",
+      "kind": "missing_compiled_input"
+    },
+    {
+      "base": "canoe-tp-v2.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-v2-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoe-tp.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoe-tp.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "myron-sm8850-camera-sensor.dtbo",
+      "symbols": [
+        "cam_cci0",
+        "cam_csiphy1",
+        "cam_csiphy3",
+        "cam_sensor_active_rst2",
+        "cam_sensor_mclk2_active",
+        "cam_sensor_mclk2_suspend",
+        "cam_sensor_suspend_rst2"
+      ]
+    },
+    {
+      "base": "canoe-v2.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-v2-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoe.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoe.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "myron-sm8850-camera-sensor.dtbo",
+      "symbols": [
+        "cam_cci0",
+        "cam_csiphy1",
+        "cam_csiphy3",
+        "cam_sensor_active_rst2",
+        "cam_sensor_mclk2_active",
+        "cam_sensor_mclk2_suspend",
+        "cam_sensor_suspend_rst2"
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-audio.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-dsp_v2.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-eva.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-v2-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-v2-gpu.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-hfi-core.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-vidc-v2.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-cnss.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-bt.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sm8850-overlay.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-audio-mtp.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sde-display-mtp-overlay.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-audio.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-dsp.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-eva.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-gpu.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-hfi-core.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-vidc.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-cnss.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-bt.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sm8850-overlay.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-audio-mtp.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "myron-sm8850-camera-sensor.dtbo",
+      "symbols": [
+        "cam_cci0",
+        "cam_csiphy1",
+        "cam_csiphy3",
+        "cam_sensor_active_rst2",
+        "cam_sensor_mclk2_active",
+        "cam_sensor_mclk2_suspend",
+        "cam_sensor_suspend_rst2"
+      ]
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sde-display-mtp-overlay.dtbo"
+    },
+    {
+      "base": "canoep-v2.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-v2-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoep.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "canoe-gpu.dtbo",
+      "symbols": [
+        "debugbus_en",
+        "gpu_niden_en"
+      ]
+    },
+    {
+      "base": "canoep.dtb",
+      "kind": "unresolved_symbols",
+      "overlay": "myron-sm8850-camera-sensor.dtbo",
+      "symbols": [
+        "cam_cci0",
+        "cam_csiphy1",
+        "cam_csiphy3",
+        "cam_sensor_active_rst2",
+        "cam_sensor_mclk2_active",
+        "cam_sensor_mclk2_suspend",
+        "cam_sensor_suspend_rst2"
+      ]
+    }
+  ],
+  "failure": "DT preflight blocked: see source-dt-report.json",
+  "full_rom_compiled": false,
+  "inputs": {
+    "canoe-audio.dtbo": "3aa478a78328724873222862ffb0d67db30b581f5fc234e0c59356c20991d70a",
+    "canoe-camera-v2.dtbo": "9f04aebd3b9666745d440a345dbe29462572b0c25dc16c363ba9c2075cf0647e",
+    "canoe-dsp.dtbo": "b0ba1e0e47db5f1f3b33fc6ff043acb778bb61d399c52596e5fec8386e52c64a",
+    "canoe-dsp_v2.dtbo": "68a7809bc1d876f3e00b9aae7c94c476988c244fefb02da4e46585d0a35e74b2",
+    "canoe-eva.dtbo": "e0674d71c7f472efa5154bb1f99f3d1b527e14f86cb7d5291f02517574d3aef0",
+    "canoe-gpu.dtbo": "f4441b0183c971abff9c394b86a640be4f6aa3d74a6ef95d055b353907d3d0d6",
+    "canoe-hfi-core.dtbo": "32675728046fe0e6aa194c58bd29218d4f5f1076e1667562074cdf8657e11b3d",
+    "canoe-ipa.dtbo": "41cbab7ec52ba5670a703454268a0341be5a35e5e8ab2d516dbc1f6d71d1a13f",
+    "canoe-peach-bt.dtbo": "4ab558d5d3c3df23051e1ea4ad60653ef518e6390e8dff9cd21ee75743686da2",
+    "canoe-peach-cnss.dtbo": "2d213d5a5b3f2a197926cdd6e494292f5007958032f6ac7d9006e551666c94bd",
+    "canoe-sde.dtbo": "552a7751f0f56e0de1d408345d48c4bf2a1cb4ac735a17132318463ecfa3aeef",
+    "canoe-tp-v2.dtb": "54d192d98ecb3efcf18237a5d0280e9a8afa92d07075e7e0dc421c6921c533a1",
+    "canoe-tp.dtb": "ccbdab3273acbfff286ec5a3c550ba023c6e909650b22666bdea3597c528e7b6",
+    "canoe-v2-gpu.dtbo": "ea2bec67385347bdca0073e7b6489f994ae32a59a46b563aca847ec6ef931258",
+    "canoe-v2.dtb": "8dd3cb280b7f537547d8cffb6245b847d73665affa29f24f2ef9a1f787c1b918",
+    "canoe-vidc-v2.dtbo": "7b3f601dc27e2a262e23bd8860c426e2aaeab34105d7681cbf79d32ef1256938",
+    "canoe-vidc.dtbo": "47ea6f9f28c65ceaa96a4ec998d9903bca767219645efb83f959ea2e439c15c4",
+    "canoe.dtb": "489235c436ab0e366174ffa81358185a908731ba371e1b2fd56dc0c1cfec14a6",
+    "canoep-tp-v2.dtb": "f1f9c6795036fd4749a16b3c502dbf8479c1a8475c43f8888a6c1aa86777c8f9",
+    "canoep-tp.dtb": "9f9ed57bc3063bcd4b6b3520aa05e333b537def5f5e1537ace168cc7ad1877db",
+    "canoep-v2.dtb": "252215a49329233ca37ae247751306f8b65b737af6418f7beff825c51b8e5591",
+    "canoep.dtb": "8c5dbd51aafdd66e2de20c9816423cc8151281add18c5688f4ded7867df1373b",
+    "myron-audio-mtp.dtbo": "b09a7dfde9d04d5433c0538c8fa3f11c8aecd66bc6b6f358c61e936bfffdb12f",
+    "myron-sde-display-mtp-overlay.dtbo": "46e7276e80dfc06e0e821da84306b8cb3914c163db85e6c95edbfb47649b7c48",
+    "myron-sm8850-camera-sensor.dtbo": "4fb760bc0ae42554bcf1d7a341a4d1bbf64f1dcbdf3b277fc55ecc6a540860ee",
+    "myron-sm8850-overlay.dtbo": "0ab5bc21a50f4de9cdf41668fc792e87d685df4d7e3d92b52a700f001d0433e2"
+  },
+  "profile_sha256": "9833a634742fe56fdf46644e718f9f4f8687ec4c27dfb5488ddc2f6290fc5aee",
+  "source_dts_commit": "9956353d359e30561eac7d33c71e2ffb1afeb700",
+  "success": false
+}

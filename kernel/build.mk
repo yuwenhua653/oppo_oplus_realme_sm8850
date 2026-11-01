@@ -21,3 +21,23 @@ $(PRODUCT_OUT)/kernel: $(myron_kernel_image)
 ALL_DEFAULT_INSTALLED_MODULES += $(PRODUCT_OUT)/kernel
 .PHONY: kernel
 kernel: $(PRODUCT_OUT)/kernel
+
+# Compile/assemble source DTs behind the same kernel build dependency. Unlike a
+# wildcard on an empty out directory, both outputs exist in the clean Ninja graph.
+myron_source_dtb := $(MYRON_SOURCE_DT_OUT)/dtb.img
+myron_source_dtbo := $(MYRON_SOURCE_DT_OUT)/dtbo.img
+myron_dt_tools := $(HOST_OUT_EXECUTABLES)/fdtoverlay $(HOST_OUT_EXECUTABLES)/fdtoverlaymerge $(HOST_OUT_EXECUTABLES)/fdtput $(HOST_OUT_EXECUTABLES)/mkdtboimg
+.PHONY: myron-source-dt-force myron-source-dt-check
+.KATI_RESTAT: $(myron_source_dtb)
+$(myron_source_dtb): .KATI_IMPLICIT_OUTPUTS := $(myron_source_dtbo)
+$(myron_source_dtb): $(myron_kernel_image) $(DEVICE_PATH)/kernel/source_dt.py $(DEVICE_PATH)/kernel/dt-profile.json $(myron_dt_tools) myron-source-dt-force
+	/usr/bin/python3 -B $(DEVICE_PATH)/kernel/source_dt.py --full $(MYRON_KERNEL_WORKSPACE)/integration-artifacts/full --output $(MYRON_SOURCE_DT_OUT) --fdtoverlay $(HOST_OUT_EXECUTABLES)/fdtoverlay --fdtoverlaymerge $(HOST_OUT_EXECUTABLES)/fdtoverlaymerge --fdtput $(HOST_OUT_EXECUTABLES)/fdtput --mkdtboimg $(HOST_OUT_EXECUTABLES)/mkdtboimg
+
+myron-source-dt-check: $(myron_source_dtb) $(myron_source_dtbo)
+
+ifeq ($(MYRON_DT_MODE),source)
+$(PRODUCT_OUT)/dtb.img: $(myron_source_dtb)
+	@mkdir -p $(dir $@)
+	cmp -s $< $@ || cp -f $< $@
+# Android's existing DTBO rule supplies AVB/footer and partition-size checks.
+endif

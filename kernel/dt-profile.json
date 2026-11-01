@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "device": "Redmi K90PM / myron",
+  "dts_commit": "9956353d359e30561eac7d33c71e2ffb1afeb700",
+  "bases": [
+    {
+      "file": "canoe-tp-v2.dtb",
+      "msm_id": [
+        16777876,
+        131072
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera-v2.dtbo",
+        "canoe-dsp_v2.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-v2-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-ipa.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc-v2.dtbo"
+      ]
+    },
+    {
+      "file": "canoe-tp.dtb",
+      "msm_id": [
+        16777876,
+        65536
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera.dtbo",
+        "canoe-dsp.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-ipa.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc.dtbo"
+      ]
+    },
+    {
+      "file": "canoe-v2.dtb",
+      "msm_id": [
+        660,
+        131072
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera-v2.dtbo",
+        "canoe-dsp_v2.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-v2-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-ipa.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc-v2.dtbo"
+      ]
+    },
+    {
+      "file": "canoe.dtb",
+      "msm_id": [
+        660,
+        65536
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera.dtbo",
+        "canoe-dsp.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-ipa.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc.dtbo"
+      ]
+    },
+    {
+      "file": "canoep-tp-v2.dtb",
+      "msm_id": [
+        16843413,
+        131072
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera-v2.dtbo",
+        "canoe-dsp_v2.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-v2-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc-v2.dtbo"
+      ]
+    },
+    {
+      "file": "canoep-tp.dtb",
+      "msm_id": [
+        16843413,
+        65536
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera.dtbo",
+        "canoe-dsp.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc.dtbo"
+      ]
+    },
+    {
+      "file": "canoep-v2.dtb",
+      "msm_id": [
+        661,
+        131072
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera-v2.dtbo",
+        "canoe-dsp_v2.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-v2-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc-v2.dtbo"
+      ]
+    },
+    {
+      "file": "canoep.dtb",
+      "msm_id": [
+        661,
+        65536
+      ],
+      "board_id": [
+        0,
+        0
+      ],
+      "overlays": [
+        "canoe-audio.dtbo",
+        "canoe-camera.dtbo",
+        "canoe-dsp.dtbo",
+        "canoe-eva.dtbo",
+        "canoe-gpu.dtbo",
+        "canoe-hfi-core.dtbo",
+        "canoe-sde.dtbo",
+        "canoe-vidc.dtbo"
+      ]
+    }
+  ],
+  "board_overlays": [
+    "canoe-peach-cnss.dtbo",
+    "canoe-peach-bt.dtbo",
+    "myron-sm8850-overlay.dtbo",
+    "myron-audio-mtp.dtbo",
+    "myron-sm8850-camera-sensor.dtbo",
+    "myron-sde-display-mtp-overlay.dtbo"
+  ],
+  "board_metadata_from": "myron-sm8850-overlay.dtbo",
+  "dtbo_table": {
+    "page_size": 4096,
+    "version": 0,
+    "id": 0,
+    "rev": 0,
+    "custom": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "required_compatible": [
+    "qcom,adreno-gpu-gen8-2-0",
+    "qcom,cnss-peach",
+    "qcom,lpass-cdc-rx-macro",
+    "qcom,lpass-cdc-tx-macro",
+    "qcom,lpass-cdc-va-macro",
+    "qcom,lpass-cdc-wsa2-macro",
+    "focal,touch-spi"
+  ],
+  "notes": [
+    "OEM base order and SoC IDs matched against public myron-prebuilt 9999f765b53876bf7a013a4fde5221153ad570fc.",
+    "This is a checked assembly contract, not hardware qualification. Missing inputs/IDs/symbols/providers are hard failures.",
+    "Do not widen SoC IDs, add fake providers, or suppress errors to obtain flash images."
+  ]
+}

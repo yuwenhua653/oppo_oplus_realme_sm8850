@@ -26,5 +26,16 @@
     "new_kernel_compilation_this_round": false,
     "new_device_test": false
   },
-  "publication_scope": "Public upstream device files and new build adapter only; no private R110/R113 derived policy/runtime files."
+  "publication_scope": "Public upstream device files and new build adapter only; no private R110/R113 derived policy/runtime files.",
+  "r117": {
+    "source_dt_checks_passed": false,
+    "default_dt_mode": "oem",
+    "source_dt_adapter_tests_passed": 5,
+    "kati_ninja_oem_and_source_graphs": true,
+    "r116_upgrade_preserves_policy": true,
+    "full_kernel_recompiled": false,
+    "full_rom_compiled": false,
+    "device_tested": false,
+    "source_dt_report": "DT-CHECK-R115.json"
+  }
 }

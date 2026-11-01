@@ -40,6 +40,8 @@ repo sync -c kernel/xiaomi/myron-build
 
 保留 `kernel/xiaomi/myron-prebuilt` 依赖：目前仅使用其中 OEM DTB/DTBO 和既有 UAPI 头文件。
 其原 `kernel`、`vendor_dlkm/*.ko`、`vendor_ramdisk/*.ko`、`system_dlkm/*.ko` 已不再作为构建输入。
+R117 新增源码 DT 的装配规则和检查目标，但当前源码存在明确缺口，默认仍为 `MYRON_DT_MODE=oem`。
+具体证据、使用方式和阻塞见 [DT-STATUS.md](DT-STATUS.md)。不要直接切换 source 模式后刷机。
 本轮检查的 OEM 仓库提交是 `9999f765b53876bf7a013a4fde5221153ad570fc`。
 
 第一次切换请用新 OUT_DIR，避免旧预编译模块和旧版本目录残留到增量输出：
@@ -75,7 +77,8 @@ m kernel
 
 每次构建检查入口提交、53 个源码仓库是否干净、全部输出哈希、vermagic、依赖清单、
 内核与模块符号 CRC。改动源码必须先提交并更新 lock；依赖变化需复审并更新模块目录。
-未改动且已验证的源码编译结果会复用；缺失或被篡改的缓存停止，不降级使用旧内核。
+未改动且已验证的源码编译结果会复用；只改设备打包规则时，也会先尝试验证并复用完整编译原始产物，
+避免重新编译整个内核。缺失或被篡改的缓存停止，不降级使用旧内核。
 版本来自真实 common 提交，时间来自实际构建开始时间，保留表示 4 KiB 页的 `-4k`。
 
 ## 当前验证与边界

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Merge this kernel adapter into an existing myron checkout, preserving other adaptations."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -37,11 +38,15 @@ def main():
     if not existing:
         deps.append(entry)
     writes[dep] = (json.dumps(deps, indent=2) + '\n').encode()
+    previous_path = source / 'kernel/previous-adapter.json'
+    previous = json.loads(previous_path.read_text())['files'] if previous_path.exists() else {}
     for path in sorted((source / 'kernel').iterdir()):
         if path.is_file():
             dst = target / 'kernel' / path.name
             if dst.exists() and dst.read_bytes() != path.read_bytes():
-                sys.exit('Existing adapter differs: ' + str(dst))
+                digest = hashlib.sha256(dst.read_bytes()).hexdigest()
+                if previous.get(path.name) != digest:
+                    sys.exit('Existing adapter differs: ' + str(dst))
             writes[dst] = path.read_bytes()
     android = target / 'Android.mk'
     block = (source / 'Android.mk').read_bytes()

@@ -1,0 +1,15 @@
+{
+  "commit": "24f5fd0db33a627d09f058028f5f0ffb124ca205",
+  "files": {
+    "BoardConfigKernel.mk": "3ac77e620691986154830ece2b250e89c77ff1d82f144f7fda6fbd1cfa9aa956",
+    "README-CN.md": "24108bd38aabb96af6ef40b9278fc04734691a3aa98ba2404e9c11d3ab27f511",
+    "VALIDATION.json": "d58f93893b46745b21315713929503aa9d2b4c309f5e223b9ac79387bf922b5f",
+    "apply_source_build.py": "7a5315a416ef63ec06b8f950d724fa43912cf1e90875469998fc0d1e316d3d5e",
+    "build.mk": "dbd3b805c6fd010ef3f6025a0b3663f6a66fa6e6a97ff3ca63e232be9d226f76",
+    "local_manifest.xml": "c09a3f7862a9ce5bdcab7face225ee1e1c5e112b83cbb2701c269d4e56c9a664",
+    "modules.json": "e7df1b2be684d67fdc2f1695549b1cbe40c62ed9c6e7e1a9873dcf47b55218d8",
+    "modules.mk": "966b5b82bbf10aa83691d107c03187e6a9921511149f27158e73027bd64d9d85",
+    "rom_kernel.py": "b4c2ce7eca2db7b253e6fa966ce94c8e80ffc65d214d05d16e7fb60f16864d59",
+    "upstream-kernel-block.txt": "5d119d1e83ace100c28c5aac04bb5c6c2acbf358d3462049107f8d2c1128adba"
+  }
+}

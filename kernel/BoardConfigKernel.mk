@@ -17,9 +17,19 @@ MYRON_KERNEL_SOURCE := $(MYRON_KERNEL_WORKSPACE)/common
 # export Makefile; actual Image/module sources are MYRON_KERNEL_SOURCE above.
 TARGET_KERNEL_SOURCE := $(KERNEL_PATH)/kernel-headers
 
-# DT migration is separate from kernel/module compilation. Keep OEM DT selection.
+# Source mode is fail-closed: input/SoC-ID/provider checks must pass before the
+# source images can replace OEM DTs. See DT-STATUS.md for current blockers.
+MYRON_DT_MODE ?= oem
+MYRON_SOURCE_DT_OUT := $(MYRON_KERNEL_OUT)/source-dt
+ifeq ($(MYRON_DT_MODE),source)
+BOARD_PREBUILT_DTBOIMAGE := $(MYRON_SOURCE_DT_OUT)/dtbo.img
+BOARD_PREBUILT_DTBIMAGE_DIR :=
+else ifeq ($(MYRON_DT_MODE),oem)
 BOARD_PREBUILT_DTBOIMAGE := $(KERNEL_PATH)/dtbo.img
 BOARD_PREBUILT_DTBIMAGE_DIR := $(KERNEL_PATH)/dtb
+else
+$(error MYRON_DT_MODE must be oem or source)
+endif
 
 include $(DEVICE_PATH)/kernel/modules.mk
 BOARD_USES_SYSTEM_DLKMIMAGE := true

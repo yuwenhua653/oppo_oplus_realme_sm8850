@@ -180,7 +180,7 @@ def main():
         builder = load('myron_source_build', entry / 'build.py')
         source_lock = read(entry / 'sources.lock.json')
         require((workspace / 'common/.git').exists(), 'Run python3 device/xiaomi/myron/kernel/rom_kernel.py prepare first (use the same --workspace when OUT_DIR differs).')
-        builder.check_sources(workspace, source_lock)
+        source_state = builder.check_sources(workspace, source_lock)
         if a.action == 'prepare':
             print('Pinned sources ready. Use the normal ROM lunch and m commands; kernel compilation is a build dependency.')
             return
@@ -196,6 +196,17 @@ def main():
             print('Reusing verified source-built kernel: ' + report['kernel_release'])
             return
         full = workspace / 'integration-artifacts/full'
+        raw_status = workspace / 'integration-reports/build-status.json'
+        if full.is_dir() and raw_status.is_file():
+            previous = read(raw_status)
+            if (previous.get('success') is True and previous.get('entry_commit') == catalog['entry_commit']
+                    and previous.get('sources') == source_state):
+                # A device packaging/DT-rule edit must not spend another full
+                # kernel build. Revalidate compiler outputs before restaging.
+                stage(full, dist, entry, catalog)
+                write(cache, key)
+                print('Revalidated existing source build; updated device staging only.')
+                return
         if full.exists():
             require(not full.is_symlink(), 'Refusing redirected compiler output')
             shutil.rmtree(full)
