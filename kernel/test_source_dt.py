@@ -39,9 +39,16 @@ class Test(unittest.TestCase):
    for i in range(8):
     size=struct.unpack_from('>I',data,off+4)[0];node=m.fdt(data[off:off+size])['/'];self.assertEqual(m.cells(node['qcom,msm-id']),[100+i,1]);off+=size
    self.assertEqual(off,len(data));m.verify_table((out/'dtbo.img').read_bytes(),(out/'work/myron-board.dtbo').read_bytes(),profile['dtbo_table'])
+   profile['bases'][1]['required_compatible']=['test,wrong-gpu-revision']
+   with self.assertRaisesRegex(ValueError,'test,wrong-gpu-revision'):m.assemble(files,trees,profile,root/'wrong-revision',TOOLS)
+   del profile['bases'][1]['required_compatible']
    profile['required_compatible']=['test,absent']
    with self.assertRaisesRegex(ValueError,'Missing/disabled hardware'):m.assemble(files,trees,profile,root/'failed',TOOLS)
    self.assertFalse((root/'failed/dtb.img').exists())
+ def test_required_binding_properties(self):
+  required={'/macro':{'reg':[0x6ac0000,0]}}
+  self.assertEqual(m.property_errors({'/macro':{}},required),['/macro:reg'])
+  self.assertEqual(m.property_errors({'/macro':{'reg':struct.pack('>2I',0x6ac0000,0)}},required),[])
  def test_disabled_parent_blocks_provider(self):
   self.assertEqual(m.provider_errors({'/':{},'/bus':{'status':b'disabled\0'},'/bus/dev':{'compatible':b'test,provider\0'}},['test,provider']),['test,provider'])
 if __name__=='__main__':unittest.main(verbosity=2)

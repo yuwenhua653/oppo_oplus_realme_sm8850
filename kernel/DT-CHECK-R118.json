@@ -1,0 +1,192 @@
+{
+  "all_variants_passed": false,
+  "audit_completed": true,
+  "compile_manifest_sha256": "830217c4f2c2b14aca42767a2cb2da1c7bf6165ed9c739ba76ea2a10a34fd0c8",
+  "compiled_inputs": 27,
+  "device_tested": false,
+  "dts_commit": "0d015de10a547545b053acb7df2a097996bf011d",
+  "flash_images_emitted": false,
+  "full_kernel_compiled": false,
+  "kind": "dt-only-audit",
+  "preflight_errors": [
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-audio.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-dsp_v2.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-eva.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-v2-gpu.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-hfi-core.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-vidc-v2.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sm8850-overlay.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-audio-mtp.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sde-display-mtp-overlay.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-cnss.dtbo"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-bt.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-audio.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-dsp.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-eva.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-gpu.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-hfi-core.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-vidc.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sm8850-overlay.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-audio-mtp.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "myron-sde-display-mtp-overlay.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-cnss.dtbo"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "kind": "soc_id_mapping_requires_review",
+      "note": "No implicit SoC/SKU mask or revision substitution is permitted.",
+      "overlay": "canoe-peach-bt.dtbo"
+    }
+  ],
+  "profile_sha256": "52eeb06ce3bf27cbad89daa34d6edb8692bed8e0fd950188d3e6b0ad34681627",
+  "variants": [
+    {
+      "base": "canoe-tp-v2.dtb",
+      "merged_sha256": "a5dafb400bec7045deb76fcd99935fd6d6beedf65bc820db050f47eba33bc19e",
+      "node_count": 5480,
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoe-tp.dtb",
+      "merged_sha256": "198c4fd613f690459ff041476cc1159d4637b54fa1b0e640c2664f0d85cc9b61",
+      "node_count": 5419,
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoe-v2.dtb",
+      "merged_sha256": "9f2ab4f28845d1df95bc4708ce72b598c034ac68a797c8d0a9ab84c8bafef54b",
+      "node_count": 5480,
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoe.dtb",
+      "merged_sha256": "ad5e6afa648586806af264434eceb755affa586c145e17e66cf6b741a6005558",
+      "node_count": 5419,
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoep-v2.dtb",
+      "merged_sha256": "619d0b93fc4ab50eff570fca9df48ee9b315354fd3993dfeab19d173a9eee5e0",
+      "node_count": 5468,
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoep.dtb",
+      "merged_sha256": "08ece3db31692da284618a102e45a023c39a27252398d2a097bdb20ba1f7a83f",
+      "node_count": 5407,
+      "status": "structural_checks_passed"
+    },
+    {
+      "base": "canoep-tp-v2.dtb",
+      "status": "blocked_by_preflight"
+    },
+    {
+      "base": "canoep-tp.dtb",
+      "status": "blocked_by_preflight"
+    }
+  ]
+}

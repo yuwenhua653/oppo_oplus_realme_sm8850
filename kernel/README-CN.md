@@ -6,7 +6,7 @@
 
 ROM 的 `kernel`、模块打包和镜像目标现在依赖 `kernel/build.mk` 中的源码构建规则。
 该规则调用已成功完整编译的 `myron/kernel-6.12` 入口，锁定提交
-`35b9d149db371891a6045397eeabd7fcaabd3b52`，使用其 53 项精确依赖和 54 项 Kleaf 目标。
+`ff31bb42e8b96c2b6017b1da2ea6841f57488737`，使用其 53 项精确依赖和 54 项 Kleaf 目标。
 没有复制下载的 Image，没有使用旧 `.ko`，没有在 ROM 内再次执行内核源码迁移补丁。
 
 `TARGET_NO_KERNEL_OVERRIDE=true` 用于关闭进化 X 的旧 make/defconfig 构建器，
@@ -92,3 +92,11 @@ DSP/VPP/ready broker、Recovery 独立运行时尚未全部整理进公开设备
 已有 R113 设备策略保留，但不能据此宣称完整 R110/R115 行为已在 ROM 源码中复现。
 首次源码 ROM 的模块加载时序、快充、DSP/相机、Recovery 等仍须完整编译和真机回归。
 不要将生成的单独 boot 或 dlkm 与旧版模块分开刷入；先完成匹配整包验证。
+
+## R118 DT 专项验证
+
+最新进度和准确验证范围见 [DT-STATUS.md](DT-STATUS.md)。
+27 个 DT 输入可独立从锁定源码编译。六个变体通过静态合并；两个 CanoeP 温控变体仍被 ID 门禁阻止。
+`compile_dt.py` / `audit_dt.py` 与 GitHub 专项工作流不会编译 Image、模块或完整 ROM。
+内核入口已更新 DTS 锁，现有 R115 全量产物不满足新入口身份检查，需要新全量构建才能作为其产物使用。
+保持默认 OEM DT，尚不要将本轮诊断输出用于刷机。

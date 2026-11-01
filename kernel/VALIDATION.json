@@ -1,7 +1,7 @@
 {
   "status": "DEVICE_KERNEL_SOURCE_INTEGRATION_CHECKED_NOT_FULL_ROM_BUILT",
   "device": "Redmi K90PM / myron",
-  "source_entry": "35b9d149db371891a6045397eeabd7fcaabd3b52",
+  "source_entry": "ff31bb42e8b96c2b6017b1da2ea6841f57488737",
   "upstream": {
     "myron": "941665af189930742a02deb258583ec697a7e8ec",
     "sm8850-common": "98310d6cb945d6ca3d76a8bf2932dc83b0f65b0a",
@@ -37,5 +37,22 @@
     "full_rom_compiled": false,
     "device_tested": false,
     "source_dt_report": "DT-CHECK-R115.json"
+  },
+  "r115_source_entry": "35b9d149db371891a6045397eeabd7fcaabd3b52",
+  "r118": {
+    "source_dt_checks_passed": false,
+    "default_dt_mode": "oem",
+    "source_dt_adapter_tests_passed": 6,
+    "dt_inputs_compiled": 27,
+    "unchanged_inputs_semantically_equal_to_r115": 23,
+    "variants_structurally_passed": 6,
+    "variants_blocked_by_ids": 2,
+    "id_mapping_review_records": 22,
+    "r117_upgrade_preserves_policy": true,
+    "full_kernel_recompiled": false,
+    "full_rom_compiled": false,
+    "device_tested": false,
+    "source_dt_report": "DT-CHECK-R118.json",
+    "compiler_provenance": "DT-COMPILE-R118.json"
   }
 }

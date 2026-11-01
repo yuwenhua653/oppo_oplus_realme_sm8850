@@ -159,6 +159,16 @@ def provider_errors(tree, required):
     return sorted(set(required) - present)
 
 
+def property_errors(nodes, required):
+    errors = []
+    for path, properties in required.items():
+        for name, expected in properties.items():
+            value = nodes.get(path, {}).get(name)
+            if value is None or cells(value) != expected:
+                errors.append(path + ':' + name)
+    return errors
+
+
 def verify_table(data, overlay, table):
     require(len(data) >= 64, 'Truncated DTBO image')
     h = struct.unpack_from('>8I', data)
@@ -184,8 +194,11 @@ def assemble(files, trees, profile, output, tools):
         root_metadata(base, trees[spec['file']]['/'], tools.fdtput)
         merged = work / ('merged-%02d.dtb' % i)
         run([tools.fdtoverlay, '-i', base, '-o', merged, board])
-        absent = provider_errors(fdt(merged.read_bytes()), profile['required_compatible'])
+        nodes = fdt(merged.read_bytes())
+        absent = provider_errors(nodes, profile['required_compatible'] + spec.get('required_compatible', []))
         require(not absent, 'Missing/disabled hardware providers on ' + spec['file'] + ': ' + ', '.join(absent))
+        invalid = property_errors(nodes, profile.get('required_properties', {}))
+        require(not invalid, 'Missing/incorrect hardware properties on ' + spec['file'] + ': ' + ', '.join(invalid))
         bases.append(base.read_bytes())
     table = profile['dtbo_table']
     raw_dtbo = work / 'dtbo.img'

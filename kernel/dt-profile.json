@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "device": "Redmi K90PM / myron",
-  "dts_commit": "9956353d359e30561eac7d33c71e2ffb1afeb700",
+  "dts_commit": "0d015de10a547545b053acb7df2a097996bf011d",
   "bases": [
     {
       "file": "canoe-tp-v2.dtb",
@@ -23,6 +23,9 @@
         "canoe-ipa.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc-v2.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-1"
       ]
     },
     {
@@ -45,6 +48,9 @@
         "canoe-ipa.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-0"
       ]
     },
     {
@@ -67,6 +73,9 @@
         "canoe-ipa.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc-v2.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-1"
       ]
     },
     {
@@ -89,6 +98,9 @@
         "canoe-ipa.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-0"
       ]
     },
     {
@@ -110,6 +122,9 @@
         "canoe-hfi-core.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc-v2.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-1"
       ]
     },
     {
@@ -131,6 +146,9 @@
         "canoe-hfi-core.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-0"
       ]
     },
     {
@@ -152,6 +170,9 @@
         "canoe-hfi-core.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc-v2.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-1"
       ]
     },
     {
@@ -173,16 +194,19 @@
         "canoe-hfi-core.dtbo",
         "canoe-sde.dtbo",
         "canoe-vidc.dtbo"
+      ],
+      "required_compatible": [
+        "qcom,adreno-gpu-gen8-2-0"
       ]
     }
   ],
   "board_overlays": [
-    "canoe-peach-cnss.dtbo",
-    "canoe-peach-bt.dtbo",
     "myron-sm8850-overlay.dtbo",
     "myron-audio-mtp.dtbo",
     "myron-sm8850-camera-sensor.dtbo",
-    "myron-sde-display-mtp-overlay.dtbo"
+    "myron-sde-display-mtp-overlay.dtbo",
+    "canoe-peach-cnss.dtbo",
+    "canoe-peach-bt.dtbo"
   ],
   "board_metadata_from": "myron-sm8850-overlay.dtbo",
   "dtbo_table": {
@@ -198,7 +222,6 @@
     ]
   },
   "required_compatible": [
-    "qcom,adreno-gpu-gen8-2-0",
     "qcom,cnss-peach",
     "qcom,lpass-cdc-rx-macro",
     "qcom,lpass-cdc-tx-macro",
@@ -210,5 +233,43 @@
     "OEM base order and SoC IDs matched against public myron-prebuilt 9999f765b53876bf7a013a4fde5221153ad570fc.",
     "This is a checked assembly contract, not hardware qualification. Missing inputs/IDs/symbols/providers are hard failures.",
     "Do not widen SoC IDs, add fake providers, or suppress errors to obtain flash images."
-  ]
+  ],
+  "required_properties": {
+    "/soc/spf_core_platform/lpass-cdc/rx-macro@6AC0000": {
+      "reg": [
+        111935488,
+        0
+      ]
+    },
+    "/soc/spf_core_platform/lpass-cdc/tx-macro@6AE0000": {
+      "reg": [
+        112066560,
+        0
+      ]
+    },
+    "/soc/spf_core_platform/lpass-cdc/va-macro@7660000": {
+      "reg": [
+        124125184,
+        0
+      ]
+    },
+    "/soc/spf_core_platform/lpass-cdc/wsa-macro@6B00000": {
+      "reg": [
+        112197632,
+        0
+      ]
+    },
+    "/soc/spf_core_platform/lpass-cdc/wsa2-macro@6AA0000": {
+      "reg": [
+        111804416,
+        0
+      ]
+    },
+    "/soc/spf_core_platform/lpass-cdc/wsa2-macro@6AA0000/wsa2_swr_master/swr_haptics@f0170220": {
+      "reg": [
+        3,
+        4028039712
+      ]
+    }
+  }
 }

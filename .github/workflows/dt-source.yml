@@ -1,0 +1,90 @@
+name: Myron DT source compile and gap audit
+
+on:
+  push:
+    branches: [myron/device-cnb-source]
+    paths:
+      - 'kernel/**'
+      - '.github/workflows/dt-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-dt-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dt-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Read pinned kernel entry
+        id: entry
+        run: |
+          python3 - <<'PY'
+          import json, os
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              print('commit=' + json.load(open('kernel/modules.json'))['entry_commit'], file=output)
+          PY
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: yuwenhua653/oppo_oplus_realme_sm8850
+          ref: ${{ steps.entry.outputs.commit }}
+          path: entry
+          persist-credentials: false
+      - name: Prepare DT host tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential device-tree-compiler
+          git init host-dtc
+          git -C host-dtc remote add origin https://github.com/LineageOS/android_external_dtc.git
+          git -C host-dtc fetch --depth=1 origin c1197f56b8f468effbbf5e79feae353c4280e2ea
+          git -C host-dtc checkout --detach FETCH_HEAD
+          printf '%s\n' '#define DTC_VERSION "DTC c1197f56b8f4"' > host-dtc/version_gen.h
+          cc -O2 -I host-dtc -I host-dtc/libfdt host-dtc/fdtoverlaymerge.c host-dtc/util.c host-dtc/libfdt/*.c -o host-dtc/fdtoverlaymerge
+          git init host-libufdt
+          git -C host-libufdt remote add origin https://github.com/LineageOS/android_system_libufdt.git
+          git -C host-libufdt fetch --depth=1 origin 70c20864187df19f3e7d358ca8436f77d61a3f39
+          git -C host-libufdt checkout --detach FETCH_HEAD
+      - name: Test assembly gates
+        env:
+          MYRON_TEST_FDTOVERLAYMERGE: ${{ github.workspace }}/host-dtc/fdtoverlaymerge
+          MYRON_TEST_MKDTBOIMG: ${{ github.workspace }}/host-libufdt/utils/src/mkdtboimg.py
+        run: python3 -B kernel/test_source_dt.py
+      - name: Compile only the 27 DT inputs from pinned sources
+        run: python3 -B kernel/compile_dt.py --entry entry --workspace dt-workspace --output dt-compiled --sync
+      - name: Audit applicable variants and report blocked IDs
+        run: |
+          python3 -B kernel/audit_dt.py --compiled dt-compiled --report dt-reports/audit.json \
+            --fdtoverlaymerge "$GITHUB_WORKSPACE/host-dtc/fdtoverlaymerge" \
+            --mkdtboimg "$GITHUB_WORKSPACE/host-libufdt/utils/src/mkdtboimg.py"
+          python3 - <<'PY'
+          import json, os
+          report = json.load(open('dt-reports/audit.json'))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              print('DT compilation and diagnostic audit completed.', file=output)
+              print('All variants passed: ' + str(report['all_variants_passed']), file=output)
+              print('Unresolved preflight records: ' + str(len(report['preflight_errors'])), file=output)
+              print('No flash images emitted. Device testing and full ROM compilation have not run.', file=output)
+          PY
+      - name: Upload DT diagnostics (not a flash package)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-dt-diagnostics-${{ github.run_id }}
+          path: |
+            dt-compiled/*.dtb
+            dt-compiled/*.dtbo
+            dt-compiled/*.log
+            dt-compiled/dt-compile.json
+            dt-reports/
+          retention-days: 14
