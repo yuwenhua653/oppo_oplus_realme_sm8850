@@ -146,6 +146,13 @@ _platform_map = {
             {"name": "canoe-camera.dtbo"},
             {"name": "canoe-camera-v2.dtbo"},
             {"name": "canoe-sde.dtbo"},
+            {"name": "canoe-mmrm.dtbo"},
+            {"name": "canoe-hw-fence.dtbo"},
+            {"name": "canoe-synx.dtbo"},
+            {"name": "canoe-smem-mailbox.dtbo"},
+            {"name": "canoe-fingerprint.dtbo"},
+            {"name": "canoe-wcn786x-bt.dtbo"},
+
             {"name": "myron-sm8850-overlay.dtbo"},
             # Collect the separate myron components for offline bring-up only.
             # This does not define the OEM dtbo.img table or overlay ordering.
