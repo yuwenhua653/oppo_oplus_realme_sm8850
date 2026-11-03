@@ -459,7 +459,8 @@
 		pinctrl-names = "cam_tele_active", "cam_tele_suspend";
 		pinctrl-0 = <&cam_sensor_tele_mclk3_1p8_active &cam_sensor_tele_1p8_rst1_active>;
 		pinctrl-1 = <&cam_sensor_tele_mclk3_1p8_suspend &cam_sensor_tele_1p8_rst1_suspend>;
-		gpios-shared-pinctrl = <&tlmm 92 0>, <&tlmm 105 0>;
+		/* cam_res_mgr consumes legacy GPIO numbers, not GPIO specifiers. */
+		gpios-shared-pinctrl = <604 617>;
 		shared-pctrl-gpio-names = "cam_tele", "cam_tele";
 	};
 

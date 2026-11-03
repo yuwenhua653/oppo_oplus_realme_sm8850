@@ -51,6 +51,10 @@
 &swr_haptics { status = "ok"; };
 
 &canoe_snd {
+	qcom,wcd-disabled = <1>;
+	qcom,pri-mi2s-gpios = <&pri_tdm_pinctrl>;
+	qcom,tdm-max-slots = <4>;
+	qcom,tdm-clk-attribute = <4>, <4>, <4>, <4>, <4>, <4>, <4>, <4>;
 	qcom,model = "canoe-mtp-snd-card";
 	qcom,tdm-audio-intf = <1>;
 	qcom,wsa-max-devs = <0>;

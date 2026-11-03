@@ -735,3 +735,17 @@
 		mt-size = <0x100000>;
 	};
 };
+
+/* Restore Myron's OEM actuator defaults without changing effect waveforms. */
+&pmih010x_haptics {
+	qcom,lra-period-us = <5882>;
+	qcom,vmax-mv = <1286>;
+	qcom,brake-pattern = /bits/ 8 <0x00>;
+	qcom,brake-disable;
+};
+
+/* Match Myron's single-channel OEM flash LED wiring and current limit. */
+&pmh0101_flash_led0 {
+	led-sources = <1>;
+	flash-max-microamp = <500000>;
+};
