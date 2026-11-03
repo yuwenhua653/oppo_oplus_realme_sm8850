@@ -59,7 +59,7 @@ jobs:
         env:
           MYRON_TEST_FDTOVERLAYMERGE: ${{ github.workspace }}/host-dtc/fdtoverlaymerge
           MYRON_TEST_MKDTBOIMG: ${{ github.workspace }}/host-libufdt/utils/src/mkdtboimg.py
-        run: python3 -B kernel/test_source_dt.py
+        run: python3 -B -m unittest discover -s kernel -p "test_*.py" -v
       - name: Compile only the 32 DT inputs from pinned sources
         run: python3 -B kernel/compile_dt.py --entry entry --workspace dt-workspace --output dt-compiled --sync
       - name: Assemble all eight variants with strict hardware checks
@@ -72,11 +72,15 @@ jobs:
           report = json.load(open('dt-images/source-dt-report.json'))
           assert report['success'] and report['base_count'] == 8
           assert len(report['variants']) == 8 and not report['errors']
+          proof = json.load(open('dt-images/fastrpc-order-proof.json'))
+          assert len(proof) == 8
+          assert all(p['all_other_bytes_identical'] and p['all_properties_byte_identical'] for p in proof)
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
               print('32 source DT inputs compiled; all 8 variants passed structural checks.', file=output)
               print('Reviewed foundry-zero matches: ' + str(len(report['reviewed_matches'])), file=output)
               print('Raw DT images emitted. This is not a flash package or a full kernel/ROM build.', file=output)
-              print('Hardware validation is still required; default ROM DT mode remains OEM.', file=output)
+              print('Default ROM mode is source DT; R123 passed device functional testing on 2026-11-03.', file=output)
+              print('This run verifies source assembly, not a new full ROM or hardware endurance test.', file=output)
           PYREPORT
       - name: Upload complete raw DT images (not a flash package)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -86,6 +90,7 @@ jobs:
             dt-images/dtb.img
             dt-images/dtbo.img
             dt-images/source-dt-report.json
+            dt-images/fastrpc-order-proof.json
             dt-compiled/dt-compile.json
           if-no-files-found: error
           retention-days: 14
@@ -100,4 +105,5 @@ jobs:
             dt-compiled/*.log
             dt-compiled/dt-compile.json
             dt-images/source-dt-report.json
+            dt-images/fastrpc-order-proof.json
           retention-days: 14

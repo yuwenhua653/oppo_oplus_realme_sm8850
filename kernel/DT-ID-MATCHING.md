@@ -47,5 +47,6 @@ The public ABL implementation supports the encoding and fallback interpretation;
 it does not establish which DT is selected by this device's exact ABL binary.
 The available R114 capture did not record the live DT IDs.
 
-Keep `MYRON_DT_MODE=oem` as the default until a matching source-DT test package
-has passed real-device checks. Static success is necessary, not hardware proof.
+R123 passed functional testing on the Myron device on 2026-11-03, and the
+paired device adapter now defaults to `MYRON_DT_MODE=source`. This does not
+establish physical coverage of all eight variants; see `DT-STATUS.md` for scope.

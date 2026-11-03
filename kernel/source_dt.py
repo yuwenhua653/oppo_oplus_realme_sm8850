@@ -226,7 +226,21 @@ def property_errors(nodes, required):
     for path, properties in required.items():
         for name, expected in properties.items():
             value = nodes.get(path, {}).get(name)
-            if value is None or cells(value) != expected:
+            if isinstance(expected, list):
+                matches = value is not None and len(value) % 4 == 0 and cells(value) == expected
+            elif isinstance(expected, dict) and set(expected) == {'hex'}:
+                # Exact byte values also represent boolean properties with hex="".
+                matches = value == bytes.fromhex(expected['hex'])
+            elif isinstance(expected, dict) and set(expected) == {'phandle_target'}:
+                target = expected['phandle_target']
+                # Compare the resolved path, never a compiler-assigned phandle number.
+                owners = [p for p, node in nodes.items()
+                          if value is not None and len(value) == 4 and value != bytes(4)
+                          and value in (node.get('phandle'), node.get('linux,phandle'))]
+                matches = owners == [target]
+            else:
+                raise ValueError('Unknown required-property rule: ' + path + ':' + name)
+            if not matches:
                 errors.append(path + ':' + name)
     return errors
 
@@ -242,6 +256,153 @@ def verify_table(data, overlay, table):
     require(e[1] + e[0] == h[1], 'DTBO table total size does not match payload')
 
 
+FASTRPC_ORDER_RULES = [
+    {'parent': '/soc/remoteproc-adsp@03000000/glink-edge/qcom,fastrpc',
+     'overlay_target_symbol': 'remoteproc_adsp_glink',
+     'children': ['compute-cb@%d' % i for i in range(1, 7)]},
+    {'parent': '/soc/remoteproc-cdsp@32300000/glink-edge/qcom,fastrpc',
+     'overlay_target_symbol': 'remoteproc_cdsp_glink',
+     'children': ['compute-cb@%d' % i for i in range(1, 12)]},
+]
+FASTRPC_SOURCE_OVERLAYS = ('canoe-dsp.dtbo', 'canoe-dsp_v2.dtbo')
+
+
+def fdt_layout(data):
+    """Read structure-token spans and ordered direct children without rewriting."""
+    nodes = fdt(data)  # Validate the complete property graph first.
+    h = struct.unpack_from('>10I', data)
+    pos, end = h[2], h[2] + h[9]
+    stack, children, spans = [], {}, {}
+    while pos + 4 <= end:
+        start = pos
+        token, = struct.unpack_from('>I', data, pos)
+        pos += 4
+        if token == 1:
+            stop = data.index(b'\0', pos, end)
+            name = data[pos:stop].decode()
+            path = (stack[-1][0].rstrip('/') + '/' + name) if stack else '/'
+            require(path in nodes and path not in children, 'Invalid layout node')
+            if stack:
+                children[stack[-1][0]].append(path)
+            children[path] = []
+            stack.append((path, start))
+            pos = (stop + 4) & ~3
+        elif token == 2:
+            require(bool(stack), 'Unbalanced layout node')
+            path, begin = stack.pop()
+            spans[path] = (begin, pos)
+        elif token == 3:
+            require(stack and pos + 8 <= end, 'Invalid layout property')
+            length, _ = struct.unpack_from('>2I', data, pos)
+            pos = (pos + 8 + length + 3) & ~3
+            require(pos <= end, 'Invalid layout property size')
+        elif token == 4:
+            continue
+        elif token == 9:
+            require(not stack and set(children) == set(nodes), 'Incomplete layout')
+            return nodes, children, spans
+        else:
+            raise ValueError('Unknown layout token')
+    raise ValueError('Missing layout end token')
+
+
+def reviewed_fastrpc_order(profile, spec, files):
+    """Only the two reviewed Myron FastRPC domains and exact pinned sources."""
+    require(profile.get('device') == 'Redmi K90PM / myron' and spec in profile['bases'],
+            'FastRPC order policy is not approved for this source/device')
+    require(profile.get('reviewed_fastrpc_child_order') == FASTRPC_ORDER_RULES,
+            'Missing or unreviewed FastRPC child-order policy')
+    names = [name for name in spec['overlays'] if name in FASTRPC_SOURCE_OVERLAYS]
+    require(len(names) == 1, 'Expected exactly one reviewed DSP overlay')
+    name = names[0]
+    blob = files[name].read_bytes()
+    # files has already passed catalog/compiled_catalog against the matching
+    # source manifest. Record that build's digest, do not freeze a build hash.
+    source_digest = hashlib.sha256(blob).hexdigest()
+    nodes, children, _ = fdt_layout(blob)
+    proofs = []
+    for rule in FASTRPC_ORDER_RULES:
+        fixup = nodes.get('/__fixups__', {}).get(rule['overlay_target_symbol'])
+        require(fixup is not None, 'DSP overlay target symbol is missing')
+        locations = fixup.rstrip(b'\0').decode().split('\0')
+        require(len(locations) == 1, 'Ambiguous DSP overlay target symbol')
+        parts = locations[0].split(':')
+        require(len(parts) == 3 and parts[1:] == ['target', '0'], 'Unexpected DSP overlay target fixup')
+        fragment = parts[0]
+        require(nodes.get(fragment, {}).get('target') == b'\xff\xff\xff\xff',
+                'DSP overlay is not an unresolved target-symbol overlay')
+        parent = fragment + '/__overlay__/qcom,fastrpc'
+        require(nodes.get(parent, {}).get('compatible') == b'qcom,fastrpc\0',
+                'DSP source parent is not FastRPC')
+        order = [p.rsplit('/', 1)[1] for p in children.get(parent, [])]
+        require(order == rule['children'], 'Pinned DSP source child order changed')
+        proofs.append({'source_parent': parent, 'target_symbol': rule['overlay_target_symbol'],
+                       'runtime_parent': rule['parent'], 'source_children': order})
+    return {'overlay': name, 'sha256': source_digest, 'parents': proofs}
+
+
+def fastrpc_order_errors(data, profile):
+    require(profile.get('reviewed_fastrpc_child_order') == FASTRPC_ORDER_RULES,
+            'Missing or unreviewed FastRPC child-order policy')
+    _, children, _ = fdt_layout(data)
+    return [r['parent'] for r in FASTRPC_ORDER_RULES
+            if [p.rsplit('/', 1)[1] for p in children.get(r['parent'], [])] != r['children']]
+
+
+def restore_fastrpc_order(data, profile, spec, files):
+    """Restore only two reviewed sibling lists with byte-preserving subtree moves.
+
+    libfdt inserts newly added siblings at the start of their parent. This host
+    assembly stage restores the compiled DSP source order before board overlays
+    are applied. It never changes DTS declaration order or any property value.
+    """
+    source_proof = reviewed_fastrpc_order(profile, spec, files)
+    before_nodes, before_children, spans = fdt_layout(data)
+    replacements, changes = [], []
+    for rule in FASTRPC_ORDER_RULES:
+        parent = rule['parent']
+        require(before_nodes.get(parent, {}).get('compatible') == b'qcom,fastrpc\0',
+                'Reviewed runtime FastRPC parent is absent')
+        old_paths = before_children.get(parent, [])
+        names = [p.rsplit('/', 1)[1] for p in old_paths]
+        expected = rule['children']
+        require(names in (expected, list(reversed(expected))),
+                'FastRPC child set/order is outside the reviewed source/merge forms')
+        require(all(before_nodes[p].get('compatible') == b'qcom,fastrpc-compute-cb\0'
+                    for p in old_paths), 'Unexpected child type in FastRPC order span')
+        for a, b in zip(old_paths, old_paths[1:]):
+            require(spans[a][1] == spans[b][0], 'Noncontiguous FastRPC children; no token may be dropped')
+        start, stop = spans[old_paths[0]][0], spans[old_paths[-1]][1]
+        ordered_paths = [parent + '/' + name for name in expected]
+        replacement = b''.join(data[spans[p][0]:spans[p][1]] for p in ordered_paths)
+        require(len(replacement) == stop - start, 'FastRPC subtree length changed')
+        replacements.append((start, stop, replacement))
+        changes.append({'parent': parent, 'before': names, 'after': expected,
+                        'structure_span': [start, stop], 'changed': names != expected})
+    ranges = sorted(replacements)
+    require(all(a[1] <= b[0] for a, b in zip(ranges, ranges[1:])), 'Overlapping reviewed spans')
+    result = bytearray(data)
+    for start, stop, replacement in replacements:
+        result[start:stop] = replacement
+    result = bytes(result)
+    require(len(result) == len(data), 'FDT length changed')
+    after_nodes, after_children, _ = fdt_layout(result)
+    require(after_nodes == before_nodes, 'FDT node/property bytes changed during reorder')
+    changed_parents = {p for p in before_children if before_children[p] != after_children[p]}
+    expected_changes = {row['parent'] for row in changes if row['changed']}
+    require(changed_parents == expected_changes, 'Unreviewed sibling order changed')
+    cursor = 0
+    for start, stop, _ in ranges:
+        require(result[cursor:start] == data[cursor:start], 'Bytes outside order spans changed')
+        cursor = stop
+    require(result[cursor:] == data[cursor:], 'Trailing FDT bytes changed')
+    require(not fastrpc_order_errors(result, profile), 'FastRPC final order check failed')
+    return result, {'source_proof': source_proof, 'changes': changes,
+                    'all_properties_byte_identical': True, 'all_other_bytes_identical': True,
+                    'before_sha256': hashlib.sha256(data).hexdigest(),
+                    'after_sha256': hashlib.sha256(result).hexdigest()}
+
+
 def assemble(files, trees, profile, output, tools):
     work = output / 'work'
     work.mkdir(parents=True, exist_ok=True)
@@ -249,14 +410,23 @@ def assemble(files, trees, profile, output, tools):
     overlays = profile['board_overlays']
     run([tools.fdtoverlaymerge, '-i', files[overlays[0]], '-o', board, *[files[n] for n in overlays[1:]]])
     root_metadata(board, trees[profile['board_metadata_from']]['/'], tools.fdtput)
-    bases = []
+    bases, order_proofs = [], []
+    use_order_policy = (profile.get('device') == 'Redmi K90PM / myron' or
+                        'reviewed_fastrpc_child_order' in profile)
     for i, spec in enumerate(profile['bases']):
         base = work / ('base-%02d.dtb' % i)
         run([tools.fdtoverlay, '-i', files[spec['file']], '-o', base, *[files[n] for n in spec['overlays']]])
         root_metadata(base, trees[spec['file']]['/'], tools.fdtput)
+        if use_order_policy:
+            shutil.copyfile(base, work / ('preorder-base-%02d.dtb' % i))
+            revised, order_proof = restore_fastrpc_order(base.read_bytes(), profile, spec, files)
+            base.write_bytes(revised)
+            order_proofs.append(dict(order_proof, index=i, base=spec['file']))
         merged = work / ('merged-%02d.dtb' % i)
         run([tools.fdtoverlay, '-i', base, '-o', merged, board])
         nodes = fdt(merged.read_bytes())
+        require(not use_order_policy or not fastrpc_order_errors(merged.read_bytes(), profile),
+                'Board overlay changed reviewed FastRPC child order')
         absent = provider_errors(nodes, profile['required_compatible'] + spec.get('required_compatible', []))
         require(not absent, 'Missing/disabled hardware providers on ' + spec['file'] + ': ' + ', '.join(absent))
         invalid = property_errors(nodes, profile.get('required_properties', {}))
@@ -271,6 +441,7 @@ def assemble(files, trees, profile, output, tools):
     # Final ROM inputs are written only after all eight variants passed.
     (output / 'dtb.img').write_bytes(b''.join(bases))
     shutil.copyfile(raw_dtbo, output / 'dtbo.img')
+    (output / 'fastrpc-order-proof.json').write_text(json.dumps(order_proofs, indent=2, sort_keys=True) + '\n')
     return {'dtb.img': sha(output / 'dtb.img'), 'dtbo.img': sha(output / 'dtbo.img')}
 
 
@@ -290,7 +461,7 @@ def main():
     a.output.mkdir(parents=True, exist_ok=True)
     require(not a.output.is_symlink(), 'Redirected output directory')
     # Never leave a prior success usable after a failed recheck.
-    for name in ('dtb.img', 'dtbo.img'):
+    for name in ('dtb.img', 'dtbo.img', 'fastrpc-order-proof.json'):
         path = a.output / name
         require(not path.is_symlink(), 'Redirected image output')
         path.unlink(missing_ok=True)

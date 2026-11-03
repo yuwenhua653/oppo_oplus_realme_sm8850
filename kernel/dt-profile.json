@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "device": "Redmi K90PM / myron",
-  "dts_commit": "feff8ac781caca95799d642f79a6bfa23a17e639",
+  "dts_commit": "78c0b1cecb5cad48af8d01cd66afbb1759596190",
   "bases": [
     {
       "file": "canoe-tp-v2.dtb",
@@ -314,6 +314,55 @@
         3,
         4028039712
       ]
+    },
+    "/soc/spf_core_platform/sound": {
+      "qcom,wcd-disabled": [
+        1
+      ],
+      "qcom,tdm-max-slots": [
+        4
+      ],
+      "qcom,tdm-clk-attribute": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "qcom,pri-mi2s-gpios": {
+        "phandle_target": "/soc/spf_core_platform/pri_tdm_pinctrl"
+      }
+    },
+    "/soc/qcom,cam-res-mgr": {
+      "gpios-shared-pinctrl": [
+        604,
+        617
+      ]
+    },
+    "/soc/arbiter@c400000/spmi@c437000/qcom,pmih010x@7/qcom,hv-haptics@f000": {
+      "qcom,lra-period-us": [
+        5882
+      ],
+      "qcom,vmax-mv": [
+        1286
+      ],
+      "qcom,brake-pattern": {
+        "hex": "00"
+      },
+      "qcom,brake-disable": {
+        "hex": ""
+      }
+    },
+    "/soc/arbiter@c400000/spmi@c426000/pmh0101@1/led-controller@ee00/led-0": {
+      "led-sources": [
+        1
+      ],
+      "flash-max-microamp": [
+        500000
+      ]
     }
   },
   "reviewed_foundry_zero": [
@@ -338,6 +387,37 @@
         131072
       ],
       "evidence": "DT-ID-MATCHING.md"
+    }
+  ],
+  "reviewed_fastrpc_child_order": [
+    {
+      "parent": "/soc/remoteproc-adsp@03000000/glink-edge/qcom,fastrpc",
+      "overlay_target_symbol": "remoteproc_adsp_glink",
+      "children": [
+        "compute-cb@1",
+        "compute-cb@2",
+        "compute-cb@3",
+        "compute-cb@4",
+        "compute-cb@5",
+        "compute-cb@6"
+      ]
+    },
+    {
+      "parent": "/soc/remoteproc-cdsp@32300000/glink-edge/qcom,fastrpc",
+      "overlay_target_symbol": "remoteproc_cdsp_glink",
+      "children": [
+        "compute-cb@1",
+        "compute-cb@2",
+        "compute-cb@3",
+        "compute-cb@4",
+        "compute-cb@5",
+        "compute-cb@6",
+        "compute-cb@7",
+        "compute-cb@8",
+        "compute-cb@9",
+        "compute-cb@10",
+        "compute-cb@11"
+      ]
     }
   ]
 }

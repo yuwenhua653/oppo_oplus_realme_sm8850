@@ -18,8 +18,9 @@ MYRON_KERNEL_SOURCE := $(MYRON_KERNEL_WORKSPACE)/common
 TARGET_KERNEL_SOURCE := $(KERNEL_PATH)/kernel-headers
 
 # Source mode is fail-closed: input/SoC-ID/provider checks must pass before the
-# source images can replace OEM DTs. See DT-STATUS.md for current blockers.
-MYRON_DT_MODE ?= oem
+# source images enter ROM packaging. R123 passed device functional validation;
+# see DT-STATUS.md for scope and the explicit OEM fallback.
+MYRON_DT_MODE ?= source
 MYRON_SOURCE_DT_OUT := $(MYRON_KERNEL_OUT)/source-dt
 ifeq ($(MYRON_DT_MODE),source)
 BOARD_PREBUILT_DTBOIMAGE := $(MYRON_SOURCE_DT_OUT)/dtbo.img

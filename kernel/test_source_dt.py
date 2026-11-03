@@ -83,9 +83,9 @@ class Test(unittest.TestCase):
    root=pathlib.Path(t);full,profile,build_status,status=full_fixture(root);out=root/'output';out.mkdir()
    status['entry_commit']='old-entry';build_status.write_text(json.dumps(status))
    for args in [[],['--build-status',str(build_status)]]:
-    for n in ['dtb.img','dtbo.img']:(out/n).write_bytes(b'stale')
+    for n in ['dtb.img','dtbo.img','fastrpc-order-proof.json']:(out/n).write_bytes(b'stale')
     p=subprocess.run(['python3','-B',str(P),'--full',str(full),'--output',str(out),*args],capture_output=True)
-    self.assertEqual(p.returncode,1);self.assertFalse((out/'dtb.img').exists());self.assertFalse((out/'dtbo.img').exists());self.assertFalse(json.loads((out/'source-dt-report.json').read_text())['success'])
+    self.assertEqual(p.returncode,1);self.assertFalse((out/'dtb.img').exists());self.assertFalse((out/'dtbo.img').exists());self.assertFalse((out/'fastrpc-order-proof.json').exists());self.assertFalse(json.loads((out/'source-dt-report.json').read_text())['success'])
  @unittest.skipUnless(all(shutil.which(x) for x in [DTC,*vars(TOOLS).values()]), 'dtc, fdtoverlay, fdtoverlaymerge, fdtput and mkdtboimg required')
  def test_eight_variant_pack_roundtrip(self):
   with tempfile.TemporaryDirectory() as t:
@@ -112,6 +112,18 @@ class Test(unittest.TestCase):
   required={'/macro':{'reg':[0x6ac0000,0]}}
   self.assertEqual(m.property_errors({'/macro':{}},required),['/macro:reg'])
   self.assertEqual(m.property_errors({'/macro':{'reg':struct.pack('>2I',0x6ac0000,0)}},required),[])
+ def test_typed_hardware_properties_reject_regressions(self):
+  required={'/sound':{'gpio':{'phandle_target':'/pin'}},'/haptics':{'brake':{'hex':'00'},'disabled':{'hex':''}},'/camera':{'gpios':[604,617]}}
+  nodes={'/sound':{'gpio':struct.pack('>I',23)},'/pin':{'phandle':struct.pack('>I',23)},'/haptics':{'brake':b'\x00','disabled':b''},'/camera':{'gpios':struct.pack('>2I',604,617)}}
+  self.assertEqual(m.property_errors(nodes,required),[])
+  for path,key,bad in [('/sound','gpio',struct.pack('>I',24)),('/sound','gpio',bytes(4)),('/sound','gpio',bytes(8)),('/haptics','brake',bytes(4)),('/haptics','disabled',b'1'),('/camera','gpios',b'bad')]:
+   previous=nodes[path][key];nodes[path][key]=bad
+   with self.subTest(path=path,key=key,bad=bad):self.assertIn(path+':'+key,m.property_errors(nodes,required))
+   nodes[path][key]=previous
+  del nodes['/haptics']['disabled'];self.assertIn('/haptics:disabled',m.property_errors(nodes,required));nodes['/haptics']['disabled']=b''
+  nodes['/duplicate']={'phandle':struct.pack('>I',23)};self.assertIn('/sound:gpio',m.property_errors(nodes,required));del nodes['/duplicate']
+  nodes['/pin']={'linux,phandle':struct.pack('>I',23)};self.assertEqual(m.property_errors(nodes,required),[])
+  with self.assertRaisesRegex(ValueError,'Unknown required-property'):m.property_errors(nodes,{'/sound':{'gpio':{'unsupported':True}}})
  def test_disabled_parent_blocks_provider(self):
   self.assertEqual(m.provider_errors({'/':{},'/bus':{'status':b'disabled\0'},'/bus/dev':{'compatible':b'test,provider\0'}},['test,provider']),['test,provider'])
 if __name__=='__main__':unittest.main(verbosity=2)

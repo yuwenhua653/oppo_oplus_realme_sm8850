@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "device": "Redmi K90PM / myron",
+  "status": "R123_FUNCTIONS_USER_CONFIRMED_SOURCE_DT_DEFAULT_ENABLED",
+  "confirmation_date": "2026-11-03",
+  "default_dt_mode": "source",
+  "source_dts_commit": "78c0b1cecb5cad48af8d01cd66afbb1759596190",
+  "source_entry_commit": "bb043db67432d670e171835d3719618adb31470a",
+  "r123_package_sha256": "6afb80bfa735c2449d42f03db7dba9f2a287808a520535ebe6603f96bf023263",
+  "device_capture_sha256": "388022a47fa003a0ce62c5944020af6a7098f0f2011672761b6c863ccd796124",
+  "user_confirmed_functions_normal": true,
+  "capture_evidence": {
+    "boot_completed": true,
+    "boot_animation_stopped": true,
+    "adsp_probe_order": "cb1..cb6",
+    "cdsp_probe_order": "cb1..cb11",
+    "bitml_hpriority1_successful_opens": 9,
+    "qseg_hpriority1_successful_opens": 4,
+    "front_and_rear_first_frames": true,
+    "torch_on_and_off": true,
+    "camera_provider_restart_observed": false,
+    "crash_buffer_bytes": 0
+  },
+  "scope": {
+    "tested_base": "canoe-v2.dtb",
+    "all_physical_variants_tested": false,
+    "all_camera_modes_tested": false,
+    "endurance_qualified": false,
+    "partition_readback_in_capture": false,
+    "new_full_kernel_build": false,
+    "new_full_rom_build": false
+  },
+  "source_changes": [
+    "audio WCD/TDM bindings",
+    "camera legacy shared GPIOs",
+    "OEM haptics defaults",
+    "single-channel flash limits",
+    "pinned-source FastRPC child-order restoration"
+  ],
+  "ci_contract": {
+    "dt_inputs": 32,
+    "assembled_variants": 8,
+    "requires_all_variants": true,
+    "full_output_provenance_gate": true,
+    "raw_dt_artifacts_are_flash_package": false
+  }
+}
