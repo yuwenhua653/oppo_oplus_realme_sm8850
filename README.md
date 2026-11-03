@@ -58,7 +58,8 @@ Logs and source revisions: `kernel_workspace/integration-reports/`.
 The build verifies the Image banner, module vermagic and all 297 required
 runtime module names. These are compilation outputs, not a flash package.
 Boot, vendor_boot and Recovery assembly must use matching modules and preserve
-the separately validated SELinux/Recovery configuration and OEM DTB/DTBO.
+the separately validated SELinux/Recovery configuration. The device adapter
+assembles the matching source DTB/DTBO from the locked DT outputs.
 
 The `K90PM committed source full build` Actions workflow in this branch runs
 the same `build.py` command directly. It does not rerun source migration.
@@ -75,19 +76,19 @@ For development, commit changes on the relevant source branch and update that
 project's full SHA in the lock file before building in a new workspace. The
 build does not discard local edits or invent a clean version for uncommitted code.
 
-## R118 device-tree-only follow-up
+## R123 device-validated DT source
 
-The lock now selects DTS `feff8ac781caca95799d642f79a6bfa23a17e639`: v1 camera
-collection, optional GPU fuse references, and Myron LPASS/SoundWire provider fixes.
-Common kernel and all module source commits are unchanged. The R115 binary outputs
-remain evidence for their original lock only; do not relabel them as an R118 build.
-A new full build is still required for outputs claiming this updated lock.
+The lock selects DTS `78c0b1cecb5cad48af8d01cd66afbb1759596190`, including the
+R123 audio, haptics, camera shared-GPIO and flash wiring fixes. Common kernel
+and module source commits are unchanged. R123 functional testing on 2026-11-03
+passed on the user's Myron; this is not an exhaustive mode or endurance test.
 
-Device-owned DT-only compilation and validation live under `kernel/` on
-`myron/device-cnb-source`. They can compile the 32 profile inputs using only the
-four pinned source projects. OEM DT remains the ROM default while the two CanoeP
-thermal-profile ID mappings are under review. No full build is triggered by this
-lock-only diagnostic update (`[skip ci]`); normal full-build dispatch remains available.
+The paired `myron/device-cnb-source` adapter preserves ADSP/CDSP FastRPC child
+order during base assembly and now defaults to `MYRON_DT_MODE=source`. Its
+DT-only CI compiles 32 inputs and validates all eight variants. Raw Kleaf DT
+outputs must pass that assembly path before ROM packaging.
 
-The follow-up also collects existing MMRM, hardware fence, IPC, mailbox, fingerprint
-helper and WCN786x DT components; the device profile respects OEM variant coverage.
+R115 binary outputs remain evidence for their original lock. A new full build
+is required for outputs claiming this updated lock. This DT-only lock update
+uses `[skip ci]` to avoid another full kernel build; normal workflow dispatch
+remains available.
