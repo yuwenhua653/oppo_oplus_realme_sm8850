@@ -14,9 +14,21 @@ import sys
 import time
 import dt_sandbox
 
+SOURCE_PROFILE = 'myron-r123-device-validated-dt-source'
+
+
 def require(ok, message):
     if not ok:
         raise ValueError(message)
+
+
+def validate_source_lock(lock):
+    """Reject locks for other source generations before syncing or building."""
+    actual = lock.get('profile') if isinstance(lock, dict) else None
+    require(actual == SOURCE_PROFILE,
+            'Wrong source manifest: expected profile ' + repr(SOURCE_PROFILE) +
+            ', got ' + repr(actual))
+
 
 def sha(path):
     h = hashlib.sha256()
@@ -222,7 +234,7 @@ def main():
     started = time.monotonic()
     try:
         lock = json.loads((entry / 'sources.lock.json').read_text())
-        require(lock['profile'] == 'myron-r115-clean-source', 'Wrong source manifest')
+        validate_source_lock(lock)
         if not a.no_sync:
             logged([sys.executable, '-B', str(entry / 'sync_sources.py'), '--workspace', str(root),
                     '--jobs', str(a.sync_jobs)], entry, reports / 'source-sync.log')
