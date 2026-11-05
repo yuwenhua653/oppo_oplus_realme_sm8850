@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Native Kbuild development sources. DT compilation is verified; full kernel/ROM integration is not complete. -->
+<manifest>
+  <remote name="myron-native" fetch="https://github.com/" />
+  <project name="yuwenhua653/oppo_oplus_realme_sm8850" path="kernel/xiaomi/sm8850"
+    remote="myron-native" revision="refs/heads/myron/native-kbuild" clone-depth="1" />
+  <project name="yuwenhua653/oppo_oplus_realme_sm8850" path="kernel/xiaomi/sm8850-modules"
+    remote="myron-native" revision="b2877f865a4fc591ce15223059062dc0162e058b"
+    upstream="refs/heads/myron/sm8850-modules" clone-depth="1" />
+  <project name="yuwenhua653/oppo_oplus_realme_sm8850" path="kernel/xiaomi/sm8850-devicetrees"
+    remote="myron-native" revision="b84c303a85a8f8b73d7fa3d4df37b57a601dd5b1"
+    upstream="refs/heads/myron/native-devicetrees" clone-depth="1" />
+</manifest>

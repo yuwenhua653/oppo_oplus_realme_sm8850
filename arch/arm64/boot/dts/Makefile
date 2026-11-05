@@ -1,4 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0
+# Prefer the sibling Qualcomm device-tree repository when it is present.
+ifneq ($(wildcard $(src)/vendor/Makefile),)
+subdir-y += vendor
+else
 subdir-y += actions
 subdir-y += airoha
 subdir-y += allwinner
@@ -34,3 +38,4 @@ subdir-y += tesla
 subdir-y += ti
 subdir-y += toshiba
 subdir-y += xilinx
+endif

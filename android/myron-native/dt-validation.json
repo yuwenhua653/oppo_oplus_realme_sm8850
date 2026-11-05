@@ -1,0 +1,204 @@
+{
+  "scope": "native Kbuild DT compilation, not Image/modules or flashable image assembly",
+  "files": [
+    {
+      "file": "canoe-audio.dtbo",
+      "sha256": "3aa478a78328724873222862ffb0d67db30b581f5fc234e0c59356c20991d70a",
+      "bytes": 7718,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-camera-v2.dtbo",
+      "sha256": "9f04aebd3b9666745d440a345dbe29462572b0c25dc16c363ba9c2075cf0647e",
+      "bytes": 84111,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-camera.dtbo",
+      "sha256": "88f355721aeb1dbb2a07f587f28b99e8ab6aae78a729d4974dc6f075d2854c61",
+      "bytes": 85443,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-dsp.dtbo",
+      "sha256": "b0ba1e0e47db5f1f3b33fc6ff043acb778bb61d399c52596e5fec8386e52c64a",
+      "bytes": 9165,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-dsp_v2.dtbo",
+      "sha256": "68a7809bc1d876f3e00b9aae7c94c476988c244fefb02da4e46585d0a35e74b2",
+      "bytes": 9843,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-eva.dtbo",
+      "sha256": "e0674d71c7f472efa5154bb1f99f3d1b527e14f86cb7d5291f02517574d3aef0",
+      "bytes": 6390,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-fingerprint.dtbo",
+      "sha256": "a2b116fb0877ee75696410c13c40b3e6ca64db78b7de8f6f6319433b8488c983",
+      "bytes": 870,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-gpu.dtbo",
+      "sha256": "3191ce9d82de41316724272630d23e9a34baf85e185b0853844952dffa174f13",
+      "bytes": 10066,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-hfi-core.dtbo",
+      "sha256": "32675728046fe0e6aa194c58bd29218d4f5f1076e1667562074cdf8657e11b3d",
+      "bytes": 2866,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-hw-fence.dtbo",
+      "sha256": "5dc26b70ffb798a1c33e869e72dd51e73e455ec40af423684ceb3bfa1e727894",
+      "bytes": 1427,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-ipa.dtbo",
+      "sha256": "41cbab7ec52ba5670a703454268a0341be5a35e5e8ab2d516dbc1f6d71d1a13f",
+      "bytes": 6764,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-mmrm.dtbo",
+      "sha256": "fc39bb4aaac1b8fe5a96b243323b25eea87858f0ecd9027e3a74fdf391cff5fb",
+      "bytes": 1604,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-peach-cnss.dtbo",
+      "sha256": "2d213d5a5b3f2a197926cdd6e494292f5007958032f6ac7d9006e551666c94bd",
+      "bytes": 8913,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-sde.dtbo",
+      "sha256": "552a7751f0f56e0de1d408345d48c4bf2a1cb4ac735a17132318463ecfa3aeef",
+      "bytes": 33732,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-smem-mailbox.dtbo",
+      "sha256": "8c555c3b84f1a788dc86fe87af2c9c9b4dfbe6c3f37e2a8d5e652b6cdd26c24b",
+      "bytes": 1162,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-synx.dtbo",
+      "sha256": "636bffbd2530b0db7c3994e21cf1b2dd1e796754bc1a7fbe8e9f1593edd17662",
+      "bytes": 9693,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-tp-v2.dtb",
+      "sha256": "54d192d98ecb3efcf18237a5d0280e9a8afa92d07075e7e0dc421c6921c533a1",
+      "bytes": 444837,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-tp.dtb",
+      "sha256": "ccbdab3273acbfff286ec5a3c550ba023c6e909650b22666bdea3597c528e7b6",
+      "bytes": 444382,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-v2-gpu.dtbo",
+      "sha256": "b059e858c3944c3d267591b0d937c5f74ae5b2c57150b9bc79d69fe1ff63b35a",
+      "bytes": 18257,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-v2.dtb",
+      "sha256": "8dd3cb280b7f537547d8cffb6245b847d73665affa29f24f2ef9a1f787c1b918",
+      "bytes": 444823,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-vidc-v2.dtbo",
+      "sha256": "7b3f601dc27e2a262e23bd8860c426e2aaeab34105d7681cbf79d32ef1256938",
+      "bytes": 6359,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-vidc.dtbo",
+      "sha256": "47ea6f9f28c65ceaa96a4ec998d9903bca767219645efb83f959ea2e439c15c4",
+      "bytes": 6319,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe-wcn786x-bt.dtbo",
+      "sha256": "12ad9f0d9cd2a6a53038dab3a6880c7486ca65498c0d27de66ef27f4f0c75c58",
+      "bytes": 4931,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoe.dtb",
+      "sha256": "489235c436ab0e366174ffa81358185a908731ba371e1b2fd56dc0c1cfec14a6",
+      "bytes": 444362,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoep-tp-v2.dtb",
+      "sha256": "f1f9c6795036fd4749a16b3c502dbf8479c1a8475c43f8888a6c1aa86777c8f9",
+      "bytes": 444837,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoep-tp.dtb",
+      "sha256": "9f9ed57bc3063bcd4b6b3520aa05e333b537def5f5e1537ace168cc7ad1877db",
+      "bytes": 444382,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoep-v2.dtb",
+      "sha256": "252215a49329233ca37ae247751306f8b65b737af6418f7beff825c51b8e5591",
+      "bytes": 444823,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "canoep.dtb",
+      "sha256": "8c5dbd51aafdd66e2de20c9816423cc8151281add18c5688f4ded7867df1373b",
+      "bytes": 444362,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "myron-audio-mtp.dtbo",
+      "sha256": "36c32738779d12ad4d04328160fdf1037083019d88a3ca1c56f79eabe69486cf",
+      "bytes": 66174,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "myron-sde-display-mtp-overlay.dtbo",
+      "sha256": "46e7276e80dfc06e0e821da84306b8cb3914c163db85e6c95edbfb47649b7c48",
+      "bytes": 317622,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "myron-sm8850-camera-sensor.dtbo",
+      "sha256": "f403595417100c1e71171a11b9259fa1032416a04c85d5cb2188edc34796a6fb",
+      "bytes": 26999,
+      "identical_to_pinned_source_build": true
+    },
+    {
+      "file": "myron-sm8850-overlay.dtbo",
+      "sha256": "0533b38e87631c701b62b25cff5c06b15c93ba4f0f603bba03f1bd94b0056015",
+      "bytes": 138261,
+      "identical_to_pinned_source_build": true
+    }
+  ],
+  "pass": true,
+  "output_count": 32,
+  "incremental_noop": true,
+  "incremental_rebuild_targets": [
+    "DTC     arch/arm64/boot/dts/vendor/qcom/audio/myron-audio-mtp.dtbo"
+  ],
+  "read_only_sources_full_dt_rebuild": true
+}
