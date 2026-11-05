@@ -179,6 +179,7 @@ def main():
         sys.path.insert(0, str(entry))
         builder = load('myron_source_build', entry / 'build.py')
         source_lock = read(entry / 'sources.lock.json')
+        builder.validate_source_lock(source_lock)
         require((workspace / 'common/.git').exists(), 'Run python3 device/xiaomi/myron/kernel/rom_kernel.py prepare first (use the same --workspace when OUT_DIR differs).')
         source_state = builder.check_sources(workspace, source_lock)
         if a.action == 'prepare':

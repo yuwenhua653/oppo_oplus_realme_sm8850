@@ -6,7 +6,7 @@
 
 ROM 的 `kernel`、模块打包和镜像目标现在依赖 `kernel/build.mk` 中的源码构建规则。
 该规则调用 `myron/kernel-6.12` 入口，锁定提交
-`bb043db67432d670e171835d3719618adb31470a`，使用其 53 项精确依赖和 54 项 Kleaf 目标。
+`ae506d4278722b0a02158de05e8f2918d3ece0f7`，使用其 53 项精确依赖和 54 项 Kleaf 目标。
 没有复制下载的 Image，没有使用旧 `.ko`，没有在 ROM 内再次执行内核源码迁移补丁。
 
 `TARGET_NO_KERNEL_OVERRIDE=true` 用于关闭进化 X 的旧 make/defconfig 构建器，
@@ -60,6 +60,17 @@ m kernel
 ```
 
 `prepare` 只同步并检查源码、工具链，不编译内核。后续 `m` 自动编译。
+已经准备好的 R123 工作区升级入口后先运行：
+
+```sh
+python3 -B device/xiaomi/myron/kernel/rom_kernel.py verify \
+  --workspace "$OUT_DIR/target/product/myron/obj/MYRON_KERNEL/workspace"
+```
+
+本次入口修正旧 R115 profile 检查，并在 `prepare`、`verify` 和 `build` 中共用校验。
+53 项依赖清单字节不变，继续使用原工作区和 Bazel 缓存，无需重复 prepare。
+合并脚本保留已安装的 Myron 扁平 UAPI 头文件修复。历史验证 JSON 保留当时的入口提交，
+本次入口修复经过本地回归测试，尚未执行完整内核或 ROM 编译。
 `OUT_DIR` 使用相对 ROM 根目录的路径；当前 cnb 的 fsgen 会拒绝绝对路径形式的源码模块和 DTBO 输入。
 若已经使用绝对路径，只需在 ROM 根目录将 `OUT_DIR` 改成同一目录的相对写法，无需删除输出或重新同步。
 `SOONG_NINJA=ninja` 在当前 shell 中选择原生 Ninja，可避开 Siso 的 `@config//main.star` 配置加载失败。

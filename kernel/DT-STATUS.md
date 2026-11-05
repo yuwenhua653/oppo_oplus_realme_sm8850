@@ -14,7 +14,7 @@
   overlay 校验来源，拒绝未知顺序、缺失或新增节点。
 
 DTS：`78c0b1cecb5cad48af8d01cd66afbb1759596190`。
-内核入口：`bb043db67432d670e171835d3719618adb31470a`。
+内核入口：`ae506d4278722b0a02158de05e8f2918d3ece0f7`。
 common 和模块源码未改动。有限 foundry-zero ID 匹配、提供者、GPU 版本及
 全量构建来源检查保持启用，详见 `DT-ID-MATCHING.md`。
 最终八棵合并树还须通过音频、相机 GPIO、振动和闪光灯属性检查；TDM 引用

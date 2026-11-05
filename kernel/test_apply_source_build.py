@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
 
 HERE = Path(__file__).resolve().parent
@@ -89,6 +90,29 @@ class AdapterUpgradeTest(unittest.TestCase):
         self.assertTrue(result.stdout.startswith('0 files;'), result.stdout)
         self.assertEqual(snapshot(self.target), before)
 
+    def test_header_repair_survives_adapter_upgrade(self):
+        self.installed_target()
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('merge_headers', HERE / 'apply_source_build.py')
+        merger = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(merger)
+        board = self.target / 'kernel/BoardConfigKernel.mk'
+        repaired = board.read_bytes().replace(merger.HEADER_ANCHOR,
+                                              merger.HEADER_ANCHOR + merger.HEADER_CONFIG)
+        board.write_bytes(repaired)
+        result = self.run_adapter(apply=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(board.read_bytes(), repaired)
+        before = snapshot(self.target)
+        self.assertEqual(self.run_adapter(apply=True).returncode, 0)
+        self.assertEqual(snapshot(self.target), before)
+        board.write_bytes(repaired + b'\n# Unknown local kernel edit\n')
+        before = snapshot(self.target)
+        result = self.run_adapter(apply=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Existing adapter differs:', result.stderr)
+        self.assertEqual(snapshot(self.target), before)
+
     def test_unknown_adapter_change_rejects_before_any_write(self):
         self.installed_target()
         path = self.target / 'kernel/source_dt.py'
@@ -129,7 +153,9 @@ class AdapterUpgradeTest(unittest.TestCase):
     def test_published_previous_checkout_upgrade(self):
         prior = Path(PREVIOUS)
         known = json.loads((self.source / 'kernel/previous-adapter.json').read_text())['files']['build.mk']
-        self.assertIn(hashlib.sha256((prior / 'kernel/build.mk').read_bytes()).hexdigest(), known)
+        prior_build = (prior / 'kernel/build.mk').read_bytes()
+        self.assertTrue(prior_build == (self.source / 'kernel/build.mk').read_bytes() or
+                        hashlib.sha256(prior_build).hexdigest() in known)
         self.installed_target(prior)
         before = snapshot(self.target)
         dry_run = self.run_adapter()
@@ -149,6 +175,33 @@ class AdapterUpgradeTest(unittest.TestCase):
         self.assertEqual(again.returncode, 0, again.stderr)
         self.assertTrue(again.stdout.startswith('0 files;'), again.stdout)
         self.assertEqual(snapshot(self.target), current)
+
+
+class ManifestPreflightTest(unittest.TestCase):
+    def test_verify_checks_manifest_before_source_or_cache_work(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('manifest_adapter', HERE / 'rom_kernel.py')
+        adapter = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(adapter)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            entry = root / 'entry'
+            entry.mkdir()
+            (entry / 'sources.lock.json').write_text('{"profile": "wrong-fixture"}')
+            builder = Mock()
+            builder.validate_source_lock.side_effect = ValueError('fixture manifest rejected')
+            arguments = ['rom_kernel.py', 'verify', '--entry', str(entry),
+                         '--workspace', str(root / 'workspace'), '--dist', str(root / 'dist')]
+            with patch.object(sys, 'argv', arguments), \
+                    patch.object(sys, 'path', list(sys.path)), \
+                    patch.object(adapter, 'entry_check'), \
+                    patch.object(adapter, 'load', return_value=builder), \
+                    patch.object(adapter.subprocess, 'run') as process:
+                with self.assertRaisesRegex(ValueError, 'fixture manifest rejected'):
+                    adapter.main()
+            builder.validate_source_lock.assert_called_once_with({'profile': 'wrong-fixture'})
+            builder.check_sources.assert_not_called()
+            process.assert_not_called()
 
 
 if __name__ == '__main__':

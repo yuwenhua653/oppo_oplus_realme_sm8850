@@ -8,6 +8,36 @@ import subprocess
 import sys
 
 
+HEADER_CONFIG = b'''# The exported UAPI tree is flat; declare every header for sbox retention.
+$(call soong_config_set,lineageGlobalVars,preexported_kernel_headers,true)
+$(call soong_config_set,lineageGlobalVars,preexported_kernel_headers_root,.)
+'''
+HEADER_ANCHOR = b'TARGET_KERNEL_SOURCE := $(KERNEL_PATH)/kernel-headers\n'
+
+
+def adapter_bytes(path, destination, previous):
+    data = path.read_bytes()
+    if not destination.exists():
+        return data
+    current = destination.read_bytes()
+    # Preserve the exact optional header repair when updating the kernel adapter.
+    # Normalize only this reviewed insertion; unknown changes still fail closed.
+    keep_headers = (path.name == 'BoardConfigKernel.mk' and
+                    current.count(HEADER_ANCHOR + HEADER_CONFIG) == 1 and
+                    current.count(HEADER_CONFIG) == 1 and HEADER_CONFIG not in data)
+    normalized = current.replace(HEADER_CONFIG, b'', 1) if keep_headers else current
+    if normalized != data:
+        known = previous.get(path.name, [])
+        known = [known] if isinstance(known, str) else known
+        if hashlib.sha256(normalized).hexdigest() not in known:
+            sys.exit('Existing adapter differs: ' + str(destination))
+    if keep_headers:
+        if data.count(HEADER_ANCHOR) != 1:
+            sys.exit('Cannot preserve exported header configuration: ' + str(destination))
+        data = data.replace(HEADER_ANCHOR, HEADER_ANCHOR + HEADER_CONFIG, 1)
+    return data
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('rom_root', type=Path)
@@ -43,13 +73,7 @@ def main():
     for path in sorted((source / 'kernel').iterdir()):
         if path.is_file():
             dst = target / 'kernel' / path.name
-            if dst.exists() and dst.read_bytes() != path.read_bytes():
-                digest = hashlib.sha256(dst.read_bytes()).hexdigest()
-                known = previous.get(path.name, [])
-                known = [known] if isinstance(known, str) else known
-                if digest not in known:
-                    sys.exit('Existing adapter differs: ' + str(dst))
-            writes[dst] = path.read_bytes()
+            writes[dst] = adapter_bytes(path, dst, previous)
     android = target / 'Android.mk'
     block = (source / 'Android.mk').read_bytes()
     if android.exists():
