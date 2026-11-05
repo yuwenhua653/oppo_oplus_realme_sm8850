@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/core
+ccflags-y += -I$(src)/../datarmnet-ext/mem
+ccflags-y += -I$(src)/../datarmnet-ext/mem/include/uapi/linux
+ccflags-y += -I$(src)/../dataipa/drivers/platform/msm/include
+ccflags-y += -I$(src)/../dataipa/drivers/platform/msm/include/uapi
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../datarmnet-ext/mem/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../dataipa/Module.symvers)
+
+obj-m += rmnet_ctl.o
+rmnet_ctl-y := core/rmnet_ctl_ipa.o \
+	core/rmnet_ctl_client.o
+CFLAGS_core/rmnet_ctl_ipa.o += -DCONFIG_RMNET_LA_PLATFORM=1
+CFLAGS_core/rmnet_ctl_client.o += -DCONFIG_RMNET_LA_PLATFORM=1
+
+obj-m += rmnet_core.o
+rmnet_core-y := core/rmnet_config.o \
+	core/rmnet_descriptor.o \
+	core/rmnet_genl.o \
+	core/rmnet_handlers.o \
+	core/rmnet_map_command.o \
+	core/rmnet_map_data.o \
+	core/rmnet_module.o \
+	core/rmnet_vnd.o \
+	core/dfc_qmap.o \
+	core/dfc_qmi.o \
+	core/qmi_rmnet.o \
+	core/wda_qmi.o \
+	core/rmnet_qmap.o \
+	core/rmnet_ll.o \
+	core/rmnet_ll_ipa.o \
+	core/rmnet_ll_qmap.o
+CFLAGS_core/rmnet_config.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_descriptor.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_genl.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_handlers.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_map_command.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_map_data.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_module.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_vnd.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/dfc_qmap.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/dfc_qmi.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/qmi_rmnet.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/wda_qmi.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_qmap.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_ll.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_ll_ipa.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core
+CFLAGS_core/rmnet_ll_qmap.o += -DCONFIG_RMNET_LA_PLATFORM=1 -DRMNET_TRACE_INCLUDE_PATH=$(src)/core

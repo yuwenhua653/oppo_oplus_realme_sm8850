@@ -1,0 +1,7 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
+# SPDX-License-Identifier: GPL-2.0-only
+include $(src)/Kbuild.canoe
+
+endif

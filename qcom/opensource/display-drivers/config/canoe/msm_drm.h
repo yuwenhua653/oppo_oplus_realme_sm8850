@@ -1,0 +1,80 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Canoe module-local configuration. */
+#ifndef CONFIG_DRM_MSM_SDE
+#define CONFIG_DRM_MSM_SDE 1
+#endif
+#ifndef CONFIG_SYNC_FILE
+#define CONFIG_SYNC_FILE 1
+#endif
+#ifndef CONFIG_DRM_MSM_DSI
+#define CONFIG_DRM_MSM_DSI 1
+#endif
+#ifndef CONFIG_QTI_HFI_CORE
+#define CONFIG_QTI_HFI_CORE 1
+#endif
+#ifndef CONFIG_MDSS_HFI_ADAPTER
+#define CONFIG_MDSS_HFI_ADAPTER 1
+#endif
+#ifndef CONFIG_MDSS_HFI
+#define CONFIG_MDSS_HFI 1
+#endif
+#ifndef CONFIG_DRM_MSM_DP
+#define CONFIG_DRM_MSM_DP 1
+#endif
+#ifndef CONFIG_DRM_MSM_DP_MST
+#define CONFIG_DRM_MSM_DP_MST 1
+#endif
+#ifndef CONFIG_DSI_PARSER
+#define CONFIG_DSI_PARSER 1
+#endif
+#ifndef CONFIG_DRM_SDE_WB
+#define CONFIG_DRM_SDE_WB 1
+#endif
+#ifndef CONFIG_DRM_MSM_REGISTER_LOGGING
+#define CONFIG_DRM_MSM_REGISTER_LOGGING 1
+#endif
+#ifndef CONFIG_QCOM_MDSS_PLL
+#define CONFIG_QCOM_MDSS_PLL 1
+#endif
+#ifndef CONFIG_HDCP_QSEECOM
+#define CONFIG_HDCP_QSEECOM 1
+#endif
+#ifndef CONFIG_DRM_SDE_VM
+#define CONFIG_DRM_SDE_VM 1
+#endif
+#ifndef CONFIG_QCOM_WCD939X_I2C
+#define CONFIG_QCOM_WCD939X_I2C 1
+#endif
+#ifndef CONFIG_THERMAL_OF
+#define CONFIG_THERMAL_OF 1
+#endif
+#ifndef CONFIG_QCOM_SPEC_SYNC
+#define CONFIG_QCOM_SPEC_SYNC 1
+#endif
+#ifndef CONFIG_MSM_EXT_DISPLAY
+#define CONFIG_MSM_EXT_DISPLAY 1
+#endif
+#ifndef CONFIG_DRM_SDE_RSC
+#define CONFIG_DRM_SDE_RSC 1
+#endif
+#ifndef CONFIG_DRM_SDE_CESTA
+#define CONFIG_DRM_SDE_CESTA 1
+#endif
+#ifndef CONFIG_QTI_HW_FENCE
+#define CONFIG_QTI_HW_FENCE 1
+#endif
+#ifndef CONFIG_SMMU_PROXY
+#define CONFIG_SMMU_PROXY 1
+#endif
+#ifndef CONFIG_DSI_EXTENDED_MODES
+#define CONFIG_DSI_EXTENDED_MODES 1
+#endif
+#ifndef CONFIG_MSM_SDE_ROTATOR
+#define CONFIG_MSM_SDE_ROTATOR 1
+#endif
+#ifndef CONFIG_MSM_SDE_ROTATOR_EVTLOG_DEBUG
+#define CONFIG_MSM_SDE_ROTATOR_EVTLOG_DEBUG 1
+#endif
+#ifndef CONFIG_DRM_MSM
+#define CONFIG_DRM_MSM 1
+#endif

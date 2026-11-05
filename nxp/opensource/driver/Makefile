@@ -1,14 +1,10 @@
-KERNEL_SRC ?= /lib/modules/$(shell uname -r)/build
+# SPDX-License-Identifier: GPL-2.0-only
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
+KBUILD_OPTIONS += NFC_ROOT=$(module_src)
 
-M ?= $(shell pwd)
+.PHONY: all modules modules_install clean
+all: modules
 
-KBUILD_OPTIONS+= NFC_ROOT=$(KERNEL_SRC)/$(M)
-
-all:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) modules $(KBUILD_OPTIONS)
-
-modules_install:
-	$(MAKE) INSTALL_MOD_STRIP=1 -C $(KERNEL_SRC) M=$(M) modules_install
-
-clean:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) clean
+modules modules_install clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)

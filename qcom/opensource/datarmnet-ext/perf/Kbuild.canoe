@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/.
+ccflags-y += -I$(src)/include
+ccflags-y += -I$(src)/../../datarmnet/core
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../../datarmnet/Module.symvers)
+
+obj-m += rmnet_perf.o
+rmnet_perf-y := rmnet_perf_main.o \
+	rmnet_perf_tcp.o \
+	rmnet_perf_udp.o
+CFLAGS_rmnet_perf_main.o += -Wno-misleading-indentation
+CFLAGS_rmnet_perf_tcp.o += -Wno-misleading-indentation
+CFLAGS_rmnet_perf_udp.o += -Wno-misleading-indentation

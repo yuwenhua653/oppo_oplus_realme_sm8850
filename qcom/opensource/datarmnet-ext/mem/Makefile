@@ -1,16 +1,9 @@
-#By default build for CLD
-RMNET_MEM_SELECT := CONFIG_RMNET_MEM=m
-KBUILD_OPTIONS += $(RMNET_MEM_SELECT)
-KBUILD_OPTIONS += $(KBUILD_EXTRA) # Extra config if any
+# SPDX-License-Identifier: GPL-2.0-only
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
 
-M ?= $(shell pwd)
+.PHONY: all modules modules_install clean
+all: modules
 
-all:
-		$(MAKE) -C $(KERNEL_SRC) M=$(M) modules $(KBUILD_OPTIONS)
-
-modules_install:
-		$(MAKE) INSTALL_MOD_STRIP=1 -C $(KERNEL_SRC) M=$(M) modules_install
-
-clean:
-		$(MAKE) -C $(KERNEL_SRC) M=$(M) clean
-
+modules modules_install clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)

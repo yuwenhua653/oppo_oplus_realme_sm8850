@@ -1,0 +1,386 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/include
+ccflags-y += -I$(src)/include/uapi/display
+ccflags-y += -I$(src)/msm/dp
+ccflags-y += -I$(src)/msm/dsi/hfi
+ccflags-y += -I$(src)/msm/dsi
+ccflags-y += -I$(src)/msm/hdmi
+ccflags-y += -I$(src)/msm/hfi
+ccflags-y += -I$(src)/msm/sde/hfi
+ccflags-y += -I$(src)/msm/sde
+ccflags-y += -I$(src)/rotator
+ccflags-y += -I$(src)/msm
+ccflags-y += -I$(src)/../synx-kernel/msm/synx
+ccflags-y += -I$(src)/../synx-kernel/include/uapi/synx
+ccflags-y += -I$(src)/../synx-kernel/include/uapi/synx/media
+ccflags-y += -I$(src)/../securemsm-kernel
+ccflags-y += -I$(src)/../securemsm-kernel/include
+ccflags-y += -I$(src)/../securemsm-kernel/include/linux
+ccflags-y += -I$(src)/../securemsm-kernel/include/uapi
+ccflags-y += -I$(src)/../securemsm-kernel/include/uapi/linux
+ccflags-y += -I$(src)/../securemsm-kernel/include/smci/uid
+ccflags-y += -I$(src)/../securemsm-kernel/include/smci/interface
+ccflags-y += -I$(src)/../securemsm-kernel/linux
+ccflags-y += -I$(src)/../securemsm-kernel/smcinvoke
+ccflags-y += -I$(src)/../securemsm-kernel/smmu-proxy
+ccflags-y += -I$(src)/../mm-drivers/hw_fence/include
+ccflags-y += -I$(src)/../mm-drivers/sync_fence/include
+ccflags-y += -I$(src)/../mm-drivers/config
+ccflags-y += -I$(src)/../mm-drivers/msm_ext_display/include
+ccflags-y += -I$(src)/../mm-drivers/hfi_core/inc
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../synx-kernel/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../securemsm-kernel/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../mm-drivers/hw_fence/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../mm-drivers/sync_fence/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../mm-drivers/msm_ext_display/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../mm-drivers/hfi_core/Module.symvers)
+
+obj-m += msm_drm.o
+msm_drm-y := hdcp/msm_hdcp.o \
+	msm/dp/dp_hdcp2p2.o \
+	msm/sde_hdcp_1x.o \
+	msm/sde_hdcp_2x.o \
+	msm/sde/sde_vm_common.o \
+	msm/sde/sde_vm_primary.o \
+	msm/sde/sde_vm_trusted.o \
+	msm/sde/sde_vm_msgq.o \
+	msm/dp/dp_altmode.o \
+	msm/dp/dp_parser.o \
+	msm/dp/dp_power.o \
+	msm/dp/dp_catalog.o \
+	msm/dp/dp_catalog_v420.o \
+	msm/dp/dp_catalog_v200.o \
+	msm/dp/dp_catalog_v500.o \
+	msm/dp/dp_aux.o \
+	msm/dp/dp_panel.o \
+	msm/dp/dp_panel_tu.o \
+	msm/dp/dp_link.o \
+	msm/dp/dp_ctrl.o \
+	msm/dp/dp_audio.o \
+	msm/dp/dp_debug.o \
+	msm/dp/dp_hpd.o \
+	msm/dp/dp_aux_bridge.o \
+	msm/dp/dp_bridge_hpd.o \
+	msm/dp/dp_mst_sim.o \
+	msm/dp/dp_mst_sim_helper.o \
+	msm/dp/dp_gpio_hpd.o \
+	msm/dp/dp_lphw_hpd.o \
+	msm/dp/dp_display.o \
+	msm/dp/dp_drm.o \
+	msm/dp/dp_pll.o \
+	msm/dp/dp_pll_5nm.o \
+	msm/dp/dp_pll_4nm.o \
+	msm/dp/dp_pll_3nm.o \
+	msm/dp/edp_pll_5nm.o \
+	msm/dp/edp_pll_4nm.o \
+	msm/dp/dp_mst_drm.o \
+	msm/hfi/hfi_adapter.o \
+	msm/hfi/hfi_packer.o \
+	msm/hfi/hfi_unpacker.o \
+	msm/hfi/hfi_utils.o \
+	msm/hfi/hfi_msm_drv.o \
+	msm/hfi/hfi_dbg.o \
+	msm/sde/hfi/hfi_catalog.o \
+	msm/sde/hfi/hfi_connector.o \
+	msm/sde/hfi/hfi_crtc.o \
+	msm/sde/hfi/hfi_encoder.o \
+	msm/sde/hfi/hfi_kms.o \
+	msm/sde/hfi/hfi_plane.o \
+	msm/sde/hfi/hfi_color_proc.o \
+	msm/dsi/hfi/dsi_display_hfi.o \
+	msm/dsi/hfi/dsi_hfi.o \
+	msm/sde/hfi/hfi_wb.o \
+	msm/sde/sde_crtc.o \
+	msm/sde/sde_encoder.o \
+	msm/sde/sde_encoder_dce.o \
+	msm/sde/sde_encoder_phys_vid.o \
+	msm/sde/sde_encoder_phys_cmd.o \
+	msm/sde/sde_irq.o \
+	msm/sde/sde_core_irq.o \
+	msm/sde/sde_core_perf.o \
+	msm/sde/sde_rm.o \
+	msm/sde/sde_kms_utils.o \
+	msm/sde/sde_kms.o \
+	msm/sde/sde_plane.o \
+	msm/sde/sde_connector.o \
+	msm/sde/sde_color_processing.o \
+	msm/sde/sde_vbif.o \
+	msm/sde_dbg.o \
+	msm/sde_dbg_evtlog.o \
+	msm/sde_io_util.o \
+	msm/sde_vm_event.o \
+	msm/sde/sde_hw_reg_dma_v1_color_proc.o \
+	msm/sde/sde_hw_color_proc_v4.o \
+	msm/sde/sde_hw_ad4.o \
+	msm/sde/sde_hw_uidle.o \
+	msm/sde_edid_parser.o \
+	msm/sde/sde_hw_catalog.o \
+	msm/sde/sde_hw_cdm.o \
+	msm/sde/sde_hw_dspp.o \
+	msm/sde/sde_hw_intf.o \
+	msm/sde/sde_hw_lm.o \
+	msm/sde/sde_hw_ctl.o \
+	msm/sde/sde_hw_util.o \
+	msm/sde/sde_hw_sspp_v1.o \
+	msm/sde/sde_hw_sspp.o \
+	msm/sde/sde_hw_wb.o \
+	msm/sde/sde_hw_pingpong.o \
+	msm/sde/sde_hw_top.o \
+	msm/sde/sde_hw_interrupts.o \
+	msm/sde/sde_hw_vbif.o \
+	msm/sde/sde_formats.o \
+	msm/sde_power_handle.o \
+	msm/sde/sde_hw_color_processing_v1_7.o \
+	msm/sde/sde_reg_dma.o \
+	msm/sde/sde_hw_reg_dma_v1.o \
+	msm/sde/sde_hw_dsc.o \
+	msm/sde/sde_hw_dsc_1_2.o \
+	msm/sde/sde_hw_vdc.o \
+	msm/sde/sde_hw_ds.o \
+	msm/sde/sde_fence.o \
+	msm/sde/sde_hw_qdss.o \
+	msm/sde_dsc_helper.o \
+	msm/sde_vdc_helper.o \
+	msm/sde/sde_hw_dnsc_blur.o \
+	msm/sde/sde_hw_rc.o \
+	msm/sde/sde_color_proc_property_helper.o \
+	msm/sde/sde_color_processing_aiqe.o \
+	msm/sde/sde_hw_color_proc_aiqe_v1.o \
+	msm/sde/sde_aiqe_common.o \
+	msm/sde/sde_loopback.o \
+	msm/sde/sde_color_proc_feature_state_helper.o \
+	msm/sde/sde_wb.o \
+	msm/sde/sde_encoder_phys_wb.o \
+	msm/sde_rsc.o \
+	msm/sde_rsc_hw.o \
+	msm/sde_rsc_hw_v3.o \
+	msm/sde_cesta.o \
+	msm/sde_cesta_hw.o \
+	msm/dsi/dsi_phy.o \
+	msm/dsi/dsi_pwr.o \
+	msm/dsi/dsi_phy_hw_v2_0.o \
+	msm/dsi/dsi_phy_hw_v3_0.o \
+	msm/dsi/dsi_phy_hw_v4_0.o \
+	msm/dsi/dsi_phy_hw_v5_0.o \
+	msm/dsi/dsi_phy_hw_v7_2.o \
+	msm/dsi/dsi_phy_timing_calc.o \
+	msm/dsi/dsi_phy_timing_v2_0.o \
+	msm/dsi/dsi_phy_timing_v3_0.o \
+	msm/dsi/dsi_phy_timing_v4_0.o \
+	msm/dsi/dsi_pll.o \
+	msm/dsi/dsi_pll_5nm.o \
+	msm/dsi/dsi_pll_4nm.o \
+	msm/dsi/dsi_pll_3nm.o \
+	msm/dsi/dsi_pll_14nm.o \
+	msm/dsi/dsi_ctrl_hw_cmn.o \
+	msm/dsi/dsi_ctrl_hw_2_2.o \
+	msm/dsi/dsi_ctrl.o \
+	msm/dsi/dsi_catalog.o \
+	msm/dsi/dsi_drm.o \
+	msm/dsi/dsi_display.o \
+	msm/dsi/myron_mi_clone.o \
+	msm/dsi/dsi_display_manager.o \
+	msm/dsi/dsi_panel.o \
+	msm/dsi/dsi_clk_manager.o \
+	msm/dsi/dsi_display_test.o \
+	msm/dsi/dsi_parser.o \
+	msm/msm_cooling_device.o \
+	msm/msm_atomic.o \
+	msm/msm_fb.o \
+	msm/msm_drv.o \
+	msm/msm_gem.o \
+	msm/msm_gem_prime.o \
+	msm/msm_gem_vma.o \
+	msm/msm_smmu.o \
+	msm/msm_prop.o \
+	rotator/sde_rotator_dev.o \
+	rotator/sde_rotator_core.o \
+	rotator/sde_rotator_base.o \
+	rotator/sde_rotator_formats.o \
+	rotator/sde_rotator_util.o \
+	rotator/sde_rotator_io_util.o \
+	rotator/sde_rotator_smmu.o \
+	rotator/sde_rotator_r1_wb.o \
+	rotator/sde_rotator_r1_pipe.o \
+	rotator/sde_rotator_r1_ctl.o \
+	rotator/sde_rotator_r1.o \
+	rotator/sde_rotator_r3.o \
+	rotator/sde_rotator_sync.o \
+	rotator/sde_rotator_debug.o \
+	rotator/sde_rotator_r1_debug.o \
+	rotator/sde_rotator_r3_debug.o
+CFLAGS_hdcp/msm_hdcp.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_hdcp2p2.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_hdcp_1x.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_hdcp_2x.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_vm_common.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_vm_primary.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_vm_trusted.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_vm_msgq.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_altmode.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_parser.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_power.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_catalog.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_catalog_v420.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_catalog_v200.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_catalog_v500.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_aux.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_panel.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_panel_tu.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_link.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_ctrl.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_audio.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_debug.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_hpd.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_aux_bridge.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_bridge_hpd.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_mst_sim.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_mst_sim_helper.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_gpio_hpd.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_lphw_hpd.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_display.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_drm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_pll.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_pll_5nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_pll_4nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_pll_3nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/edp_pll_5nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/edp_pll_4nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dp/dp_mst_drm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/hfi/hfi_adapter.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/hfi/hfi_packer.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/hfi/hfi_unpacker.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/hfi/hfi_utils.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/hfi/hfi_msm_drv.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/hfi/hfi_dbg.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_catalog.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_connector.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_crtc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_encoder.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_kms.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_plane.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_color_proc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/hfi/dsi_display_hfi.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/hfi/dsi_hfi.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/hfi/hfi_wb.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_crtc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_encoder.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_encoder_dce.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_encoder_phys_vid.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_encoder_phys_cmd.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_irq.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_core_irq.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_core_perf.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_rm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_kms_utils.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_kms.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_plane.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_connector.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_color_processing.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_vbif.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_dbg.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_dbg_evtlog.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_io_util.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_vm_event.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_reg_dma_v1_color_proc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_color_proc_v4.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_ad4.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_uidle.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_edid_parser.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_catalog.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_cdm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_dspp.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_intf.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_lm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_ctl.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_util.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_sspp_v1.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_sspp.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_wb.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_pingpong.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_top.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_interrupts.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_vbif.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_formats.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_power_handle.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_color_processing_v1_7.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_reg_dma.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_reg_dma_v1.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_dsc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_dsc_1_2.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_vdc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_ds.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_fence.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_qdss.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_dsc_helper.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_vdc_helper.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_dnsc_blur.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_rc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_color_proc_property_helper.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_color_processing_aiqe.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_hw_color_proc_aiqe_v1.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_aiqe_common.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_loopback.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_color_proc_feature_state_helper.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_wb.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde/sde_encoder_phys_wb.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_rsc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_rsc_hw.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_rsc_hw_v3.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_cesta.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/sde_cesta_hw.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_pwr.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_hw_v2_0.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_hw_v3_0.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_hw_v4_0.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_hw_v5_0.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_hw_v7_2.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_timing_calc.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_timing_v2_0.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_timing_v3_0.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_phy_timing_v4_0.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_pll.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_pll_5nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_pll_4nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_pll_3nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_pll_14nm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_ctrl_hw_cmn.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_ctrl_hw_2_2.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_ctrl.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_catalog.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_drm.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_display.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/myron_mi_clone.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_display_manager.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_panel.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_clk_manager.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_display_test.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/dsi/dsi_parser.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_cooling_device.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_atomic.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_fb.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_drv.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_gem.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_gem_prime.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_gem_vma.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_smmu.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_msm/msm_prop.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_dev.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_core.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_base.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_formats.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_util.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_io_util.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_smmu.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_r1_wb.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_r1_pipe.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_r1_ctl.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_r1.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_r3.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_sync.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_debug.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_r1_debug.o += -include $(src)/config/canoe/msm_drm.h
+CFLAGS_rotator/sde_rotator_r3_debug.o += -include $(src)/config/canoe/msm_drm.h

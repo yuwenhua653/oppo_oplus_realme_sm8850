@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/.
+ccflags-y += -I$(src)/linux
+ccflags-y += -I$(src)/nfc
+ccflags-y += -I$(src)/include/uapi/linux/nfc
+ccflags-y += -I$(src)/../../../qcom/opensource/securemsm-kernel/include
+ccflags-y += -I$(src)/../../../qcom/opensource/securemsm-kernel/include/linux
+ccflags-y += -I$(src)/../../../qcom/opensource/securemsm-kernel/linux
+ccflags-y += -I$(src)/../../../qcom/opensource/securemsm-kernel/include/uapi/linux
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../../../qcom/opensource/securemsm-kernel/Module.symvers)
+
+obj-m += nxp-nci.o
+nxp-nci-y := nfc/common.o \
+	nfc/common_nxp.o \
+	nfc/common_qcom.o \
+	nfc/ese_cold_reset.o \
+	nfc/i2c_drv.o
+CFLAGS_nfc/common.o += -DCONFIG_NFC_BOB1 -DNFC_SECURE_PERIPHERAL_ENABLED
+CFLAGS_nfc/common_nxp.o += -DCONFIG_NFC_BOB1 -DNFC_SECURE_PERIPHERAL_ENABLED
+CFLAGS_nfc/common_qcom.o += -DCONFIG_NFC_BOB1 -DNFC_SECURE_PERIPHERAL_ENABLED
+CFLAGS_nfc/ese_cold_reset.o += -DCONFIG_NFC_BOB1 -DNFC_SECURE_PERIPHERAL_ENABLED
+CFLAGS_nfc/i2c_drv.o += -DCONFIG_NFC_BOB1 -DNFC_SECURE_PERIPHERAL_ENABLED

@@ -1,0 +1,374 @@
+{
+  "qcom/opensource/synx-kernel": {
+    "synx-driver": {
+      "srcs": [
+        "msm/synx/synx.c",
+        "msm/synx/synx_compat.c",
+        "msm/synx/synx_debugfs.c",
+        "msm/synx/synx_debugfs_util.c",
+        "msm/synx/synx_global.c",
+        "msm/synx/synx_ioctl.c",
+        "msm/synx/synx_test_ioctl.c",
+        "msm/synx/synx_util.c"
+      ],
+      "defines": [
+        "TARGET_SYNX_ENABLE",
+        "CONFIG_QTI_HW_FENCE",
+        "CONFIG_EXTENSIBLE_GLCOREDATA"
+      ],
+      "config": {},
+      "copts": []
+    },
+    "ipclite": {
+      "srcs": [
+        "msm/synx/ipclite.c"
+      ],
+      "defines": [
+        "TARGET_SYNX_ENABLE",
+        "CONFIG_QTI_HW_FENCE",
+        "CONFIG_EXTENSIBLE_GLCOREDATA"
+      ],
+      "config": {},
+      "copts": []
+    }
+  },
+  "qcom/opensource/bt-kernel": {
+    "btpower": {
+      "srcs": [
+        "pwr/btpower.c"
+      ],
+      "defines": [
+        "CONFIG_MSM_BT_POWER",
+        "CONFIG_I2C_RTC6226_QCA",
+        "CONFIG_SLIM_BTFM_CODEC",
+        "CONFIG_BTFM_CODEC",
+        "CONFIG_BTFM_SWR",
+        "CONFIG_FMD_ENABLE",
+        "CONFIG_SPI_CNSS_PROTO",
+        "CONFIG_THQSPI_PROTO",
+        "CONFIG_EXT_BUCK"
+      ],
+      "config": {},
+      "copts": []
+    },
+    "btfmcodec": {
+      "srcs": [
+        "btfmcodec/btfm_codec.c",
+        "btfmcodec/btfm_codec_btadv_interface.c",
+        "btfmcodec/btfm_codec_hw_interface.c",
+        "btfmcodec/btfm_codec_interface.c"
+      ],
+      "defines": [
+        "CONFIG_MSM_BT_POWER",
+        "CONFIG_I2C_RTC6226_QCA",
+        "CONFIG_SLIM_BTFM_CODEC",
+        "CONFIG_BTFM_CODEC",
+        "CONFIG_BTFM_SWR",
+        "CONFIG_FMD_ENABLE",
+        "CONFIG_SPI_CNSS_PROTO",
+        "CONFIG_THQSPI_PROTO",
+        "CONFIG_EXT_BUCK"
+      ],
+      "config": {},
+      "copts": []
+    },
+    "bt_fm_swr": {
+      "srcs": [
+        "soundwire/btfm_swr.c",
+        "soundwire/btfm_swr_hw_interface.c",
+        "soundwire/btfm_swr_slave.c"
+      ],
+      "defines": [
+        "CONFIG_MSM_BT_POWER",
+        "CONFIG_I2C_RTC6226_QCA",
+        "CONFIG_SLIM_BTFM_CODEC",
+        "CONFIG_BTFM_CODEC",
+        "CONFIG_BTFM_SWR",
+        "CONFIG_FMD_ENABLE",
+        "CONFIG_SPI_CNSS_PROTO",
+        "CONFIG_THQSPI_PROTO",
+        "CONFIG_EXT_BUCK"
+      ],
+      "config": {},
+      "copts": []
+    }
+  },
+  "qcom/opensource/securemsm-kernel": {
+    "smcinvoke_dlkm": {
+      "srcs": [
+        "smcinvoke/si_core_xts/qseecom.c",
+        "smcinvoke/si_core_xts/smci.c",
+        "smcinvoke/si_core_xts/smci_kernel.c"
+      ],
+      "defines": [
+        "SMCINVOKE_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/securemsm-kernel/smcinvoke/compat",
+        "CONFIG_QCOM_SI_CORE_TEST",
+        "CONFIG_QCOM_SMCINVOKE",
+        "CONFIG_QSEECOM_COMPAT",
+        "CONFIG_QCOM_SI_CORE",
+        "CONFIG_MSM_TMECOM_QMP",
+        "CONFIG_TZLOG_TIME_CONSOLIDATE"
+      ],
+      "config": {},
+      "copts": []
+    },
+    "hdcp_qseecom_dlkm": {
+      "srcs": [
+        "hdcp/hdcp_main.c",
+        "hdcp/hdcp_qseecom.c",
+        "hdcp/hdcp_smcinvoke.c"
+      ],
+      "defines": [
+        "SMCINVOKE_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/securemsm-kernel/smcinvoke/compat",
+        "CONFIG_QCOM_SI_CORE_TEST",
+        "CONFIG_QCOM_SMCINVOKE",
+        "CONFIG_QSEECOM_COMPAT",
+        "CONFIG_QCOM_SI_CORE",
+        "CONFIG_MSM_TMECOM_QMP",
+        "CONFIG_TZLOG_TIME_CONSOLIDATE"
+      ],
+      "config": {},
+      "copts": [
+        "-include",
+        "config/sec-kernel_defconfig.h"
+      ]
+    },
+    "smmu_proxy_dlkm": {
+      "srcs": [
+        "smmu-proxy/qti-smmu-proxy-common.c",
+        "smmu-proxy/qti-smmu-proxy-pvm.c"
+      ],
+      "defines": [
+        "SMCINVOKE_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/securemsm-kernel/smcinvoke/compat",
+        "CONFIG_QCOM_SI_CORE_TEST",
+        "CONFIG_QCOM_SMCINVOKE",
+        "CONFIG_QSEECOM_COMPAT",
+        "CONFIG_QCOM_SI_CORE",
+        "CONFIG_MSM_TMECOM_QMP",
+        "CONFIG_TZLOG_TIME_CONSOLIDATE"
+      ],
+      "config": {},
+      "copts": []
+    }
+  },
+  "qcom/opensource/datarmnet-ext/mem": {
+    "rmnet_mem": {
+      "srcs": [
+        "rmnet_mem_main.c",
+        "rmnet_mem_nl.c",
+        "rmnet_mem_pool.c"
+      ],
+      "defines": [],
+      "config": {},
+      "copts": [
+        "-Wno-misleading-indentation"
+      ]
+    }
+  },
+  "qcom/opensource/datarmnet-ext/shs": {
+    "rmnet_shs": {
+      "srcs": [
+        "rmnet_shs_common.c",
+        "rmnet_shs_config.c",
+        "rmnet_shs_freq.c",
+        "rmnet_shs_ll.c",
+        "rmnet_shs_main.c",
+        "rmnet_shs_modules.c",
+        "rmnet_shs_wq.c",
+        "rmnet_shs_wq_genl.c",
+        "rmnet_shs_wq_mem.c"
+      ],
+      "defines": [],
+      "config": {},
+      "copts": [
+        "-Wno-misleading-indentation"
+      ]
+    }
+  },
+  "qcom/opensource/datarmnet-ext/perf": {
+    "rmnet_perf": {
+      "srcs": [
+        "rmnet_perf_main.c",
+        "rmnet_perf_tcp.c",
+        "rmnet_perf_udp.c"
+      ],
+      "defines": [],
+      "config": {},
+      "copts": [
+        "-Wno-misleading-indentation"
+      ]
+    }
+  },
+  "qcom/opensource/datarmnet": {
+    "rmnet_ctl": {
+      "srcs": [
+        "core/rmnet_ctl_ipa.c",
+        "core/rmnet_ctl_client.c"
+      ],
+      "defines": [],
+      "config": {
+        "CONFIG_RMNET_LA_PLATFORM": "y"
+      },
+      "copts": []
+    },
+    "rmnet_core": {
+      "srcs": [
+        "core/rmnet_config.c",
+        "core/rmnet_descriptor.c",
+        "core/rmnet_genl.c",
+        "core/rmnet_handlers.c",
+        "core/rmnet_map_command.c",
+        "core/rmnet_map_data.c",
+        "core/rmnet_module.c",
+        "core/rmnet_vnd.c",
+        "core/dfc_qmap.c",
+        "core/dfc_qmi.c",
+        "core/qmi_rmnet.c",
+        "core/wda_qmi.c",
+        "core/rmnet_qmap.c",
+        "core/rmnet_ll.c",
+        "core/rmnet_ll_ipa.c",
+        "core/rmnet_ll_qmap.c"
+      ],
+      "defines": [
+        "RMNET_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/datarmnet/core"
+      ],
+      "config": {
+        "CONFIG_RMNET_LA_PLATFORM": "y"
+      },
+      "copts": []
+    }
+  },
+  "qcom/opensource/dataipa": {
+    "gsim": {
+      "srcs": [
+        "drivers/platform/msm/gsi/gsi.c",
+        "drivers/platform/msm/gsi/gsi_dbg.c",
+        "drivers/platform/msm/gsi/gsihal/gsihal.c",
+        "drivers/platform/msm/gsi/gsihal/gsihal_reg.c"
+      ],
+      "defines": [
+        "GSI_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/dataipa/drivers/platform/msm/gsi"
+      ],
+      "config": {
+        "CONFIG_GSI": "m",
+        "CONFIG_IPA_CLIENTS_MANAGER": "m",
+        "CONFIG_IPA_WDI_UNIFIED_API": "y",
+        "CONFIG_RMNET_IPA3": "y",
+        "CONFIG_RNDIS_IPA": "m",
+        "CONFIG_IPA3_REGDUMP": "y",
+        "CONFIG_IPA3_REGDUMP_IPA_5_5": "y",
+        "CONFIG_IPA_KERNEL_TESTS_MODULE": "m",
+        "CONFIG_IPA3": "m",
+        "CONFIG_NCM_IPA": "m"
+      },
+      "copts": []
+    },
+    "ipam": {
+      "srcs": [
+        "drivers/platform/msm/ipa/ipa_v3/ipa.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_client.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_debugfs.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_elf_dump.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_dma.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_dp.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_eth_i.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_flt.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_hdr.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_hw_stats.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_interrupts.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_intf.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_mhi.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_nat.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_odl.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_opt_log.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_pm.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_qdss.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_qmi_service.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_qmi_service_v01.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_rt.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_stats.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_uc.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_uc_holb_monitor.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_uc_mhi.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_uc_ntn.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_uc_wdi.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_utils.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_wdi3_i.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipa_wigig_i.c",
+        "drivers/platform/msm/ipa/ipa_v3/rmnet_ctl_ipa.c",
+        "drivers/platform/msm/ipa/ipa_v3/rmnet_ipa.c",
+        "drivers/platform/msm/ipa/ipa_v3/rmnet_ipa_fd_ioctl.c",
+        "drivers/platform/msm/ipa/ipa_v3/rmnet_ll_ipa.c",
+        "drivers/platform/msm/ipa/ipa_v3/teth_bridge.c",
+        "drivers/platform/msm/ipa/ipa_clients/ipa_eth.c",
+        "drivers/platform/msm/ipa/ipa_clients/ipa_gsb.c",
+        "drivers/platform/msm/ipa/ipa_clients/ipa_mhi_client.c",
+        "drivers/platform/msm/ipa/ipa_clients/ipa_uc_offload.c",
+        "drivers/platform/msm/ipa/ipa_clients/ipa_usb.c",
+        "drivers/platform/msm/ipa/ipa_clients/ipa_wdi3.c",
+        "drivers/platform/msm/ipa/ipa_clients/ipa_wigig.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipahal/ipahal.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipahal/ipahal_fltrt.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipahal/ipahal_hw_stats.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipahal/ipahal_nat.c",
+        "drivers/platform/msm/ipa/ipa_v3/ipahal/ipahal_reg.c",
+        "drivers/platform/msm/ipa/ipa_v3/dump/ipa5.5/ipa_reg_dump.c",
+        "drivers/platform/msm/ipa/ipa_rm.c",
+        "drivers/platform/msm/ipa/ipa_rm_dependency_graph.c",
+        "drivers/platform/msm/ipa/ipa_rm_inactivity_timer.c",
+        "drivers/platform/msm/ipa/ipa_rm_peers_list.c",
+        "drivers/platform/msm/ipa/ipa_rm_resource.c",
+        "drivers/platform/msm/ipa/ipa_clients/rndis_ipa.c",
+        "drivers/platform/msm/ipa/ipa_clients/ncm_ipa.c"
+      ],
+      "defines": [
+        "GSI_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/dataipa/drivers/platform/msm/gsi",
+        "IPA_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/dataipa/drivers/platform/msm/ipa/ipa_v3",
+        "RNDIS_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/dataipa/drivers/platform/msm/ipa/ipa_clients",
+        "NCM_TRACE_INCLUDE_PATH=../../../vendor/qcom/sm8850-modules/qcom/opensource/dataipa/drivers/platform/msm/ipa/ipa_clients",
+        "CONFIG_IPA_RMNET_MEM=y"
+      ],
+      "config": {
+        "CONFIG_GSI": "m",
+        "CONFIG_IPA_CLIENTS_MANAGER": "m",
+        "CONFIG_IPA_WDI_UNIFIED_API": "y",
+        "CONFIG_RMNET_IPA3": "y",
+        "CONFIG_RNDIS_IPA": "m",
+        "CONFIG_IPA3_REGDUMP": "y",
+        "CONFIG_IPA3_REGDUMP_IPA_5_5": "y",
+        "CONFIG_IPA_KERNEL_TESTS_MODULE": "m",
+        "CONFIG_IPA3": "m",
+        "CONFIG_NCM_IPA": "m"
+      },
+      "copts": []
+    }
+  },
+  "qcom/opensource/data-kernel/drivers/smem-mailbox": {
+    "smem-mailbox": {
+      "srcs": [
+        "smem-mailbox.c"
+      ],
+      "defines": [],
+      "config": {},
+      "copts": []
+    }
+  },
+  "nxp/opensource/driver": {
+    "nxp-nci": {
+      "srcs": [
+        "nfc/common.c",
+        "nfc/common_nxp.c",
+        "nfc/common_qcom.c",
+        "nfc/ese_cold_reset.c",
+        "nfc/i2c_drv.c"
+      ],
+      "defines": [],
+      "config": {},
+      "copts": [
+        "-DCONFIG_NFC_BOB1",
+        "-DNFC_SECURE_PERIPHERAL_ENABLED"
+      ]
+    }
+  }
+}

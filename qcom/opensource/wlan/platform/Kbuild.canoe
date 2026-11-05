@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/inc
+ccflags-y += -I$(src)/cnss2
+ccflags-y += -I$(src)/cnss_utils
+ccflags-y += -I$(src)/icnss2
+ccflags-y += -I$(src)/../../data-kernel/drivers/smem-mailbox/include
+ccflags-y += -I$(src)/../../securemsm-kernel/include
+ccflags-y += -I$(src)/../../securemsm-kernel/include/linux
+ccflags-y += -I$(src)/../../securemsm-kernel/include/uapi
+ccflags-y += -I$(src)/../../securemsm-kernel/include/uapi/linux
+ccflags-y += -I$(src)/../../securemsm-kernel/linux
+ccflags-y += -I$(src)/cnss
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../../securemsm-kernel/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../../data-kernel/drivers/smem-mailbox/Module.symvers)
+
+obj-m += cnss2.o
+cnss2-y := cnss2/bus.o \
+	cnss2/debug.o \
+	cnss2/genl.o \
+	cnss2/main.o \
+	cnss2/pci.o \
+	cnss2/power.o \
+	cnss2/qmi.o \
+	cnss2/coexistence_service_v01.o \
+	cnss2/pci_qcom.o
+CFLAGS_cnss2/bus.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/debug.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/genl.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/main.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/pci.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/power.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/qmi.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/coexistence_service_v01.o += -include $(src)/config/canoe/cnss2.h
+CFLAGS_cnss2/pci_qcom.o += -include $(src)/config/canoe/cnss2.h
+
+obj-m += cnss_nl.o
+cnss_nl-y := cnss_genl/cnss_nl.o
+CFLAGS_cnss_genl/cnss_nl.o += -include $(src)/config/canoe/cnss_nl.h
+
+obj-m += cnss_prealloc.o
+cnss_prealloc-y := cnss_prealloc/cnss_prealloc.o
+CFLAGS_cnss_prealloc/cnss_prealloc.o += -include $(src)/config/canoe/cnss_prealloc.h
+
+obj-m += cnss_utils.o
+cnss_utils-y := cnss_utils/cnss_utils.o
+CFLAGS_cnss_utils/cnss_utils.o += -include $(src)/config/canoe/cnss_utils.h
+
+obj-m += wlan_firmware_service.o
+wlan_firmware_service-y := cnss_utils/device_management_service_v01.o \
+	cnss_utils/ip_multimedia_subsystem_private_service_v01.o \
+	cnss_utils/wlan_firmware_service_v01.o
+CFLAGS_cnss_utils/device_management_service_v01.o += -include $(src)/config/canoe/wlan_firmware_service.h
+CFLAGS_cnss_utils/ip_multimedia_subsystem_private_service_v01.o += -include $(src)/config/canoe/wlan_firmware_service.h
+CFLAGS_cnss_utils/wlan_firmware_service_v01.o += -include $(src)/config/canoe/wlan_firmware_service.h
+
+obj-m += cnss_plat_ipc_qmi_svc.o
+cnss_plat_ipc_qmi_svc-y := cnss_utils/cnss_plat_ipc_qmi.o \
+	cnss_utils/cnss_plat_ipc_service_v01.o
+CFLAGS_cnss_utils/cnss_plat_ipc_qmi.o += -include $(src)/config/canoe/cnss_plat_ipc_qmi_svc.h
+CFLAGS_cnss_utils/cnss_plat_ipc_service_v01.o += -include $(src)/config/canoe/cnss_plat_ipc_qmi_svc.h

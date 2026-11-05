@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/.
+ccflags-y += -I$(src)/include/uapi/linux
+
+obj-m += rmnet_mem.o
+rmnet_mem-y := rmnet_mem_main.o \
+	rmnet_mem_nl.o \
+	rmnet_mem_pool.o
+CFLAGS_rmnet_mem_main.o += -Wno-misleading-indentation
+CFLAGS_rmnet_mem_nl.o += -Wno-misleading-indentation
+CFLAGS_rmnet_mem_pool.o += -Wno-misleading-indentation

@@ -1,17 +1,10 @@
-M=$(PWD)
-SSG_MODULE_ROOT=$(KERNEL_SRC)/$(M)
-ifeq ($(TARGET_MACHINE), seraph)
-    SSG_MODULE_ROOT=$(M)
-endif
+# SPDX-License-Identifier: GPL-2.0-only
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
+KBUILD_OPTIONS += SSG_MODULE_ROOT=$(module_src)
 
-INC=-I/$(M)/linux/*
-KBUILD_OPTIONS+=SSG_MODULE_ROOT=$(SSG_MODULE_ROOT)
-KBUILD_OPTIONS+=CONFIG_DISABLE_TEST_MODULES=y
-
+.PHONY: all modules modules_install clean
 all: modules
 
-clean:
-	rm -f *.cmd *.d *.mod *.o *.ko *.mod.c *.mod.o Module.symvers modules.order
-
-%:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) $(INC) $@ $(KBUILD_OPTIONS)
+modules modules_install clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)

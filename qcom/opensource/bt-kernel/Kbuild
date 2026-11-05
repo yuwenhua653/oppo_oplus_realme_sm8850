@@ -1,3 +1,6 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
 $(info within KBUILD file LINUXINCLUDE = $(LINUXINCLUDE), SOCINCLUDE = $(SOCINCLUDE), AUDIOINCLUDE = $(AUDIOINCLUDE))
 
 LINUXINCLUDE    := \
@@ -53,3 +56,5 @@ obj-$(CONFIG_SLIM_BTFM_CODEC) += slimbus/
 obj-$(CONFIG_BTFM_SWR) += soundwire/
 obj-$(CONFIG_SPI_CNSS_PROTO) += spi/
 obj-$(CONFIG_THQSPI_PROTO) += thq-spi/
+
+endif

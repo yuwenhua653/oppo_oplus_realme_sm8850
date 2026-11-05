@@ -1,3 +1,6 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
 # We can build either as part of a standalone Kernel build or as
 # an external module.  Determine which mechanism is being used
 ifeq ($(MODNAME),)
@@ -5344,3 +5347,5 @@ OBJS_DIRS += $(dir $(OBJS)) \
 CLEAN_DIRS := $(addsuffix *.o,$(sort $(OBJS_DIRS))) \
 	      $(addsuffix .*.o.cmd,$(sort $(OBJS_DIRS)))
 clean-files := $(CLEAN_DIRS)
+
+endif

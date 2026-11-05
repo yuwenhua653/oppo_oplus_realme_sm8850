@@ -1,3 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
 
-obj-$(CONFIG_ARCH_QCOM) += drivers/platform/msm/
+.PHONY: all modules modules_install clean
+all: modules
+
+modules modules_install clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)

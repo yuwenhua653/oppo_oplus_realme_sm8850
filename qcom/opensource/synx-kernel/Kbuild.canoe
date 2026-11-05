@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/include/uapi/synx
+ccflags-y += -I$(src)/include/uapi/synx/media
+ccflags-y += -I$(src)/msm/synx
+ccflags-y += -I$(src)/../mm-drivers/hw_fence/include
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../mm-drivers/hw_fence/Module.symvers)
+
+obj-m += synx-driver.o
+synx-driver-y := msm/synx/synx.o \
+	msm/synx/synx_compat.o \
+	msm/synx/synx_debugfs.o \
+	msm/synx/synx_debugfs_util.o \
+	msm/synx/synx_global.o \
+	msm/synx/synx_ioctl.o \
+	msm/synx/synx_test_ioctl.o \
+	msm/synx/synx_util.o
+CFLAGS_msm/synx/synx.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+CFLAGS_msm/synx/synx_compat.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+CFLAGS_msm/synx/synx_debugfs.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+CFLAGS_msm/synx/synx_debugfs_util.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+CFLAGS_msm/synx/synx_global.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+CFLAGS_msm/synx/synx_ioctl.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+CFLAGS_msm/synx/synx_test_ioctl.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+CFLAGS_msm/synx/synx_util.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA
+
+obj-m += ipclite.o
+ipclite-y := msm/synx/ipclite.o
+CFLAGS_msm/synx/ipclite.o += -DTARGET_SYNX_ENABLE -DCONFIG_QTI_HW_FENCE -DCONFIG_EXTENSIBLE_GLCOREDATA

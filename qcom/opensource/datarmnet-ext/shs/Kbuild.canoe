@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/.
+ccflags-y += -I$(src)/include
+ccflags-y += -I$(src)/../../datarmnet/core
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../../datarmnet/Module.symvers)
+
+obj-m += rmnet_shs.o
+rmnet_shs-y := rmnet_shs_common.o \
+	rmnet_shs_config.o \
+	rmnet_shs_freq.o \
+	rmnet_shs_ll.o \
+	rmnet_shs_main.o \
+	rmnet_shs_modules.o \
+	rmnet_shs_wq.o \
+	rmnet_shs_wq_genl.o \
+	rmnet_shs_wq_mem.o
+CFLAGS_rmnet_shs_common.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_config.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_freq.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_ll.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_main.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_modules.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_wq.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_wq_genl.o += -Wno-misleading-indentation
+CFLAGS_rmnet_shs_wq_mem.o += -Wno-misleading-indentation

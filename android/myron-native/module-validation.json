@@ -243,6 +243,242 @@
         }
       ],
       "read_only_sources": true
+    },
+    {
+      "directory": "datarmnet-ext/shs",
+      "modules": [
+        {
+          "name": "rmnet_shs.ko",
+          "bytes": 2508328,
+          "sha256": "61359310bcaddcf06521fc3487a8d448df1bbaee41d86a0a161ed5b028bd9ec1"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "datarmnet-ext/perf",
+      "modules": [
+        {
+          "name": "rmnet_perf.ko",
+          "bytes": 891080,
+          "sha256": "f1f355351fcdbdf5ba04d9bbe4ebe8b5e1d05406ea7bff16b80aad0cb8de3dd6"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "data-kernel/drivers/smem-mailbox",
+      "modules": [
+        {
+          "name": "smem-mailbox.ko",
+          "bytes": 320880,
+          "sha256": "bc52783ef98d3f001b420eef8279cd3d80d2b617752324359d358d066993f79b"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "nxp/opensource/driver",
+      "modules": [
+        {
+          "name": "nxp-nci.ko",
+          "bytes": 905832,
+          "sha256": "353deb83aa58f5ec8c9866ebc52bb09383ff20d8c34c4eaa51800c148ad24949"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "synx-kernel",
+      "modules": [
+        {
+          "name": "ipclite.ko",
+          "bytes": 466384,
+          "sha256": "f0c7820b4a9a084aa07d021f17b9d9f4c38e2c484daa96b13e093833c8a89240"
+        },
+        {
+          "name": "synx-driver.ko",
+          "bytes": 1570616,
+          "sha256": "c97cf9f2b35b2f76b78a4bee9fd81d76e48ba349dcfd70bb2ebc2333b501411c"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "datarmnet-ext/mem",
+      "modules": [
+        {
+          "name": "rmnet_mem.ko",
+          "bytes": 770888,
+          "sha256": "674f2f9fb709a82d2c03e35b59fdb06adf15e9869ecf4f8f7b3edde70883e0ff"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "dataipa",
+      "modules": [
+        {
+          "name": "gsim.ko",
+          "bytes": 1422432,
+          "sha256": "64ee5eaeaf0563d116dd9beecb53ab75d713f61f34753fc97dca3df9f827d52f"
+        },
+        {
+          "name": "ipam.ko",
+          "bytes": 23466104,
+          "sha256": "c47be94493f74565e3526654d0fb9e9a66c56c2a244d1ec44ccd1f800f208e9e"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "datarmnet",
+      "modules": [
+        {
+          "name": "rmnet_core.ko",
+          "bytes": 4435984,
+          "sha256": "e07fc42ff2bc897cfa1b6a391b1548ebc56247b35c5a8350230b98cdea44d49c"
+        },
+        {
+          "name": "rmnet_ctl.ko",
+          "bytes": 434824,
+          "sha256": "278cbe2d3ec937150cc23a8e3b5537492a672992c994fc692a35b33fce5ffdd8"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "graphics-kernel",
+      "modules": [
+        {
+          "name": "msm_kgsl.ko",
+          "bytes": 22121232,
+          "sha256": "f44e816cd94ca0ba99226f0880beb67f3c0db5ad667611b71b5cde519b6d3bc1"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "wlan/platform",
+      "modules": [
+        {
+          "name": "cnss2.ko",
+          "bytes": 3755616,
+          "sha256": "711f6753c7b64f77892e39247daef84e2aaebff5c8b8cdd94ef29a7c55cba090"
+        },
+        {
+          "name": "cnss_nl.ko",
+          "bytes": 288264,
+          "sha256": "4254681bc55cda761542f0b54aa4925ea8af8158b48edeb1c6ff85af7d3eede3"
+        },
+        {
+          "name": "cnss_plat_ipc_qmi_svc.ko",
+          "bytes": 267208,
+          "sha256": "6c8aa7a52c3f1822d367bd296e8c57ac134b34ef7cc04a95aac1bc8791a0956e"
+        },
+        {
+          "name": "cnss_prealloc.ko",
+          "bytes": 254576,
+          "sha256": "82c8ebd0297af3579e35ec80eaaa7ca046dbce10188d7d90dd7b56d6e78ccea4"
+        },
+        {
+          "name": "cnss_utils.ko",
+          "bytes": 353288,
+          "sha256": "8726d56481300ad0be6611be88cfd72acd083c4e6b424f0cb56de0377be58ed6"
+        },
+        {
+          "name": "wlan_firmware_service.ko",
+          "bytes": 310968,
+          "sha256": "32aba3d4ca3713f61b10809c857b7e44bb22daf30deedb10179d8fd9d67ad955"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "bt-kernel",
+      "modules": [
+        {
+          "name": "bt_fm_swr.ko",
+          "bytes": 392792,
+          "sha256": "e3c8a8fa239049ae59e45798fabf9613e8832b725f1e874dbebac48688d6fead"
+        },
+        {
+          "name": "btfmcodec.ko",
+          "bytes": 800272,
+          "sha256": "22b50598a78729ec009eca29c277c38215e521a03d004ce2518709e001f06899"
+        },
+        {
+          "name": "btpower.ko",
+          "bytes": 484104,
+          "sha256": "c63d1fbb3468c48db64ad7ba960d1e2f13bce6804d66d4a28bd73eee959c5c25"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "eva-kernel",
+      "modules": [
+        {
+          "name": "msm-eva.ko",
+          "bytes": 5481200,
+          "sha256": "8a030f12ae015107c8fdbdee50a593c2ed72687e423341eb0712af80a6d1c1f9"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "securemsm-kernel",
+      "modules": [
+        {
+          "name": "hdcp_qseecom_dlkm.ko",
+          "bytes": 504496,
+          "sha256": "33137618b7df980020fc44b5fcb07459343cc698f59b0c9527a10a101754c649"
+        },
+        {
+          "name": "smcinvoke_dlkm.ko",
+          "bytes": 693056,
+          "sha256": "2f489e5a09a5c19d964b6230b8d669c1e3961db095d615ec5abdb30b73ec66dd"
+        },
+        {
+          "name": "smmu_proxy_dlkm.ko",
+          "bytes": 352176,
+          "sha256": "db9e7506d3b8f082a8971b8b0002d3d7e9680557b5127c6730d6b904d52d41e2"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "display-drivers",
+      "modules": [
+        {
+          "name": "msm_drm.ko",
+          "bytes": 44640144,
+          "sha256": "ca9b05a8378c336fcc98f4adec2723927240711a26f2a0396fcf30cedb1fc1e4"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "wlan/qcacld-3.0",
+      "modules": [
+        {
+          "name": "qca_cld3_peach_v2.ko",
+          "bytes": 416959912,
+          "sha256": "aaba4c91dbd09f4637407fb6e6317039676286a7029735ab01bcff320091cadb"
+        }
+      ],
+      "read_only_sources": true
+    },
+    {
+      "directory": "camera-kernel",
+      "modules": [
+        {
+          "name": "camera.ko",
+          "bytes": 33516896,
+          "sha256": "ea1a12211af8551e78a97f41446d5cb81a7f04f6d75c7c288ce06627d55a0217"
+        }
+      ],
+      "read_only_sources": true
     }
   ]
 }

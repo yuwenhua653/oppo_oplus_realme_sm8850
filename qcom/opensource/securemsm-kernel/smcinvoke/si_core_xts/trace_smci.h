@@ -232,9 +232,12 @@ TRACE_EVENT(cbo_dispatch_ret,
  * Path must be relative to location of 'define_trace.h' header in kernel
  * Define path if not defined in bazel file
  */
-#undef TRACE_INCLUDE_PATH
-#define TRACE_INCLUDE_PATH \
+#ifndef SMCINVOKE_XTS_TRACE_INCLUDE_PATH
+#define SMCINVOKE_XTS_TRACE_INCLUDE_PATH \
 	../../../../vendor/qcom/sm8850-modules/qcom/opensource/securemsm-kernel/smcinvoke/si_core_xts
+#endif
+#undef TRACE_INCLUDE_PATH
+#define TRACE_INCLUDE_PATH SMCINVOKE_XTS_TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace_smci
 

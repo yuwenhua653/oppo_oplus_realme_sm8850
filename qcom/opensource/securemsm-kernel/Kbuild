@@ -1,3 +1,6 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
 ifeq ($(TARGET_MACHINE), seraph)
 LINUXINCLUDE := $(SOCINCLUDE) \
                 $(LINUXINCLUDE)
@@ -125,4 +128,6 @@ ifneq ($(CONFIG_ARCH_QTI_VM), y)
 
     obj-$(CONFIG_HIBERNATE_TZDATA_MGR) += hibernate_tzdata_mgr_dlkm.o
     hibernate_tzdata_mgr_dlkm-objs := hibernate_tzdata_mgr/hibernate_tzdata_mgr.o
+endif
+
 endif

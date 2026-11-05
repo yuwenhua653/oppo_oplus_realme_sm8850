@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "scope": "host EROFS payload size estimate only, not a flashable Android image; SELinux/AVB/ROM depmod metadata not included",
+  "vendor_module_count": 403,
+  "all_catalog_dependencies_present": true,
+  "catalog_dependency_extras": {},
+  "erofs_compressor": "lz4hc,9",
+  "erofs_payload_bytes": 33513472,
+  "reported_partition_bytes": 53805056,
+  "remaining_bytes": 20291584
+}

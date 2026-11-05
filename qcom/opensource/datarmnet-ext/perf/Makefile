@@ -1,17 +1,9 @@
-#By default build for CLD
-RMNET_PERF_SELECT := CONFIG_RMNET_PERF=m
-KBUILD_OPTIONS += $(RMNET_PERF_SELECT)
-KBUILD_OPTIONS += $(KBUILD_EXTRA) # Extra config if any
-KBUILD_EXTRA_SYMBOLS := $(M)/../../$(DATARMNET_CORE_PATH)/Module.symvers
-KBUILD_EXTRA_SYMBOLS += $(M)/../../$(DATARMNET_SHS_PATH)/Module.symvers
+# SPDX-License-Identifier: GPL-2.0-only
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
 
-M ?= $(shell pwd)
+.PHONY: all modules modules_install clean
+all: modules
 
-all:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) modules $(KBUILD_OPTIONS) $(KBUILD_EXTRA_SYMBOLS)
-
-modules_install:
-	$(MAKE) INSTALL_MOD_STRIP=1 -C $(KERNEL_SRC) M=$(M) modules_install
-
-clean:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) clean
+modules modules_install clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)

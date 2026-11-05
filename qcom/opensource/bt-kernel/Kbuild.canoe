@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/include
+ccflags-y += -I$(src)/btfmcodec/include
+ccflags-y += -I$(src)/../audio-kernel/include
+ccflags-y += -I$(src)/../audio-kernel/include/uapi/audio
+ccflags-y += -I$(src)/../wlan/platform/cnss_utils
+ccflags-y += -I$(src)/../wlan/platform/inc
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../audio-kernel/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../wlan/platform/Module.symvers)
+
+obj-m += btpower.o
+btpower-y := pwr/btpower.o
+CFLAGS_pwr/btpower.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK
+
+obj-m += btfmcodec.o
+btfmcodec-y := btfmcodec/btfm_codec.o \
+	btfmcodec/btfm_codec_btadv_interface.o \
+	btfmcodec/btfm_codec_hw_interface.o \
+	btfmcodec/btfm_codec_interface.o
+CFLAGS_btfmcodec/btfm_codec.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK
+CFLAGS_btfmcodec/btfm_codec_btadv_interface.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK
+CFLAGS_btfmcodec/btfm_codec_hw_interface.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK
+CFLAGS_btfmcodec/btfm_codec_interface.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK
+
+obj-m += bt_fm_swr.o
+bt_fm_swr-y := soundwire/btfm_swr.o \
+	soundwire/btfm_swr_hw_interface.o \
+	soundwire/btfm_swr_slave.o
+CFLAGS_soundwire/btfm_swr.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK
+CFLAGS_soundwire/btfm_swr_hw_interface.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK
+CFLAGS_soundwire/btfm_swr_slave.o += -DCONFIG_MSM_BT_POWER -DCONFIG_I2C_RTC6226_QCA -DCONFIG_SLIM_BTFM_CODEC -DCONFIG_BTFM_CODEC -DCONFIG_BTFM_SWR -DCONFIG_FMD_ENABLE -DCONFIG_SPI_CNSS_PROTO -DCONFIG_THQSPI_PROTO -DCONFIG_EXT_BUCK

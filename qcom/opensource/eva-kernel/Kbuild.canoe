@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -I$(src)/config
+ccflags-y += -I$(src)/include/uapi/eva
+ccflags-y += -I$(src)/msm
+ccflags-y += -I$(src)/msm/eva
+ccflags-y += -I$(src)/../synx-kernel/msm/synx
+ccflags-y += -I$(src)/../synx-kernel/include/uapi/synx
+ccflags-y += -I$(src)/../synx-kernel/include/uapi/synx/media
+ccflags-y += -I$(src)/../dsp-kernel/include
+ccflags-y += -I$(src)/../dsp-kernel/include/linux
+ccflags-y += -I$(src)/../dsp-kernel/include/uapi
+ccflags-y += -I$(src)/../mmrm-driver/driver/src
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../synx-kernel/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../dsp-kernel/Module.symvers)
+KBUILD_EXTRA_SYMBOLS += $(abspath $(obj)/../mmrm-driver/Module.symvers)
+
+obj-m += msm-eva.o
+msm-eva-y := msm/eva/cvp.o \
+	msm/eva/cvp_core_hfi.o \
+	msm/eva/cvp_dump.o \
+	msm/eva/cvp_fw_load.o \
+	msm/eva/cvp_hfi.o \
+	msm/eva/cvp_power.o \
+	msm/eva/cvp_presil.o \
+	msm/eva/cvp_smem.o \
+	msm/eva/hfi_packetization.o \
+	msm/eva/hfi_response_handler.o \
+	msm/eva/msm_cvp.o \
+	msm/eva/msm_cvp_buf.o \
+	msm/eva/msm_cvp_clocks.o \
+	msm/eva/msm_cvp_common.o \
+	msm/eva/msm_cvp_core.o \
+	msm/eva/msm_cvp_debug.o \
+	msm/eva/msm_cvp_dsp.o \
+	msm/eva/msm_cvp_ioctl.o \
+	msm/eva/msm_cvp_platform.o \
+	msm/eva/msm_cvp_res_parse.o \
+	msm/eva/msm_cvp_sw_dbg.o \
+	msm/eva/msm_cvp_synx.o \
+	msm/eva/target/cvp_hawi_hal.o \
+	msm/eva/target/cvp_kaanapali_hal.o \
+	msm/eva/target/cvp_pakala_hal.o \
+	msm/eva/vm/cvp_vm_main.o \
+	msm/eva/vm/cvp_vm_msgq.o \
+	msm/eva/vm/cvp_vm_resource.o
+CFLAGS_msm/eva/cvp.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/cvp_core_hfi.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/cvp_dump.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/cvp_fw_load.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/cvp_hfi.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/cvp_power.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/cvp_presil.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/cvp_smem.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/hfi_packetization.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/hfi_response_handler.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_buf.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_clocks.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_common.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_core.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_debug.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_dsp.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_ioctl.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_platform.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_res_parse.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_sw_dbg.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/msm_cvp_synx.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/target/cvp_hawi_hal.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/target/cvp_kaanapali_hal.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/target/cvp_pakala_hal.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/vm/cvp_vm_main.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/vm/cvp_vm_msgq.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds
+CFLAGS_msm/eva/vm/cvp_vm_resource.o += -include $(src)/config/canoe/msm-eva.h -Wno-format -Wno-array-bounds

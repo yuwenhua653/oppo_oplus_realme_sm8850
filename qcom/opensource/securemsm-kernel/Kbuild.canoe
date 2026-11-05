@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source/configuration selection from the pinned DDK declarations.
+ccflags-y += -I$(src) -I$(srctree)
+ccflags-y += -DSMCINVOKE_XTS_TRACE_INCLUDE_PATH=$(src)/smcinvoke/si_core_xts
+ccflags-y += -I$(src)/include
+ccflags-y += -I$(src)/include/linux
+ccflags-y += -I$(src)/include/uapi
+ccflags-y += -I$(src)/include/uapi/linux
+ccflags-y += -I$(src)/linux
+ccflags-y += -I$(src)/include/smci/uid
+ccflags-y += -I$(src)/include/smci/interface
+ccflags-y += -I$(src)/config
+ccflags-y += -I$(src)/smcinvoke
+ccflags-y += -I$(src)/smcinvoke/si_core_xts
+
+obj-m += smcinvoke_dlkm.o
+smcinvoke_dlkm-y := smcinvoke/si_core_xts/qseecom.o \
+	smcinvoke/si_core_xts/smci.o \
+	smcinvoke/si_core_xts/smci_kernel.o
+CFLAGS_smcinvoke/si_core_xts/qseecom.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE
+CFLAGS_smcinvoke/si_core_xts/smci.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE
+CFLAGS_smcinvoke/si_core_xts/smci_kernel.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE
+
+obj-m += hdcp_qseecom_dlkm.o
+hdcp_qseecom_dlkm-y := hdcp/hdcp_main.o \
+	hdcp/hdcp_qseecom.o \
+	hdcp/hdcp_smcinvoke.o
+CFLAGS_hdcp/hdcp_main.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE -include $(src)/config/sec-kernel_defconfig.h
+CFLAGS_hdcp/hdcp_qseecom.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE -include $(src)/config/sec-kernel_defconfig.h
+CFLAGS_hdcp/hdcp_smcinvoke.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE -include $(src)/config/sec-kernel_defconfig.h
+
+obj-m += smmu_proxy_dlkm.o
+smmu_proxy_dlkm-y := smmu-proxy/qti-smmu-proxy-common.o \
+	smmu-proxy/qti-smmu-proxy-pvm.o
+CFLAGS_smmu-proxy/qti-smmu-proxy-common.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE
+CFLAGS_smmu-proxy/qti-smmu-proxy-pvm.o += -DSMCINVOKE_TRACE_INCLUDE_PATH=$(src)/smcinvoke/compat -DCONFIG_QCOM_SI_CORE_TEST -DCONFIG_QCOM_SMCINVOKE -DCONFIG_QSEECOM_COMPAT -DCONFIG_QCOM_SI_CORE -DCONFIG_MSM_TMECOM_QMP -DCONFIG_TZLOG_TIME_CONSOLIDATE

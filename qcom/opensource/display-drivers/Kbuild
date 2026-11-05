@@ -1,3 +1,6 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
 # SPDX-License-Identifier: GPL-2.0-only
 
 ifeq ($(DISPLAY_ROOT),)
@@ -10,3 +13,5 @@ LINUXINCLUDE    += \
 USERINCLUDE     += -I$(DISPLAY_ROOT)/include/uapi/display
 
 obj-$(CONFIG_DRM_MSM) += msm/
+
+endif

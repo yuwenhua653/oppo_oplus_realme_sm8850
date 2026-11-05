@@ -1,3 +1,6 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
 # SPDX-License-Identifier: GPL-2.0-only
 
 CAMERA_KERNEL_ROOT=$(shell pwd)/$(srctree)/$(src)/$(M)
@@ -375,3 +378,5 @@ camera-y += drivers/camera_main.o
 
 obj-m += camera.o
 BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/camera.ko
+
+endif

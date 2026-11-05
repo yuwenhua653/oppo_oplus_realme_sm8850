@@ -1,11 +1,10 @@
-KBUILD_OPTIONS+= SYNX_ROOT=$(KERNEL_SRC)/$(M)
+# SPDX-License-Identifier: GPL-2.0-only
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
+KBUILD_OPTIONS += SYNX_ROOT=$(module_src)
 
-all:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) modules $(KBUILD_OPTIONS)
-modules_install:
-	$(MAKE) M=$(M) -C $(KERNEL_SRC) modules_install
-%:
+.PHONY: all modules modules_install clean
+all: modules
+
+modules modules_install clean:
 	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)
-clean:
-	rm -f *.o *.ko *.mod.c *.mod.o *~ .*.cmd Module.symvers
-	rm -rf .tmp_versions

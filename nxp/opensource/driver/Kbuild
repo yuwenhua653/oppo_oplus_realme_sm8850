@@ -1,3 +1,6 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
 #Makefile for qti nfc drivers
 
 include $(NFC_ROOT)/config/gki_nfc.conf
@@ -19,3 +22,5 @@ nxp-nci-objs += nfc/ese_cold_reset.o \
 		nfc/common_qcom.o \
 		nfc/i2c_drv.o
 
+
+endif
