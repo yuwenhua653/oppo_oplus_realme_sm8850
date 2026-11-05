@@ -76,6 +76,12 @@ Android.bp、Android.mk，避免内核附带工具与 ROM 项目重名。该标�
 内核源码和内部缓存；工作区锁用于串行处理内核操作。保留迁移生成的旧路径链接，
 不要手工删除缓存引用的路径。
 
+Ninja 同时会将 ROM 源码挂载为只读；`.find-ignore` 只控制扫描，不授予写权限。
+设备配置通过 `BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST` 精确放行 `kernel/xiaomi/myron`
+及现有的共享锁文件 `kernel/xiaomi/.myron-adapter.lock`，供 Kleaf 内部输出、Git 元数据和
+锁操作使用。首次运行须在普通终端先完成上述 `relocate`/`prepare`，保证挂载目标存在。
+其他源码目录继续只读，不设置全局 `BUILD_BROKEN_SRC_DIR_IS_WRITABLE=true`。
+
 上述命令的默认工作区就是 `kernel/xiaomi/myron`，默认 `dist` 按 `OUT_DIR` 计算；
 迁移完成后日常 `verify` 和正常 ROM 编译不再需要指定旧工作区路径。
 已有完整源码产物通过校验时会复用；保留缓存不代表将来所有 Bazel 动作都能避免重新分析。

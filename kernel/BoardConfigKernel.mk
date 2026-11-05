@@ -5,6 +5,10 @@ MYRON_KERNEL_OUT := $(PRODUCT_OUT)/obj/MYRON_KERNEL
 MYRON_KERNEL_DIST := $(MYRON_KERNEL_OUT)/dist
 MYRON_KERNEL_WORKSPACE := kernel/xiaomi/myron
 MYRON_KERNEL_LEGACY_WORKSPACE := $(MYRON_KERNEL_OUT)/workspace
+# Ninja mounts the ROM source tree read-only. Kleaf's workspace contains its
+# writable outputs and Git metadata; the cross-OUT_DIR lock is one existing file.
+# Run relocate/prepare outside Ninja first so both bind-mount sources exist.
+BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST += $(MYRON_KERNEL_WORKSPACE) kernel/xiaomi/.myron-adapter.lock
 MYRON_KERNEL_JOBS ?= 2
 MYRON_KERNEL_RAM_MB ?= 10000
 
