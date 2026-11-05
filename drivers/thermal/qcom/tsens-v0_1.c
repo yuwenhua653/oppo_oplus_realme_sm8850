@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #include <linux/bitfield.h>
@@ -85,7 +86,7 @@ static struct tsens_legacy_calibration_format tsens_8974_backup_nvmem = {
 
 static int calibrate_8916(struct tsens_priv *priv)
 {
-	u32 p1[5], p2[5];
+	u32 p1[MAX_SENSORS], p2[MAX_SENSORS];
 	u32 *qfprom_cdata, *qfprom_csel;
 	int mode, ret;
 
@@ -145,7 +146,7 @@ static void fixup_8974_points(int mode, u32 *p1, u32 *p2)
 
 static int calibrate_8974_nvmem(struct tsens_priv *priv)
 {
-	u32 p1[11], p2[11];
+	u32 p1[MAX_SENSORS], p2[MAX_SENSORS];
 	u32 backup;
 	int ret, mode;
 
@@ -168,7 +169,7 @@ static int calibrate_8974_nvmem(struct tsens_priv *priv)
 
 static int calibrate_8974(struct tsens_priv *priv)
 {
-	u32 p1[11], p2[11];
+	u32 p1[MAX_SENSORS], p2[MAX_SENSORS];
 	u32 *calib, *bkp;
 	u32 calib_redun_sel;
 	int mode, ret;

@@ -63,4 +63,10 @@ obj-$(CONFIG_SPRD_MBOX)		+= sprd-mailbox.o
 
 obj-$(CONFIG_QCOM_CPUCP_MBOX)	+= qcom-cpucp-mbox.o
 
-obj-$(CONFIG_QCOM_IPCC)		+= qcom-ipcc.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/mailbox
+obj-$(CONFIG_MSM_QMP) += msm_qmp.o
+obj-$(CONFIG_QCOM_IPCC) += qcom-ipcc.o

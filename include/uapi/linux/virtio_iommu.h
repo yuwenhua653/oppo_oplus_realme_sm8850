@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: BSD-3-Clause */
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 /*
- * Virtio-iommu definition v0.12
- *
- * Copyright (C) 2019 Arm Ltd.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 #ifndef _UAPI_LINUX_VIRTIO_IOMMU_H
 #define _UAPI_LINUX_VIRTIO_IOMMU_H
@@ -17,6 +15,7 @@
 #define VIRTIO_IOMMU_F_PROBE			4
 #define VIRTIO_IOMMU_F_MMIO			5
 #define VIRTIO_IOMMU_F_BYPASS_CONFIG		6
+#define VIRTIO_IOMMU_F_ATTACH_TABLE		7
 
 struct virtio_iommu_range_64 {
 	__le64					start;
@@ -47,6 +46,8 @@ struct virtio_iommu_config {
 #define VIRTIO_IOMMU_T_MAP			0x03
 #define VIRTIO_IOMMU_T_UNMAP			0x04
 #define VIRTIO_IOMMU_T_PROBE			0x05
+#define VIRTIO_IOMMU_T_ATTACH_TABLE		0x06
+#define VIRTIO_IOMMU_T_INVALIDATE		0x07
 
 /* Status types */
 #define VIRTIO_IOMMU_S_OK			0x00
@@ -80,10 +81,30 @@ struct virtio_iommu_req_attach {
 	struct virtio_iommu_req_tail		tail;
 };
 
+#define VIRTIO_IOMMU_ATTACH_TABLE_ARM_SMMU3	0x1
+#define VIRTIO_IOMMU_ATTACH_TABLE_INTEL_PT	0x2
+#define VIRTIO_IOMMU_ATTACH_TABLE_RISCV		0x4
+#define VIRTIO_IOMMU_ATTACH_TABLE_AMD_GCR3	0x5
+#define VIRTIO_IOMMU_ATTACH_TABLE_AMD_PT	0x6
+
+struct virtio_iommu_req_attach_table {
+	struct virtio_iommu_req_head	head;
+	__le32				domain;
+	__le32				endpoint;
+	__u8				format;
+	__u8				descriptor[111];
+	struct virtio_iommu_req_tail	tail;
+};
+
+
+#define VIRTIO_IOMMU_DETACH_F_PASID		(1 << 0)
+
 struct virtio_iommu_req_detach {
 	struct virtio_iommu_req_head		head;
 	__le32					domain;
 	__le32					endpoint;
+	__le32					flags;
+	__le32					pasid;
 	__u8					reserved[8];
 	struct virtio_iommu_req_tail		tail;
 };
@@ -115,8 +136,40 @@ struct virtio_iommu_req_unmap {
 	struct virtio_iommu_req_tail		tail;
 };
 
+/* Should we define that bits[15:0] of id are asid for arm64? */
+#define VIRTIO_IOMMU_INVAL_S_DOMAIN	0x1
+#define VIRTIO_IOMMU_INVAL_S_PASID	0x2
+#define VIRTIO_IOMMU_INVAL_S_ADDRESS	0x3
+
+#define VIRTIO_IOMMU_INVAL_C_PASID	(1 << 0)
+#define VIRTIO_IOMMU_INVAL_C_TLB	(1 << 1)
+
+#define VIRTIO_IOMMU_INVAL_F_LEAF	(1 << 0)
+#define VIRTIO_IOMMU_INVAL_F_PASID	(1 << 1)
+#define VIRTIO_IOMMU_INVAL_F_ID		(1 << 2)
+#define VIRTIO_IOMMU_INVAL_F_GLOBAL	(1 << 3)
+
+struct virtio_iommu_req_invalidate {
+	struct virtio_iommu_req_head	head;
+	__u8	scope;
+	__u8	caches;
+	__le16	flags;
+	__le32	domain;
+	__le32	pasid;
+	__le64	id;
+	__le64	address;
+	__le64	nr_pages;
+	__u8	page_size;
+	__u8	reserved[19];
+	struct virtio_iommu_req_tail	tail;
+};
+
 #define VIRTIO_IOMMU_PROBE_T_NONE		0
 #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
+#define VIRTIO_IOMMU_PROBE_T_HW_ARM_SMMU3	2
+#define VIRTIO_IOMMU_PROBE_T_HW_INTEL_VTD	3
+#define VIRTIO_IOMMU_PROBE_T_HW_RISCVi		4
+#define VIRTIO_IOMMU_PROBE_T_HW_AMD		5
 
 #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
 
@@ -127,6 +180,8 @@ struct virtio_iommu_probe_property {
 
 #define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
 #define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
+//FIXME the mmio flag isn't uapi compatible.
+#define VIRTIO_IOMMU_RESV_MEM_F_MMIO		(1 << 0)
 
 struct virtio_iommu_probe_resv_mem {
 	struct virtio_iommu_probe_property	head;
@@ -134,13 +189,13 @@ struct virtio_iommu_probe_resv_mem {
 	__u8					reserved[3];
 	__le64					start;
 	__le64					end;
+	__le32					flags;
 };
 
 struct virtio_iommu_req_probe {
 	struct virtio_iommu_req_head		head;
 	__le32					endpoint;
 	__u8					reserved[64];
-
 	__u8					properties[];
 
 	/*
@@ -164,8 +219,53 @@ struct virtio_iommu_fault {
 	__u8					reserved[3];
 	__le32					flags;
 	__le32					endpoint;
+	__le32					pasid;
 	__u8					reserved2[4];
 	__le64					address;
 };
 
+/* ARM_SMMU_V3 Acceleration */
+struct virtio_iommu_probe_hw_arm_smmu3 {
+	struct virtio_iommu_probe_property head;
+	__u8 reserved[4];
+	__le64 idr0;
+	__le64 idr1;
+	__le64 reserved2;
+	__le64 idr3;
+	__le64 reserved4;
+	__le64 idr5;
+};
+
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1FMT_SHIFT	4
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1FMT_MASK	0x3
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1FMT_LINEAR	0
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1FMT_4KL2i	1
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1FMT_64KL2	2
+
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1PTR_MASK	0xfffffffffffc0
+
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1CDMAX_SHIFT	59
+#define VIRTIO_IOMMU_HW_ARM_STE0_S1CDMAX_MASK	0x1f
+
+#define VIRTIO_IOMMU_HW_ARM_STE1_S1DSS_SHIFT	0
+#define VIRTIO_IOMMU_HW_ARM_STE1_S1DSS_MASK	0x3
+#define VIRTIO_IOMMU_HW_ARM_STE1_S1DSS_TERM	0
+#define VIRTIO_IOMMU_HW_ARM_STE1_S1DSS_BYPASS	1
+#define VIRTIO_IOMMU_HW_ARM_STE1_S1DSS_SSZERO	2
+
+
+struct virtio_iommu_req_attach_table_arm_smmu3 {
+	struct virtio_iommu_req_head	head;
+	__le32				domain;
+	__le32				endpoint;
+	__u8				format;
+	__u8				reserved0[3];
+	__le64				ste0;
+	__le64				ste1;
+	__u8				reserved1[92];
+	struct virtio_iommu_req_tail	tail;
+};
+
+
+#define VIRTIO_IOMMU_HW_ARM_INVALIDATE_ID_ASID	0xffff
 #endif

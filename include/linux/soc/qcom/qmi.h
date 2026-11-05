@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+/* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
  * Copyright (c) 2017, Linaro Ltd.
@@ -158,7 +158,6 @@ struct qmi_ops {
  * struct qmi_txn - transaction context
  * @qmi:	QMI handle this transaction is associated with
  * @id:		transaction id
- * @lock:	for synchronization between handler and waiter of messages
  * @completion:	completion object as the transaction receives a response
  * @result:	result code for the completed transaction
  * @ei:		description of the QMI encoded response (optional)
@@ -169,7 +168,6 @@ struct qmi_txn {
 
 	u16 id;
 
-	struct mutex lock;
 	struct completion completion;
 	int result;
 
@@ -235,6 +233,8 @@ struct qmi_handle {
 	struct mutex txn_lock;
 
 	const struct qmi_msg_handler *handlers;
+
+	unsigned int svc_id;
 };
 
 int qmi_add_lookup(struct qmi_handle *qmi, unsigned int service,

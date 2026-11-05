@@ -24,3 +24,11 @@ obj-$(CONFIG_PHY_QCOM_USB_SS)		+= phy-qcom-usb-ss.o
 obj-$(CONFIG_PHY_QCOM_USB_SNPS_FEMTO_V2)+= phy-qcom-snps-femto-v2.o
 obj-$(CONFIG_PHY_QCOM_IPQ806X_USB)	+= phy-qcom-ipq806x-usb.o
 obj-$(CONFIG_PHY_QCOM_SGMII_ETH)	+= phy-qcom-sgmii-eth.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/phy/qualcomm
+obj-$(CONFIG_PHY_QCOM_UFS) += phy-qcom-ufs.o
+obj-$(CONFIG_PHY_QCOM_UFS_V4_CANOE) += phy-qcom-ufs-qmp-v4-canoe.o
+obj-$(CONFIG_PHY_QCOM_UFS_QRBTC_SDM845) += phy-qcom-ufs-qrbtc-sdm845.o

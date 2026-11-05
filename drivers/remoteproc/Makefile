@@ -21,14 +21,9 @@ obj-$(CONFIG_DA8XX_REMOTEPROC)		+= da8xx_remoteproc.o
 obj-$(CONFIG_KEYSTONE_REMOTEPROC)	+= keystone_remoteproc.o
 obj-$(CONFIG_MESON_MX_AO_ARC_REMOTEPROC)+= meson_mx_ao_arc.o
 obj-$(CONFIG_PRU_REMOTEPROC)		+= pru_rproc.o
-obj-$(CONFIG_QCOM_PIL_INFO)		+= qcom_pil_info.o
-obj-$(CONFIG_QCOM_RPROC_COMMON)		+= qcom_common.o
-obj-$(CONFIG_QCOM_Q6V5_COMMON)		+= qcom_q6v5.o
 obj-$(CONFIG_QCOM_Q6V5_ADSP)		+= qcom_q6v5_adsp.o
 obj-$(CONFIG_QCOM_Q6V5_MSS)		+= qcom_q6v5_mss.o
-obj-$(CONFIG_QCOM_Q6V5_PAS)		+= qcom_q6v5_pas.o
 obj-$(CONFIG_QCOM_Q6V5_WCSS)		+= qcom_q6v5_wcss.o
-obj-$(CONFIG_QCOM_SYSMON)		+= qcom_sysmon.o
 obj-$(CONFIG_QCOM_WCNSS_PIL)		+= qcom_wcnss_pil.o
 qcom_wcnss_pil-y			+= qcom_wcnss.o
 qcom_wcnss_pil-y			+= qcom_wcnss_iris.o
@@ -40,3 +35,14 @@ obj-$(CONFIG_TI_K3_DSP_REMOTEPROC)	+= ti_k3_dsp_remoteproc.o
 obj-$(CONFIG_TI_K3_M4_REMOTEPROC)	+= ti_k3_m4_remoteproc.o
 obj-$(CONFIG_TI_K3_R5_REMOTEPROC)	+= ti_k3_r5_remoteproc.o
 obj-$(CONFIG_XLNX_R5_REMOTEPROC)	+= xlnx_r5_remoteproc.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/remoteproc
+obj-$(CONFIG_QCOM_PIL_INFO) += qcom_pil_info.o
+obj-$(CONFIG_QCOM_Q6V5_COMMON) += qcom_q6v5.o
+obj-$(CONFIG_QCOM_Q6V5_PAS) += qcom_q6v5_pas.o
+obj-$(CONFIG_QCOM_SYSMON) += qcom_sysmon.o
+obj-$(CONFIG_QCOM_RPROC_COMMON) += rproc_qcom_common.o
+rproc_qcom_common-y := qcom_common.o qcom_tracepoints.o

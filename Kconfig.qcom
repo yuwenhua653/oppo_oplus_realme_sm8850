@@ -1,0 +1,159 @@
+# SPDX-License-Identifier: GPL-2.0
+
+menu "Qualcomm SoC Repostiory Configuration"
+
+source "arch/arm64/gunyah/Kconfig"
+
+source "arch/arm64/Kconfig.platforms.qcom"
+
+source "drivers/base/regmap/Kconfig.qcom"
+
+source "drivers/bus/mhi/Kconfig.qcom"
+
+source "drivers/char/Kconfig.qcom"
+
+source "drivers/clk/qcom/Kconfig.qcom"
+
+source "drivers/cpufreq/Kconfig.arm.qcom"
+
+source "drivers/cpuidle/Kconfig.qcom"
+
+source "drivers/devfreq/Kconfig.qcom"
+
+source "drivers/dma-buf/heaps/Kconfig.qcom"
+
+source "drivers/dma/qcom/Kconfig.qcom"
+
+source "drivers/edac/Kconfig.qcom"
+
+source "drivers/extcon/Kconfig.qcom"
+
+source "drivers/firmware/Kconfig.qcom"
+
+source "drivers/gpu/drm/bridge/Kconfig.qcom"
+
+source "drivers/gpu/drm/msm/Kconfig.qcom"
+
+source "drivers/hwmon/Kconfig.qcom"
+
+source "drivers/hwtracing/coresight/Kconfig.qcom"
+
+source "drivers/hwtracing/stm/Kconfig.qcom"
+
+source "drivers/i2c/busses/Kconfig.qcom"
+
+source "drivers/i3c/master/Kconfig.qcom"
+
+source "drivers/iio/adc/Kconfig.qcom"
+
+source "drivers/iio/dac/Kconfig.qcom"
+
+source "drivers/input/misc/Kconfig.qcom"
+
+source "drivers/input/touchscreen/Kconfig.qcom"
+
+source "drivers/interconnect/Kconfig.qcom"
+
+source "drivers/iommu/Kconfig.qcom"
+
+source "drivers/irqchip/Kconfig.qcom"
+
+source "drivers/leds/Kconfig.qcom"
+
+source "drivers/mailbox/Kconfig.qcom"
+
+source "drivers/mfd/Kconfig.qcom"
+
+source "drivers/eom/Kconfig"
+
+source "drivers/eom/pcie/Kconfig"
+
+source "drivers/misc/Kconfig.qcom"
+
+source "drivers/mmc/host/Kconfig.qcom"
+
+source "drivers/net/Kconfig.qcom"
+
+source "drivers/nvmem/layouts/Kconfig.qcom"
+
+source "drivers/pci/controller/Kconfig.qcom"
+
+source "drivers/perf/Kconfig.qcom"
+
+source "drivers/phy/Kconfig.qcom"
+
+source "drivers/phy/qualcomm/Kconfig.qcom"
+
+source "drivers/pinctrl/qcom/Kconfig.qcom"
+
+source "drivers/power/reset/Kconfig.qcom"
+
+source "drivers/power/supply/Kconfig.qcom"
+
+source "drivers/powercap/qcom/Kconfig"
+
+source "drivers/ptp/Kconfig.qcom"
+
+source "drivers/pwm/Kconfig.qcom"
+
+source "drivers/regulator/Kconfig.qcom"
+
+source "drivers/remoteproc/Kconfig.qcom"
+
+source "drivers/rpmsg/Kconfig.qcom"
+
+source "drivers/soc/qcom/dcvs/Kconfig"
+
+source "drivers/soc/qcom/Kconfig.qcom"
+
+source "drivers/soc/qcom/mem_buf/Kconfig"
+
+source "drivers/soc/qcom/memshare/Kconfig"
+
+source "drivers/spi/Kconfig.qcom"
+
+source "drivers/spmi/Kconfig.qcom"
+
+source "drivers/thermal/qcom/Kconfig.qcom"
+
+source "drivers/tty/hvc/Kconfig.qcom"
+
+source "drivers/tty/serial/Kconfig.qcom"
+
+source "drivers/ufs/host/Kconfig.qcom"
+
+source "drivers/uio/Kconfig.qcom"
+
+source "drivers/usb/dwc3/Kconfig.qcom"
+
+source "drivers/usb/gadget/Kconfig.qcom"
+
+source "drivers/usb/Kconfig.qcom"
+
+source "drivers/rtc/Kconfig.qcom"
+
+source "drivers/video/Kconfig.qcom"
+
+source "drivers/virt/Kconfig.qcom"
+
+source "drivers/virtio/Kconfig.qcom"
+
+source "init/Kconfig.qcom"
+
+source "kernel/sched/walt/Kconfig"
+
+source "kernel/trace/Kconfig.qcom"
+
+source "net/Kconfig.qcom"
+
+source "sound/usb/Kconfig.qcom"
+
+source "drivers/block/Kconfig.qcom"
+
+source "Kconfig.qtvm"
+
+source "drivers/block/zram/Kconfig.qcom"
+
+endmenu
+
+source "drivers/xiaomi/myron/Kconfig"

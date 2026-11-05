@@ -268,7 +268,9 @@ objtree		:= .
 
 VPATH		:=
 
-ifeq ($(KBUILD_EXTMOD),)
+# ROM builds pass M relative to the kernel source, and a separate O directory.
+# Retain the standard sibling-module output layout used by LineageOS.
+ifeq ($(filter /%,$(KBUILD_EXTMOD)),)
 ifdef building_out_of_srctree
 VPATH		:= $(srctree)
 endif

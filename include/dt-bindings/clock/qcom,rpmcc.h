@@ -1,6 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
 /*
  * Copyright 2015 Linaro Limited
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #ifndef _DT_BINDINGS_CLK_MSM_RPMCC_H
@@ -170,5 +171,7 @@
 #define RPM_SMD_BIMC_FREQ_LOG			124
 #define RPM_SMD_LN_BB_CLK_PIN			125
 #define RPM_SMD_LN_BB_A_CLK_PIN			126
+#define RPM_SMD_RF_CLK5				127
+#define RPM_SMD_RF_CLK5_A			128
 
 #endif

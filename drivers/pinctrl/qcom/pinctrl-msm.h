@@ -1,10 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2013, Sony Mobile Communications AB.
+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 #ifndef __PINCTRL_MSM_H__
 #define __PINCTRL_MSM_H__
 
+#include <linux/pinctrl/qcom-pinctrl.h>
 #include <linux/pm.h>
 #include <linux/types.h>
 
@@ -34,6 +37,12 @@ struct pinctrl_pin_desc;
 					fname##_groups,		\
 					ARRAY_SIZE(fname##_groups))
 
+struct msm_function {
+	const char *name;
+	const char * const *groups;
+	unsigned int ngroups;
+};
+
 /**
  * struct msm_pingroup - Qualcomm pingroup definition
  * @grp:                  Generic data of the pin group (name and pins)
@@ -48,6 +57,7 @@ struct pinctrl_pin_desc;
  * @intr_status_reg:      Offset of the register holding the status bits for this group.
  * @intr_target_reg:      Offset of the register specifying routing of the interrupts
  *                        from this group.
+ * @reg_size_4k:          Size of the group register space in 4k granularity.
  * @mux_bit:              Offset in @ctl_reg for the pinmux function selection.
  * @pull_bit:             Offset in @ctl_reg for the bias configuration.
  * @drv_bit:              Offset in @ctl_reg for the drive strength configuration.
@@ -71,8 +81,13 @@ struct pinctrl_pin_desc;
  * @intr_detection_width: Number of bits used for specifying interrupt type,
  *                        Should be 2 for SoCs that can detect both edges in hardware,
  *                        otherwise 1.
+ * @wake_reg:             Offset of the WAKEUP_INT_EN register from base tile
+ * @wake_bit:             Bit number for the corresponding gpio
  */
 struct msm_pingroup {
+	const char *name;
+	const unsigned int *pins;
+	unsigned int npins;
 	struct pingroup grp;
 
 	unsigned *funcs;
@@ -83,6 +98,8 @@ struct msm_pingroup {
 	u32 intr_cfg_reg;
 	u32 intr_status_reg;
 	u32 intr_target_reg;
+	u32 dir_conn_reg;
+	unsigned int reg_size_4k:5;
 
 	unsigned int tile:2;
 
@@ -112,6 +129,10 @@ struct msm_pingroup {
 	unsigned intr_polarity_bit:5;
 	unsigned intr_detection_bit:5;
 	unsigned intr_detection_width:5;
+	unsigned dir_conn_en_bit:8;
+
+	u32 wake_reg;
+	unsigned int wake_bit;
 };
 
 /**
@@ -122,6 +143,36 @@ struct msm_pingroup {
 struct msm_gpio_wakeirq_map {
 	unsigned int gpio;
 	unsigned int wakeirq;
+};
+
+/**
+ * struct msm_dir_conn - TLMM Direct GPIO connect configuration
+ * @gpio:      GPIO pin number
+ * @irq:       The GIC interrupt that the pin is connected to
+ */
+struct msm_dir_conn {
+	int gpio;
+	int irq;
+};
+
+/*
+ * struct pinctrl_qup - Qup mode configuration
+ * @mode:	Qup i3c mode
+ * @offset:	Offset of the register
+ */
+struct pinctrl_qup {
+	u32 mode;
+	u32 offset;
+};
+
+/*
+ * struct msm_spare_tlmm - TLMM spare registers config
+ * @spare_reg:	spare register number
+ * @offset:	Offset of spare register
+ */
+struct msm_spare_tlmm {
+	int spare_reg;
+	u32 offset;
 };
 
 /**
@@ -154,6 +205,8 @@ struct msm_pinctrl_soc_data {
 	const struct pinfunction *functions;
 	unsigned nfunctions;
 	const struct msm_pingroup *groups;
+	unsigned int *no_wake_gpios;
+	unsigned int n_no_wake_gpios;
 	unsigned ngroups;
 	unsigned ngpios;
 	bool pull_no_keeper;
@@ -163,11 +216,18 @@ struct msm_pinctrl_soc_data {
 	const struct msm_gpio_wakeirq_map *wakeirq_map;
 	unsigned int nwakeirq_map;
 	bool wakeirq_dual_edge_errata;
+	struct pinctrl_qup *qup_regs;
+	unsigned int nqup_regs;
 	unsigned int gpio_func;
 	unsigned int egpio_func;
+	u32 *dir_conn_addr;
+	const struct msm_spare_tlmm *spare_regs;
+	unsigned int nspare_regs;
+	struct msm_dir_conn *dir_conn;
 };
 
 extern const struct dev_pm_ops msm_pinctrl_dev_pm_ops;
+extern const struct dev_pm_ops noirq_msm_pinctrl_dev_pm_ops;
 
 int msm_pinctrl_probe(struct platform_device *pdev,
 		      const struct msm_pinctrl_soc_data *soc_data);

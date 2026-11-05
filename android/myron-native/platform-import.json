@@ -1,0 +1,1477 @@
+{
+  "platform_commit": "cba60332e49c0978aa83c8bb77bf157893c14fb6",
+  "installed_module_catalog": "device_xiaomi_myron kernel/modules.json at f6e14d147eb60d11755fcfd84db85e29a155f8b4",
+  "modules": {
+    "altmode_glink": {
+      "name": "drivers/soc/qcom/altmode-glink",
+      "out": "altmode-glink.ko",
+      "config": "CONFIG_QTI_ALTMODE_GLINK",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "arm_smmu": {
+      "name": "drivers/iommu/arm/arm-smmu/arm_smmu",
+      "out": "arm_smmu.ko",
+      "config": "CONFIG_ARM_SMMU",
+      "definition": "drivers/iommu/arm/arm-smmu/modules.bzl"
+    },
+    "arm_smmu_pmu": {
+      "name": "drivers/perf/arm_smmu_pmu",
+      "out": "arm_smmu_pmu.ko",
+      "config": "CONFIG_ARM_SMMU_PMU",
+      "definition": "drivers/perf/modules.bzl"
+    },
+    "bcl_pmic5": {
+      "name": "drivers/thermal/qcom/bcl_pmic5",
+      "out": "bcl_pmic5.ko",
+      "config": "CONFIG_QTI_BCL_PMIC5",
+      "definition": "drivers/thermal/qcom/modules.bzl"
+    },
+    "bq27z561": {
+      "name": "drivers/power/supply/mca/mca_hardware_ic/fuelgauge_ic/bq27z561/bq27z561",
+      "out": "bq27z561.ko",
+      "config": "CONFIG_MYRON_CHARGE_IC",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "cambistmclkcc_canoe": {
+      "name": "drivers/clk/qcom/cambistmclkcc-canoe",
+      "out": "cambistmclkcc-canoe.ko",
+      "config": "CONFIG_SM_CAMBISTMCLKCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "camcc_alor": {
+      "name": "drivers/clk/qcom/camcc-alor",
+      "out": "camcc-alor.ko",
+      "config": "CONFIG_SM_CAMCC_ALOR",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "camcc_canoe": {
+      "name": "drivers/clk/qcom/camcc-canoe",
+      "out": "camcc-canoe.ko",
+      "config": "CONFIG_SM_CAMCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "cfg80211": {
+      "name": "net/wireless/cfg80211",
+      "out": "cfg80211.ko",
+      "config": "CONFIG_CFG80211",
+      "definition": "net/wireless/modules.bzl"
+    },
+    "charger_partition": {
+      "name": "drivers/power/supply/mca/mca_shared_memory/charger_partition",
+      "out": "charger_partition.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "clk_dummy": {
+      "name": "drivers/clk/qcom/clk-dummy",
+      "out": "clk-dummy.ko",
+      "config": "CONFIG_COMMON_CLK_QCOM",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "clk_qcom": {
+      "name": "drivers/clk/qcom/clk-qcom",
+      "out": "clk-qcom.ko",
+      "config": "CONFIG_COMMON_CLK_QCOM",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "clk_rpmh": {
+      "name": "drivers/clk/qcom/clk-rpmh",
+      "out": "clk-rpmh.ko",
+      "config": "CONFIG_QCOM_CLK_RPMH",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "clk_scmi": {
+      "name": "drivers/clk/clk-scmi",
+      "out": "clk-scmi.ko",
+      "config": "CONFIG_COMMON_CLK_SCMI",
+      "definition": "drivers/clk/modules.bzl"
+    },
+    "cmd_db": {
+      "name": "drivers/soc/qcom/cmd-db",
+      "out": "cmd-db.ko",
+      "config": "CONFIG_QCOM_COMMAND_DB",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "coresight": {
+      "name": "drivers/hwtracing/coresight/coresight",
+      "out": "coresight.ko",
+      "config": "CONFIG_CORESIGHT",
+      "definition": "drivers/hwtracing/coresight/modules.bzl"
+    },
+    "cpu_hotplug": {
+      "name": "drivers/thermal/qcom/cpu_hotplug",
+      "out": "cpu_hotplug.ko",
+      "config": "CONFIG_QTI_CPU_HOTPLUG_COOLING_DEVICE",
+      "definition": "drivers/thermal/qcom/modules.bzl"
+    },
+    "cpu_phys_log_map": {
+      "name": "drivers/soc/qcom/cpu_phys_log_map",
+      "out": "cpu_phys_log_map.ko",
+      "config": "CONFIG_QCOM_CPU_PHYS_LOG_MAP",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "cpucp_fast": {
+      "name": "drivers/soc/qcom/cpucp_fast",
+      "out": "cpucp_fast.ko",
+      "config": "CONFIG_QCOM_CPUCP_FAST",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "cqhci": {
+      "name": "drivers/mmc/host/cqhci",
+      "out": "cqhci.ko",
+      "config": "CONFIG_MMC_CQHCI",
+      "definition": "drivers/mmc/host/modules.bzl"
+    },
+    "crm_v2": {
+      "name": "drivers/soc/qcom/crm-v2",
+      "out": "crm-v2.ko",
+      "config": "CONFIG_QCOM_CRM_V2",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "dcvs_fp": {
+      "name": "drivers/soc/qcom/dcvs/dcvs_fp",
+      "out": "dcvs_fp.ko",
+      "config": "CONFIG_QCOM_DCVS_FP",
+      "definition": "drivers/soc/qcom/dcvs/modules.bzl"
+    },
+    "debug_regulator": {
+      "name": "drivers/regulator/debug-regulator",
+      "out": "debug-regulator.ko",
+      "config": "CONFIG_REGULATOR_DEBUG_CONTROL",
+      "definition": "drivers/regulator/modules.bzl"
+    },
+    "debug_symbol": {
+      "name": "drivers/soc/qcom/debug_symbol",
+      "out": "debug_symbol.ko",
+      "config": "CONFIG_QCOM_DEBUG_SYMBOL",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "debugcc_canoe": {
+      "name": "drivers/clk/qcom/debugcc-canoe",
+      "out": "debugcc-canoe.ko",
+      "config": "CONFIG_SM_DEBUGCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "deferred_free_helper": {
+      "name": "drivers/dma-buf/heaps/deferred-free-helper",
+      "out": "deferred-free-helper.ko",
+      "config": "CONFIG_QCOM_DMABUF_HEAPS_DEFERRED_FREE",
+      "definition": "drivers/dma-buf/heaps/modules.bzl"
+    },
+    "dispcc_canoe": {
+      "name": "drivers/clk/qcom/dispcc-canoe",
+      "out": "dispcc-canoe.ko",
+      "config": "CONFIG_SM_DISPCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "drm_display_helper": {
+      "name": "drivers/gpu/drm/display/drm_display_helper",
+      "out": "drm_display_helper.ko",
+      "config": "CONFIG_DRM_DISPLAY_HELPER",
+      "definition": "drivers/gpu/drm/display/modules.bzl"
+    },
+    "dwc3_msm": {
+      "name": "drivers/usb/dwc3/dwc3-msm",
+      "out": "dwc3-msm.ko",
+      "config": "CONFIG_USB_DWC3_MSM",
+      "definition": "drivers/usb/dwc3/modules.bzl"
+    },
+    "eom_driver": {
+      "name": "drivers/eom/eom_driver",
+      "out": "eom_driver.ko",
+      "config": "CONFIG_EOM_MSM",
+      "definition": "drivers/eom/modules.bzl"
+    },
+    "eud": {
+      "name": "drivers/soc/qcom/eud",
+      "out": "eud.ko",
+      "config": "CONFIG_QCOM_EUD",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "evacc_canoe": {
+      "name": "drivers/clk/qcom/evacc-canoe",
+      "out": "evacc-canoe.ko",
+      "config": "CONFIG_SM_EVACC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "focaltech_myron": {
+      "name": "drivers/input/touchscreen/myron/focaltech_myron",
+      "out": "focaltech_myron.ko",
+      "config": "CONFIG_TOUCHSCREEN_FOCALTECH_MYRON",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "fsa4480_i2c": {
+      "name": "drivers/soc/qcom/fsa4480_i2c",
+      "out": "fsa4480_i2c.ko",
+      "config": "CONFIG_QCOM_FSA4480_I2C",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "gcc_alor": {
+      "name": "drivers/clk/qcom/gcc-alor",
+      "out": "gcc-alor.ko",
+      "config": "CONFIG_SM_GCC_ALOR",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "gcc_canoe": {
+      "name": "drivers/clk/qcom/gcc-canoe",
+      "out": "gcc-canoe.ko",
+      "config": "CONFIG_SM_GCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "gdsc_regulator": {
+      "name": "drivers/clk/qcom/gdsc-regulator",
+      "out": "gdsc-regulator.ko",
+      "config": "CONFIG_QCOM_GDSC_REGULATOR",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "gh_arm_drv": {
+      "name": "arch/arm64/gunyah/gh_arm_drv",
+      "out": "gh_arm_drv.ko",
+      "config": "CONFIG_GH_ARM64_DRV",
+      "definition": "arch/arm64/gunyah/modules.bzl"
+    },
+    "gh_dbl": {
+      "name": "drivers/virt/gunyah/gh_dbl",
+      "out": "gh_dbl.ko",
+      "config": "CONFIG_GH_DBL",
+      "definition": "drivers/virt/gunyah/modules.bzl"
+    },
+    "gh_irq_lend": {
+      "name": "drivers/virt/gunyah/gh_irq_lend",
+      "out": "gh_irq_lend.ko",
+      "config": "CONFIG_GH_IRQ_LEND",
+      "definition": "drivers/virt/gunyah/modules.bzl"
+    },
+    "gh_mem_notifier": {
+      "name": "drivers/virt/gunyah/gh_mem_notifier",
+      "out": "gh_mem_notifier.ko",
+      "config": "CONFIG_GH_MEM_NOTIFIER",
+      "definition": "drivers/virt/gunyah/modules.bzl"
+    },
+    "gh_msgq": {
+      "name": "drivers/virt/gunyah/gh_msgq",
+      "out": "gh_msgq.ko",
+      "config": "CONFIG_GH_MSGQ",
+      "definition": "drivers/virt/gunyah/modules.bzl"
+    },
+    "gh_rm_drv": {
+      "name": "drivers/virt/gunyah/gh_rm_drv",
+      "out": "gh_rm_drv.ko",
+      "config": "CONFIG_GH_RM_DRV",
+      "definition": "drivers/virt/gunyah/modules.bzl"
+    },
+    "gh_rm_heap_manager": {
+      "name": "drivers/virt/gunyah/gh_rm_heap_manager",
+      "out": "gh_rm_heap_manager.ko",
+      "config": "CONFIG_GH_RM_HEAP_MANAGER",
+      "definition": "drivers/virt/gunyah/modules.bzl"
+    },
+    "gh_vcpu_mgr": {
+      "name": "drivers/virt/gunyah/gh_vcpu_mgr",
+      "out": "gh_vcpu_mgr.ko",
+      "config": "CONFIG_GH_VCPU_MGR",
+      "definition": "drivers/virt/gunyah/modules.bzl"
+    },
+    "gic_intr_routing": {
+      "name": "drivers/soc/qcom/gic_intr_routing",
+      "out": "gic_intr_routing.ko",
+      "config": "CONFIG_GIC_INTERRUPT_ROUTING",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "glink_pkt": {
+      "name": "drivers/rpmsg/glink_pkt",
+      "out": "glink_pkt.ko",
+      "config": "CONFIG_QCOM_GLINK_PKT",
+      "definition": "drivers/rpmsg/modules.bzl"
+    },
+    "governor_gpubw_mon": {
+      "name": "drivers/devfreq/governor_gpubw_mon",
+      "out": "governor_gpubw_mon.ko",
+      "config": "CONFIG_DEVFREQ_GOV_QCOM_GPUBW_MON",
+      "definition": "drivers/devfreq/modules.bzl"
+    },
+    "governor_msm_adreno_ro": {
+      "name": "drivers/devfreq/governor_msm_adreno_ro",
+      "out": "governor_msm_adreno_ro.ko",
+      "config": "CONFIG_DEVFREQ_GOV_QCOM_ADRENO_RO",
+      "definition": "drivers/devfreq/modules.bzl"
+    },
+    "governor_msm_adreno_tz": {
+      "name": "drivers/devfreq/governor_msm_adreno_tz",
+      "out": "governor_msm_adreno_tz.ko",
+      "config": "CONFIG_DEVFREQ_GOV_QCOM_ADRENO_TZ",
+      "definition": "drivers/devfreq/modules.bzl"
+    },
+    "gpucc_canoe": {
+      "name": "drivers/clk/qcom/gpucc-canoe",
+      "out": "gpucc-canoe.ko",
+      "config": "CONFIG_SM_GPUCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "hwid": {
+      "name": "drivers/misc/hwid/hwid",
+      "out": "hwid.ko",
+      "config": "CONFIG_MI_HARDWARE_ID",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "i2c_msm_geni": {
+      "name": "drivers/i2c/busses/i2c-msm-geni",
+      "out": "i2c-msm-geni.ko",
+      "config": "CONFIG_I2C_MSM_GENI",
+      "definition": "drivers/i2c/busses/modules.bzl"
+    },
+    "icc_bcm_voter": {
+      "name": "drivers/interconnect/qcom/icc-bcm-voter",
+      "out": "icc-bcm-voter.ko",
+      "config": "CONFIG_INTERCONNECT_QCOM_BCM_VOTER",
+      "definition": "drivers/interconnect/qcom/modules.bzl"
+    },
+    "icc_clk": {
+      "name": "drivers/interconnect/icc-clk",
+      "out": "icc-clk.ko",
+      "config": "CONFIG_INTERCONNECT_CLK",
+      "definition": "drivers/interconnect/modules.bzl"
+    },
+    "icc_debug": {
+      "name": "drivers/interconnect/qcom/icc-debug",
+      "out": "icc-debug.ko",
+      "config": "CONFIG_INTERCONNECT_QCOM_DEBUG",
+      "definition": "drivers/interconnect/qcom/modules.bzl"
+    },
+    "icc_rpmh": {
+      "name": "drivers/interconnect/qcom/icc-rpmh",
+      "out": "icc-rpmh.ko",
+      "config": "CONFIG_INTERCONNECT_QCOM_RPMH",
+      "definition": "drivers/interconnect/qcom/modules.bzl"
+    },
+    "iommu_logger": {
+      "name": "drivers/iommu/iommu-logger",
+      "out": "iommu-logger.ko",
+      "config": "CONFIG_QTI_IOMMU_SUPPORT",
+      "definition": "drivers/iommu/modules.bzl"
+    },
+    "leds_qcom_flash": {
+      "name": "drivers/leds/flash/leds-qcom-flash",
+      "out": "leds-qcom-flash.ko",
+      "config": "CONFIG_LEDS_QCOM_FLASH",
+      "definition": "drivers/leds/flash/modules.bzl"
+    },
+    "llcc_qcom": {
+      "name": "drivers/soc/qcom/llcc-qcom",
+      "out": "llcc-qcom.ko",
+      "config": "CONFIG_QCOM_LLCC",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "mca_adsp_glink": {
+      "name": "drivers/power/supply/mca/mca_common/mca_adsp_glink",
+      "out": "mca_adsp_glink.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_basic_wireless": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_basic_wireless",
+      "out": "mca_basic_wireless.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_bmd": {
+      "name": "drivers/power/supply/mca/mca_hardware_monitor/mca_bmd",
+      "out": "mca_bmd.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_buckchg_jeita": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_buckchg_jeita",
+      "out": "mca_buckchg_jeita.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_business_battery_comp": {
+      "name": "drivers/power/supply/mca/mca_business/business_battery/mca_business_battery_comp",
+      "out": "mca_business_battery_comp.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_business_charger_comp": {
+      "name": "drivers/power/supply/mca/mca_business/business_charger/mca_business_charger_comp",
+      "out": "mca_business_charger_comp.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_charge_interface": {
+      "name": "drivers/power/supply/mca/mca_common/mca_charge_interface",
+      "out": "mca_charge_interface.ko",
+      "config": "CONFIG_MYRON_MCA_INTERFACE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_charge_mievent": {
+      "name": "drivers/power/supply/mca/mca_common/mca_charge_mievent",
+      "out": "mca_charge_mievent.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_charger_thermal": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_charger_thermal",
+      "out": "mca_charger_thermal.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_connector_antiburn": {
+      "name": "drivers/power/supply/mca/mca_hardware_monitor/mca_connector_antiburn",
+      "out": "mca_connector_antiburn.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_event": {
+      "name": "drivers/power/supply/mca/mca_common/mca_event",
+      "out": "mca_event.ko",
+      "config": "CONFIG_MYRON_MCA_BASE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_hwid": {
+      "name": "drivers/power/supply/mca/mca_common/mca_hwid",
+      "out": "mca_hwid.ko",
+      "config": "CONFIG_MYRON_MCA_BASE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_ibat_ocp_monitor": {
+      "name": "drivers/power/supply/mca/mca_hardware_monitor/mca_ibat_ocp_monitor",
+      "out": "mca_ibat_ocp_monitor.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_log": {
+      "name": "drivers/power/supply/mca/mca_common/mca_log",
+      "out": "mca_log.ko",
+      "config": "CONFIG_MYRON_MCA_BASE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_lpd_detect": {
+      "name": "drivers/power/supply/mca/mca_hardware_monitor/mca_lpd_detect",
+      "out": "mca_lpd_detect.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_parse_dts": {
+      "name": "drivers/power/supply/mca/mca_common/mca_parse_dts",
+      "out": "mca_parse_dts.ko",
+      "config": "CONFIG_MYRON_MCA_BASE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_path_control": {
+      "name": "drivers/power/supply/mca/mca_hardware_monitor/mca_path_control",
+      "out": "mca_path_control.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_pd_auth": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_pd/mca_pd_auth",
+      "out": "mca_pd_auth.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_platform_bc12_class": {
+      "name": "drivers/power/supply/mca/mca_platform/mca_platform_bc12_class",
+      "out": "mca_platform_bc12_class.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_platform_buckchg_class": {
+      "name": "drivers/power/supply/mca/mca_platform/mca_platform_buckchg_class",
+      "out": "mca_platform_buckchg_class.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_platform_cp_class": {
+      "name": "drivers/power/supply/mca/mca_platform/mca_platform_cp_class",
+      "out": "mca_platform_cp_class.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_platform_fg_ic_ops": {
+      "name": "drivers/power/supply/mca/mca_platform/mca_platform_fg_ic_ops",
+      "out": "mca_platform_fg_ic_ops.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_platform_loadsw_class": {
+      "name": "drivers/power/supply/mca/mca_platform/mca_platform_loadsw_class",
+      "out": "mca_platform_loadsw_class.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_platform_wireless_class": {
+      "name": "drivers/power/supply/mca/mca_platform/mca_platform_wireless_class",
+      "out": "mca_platform_wireless_class.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_protocol_class": {
+      "name": "drivers/power/supply/mca/mca_protocol/mca_protocol_class",
+      "out": "mca_protocol_class.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_protocol_pd_class": {
+      "name": "drivers/power/supply/mca/mca_protocol/protocol_pd/mca_protocol_pd_class",
+      "out": "mca_protocol_pd_class.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_protocol_qc_class": {
+      "name": "drivers/power/supply/mca/mca_protocol/protocol_qc/mca_protocol_qc_class",
+      "out": "mca_protocol_qc_class.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_qcom_smem": {
+      "name": "drivers/power/supply/mca/mca_common/mca_qcom_smem",
+      "out": "mca_qcom_smem.ko",
+      "config": "CONFIG_MYRON_MCA_PLATFORM",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_qcom_subpmic_proxy": {
+      "name": "drivers/power/supply/mca/mca_qcom_subpmic_proxy/mca_qcom_subpmic_proxy",
+      "out": "mca_qcom_subpmic_proxy.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_qcom_sysfs": {
+      "name": "drivers/power/supply/mca/mca_qcom_sysfs/mca_qcom_sysfs",
+      "out": "mca_qcom_sysfs.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_quick_wireless": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_quick_wireless",
+      "out": "mca_quick_wireless.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_smart_charge": {
+      "name": "drivers/power/supply/mca/mca_smart_charge/mca_smart_charge",
+      "out": "mca_smart_charge.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_strategy_buckchg": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_buckchg",
+      "out": "mca_strategy_buckchg.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_strategy_class": {
+      "name": "drivers/power/supply/mca/mca_strategy/mca_strategy_class",
+      "out": "mca_strategy_class.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_strategy_fg_class": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_class",
+      "out": "mca_strategy_fg_class.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_strategy_fg_comp": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_fg/mca_strategy_fg_comp",
+      "out": "mca_strategy_fg_comp.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_strategy_quickchg": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_charger/mca_strategy_quickchg",
+      "out": "mca_strategy_quickchg.ko",
+      "config": "CONFIG_MYRON_MCA_COMPLETE_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_sysfs": {
+      "name": "drivers/power/supply/mca/mca_common/mca_sysfs",
+      "out": "mca_sysfs.ko",
+      "config": "CONFIG_MYRON_MCA_BASE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_vbat_ovp_monitor": {
+      "name": "drivers/power/supply/mca/mca_hardware_monitor/mca_vbat_ovp_monitor",
+      "out": "mca_vbat_ovp_monitor.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_voter": {
+      "name": "drivers/power/supply/mca/mca_common/mca_voter",
+      "out": "mca_voter.ko",
+      "config": "CONFIG_MYRON_MCA_BASE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_wireless_revchg": {
+      "name": "drivers/power/supply/mca/mca_strategy/strategy_wireless/mca_wireless_revchg",
+      "out": "mca_wireless_revchg.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mca_workqueue": {
+      "name": "drivers/power/supply/mca/mca_common/mca_workqueue",
+      "out": "mca_workqueue.ko",
+      "config": "CONFIG_MYRON_MCA_BASE",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "mdt_loader": {
+      "name": "drivers/soc/qcom/mdt_loader",
+      "out": "mdt_loader.ko",
+      "config": "CONFIG_QCOM_MDT_LOADER",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "mem_buf": {
+      "name": "drivers/soc/qcom/mem_buf/mem_buf",
+      "out": "mem_buf.ko",
+      "config": "CONFIG_QCOM_MEM_BUF",
+      "definition": "drivers/soc/qcom/mem_buf/modules.bzl"
+    },
+    "mem_buf_dev": {
+      "name": "drivers/soc/qcom/mem_buf/mem_buf_dev",
+      "out": "mem_buf_dev.ko",
+      "config": "CONFIG_QCOM_MEM_BUF_DEV",
+      "definition": "drivers/soc/qcom/mem_buf/modules.bzl"
+    },
+    "mem_buf_msgq": {
+      "name": "drivers/soc/qcom/mem_buf/mem_buf_msgq",
+      "out": "mem_buf_msgq.ko",
+      "config": "CONFIG_QCOM_MEM_BUF_MSGQ",
+      "definition": "drivers/soc/qcom/mem_buf/modules.bzl"
+    },
+    "mem_prot": {
+      "name": "drivers/soc/qcom/mem-prot",
+      "out": "mem-prot.ko",
+      "config": "CONFIG_MEM_PROT",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "memory_dump_v2": {
+      "name": "drivers/soc/qcom/memory_dump_v2",
+      "out": "memory_dump_v2.ko",
+      "config": "CONFIG_QCOM_MEMORY_DUMP_V2",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "mhi": {
+      "name": "drivers/bus/mhi/host/mhi",
+      "out": "mhi.ko",
+      "config": "CONFIG_MHI_BUS",
+      "definition": "drivers/bus/mhi/host/modules.bzl"
+    },
+    "mi_fp": {
+      "name": "drivers/input/fingerprint/mi_fp",
+      "out": "mi_fp.ko",
+      "config": "CONFIG_FINGERPRINT_MI_FP",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "miev": {
+      "name": "drivers/misc/miev/miev",
+      "out": "miev.ko",
+      "config": "CONFIG_MIEV",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "minidump": {
+      "name": "drivers/soc/qcom/minidump",
+      "out": "minidump.ko",
+      "config": "CONFIG_QCOM_MINIDUMP",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "msm_dma_iommu_mapping": {
+      "name": "drivers/iommu/msm_dma_iommu_mapping",
+      "out": "msm_dma_iommu_mapping.ko",
+      "config": "CONFIG_QCOM_LAZY_MAPPING",
+      "definition": "drivers/iommu/modules.bzl"
+    },
+    "msm_geni_serial": {
+      "name": "drivers/tty/serial/msm_geni_serial",
+      "out": "msm_geni_serial.ko",
+      "config": "CONFIG_SERIAL_MSM_GENI",
+      "definition": "drivers/tty/serial/modules.bzl"
+    },
+    "msm_gpi": {
+      "name": "drivers/dma/qcom/msm_gpi",
+      "out": "msm_gpi.ko",
+      "config": "CONFIG_MSM_GPI_DMA",
+      "definition": "drivers/dma/qcom/modules.bzl"
+    },
+    "msm_performance": {
+      "name": "drivers/soc/qcom/msm_performance",
+      "out": "msm_performance.ko",
+      "config": "CONFIG_MSM_PERFORMANCE",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "msm_qmp": {
+      "name": "drivers/mailbox/msm_qmp",
+      "out": "msm_qmp.ko",
+      "config": "CONFIG_MSM_QMP",
+      "definition": "drivers/mailbox/modules.bzl"
+    },
+    "msm_sharedmem": {
+      "name": "drivers/uio/msm_sharedmem/msm_sharedmem",
+      "out": "msm_sharedmem.ko",
+      "config": "CONFIG_UIO_MSM_SHAREDMEM",
+      "definition": "drivers/uio/msm_sharedmem/modules.bzl"
+    },
+    "msm_sysstats": {
+      "name": "kernel/msm_sysstats",
+      "out": "msm_sysstats.ko",
+      "config": "CONFIG_MSM_SYSSTATS",
+      "definition": "kernel/modules.bzl"
+    },
+    "myron_bq_readonly": {
+      "name": "drivers/power/supply/myron_bq_readonly",
+      "out": "myron_bq_readonly.ko",
+      "config": "CONFIG_MYRON_BQ_READONLY",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "myron_mca_readonly": {
+      "name": "drivers/power/supply/myron_mca_readonly/myron_mca_readonly",
+      "out": "myron_mca_readonly.ko",
+      "config": "CONFIG_MYRON_MCA_READONLY",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "nb7vpq904m": {
+      "name": "drivers/usb/redriver/nb7vpq904m",
+      "out": "nb7vpq904m.ko",
+      "config": "CONFIG_USB_REDRIVER_NB7VPQ904M",
+      "definition": "drivers/usb/redriver/modules.bzl"
+    },
+    "nvmem_qcom_spmi_sdam": {
+      "name": "drivers/nvmem/nvmem_qcom-spmi-sdam",
+      "out": "nvmem_qcom-spmi-sdam.ko",
+      "config": "CONFIG_NVMEM_SPMI_SDAM",
+      "definition": "drivers/nvmem/modules.bzl"
+    },
+    "nvmem_qfprom": {
+      "name": "drivers/nvmem/nvmem_qfprom",
+      "out": "nvmem_qfprom.ko",
+      "config": "CONFIG_NVMEM_QCOM_QFPROM",
+      "definition": "drivers/nvmem/modules.bzl"
+    },
+    "panel_event_notifier": {
+      "name": "drivers/soc/qcom/panel_event_notifier",
+      "out": "panel_event_notifier.ko",
+      "config": "CONFIG_QCOM_PANEL_EVENT_NOTIFIER",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "pci_msm_drv": {
+      "name": "drivers/pci/controller/pci-msm-drv",
+      "out": "pci-msm-drv.ko",
+      "config": "CONFIG_PCI_MSM",
+      "definition": "drivers/pci/controller/modules.bzl"
+    },
+    "pcie_pdc": {
+      "name": "drivers/soc/qcom/pcie-pdc",
+      "out": "pcie-pdc.ko",
+      "config": "CONFIG_QCOM_PCIE_PDC",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "pdr_interface": {
+      "name": "drivers/soc/qcom/pdr_interface",
+      "out": "pdr_interface.ko",
+      "config": "CONFIG_QCOM_PDR_HELPERS",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "phy_generic": {
+      "name": "drivers/usb/phy/phy-generic",
+      "out": "phy-generic.ko",
+      "config": "CONFIG_NOP_USB_XCEIV",
+      "definition": "drivers/usb/phy/modules.bzl"
+    },
+    "phy_msm_m31_eusb2": {
+      "name": "drivers/usb/phy/phy-msm-m31-eusb2",
+      "out": "phy-msm-m31-eusb2.ko",
+      "config": "CONFIG_USB_M31_MSM_EUSB2_PHY",
+      "definition": "drivers/usb/phy/modules.bzl"
+    },
+    "phy_msm_snps_hs": {
+      "name": "drivers/usb/phy/phy-msm-snps-hs",
+      "out": "phy-msm-snps-hs.ko",
+      "config": "CONFIG_MSM_HSUSB_PHY",
+      "definition": "drivers/usb/phy/modules.bzl"
+    },
+    "phy_msm_ssusb_qmp": {
+      "name": "drivers/usb/phy/phy-msm-ssusb-qmp",
+      "out": "phy-msm-ssusb-qmp.ko",
+      "config": "CONFIG_USB_MSM_SSPHY_QMP",
+      "definition": "drivers/usb/phy/modules.bzl"
+    },
+    "phy_qcom_ufs": {
+      "name": "drivers/phy/qualcomm/phy-qcom-ufs",
+      "out": "phy-qcom-ufs.ko",
+      "config": "CONFIG_PHY_QCOM_UFS",
+      "definition": "drivers/phy/qualcomm/modules.bzl"
+    },
+    "phy_qcom_ufs_qmp_v4_canoe": {
+      "name": "drivers/phy/qualcomm/phy-qcom-ufs-qmp-v4-canoe",
+      "out": "phy-qcom-ufs-qmp-v4-canoe.ko",
+      "config": "CONFIG_PHY_QCOM_UFS_V4_CANOE",
+      "definition": "drivers/phy/qualcomm/modules.bzl"
+    },
+    "phy_qcom_ufs_qrbtc_sdm845": {
+      "name": "drivers/phy/qualcomm/phy-qcom-ufs-qrbtc-sdm845",
+      "out": "phy-qcom-ufs-qrbtc-sdm845.ko",
+      "config": "CONFIG_PHY_QCOM_UFS_QRBTC_SDM845",
+      "definition": "drivers/phy/qualcomm/modules.bzl"
+    },
+    "pinctrl_alor": {
+      "name": "drivers/pinctrl/qcom/pinctrl-alor",
+      "out": "pinctrl-alor.ko",
+      "config": "CONFIG_PINCTRL_ALOR",
+      "definition": "drivers/pinctrl/qcom/modules.bzl"
+    },
+    "pinctrl_canoe": {
+      "name": "drivers/pinctrl/qcom/pinctrl-canoe",
+      "out": "pinctrl-canoe.ko",
+      "config": "CONFIG_PINCTRL_CANOE",
+      "definition": "drivers/pinctrl/qcom/modules.bzl"
+    },
+    "pinctrl_chora": {
+      "name": "drivers/pinctrl/qcom/pinctrl-chora",
+      "out": "pinctrl-chora.ko",
+      "config": "CONFIG_PINCTRL_CHORA",
+      "definition": "drivers/pinctrl/qcom/modules.bzl"
+    },
+    "pinctrl_msm": {
+      "name": "drivers/pinctrl/qcom/pinctrl-msm",
+      "out": "pinctrl-msm.ko",
+      "config": "CONFIG_PINCTRL_MSM",
+      "definition": "drivers/pinctrl/qcom/modules.bzl"
+    },
+    "pinctrl_spmi_gpio": {
+      "name": "drivers/pinctrl/qcom/pinctrl-spmi-gpio",
+      "out": "pinctrl-spmi-gpio.ko",
+      "config": "CONFIG_PINCTRL_QCOM_SPMI_PMIC",
+      "definition": "drivers/pinctrl/qcom/modules.bzl"
+    },
+    "pm8941_pwrkey": {
+      "name": "drivers/input/misc/pm8941-pwrkey",
+      "out": "pm8941-pwrkey.ko",
+      "config": "CONFIG_INPUT_PM8941_PWRKEY",
+      "definition": "drivers/input/misc/modules.bzl"
+    },
+    "pmic_pon_log": {
+      "name": "drivers/soc/qcom/pmic-pon-log",
+      "out": "pmic-pon-log.ko",
+      "config": "CONFIG_QTI_PMIC_PON_LOG",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "proxy_consumer": {
+      "name": "drivers/regulator/proxy-consumer",
+      "out": "proxy-consumer.ko",
+      "config": "CONFIG_REGULATOR_PROXY_CONSUMER",
+      "definition": "drivers/regulator/modules.bzl"
+    },
+    "qcom_adsp_pd_protocol": {
+      "name": "drivers/power/supply/mca/mca_protocol/protocol_pd/qcom_tcpc/qcom_adsp_pd_protocol",
+      "out": "qcom_adsp_pd_protocol.ko",
+      "config": "CONFIG_MYRON_MCA_SERVICES",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "qcom_aoss": {
+      "name": "drivers/soc/qcom/qcom_aoss",
+      "out": "qcom_aoss.ko",
+      "config": "CONFIG_QCOM_AOSS_QMP",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_cpu_vendor_hooks": {
+      "name": "drivers/soc/qcom/qcom_cpu_vendor_hooks",
+      "out": "qcom_cpu_vendor_hooks.ko",
+      "config": "CONFIG_QCOM_CPU_VENDOR_HOOKS",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_cpucp": {
+      "name": "drivers/soc/qcom/qcom_cpucp",
+      "out": "qcom_cpucp.ko",
+      "config": "CONFIG_QCOM_CPUCP",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_dcvs": {
+      "name": "drivers/soc/qcom/dcvs/qcom-dcvs",
+      "out": "qcom-dcvs.ko",
+      "config": "CONFIG_QCOM_DCVS",
+      "definition": "drivers/soc/qcom/dcvs/modules.bzl"
+    },
+    "qcom_dload_mode": {
+      "name": "drivers/power/reset/qcom-dload-mode",
+      "out": "qcom-dload-mode.ko",
+      "config": "CONFIG_POWER_RESET_QCOM_DOWNLOAD_MODE",
+      "definition": "drivers/power/reset/modules.bzl"
+    },
+    "qcom_dma_heaps": {
+      "name": "drivers/dma-buf/heaps/qcom_dma_heaps",
+      "out": "qcom_dma_heaps.ko",
+      "config": "CONFIG_QCOM_DMABUF_HEAPS",
+      "definition": "drivers/dma-buf/heaps/modules.bzl"
+    },
+    "qcom_glink": {
+      "name": "drivers/rpmsg/qcom_glink",
+      "out": "qcom_glink.ko",
+      "config": "CONFIG_RPMSG_QCOM_GLINK",
+      "definition": "drivers/rpmsg/modules.bzl"
+    },
+    "qcom_glink_smem": {
+      "name": "drivers/rpmsg/qcom_glink_smem",
+      "out": "qcom_glink_smem.ko",
+      "config": "CONFIG_RPMSG_QCOM_GLINK_SMEM",
+      "definition": "drivers/rpmsg/modules.bzl"
+    },
+    "qcom_hv_haptics": {
+      "name": "drivers/input/misc/qcom-hv-haptics",
+      "out": "qcom-hv-haptics.ko",
+      "config": "CONFIG_INPUT_QCOM_HV_HAPTICS",
+      "definition": "drivers/input/misc/modules.bzl"
+    },
+    "qcom_hwspinlock": {
+      "name": "drivers/hwspinlock/qcom_hwspinlock",
+      "out": "qcom_hwspinlock.ko",
+      "config": "CONFIG_HWSPINLOCK_QCOM",
+      "definition": "drivers/hwspinlock/modules.bzl"
+    },
+    "qcom_ice": {
+      "name": "drivers/soc/qcom/qcom_ice",
+      "out": "qcom_ice.ko",
+      "config": "CONFIG_QCOM_INLINE_CRYPTO_ENGINE",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_iommu_debug": {
+      "name": "drivers/iommu/qcom_iommu_debug",
+      "out": "qcom_iommu_debug.ko",
+      "config": "CONFIG_QCOM_IOMMU_DEBUG",
+      "definition": "drivers/iommu/modules.bzl"
+    },
+    "qcom_iommu_util": {
+      "name": "drivers/iommu/qcom_iommu_util",
+      "out": "qcom_iommu_util.ko",
+      "config": "CONFIG_QCOM_IOMMU_UTIL",
+      "definition": "drivers/iommu/modules.bzl"
+    },
+    "qcom_ipc_logging": {
+      "name": "kernel/trace/qcom_ipc_logging",
+      "out": "qcom_ipc_logging.ko",
+      "config": "CONFIG_IPC_LOGGING",
+      "definition": "kernel/trace/modules.bzl"
+    },
+    "qcom_ipcc": {
+      "name": "drivers/mailbox/qcom-ipcc",
+      "out": "qcom-ipcc.ko",
+      "config": "CONFIG_QCOM_IPCC",
+      "definition": "drivers/mailbox/modules.bzl"
+    },
+    "qcom_llcc_pmu": {
+      "name": "drivers/perf/qcom_llcc_pmu",
+      "out": "qcom_llcc_pmu.ko",
+      "config": "CONFIG_QCOM_LLCC_PMU",
+      "definition": "drivers/perf/modules.bzl"
+    },
+    "qcom_logbuf_boot_log": {
+      "name": "drivers/soc/qcom/qcom_logbuf_boot_log",
+      "out": "qcom_logbuf_boot_log.ko",
+      "config": "CONFIG_QCOM_LOGBUF_BOOTLOG",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_logbuf_vendor_hooks": {
+      "name": "drivers/soc/qcom/qcom_logbuf_vendor_hooks",
+      "out": "qcom_logbuf_vendor_hooks.ko",
+      "config": "CONFIG_QCOM_LOGBUF_VENDOR_HOOKS",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_pdc": {
+      "name": "drivers/irqchip/qcom-pdc",
+      "out": "qcom-pdc.ko",
+      "config": "CONFIG_QCOM_PDC",
+      "definition": "drivers/irqchip/modules.bzl"
+    },
+    "qcom_pdr_msg": {
+      "name": "drivers/soc/qcom/qcom_pdr_msg",
+      "out": "qcom_pdr_msg.ko",
+      "config": "CONFIG_QCOM_PDR_MSG",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_pil_info": {
+      "name": "drivers/remoteproc/qcom_pil_info",
+      "out": "qcom_pil_info.ko",
+      "config": "CONFIG_QCOM_PIL_INFO",
+      "definition": "drivers/remoteproc/modules.bzl"
+    },
+    "qcom_pmu_lib": {
+      "name": "drivers/soc/qcom/dcvs/qcom-pmu-lib",
+      "out": "qcom-pmu-lib.ko",
+      "config": "CONFIG_QCOM_PMU_LIB",
+      "definition": "drivers/soc/qcom/dcvs/modules.bzl"
+    },
+    "qcom_pon": {
+      "name": "drivers/power/reset/qcom-pon",
+      "out": "qcom-pon.ko",
+      "config": "CONFIG_POWER_RESET_QCOM_PON",
+      "definition": "drivers/power/reset/modules.bzl"
+    },
+    "qcom_q6v5": {
+      "name": "drivers/remoteproc/qcom_q6v5",
+      "out": "qcom_q6v5.ko",
+      "config": "CONFIG_QCOM_Q6V5_COMMON",
+      "definition": "drivers/remoteproc/modules.bzl"
+    },
+    "qcom_q6v5_pas": {
+      "name": "drivers/remoteproc/qcom_q6v5_pas",
+      "out": "qcom_q6v5_pas.ko",
+      "config": "CONFIG_QCOM_Q6V5_PAS",
+      "definition": "drivers/remoteproc/modules.bzl"
+    },
+    "qcom_ramdump": {
+      "name": "drivers/soc/qcom/qcom_ramdump",
+      "out": "qcom_ramdump.ko",
+      "config": "CONFIG_QCOM_RAMDUMP",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_reboot_reason": {
+      "name": "drivers/power/reset/qcom-reboot-reason",
+      "out": "qcom-reboot-reason.ko",
+      "config": "CONFIG_POWER_RESET_QCOM_REBOOT_REASON",
+      "definition": "drivers/power/reset/modules.bzl"
+    },
+    "qcom_rpmh": {
+      "name": "drivers/soc/qcom/qcom_rpmh",
+      "out": "qcom_rpmh.ko",
+      "config": "CONFIG_QCOM_RPMH",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_scm": {
+      "name": "drivers/firmware/qcom/qcom-scm",
+      "out": "qcom-scm.ko",
+      "config": "CONFIG_QCOM_SCM",
+      "definition": "drivers/firmware/qcom/modules.bzl"
+    },
+    "qcom_scmi_client": {
+      "name": "drivers/soc/qcom/dcvs/qcom_scmi_client",
+      "out": "qcom_scmi_client.ko",
+      "config": "CONFIG_QTI_QCOM_SCMI_CLIENT",
+      "definition": "drivers/soc/qcom/dcvs/modules.bzl"
+    },
+    "qcom_scmi_vendor": {
+      "name": "drivers/firmware/arm_scmi/qcom_scmi_vendor",
+      "out": "qcom_scmi_vendor.ko",
+      "config": "CONFIG_QTI_SCMI_VENDOR_PROTOCOL",
+      "definition": "drivers/firmware/arm_scmi/modules.bzl"
+    },
+    "qcom_sdei": {
+      "name": "drivers/soc/qcom/qcom_sdei",
+      "out": "qcom_sdei.ko",
+      "config": "CONFIG_QCOM_SDEI",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_smd": {
+      "name": "drivers/rpmsg/qcom_smd",
+      "out": "qcom_smd.ko",
+      "config": "CONFIG_RPMSG_QCOM_SMD",
+      "definition": "drivers/rpmsg/modules.bzl"
+    },
+    "qcom_soc_wdt": {
+      "name": "drivers/soc/qcom/qcom_soc_wdt",
+      "out": "qcom_soc_wdt.ko",
+      "config": "CONFIG_QCOM_SOC_WATCHDOG",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_spmi_adc5_gen3": {
+      "name": "drivers/iio/adc/qcom-spmi-adc5-gen3",
+      "out": "qcom-spmi-adc5-gen3.ko",
+      "config": "CONFIG_QCOM_SPMI_ADC5_GEN3",
+      "definition": "drivers/iio/adc/modules.bzl"
+    },
+    "qcom_spmi_pmic": {
+      "name": "drivers/mfd/qcom-spmi-pmic",
+      "out": "qcom-spmi-pmic.ko",
+      "config": "CONFIG_MFD_SPMI_PMIC",
+      "definition": "drivers/mfd/modules.bzl"
+    },
+    "qcom_spmi_wled": {
+      "name": "drivers/video/backlight/qcom-spmi-wled",
+      "out": "qcom-spmi-wled.ko",
+      "config": "CONFIG_BACKLIGHT_QCOM_SPMI_WLED",
+      "definition": "drivers/video/backlight/modules.bzl"
+    },
+    "qcom_sysmon": {
+      "name": "drivers/remoteproc/qcom_sysmon",
+      "out": "qcom_sysmon.ko",
+      "config": "CONFIG_QCOM_SYSMON",
+      "definition": "drivers/remoteproc/modules.bzl"
+    },
+    "qcom_tsens": {
+      "name": "drivers/thermal/qcom/qcom_tsens",
+      "out": "qcom_tsens.ko",
+      "config": "CONFIG_QCOM_TSENS",
+      "definition": "drivers/thermal/qcom/modules.bzl"
+    },
+    "qcom_va_minidump": {
+      "name": "drivers/soc/qcom/qcom_va_minidump",
+      "out": "qcom_va_minidump.ko",
+      "config": "CONFIG_QCOM_VA_MINIDUMP",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qcom_vadc_common": {
+      "name": "drivers/iio/adc/qcom-vadc-common",
+      "out": "qcom-vadc-common.ko",
+      "config": "CONFIG_QCOM_VADC_COMMON",
+      "definition": "drivers/iio/adc/modules.bzl"
+    },
+    "qcom_wdt_core": {
+      "name": "drivers/soc/qcom/qcom_wdt_core",
+      "out": "qcom_wdt_core.ko",
+      "config": "CONFIG_QCOM_WDT_CORE",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qmi_helpers": {
+      "name": "drivers/soc/qcom/qmi_helpers",
+      "out": "qmi_helpers.ko",
+      "config": "CONFIG_QCOM_QMI_HELPERS",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qnoc_alor": {
+      "name": "drivers/interconnect/qcom/qnoc-alor",
+      "out": "qnoc-alor.ko",
+      "config": "CONFIG_INTERCONNECT_QCOM_ALOR",
+      "definition": "drivers/interconnect/qcom/modules.bzl"
+    },
+    "qnoc_canoe": {
+      "name": "drivers/interconnect/qcom/qnoc-canoe",
+      "out": "qnoc-canoe.ko",
+      "config": "CONFIG_INTERCONNECT_QCOM_CANOE",
+      "definition": "drivers/interconnect/qcom/modules.bzl"
+    },
+    "qnoc_qos": {
+      "name": "drivers/interconnect/qcom/qnoc-qos",
+      "out": "qnoc-qos.ko",
+      "config": "CONFIG_INTERCONNECT_QCOM_QOS",
+      "definition": "drivers/interconnect/qcom/modules.bzl"
+    },
+    "qrtr": {
+      "name": "net/qrtr/qrtr",
+      "out": "qrtr.ko",
+      "config": "CONFIG_QRTR",
+      "definition": "net/qrtr/modules.bzl"
+    },
+    "qrtr_mhi": {
+      "name": "net/qrtr/qrtr-mhi",
+      "out": "qrtr-mhi.ko",
+      "config": "CONFIG_QRTR_MHI",
+      "definition": "net/qrtr/modules.bzl"
+    },
+    "qrtr_smd": {
+      "name": "net/qrtr/qrtr-smd",
+      "out": "qrtr-smd.ko",
+      "config": "CONFIG_QRTR_SMD",
+      "definition": "net/qrtr/modules.bzl"
+    },
+    "qseecom_proxy": {
+      "name": "drivers/misc/qseecom_proxy",
+      "out": "qseecom_proxy.ko",
+      "config": "CONFIG_QSEECOM_PROXY",
+      "definition": "drivers/misc/modules.bzl"
+    },
+    "qti_battery_charger": {
+      "name": "drivers/power/supply/qti_battery_charger",
+      "out": "qti_battery_charger.ko",
+      "config": "CONFIG_QTI_BATTERY_CHARGER",
+      "definition": "drivers/power/supply/modules.bzl"
+    },
+    "qti_fixed_regulator": {
+      "name": "drivers/regulator/qti-fixed-regulator",
+      "out": "qti-fixed-regulator.ko",
+      "config": "CONFIG_REGULATOR_QTI_FIXED_VOLTAGE",
+      "definition": "drivers/regulator/modules.bzl"
+    },
+    "qti_pmic_glink": {
+      "name": "drivers/soc/qcom/qti_pmic_glink",
+      "out": "qti_pmic_glink.ko",
+      "config": "CONFIG_QTI_PMIC_GLINK",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "qti_regmap_debugfs": {
+      "name": "drivers/base/regmap/qti-regmap-debugfs",
+      "out": "qti-regmap-debugfs.ko",
+      "config": "CONFIG_REGMAP_QTI_DEBUGFS",
+      "definition": "drivers/base/regmap/modules.bzl"
+    },
+    "reboot_mode": {
+      "name": "drivers/power/reset/reboot-mode",
+      "out": "reboot-mode.ko",
+      "config": "CONFIG_REBOOT_MODE",
+      "definition": "drivers/power/reset/modules.bzl"
+    },
+    "redriver": {
+      "name": "drivers/usb/redriver/redriver",
+      "out": "redriver.ko",
+      "config": "CONFIG_USB_REDRIVER",
+      "definition": "drivers/usb/redriver/modules.bzl"
+    },
+    "repeater": {
+      "name": "drivers/usb/repeater/repeater",
+      "out": "repeater.ko",
+      "config": "CONFIG_USB_REPEATER",
+      "definition": "drivers/usb/repeater/modules.bzl"
+    },
+    "repeater_qti_pmic_eusb2": {
+      "name": "drivers/usb/repeater/repeater-qti-pmic-eusb2",
+      "out": "repeater-qti-pmic-eusb2.ko",
+      "config": "CONFIG_QTI_PMIC_EUSB2_REPEATER",
+      "definition": "drivers/usb/repeater/modules.bzl"
+    },
+    "rpmh_regulator": {
+      "name": "drivers/regulator/rpmh-regulator",
+      "out": "rpmh-regulator.ko",
+      "config": "CONFIG_REGULATOR_RPMH",
+      "definition": "drivers/regulator/modules.bzl"
+    },
+    "rproc_qcom_common": {
+      "name": "drivers/remoteproc/rproc_qcom_common",
+      "out": "rproc_qcom_common.ko",
+      "config": "CONFIG_QCOM_RPROC_COMMON",
+      "definition": "drivers/remoteproc/modules.bzl"
+    },
+    "rtc_pm8xxx": {
+      "name": "drivers/rtc/rtc-pm8xxx",
+      "out": "rtc-pm8xxx.ko",
+      "config": "CONFIG_RTC_DRV_PM8XXX",
+      "definition": "drivers/rtc/modules.bzl"
+    },
+    "sc8581": {
+      "name": "drivers/power/supply/mca/mca_hardware_ic/charge_pump_ic/sc8581/sc8581",
+      "out": "sc8581.ko",
+      "config": "CONFIG_MYRON_CHARGE_IC",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "sched_walt": {
+      "name": "kernel/sched/walt/sched-walt",
+      "out": "sched-walt.ko",
+      "config": "CONFIG_SCHED_WALT",
+      "definition": "kernel/sched/walt/modules.bzl"
+    },
+    "sdhci_msm": {
+      "name": "drivers/mmc/host/sdhci-msm",
+      "out": "sdhci-msm.ko",
+      "config": "CONFIG_MMC_SDHCI_MSM",
+      "definition": "drivers/mmc/host/modules.bzl"
+    },
+    "secure_buffer": {
+      "name": "drivers/soc/qcom/secure_buffer",
+      "out": "secure_buffer.ko",
+      "config": "CONFIG_QCOM_SECURE_BUFFER",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "sg": {
+      "name": "drivers/scsi/sg",
+      "out": "sg.ko",
+      "config": "CONFIG_CHR_DEV_SG",
+      "definition": "drivers/scsi/modules.bzl"
+    },
+    "si_core_module": {
+      "name": "drivers/firmware/qcom/si_core/si_core_module",
+      "out": "si_core_module.ko",
+      "config": "CONFIG_QCOM_SI_CORE",
+      "definition": "drivers/firmware/qcom/si_core/modules.bzl"
+    },
+    "smem": {
+      "name": "drivers/soc/qcom/smem",
+      "out": "smem.ko",
+      "config": "CONFIG_QCOM_SMEM",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "smp2p": {
+      "name": "drivers/soc/qcom/smp2p",
+      "out": "smp2p.ko",
+      "config": "CONFIG_QCOM_SMP2P",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "socinfo": {
+      "name": "drivers/soc/qcom/socinfo",
+      "out": "socinfo.ko",
+      "config": "CONFIG_QCOM_SOCINFO",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    },
+    "spi_msm_geni": {
+      "name": "drivers/spi/spi-msm-geni",
+      "out": "spi-msm-geni.ko",
+      "config": "CONFIG_SPI_MSM_GENI",
+      "definition": "drivers/spi/modules.bzl"
+    },
+    "spmi_pmic_arb": {
+      "name": "drivers/spmi/spmi-pmic-arb",
+      "out": "spmi-pmic-arb.ko",
+      "config": "CONFIG_SPMI_MSM_PMIC_ARB",
+      "definition": "drivers/spmi/modules.bzl"
+    },
+    "stub_regulator": {
+      "name": "drivers/regulator/stub-regulator",
+      "out": "stub-regulator.ko",
+      "config": "CONFIG_REGULATOR_STUB",
+      "definition": "drivers/regulator/modules.bzl"
+    },
+    "tcsrcc_canoe": {
+      "name": "drivers/clk/qcom/tcsrcc-canoe",
+      "out": "tcsrcc-canoe.ko",
+      "config": "CONFIG_SM_TCSRCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "tfa98xx_dlkm": {
+      "name": "drivers/xiaomi/myron_tfa98xx/tfa98xx_dlkm",
+      "out": "tfa98xx_dlkm.ko",
+      "config": "CONFIG_MYRON_TFA98XX",
+      "definition": "drivers/xiaomi/myron/modules.bzl"
+    },
+    "thermal_pause": {
+      "name": "drivers/thermal/qcom/thermal_pause",
+      "out": "thermal_pause.ko",
+      "config": "CONFIG_QTI_CPU_PAUSE_COOLING_DEVICE",
+      "definition": "drivers/thermal/qcom/modules.bzl"
+    },
+    "ucsi_qti_glink": {
+      "name": "drivers/usb/typec/ucsi/ucsi_qti_glink",
+      "out": "ucsi_qti_glink.ko",
+      "config": "CONFIG_UCSI_QTI_GLINK",
+      "definition": "drivers/usb/typec/ucsi/modules.bzl"
+    },
+    "ufs_qcom": {
+      "name": "drivers/ufs/host/ufs-qcom",
+      "out": "ufs-qcom.ko",
+      "config": "CONFIG_SCSI_UFS_QCOM",
+      "definition": "drivers/ufs/host/modules.bzl"
+    },
+    "ufshcd_crypto_qti": {
+      "name": "drivers/ufs/host/ufshcd-crypto-qti",
+      "out": "ufshcd-crypto-qti.ko",
+      "config": "CONFIG_SCSI_UFS_CRYPTO_QTI",
+      "definition": "drivers/ufs/host/modules.bzl"
+    },
+    "usb_f_gsi": {
+      "name": "drivers/usb/gadget/function/usb_f_gsi",
+      "out": "usb_f_gsi.ko",
+      "config": "CONFIG_USB_F_GSI",
+      "definition": "drivers/usb/gadget/function/modules.bzl"
+    },
+    "videocc_canoe": {
+      "name": "drivers/clk/qcom/videocc-canoe",
+      "out": "videocc-canoe.ko",
+      "config": "CONFIG_SM_VIDEOCC_CANOE",
+      "definition": "drivers/clk/qcom/modules.bzl"
+    },
+    "wcd_usbss_i2c": {
+      "name": "drivers/soc/qcom/wcd_usbss_i2c",
+      "out": "wcd_usbss_i2c.ko",
+      "config": "CONFIG_QCOM_WCD_USBSS_I2C",
+      "definition": "drivers/soc/qcom/modules.bzl"
+    }
+  },
+  "kconfig_sources": {
+    "Kconfig.msm": "Kconfig.qcom",
+    "arch/arm64/gunyah/Kconfig": "arch/arm64/gunyah/Kconfig",
+    "arch/arm64/Kconfig.platforms": "arch/arm64/Kconfig.platforms.qcom",
+    "drivers/base/regmap/Kconfig": "drivers/base/regmap/Kconfig.qcom",
+    "drivers/bus/mhi/Kconfig": "drivers/bus/mhi/Kconfig.qcom",
+    "drivers/bus/mhi/host/Kconfig": "drivers/bus/mhi/host/Kconfig.qcom",
+    "drivers/bus/mhi/devices/Kconfig": "drivers/bus/mhi/devices/Kconfig",
+    "drivers/char/Kconfig": "drivers/char/Kconfig.qcom",
+    "drivers/clk/qcom/Kconfig": "drivers/clk/qcom/Kconfig.qcom",
+    "drivers/cpufreq/Kconfig.arm": "drivers/cpufreq/Kconfig.arm.qcom",
+    "drivers/cpuidle/Kconfig": "drivers/cpuidle/Kconfig.qcom",
+    "drivers/devfreq/Kconfig": "drivers/devfreq/Kconfig.qcom",
+    "drivers/dma-buf/heaps/Kconfig": "drivers/dma-buf/heaps/Kconfig.qcom",
+    "drivers/dma/qcom/Kconfig": "drivers/dma/qcom/Kconfig.qcom",
+    "drivers/edac/Kconfig": "drivers/edac/Kconfig.qcom",
+    "drivers/extcon/Kconfig": "drivers/extcon/Kconfig.qcom",
+    "drivers/firmware/Kconfig": "drivers/firmware/Kconfig.qcom",
+    "drivers/firmware/arm_scmi/Kconfig": "drivers/firmware/arm_scmi/Kconfig.qcom",
+    "drivers/firmware/qcom/Kconfig": "drivers/firmware/qcom/Kconfig.qcom",
+    "drivers/firmware/qcom/si_core/Kconfig": "drivers/firmware/qcom/si_core/Kconfig",
+    "drivers/firmware/arm_ffa/Kconfig": "drivers/firmware/arm_ffa/Kconfig.qcom",
+    "drivers/gpu/drm/bridge/Kconfig": "drivers/gpu/drm/bridge/Kconfig.qcom",
+    "drivers/gpu/drm/msm/Kconfig": "drivers/gpu/drm/msm/Kconfig.qcom",
+    "drivers/hwmon/Kconfig": "drivers/hwmon/Kconfig.qcom",
+    "drivers/hwtracing/coresight/Kconfig": "drivers/hwtracing/coresight/Kconfig.qcom",
+    "drivers/hwtracing/stm/Kconfig": "drivers/hwtracing/stm/Kconfig.qcom",
+    "drivers/i2c/busses/Kconfig": "drivers/i2c/busses/Kconfig.qcom",
+    "drivers/i3c/master/Kconfig": "drivers/i3c/master/Kconfig.qcom",
+    "drivers/iio/adc/Kconfig": "drivers/iio/adc/Kconfig.qcom",
+    "drivers/iio/dac/Kconfig": "drivers/iio/dac/Kconfig.qcom",
+    "drivers/input/misc/Kconfig": "drivers/input/misc/Kconfig.qcom",
+    "drivers/input/touchscreen/Kconfig": "drivers/input/touchscreen/Kconfig.qcom",
+    "drivers/interconnect/Kconfig": "drivers/interconnect/Kconfig.qcom",
+    "drivers/interconnect/qcom/Kconfig": "drivers/interconnect/qcom/Kconfig.qcom",
+    "drivers/iommu/Kconfig": "drivers/iommu/Kconfig.qcom",
+    "drivers/irqchip/Kconfig": "drivers/irqchip/Kconfig.qcom",
+    "drivers/leds/Kconfig": "drivers/leds/Kconfig.qcom",
+    "drivers/mailbox/Kconfig": "drivers/mailbox/Kconfig.qcom",
+    "drivers/mfd/Kconfig": "drivers/mfd/Kconfig.qcom",
+    "drivers/eom/Kconfig": "drivers/eom/Kconfig",
+    "drivers/eom/pcie/Kconfig": "drivers/eom/pcie/Kconfig",
+    "drivers/misc/Kconfig": "drivers/misc/Kconfig.qcom",
+    "drivers/mmc/host/Kconfig": "drivers/mmc/host/Kconfig.qcom",
+    "drivers/net/Kconfig": "drivers/net/Kconfig.qcom",
+    "drivers/net/pcs/Kconfig": "drivers/net/pcs/Kconfig.qcom",
+    "drivers/net/ethernet/Kconfig": "drivers/net/ethernet/Kconfig.qcom",
+    "drivers/net/ethernet/realtek/Kconfig": "drivers/net/ethernet/realtek/Kconfig.qcom",
+    "drivers/net/ethernet/stmicro/Kconfig": "drivers/net/ethernet/stmicro/Kconfig.qcom",
+    "drivers/net/ethernet/stmicro/stmmac/Kconfig": "drivers/net/ethernet/stmicro/stmmac/Kconfig.qcom",
+    "drivers/net/phy/Kconfig": "drivers/net/phy/Kconfig.qcom",
+    "drivers/net/phy/aquantia/Kconfig": "drivers/net/phy/aquantia/Kconfig.qcom",
+    "drivers/net/mdio_fe/Kconfig": "drivers/net/mdio_fe/Kconfig",
+    "drivers/nvmem/layouts/Kconfig": "drivers/nvmem/layouts/Kconfig.qcom",
+    "drivers/pci/controller/Kconfig": "drivers/pci/controller/Kconfig.qcom",
+    "drivers/perf/Kconfig": "drivers/perf/Kconfig.qcom",
+    "drivers/phy/Kconfig": "drivers/phy/Kconfig.qcom",
+    "drivers/phy/qualcomm/Kconfig": "drivers/phy/qualcomm/Kconfig.qcom",
+    "drivers/pinctrl/qcom/Kconfig": "drivers/pinctrl/qcom/Kconfig.qcom",
+    "drivers/pinctrl/qcom/Kconfig.msm": "drivers/pinctrl/qcom/Kconfig.msm.qcom",
+    "drivers/power/reset/Kconfig": "drivers/power/reset/Kconfig.qcom",
+    "drivers/power/supply/Kconfig": "drivers/power/supply/Kconfig.qcom",
+    "drivers/power/supply/qcom/Kconfig": "drivers/power/supply/qcom/Kconfig",
+    "drivers/powercap/qcom/Kconfig": "drivers/powercap/qcom/Kconfig",
+    "drivers/ptp/Kconfig": "drivers/ptp/Kconfig.qcom",
+    "drivers/pwm/Kconfig": "drivers/pwm/Kconfig.qcom",
+    "drivers/regulator/Kconfig": "drivers/regulator/Kconfig.qcom",
+    "drivers/remoteproc/Kconfig": "drivers/remoteproc/Kconfig.qcom",
+    "drivers/rpmsg/Kconfig": "drivers/rpmsg/Kconfig.qcom",
+    "drivers/soc/qcom/dcvs/Kconfig": "drivers/soc/qcom/dcvs/Kconfig",
+    "drivers/soc/qcom/Kconfig": "drivers/soc/qcom/Kconfig.qcom",
+    "drivers/soc/qcom/memshare/Kconfig": "drivers/soc/qcom/memshare/Kconfig",
+    "drivers/soc/qcom/hab/Kconfig": "drivers/soc/qcom/hab/Kconfig",
+    "drivers/soc/qcom/mpam/Kconfig": "drivers/soc/qcom/mpam/Kconfig",
+    "drivers/soc/qcom/mem_buf/Kconfig": "drivers/soc/qcom/mem_buf/Kconfig",
+    "drivers/spi/Kconfig": "drivers/spi/Kconfig.qcom",
+    "drivers/spmi/Kconfig": "drivers/spmi/Kconfig.qcom",
+    "drivers/thermal/qcom/Kconfig": "drivers/thermal/qcom/Kconfig.qcom",
+    "drivers/tty/hvc/Kconfig": "drivers/tty/hvc/Kconfig.qcom",
+    "drivers/tty/serial/Kconfig": "drivers/tty/serial/Kconfig.qcom",
+    "drivers/ufs/host/Kconfig": "drivers/ufs/host/Kconfig.qcom",
+    "drivers/uio/Kconfig": "drivers/uio/Kconfig.qcom",
+    "drivers/usb/dwc3/Kconfig": "drivers/usb/dwc3/Kconfig.qcom",
+    "drivers/usb/gadget/Kconfig": "drivers/usb/gadget/Kconfig.qcom",
+    "drivers/usb/Kconfig": "drivers/usb/Kconfig.qcom",
+    "drivers/usb/pd/Kconfig": "drivers/usb/pd/Kconfig",
+    "drivers/usb/phy/Kconfig": "drivers/usb/phy/Kconfig.qcom",
+    "drivers/usb/typec/Kconfig": "drivers/usb/typec/Kconfig.qcom",
+    "drivers/usb/typec/mux/Kconfig": "drivers/usb/typec/mux/Kconfig.qcom",
+    "drivers/usb/typec/ucsi/Kconfig": "drivers/usb/typec/ucsi/Kconfig.qcom",
+    "drivers/usb/repeater/Kconfig": "drivers/usb/repeater/Kconfig",
+    "drivers/usb/redriver/Kconfig": "drivers/usb/redriver/Kconfig",
+    "drivers/rtc/Kconfig": "drivers/rtc/Kconfig.qcom",
+    "drivers/video/Kconfig": "drivers/video/Kconfig.qcom",
+    "drivers/video/backlight/Kconfig": "drivers/video/backlight/Kconfig.qcom",
+    "drivers/virt/Kconfig": "drivers/virt/Kconfig.qcom",
+    "drivers/virt/gunyah/Kconfig": "drivers/virt/gunyah/Kconfig.qcom",
+    "drivers/virtio/Kconfig": "drivers/virtio/Kconfig.qcom",
+    "init/Kconfig": "init/Kconfig.qcom",
+    "kernel/sched/walt/Kconfig": "kernel/sched/walt/Kconfig",
+    "kernel/trace/Kconfig": "kernel/trace/Kconfig.qcom",
+    "net/Kconfig": "net/Kconfig.qcom",
+    "net/qrtr/Kconfig": "net/qrtr/Kconfig.qcom",
+    "net/qmsgq/Kconfig": "net/qmsgq/Kconfig",
+    "net/sched/Kconfig": "net/sched/Kconfig.qcom",
+    "sound/usb/Kconfig": "sound/usb/Kconfig.qcom",
+    "drivers/block/Kconfig": "drivers/block/Kconfig.qcom",
+    "Kconfig.qtvm": "Kconfig.qtvm",
+    "drivers/block/zram/Kconfig": "drivers/block/zram/Kconfig.qcom",
+    "drivers/xiaomi/myron/Kconfig": "drivers/xiaomi/myron/Kconfig",
+    "drivers/misc/hwid/Kconfig": "drivers/misc/hwid/Kconfig",
+    "drivers/misc/miev/Kconfig": "drivers/misc/miev/Kconfig",
+    "drivers/input/touchscreen/xiaomi/Kconfig": "drivers/input/touchscreen/xiaomi/Kconfig",
+    "drivers/xiaomi/myron_tfa98xx/Kconfig": "drivers/xiaomi/myron_tfa98xx/Kconfig"
+  }
+}

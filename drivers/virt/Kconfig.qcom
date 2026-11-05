@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Virtualization support drivers
+#
+
+if VIRT_DRIVERS
+
+source "drivers/virt/gunyah/Kconfig.qcom"
+
+endif

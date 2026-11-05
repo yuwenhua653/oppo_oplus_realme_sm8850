@@ -3,7 +3,6 @@
 obj-$(CONFIG_INTERCONNECT_QCOM) += interconnect_qcom.o
 
 interconnect_qcom-y			:= icc-common.o
-icc-bcm-voter-objs			:= bcm-voter.o
 qnoc-msm8909-objs			:= msm8909.o
 qnoc-msm8916-objs			:= msm8916.o
 qnoc-msm8937-objs			:= msm8937.o
@@ -40,7 +39,6 @@ qnoc-sm8650-objs			:= sm8650.o
 qnoc-x1e80100-objs			:= x1e80100.o
 icc-smd-rpm-objs			:= smd-rpm.o icc-rpm.o icc-rpm-clocks.o
 
-obj-$(CONFIG_INTERCONNECT_QCOM_BCM_VOTER) += icc-bcm-voter.o
 obj-$(CONFIG_INTERCONNECT_QCOM_MSM8909) += qnoc-msm8909.o
 obj-$(CONFIG_INTERCONNECT_QCOM_MSM8916) += qnoc-msm8916.o
 obj-$(CONFIG_INTERCONNECT_QCOM_MSM8937) += qnoc-msm8937.o
@@ -53,7 +51,6 @@ obj-$(CONFIG_INTERCONNECT_QCOM_OSM_L3) += icc-osm-l3.o
 obj-$(CONFIG_INTERCONNECT_QCOM_QCM2290) += qnoc-qcm2290.o
 obj-$(CONFIG_INTERCONNECT_QCOM_QCS404) += qnoc-qcs404.o
 obj-$(CONFIG_INTERCONNECT_QCOM_QDU1000) += qnoc-qdu1000.o
-obj-$(CONFIG_INTERCONNECT_QCOM_RPMH) += icc-rpmh.o
 obj-$(CONFIG_INTERCONNECT_QCOM_SA8775P) += qnoc-sa8775p.o
 obj-$(CONFIG_INTERCONNECT_QCOM_SC7180) += qnoc-sc7180.o
 obj-$(CONFIG_INTERCONNECT_QCOM_SC7280) += qnoc-sc7280.o
@@ -76,3 +73,17 @@ obj-$(CONFIG_INTERCONNECT_QCOM_SM8550) += qnoc-sm8550.o
 obj-$(CONFIG_INTERCONNECT_QCOM_SM8650) += qnoc-sm8650.o
 obj-$(CONFIG_INTERCONNECT_QCOM_X1E80100) += qnoc-x1e80100.o
 obj-$(CONFIG_INTERCONNECT_QCOM_SMD_RPM) += icc-smd-rpm.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/interconnect/qcom
+obj-$(CONFIG_INTERCONNECT_QCOM_BCM_VOTER) += icc-bcm-voter.o
+icc-bcm-voter-y := bcm-voter.o
+obj-$(CONFIG_INTERCONNECT_QCOM_DEBUG) += icc-debug.o
+obj-$(CONFIG_INTERCONNECT_QCOM_RPMH) += icc-rpmh.o
+obj-$(CONFIG_INTERCONNECT_QCOM_ALOR) += qnoc-alor.o
+qnoc-alor-y := alor.o
+obj-$(CONFIG_INTERCONNECT_QCOM_CANOE) += qnoc-canoe.o
+qnoc-canoe-y := canoe.o
+obj-$(CONFIG_INTERCONNECT_QCOM_QOS) += qnoc-qos.o

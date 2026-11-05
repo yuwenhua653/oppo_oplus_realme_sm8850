@@ -14,7 +14,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-#include "hwspinlock_internal.h"
+#include "drivers/hwspinlock/hwspinlock_internal.h"
 
 #define QCOM_MUTEX_APPS_PROC_ID	1
 #define QCOM_MUTEX_NUM_LOCKS	32
@@ -243,6 +243,7 @@ static struct platform_driver qcom_hwspinlock_driver = {
 	.driver		= {
 		.name	= "qcom_hwspinlock",
 		.of_match_table = qcom_hwspinlock_of_match,
+		.suppress_bind_attrs = true,
 	},
 };
 

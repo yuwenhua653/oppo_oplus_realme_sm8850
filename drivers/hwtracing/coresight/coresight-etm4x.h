@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #ifndef _CORESIGHT_CORESIGHT_ETM_H
@@ -162,7 +163,7 @@
 #define TRCIDR4_NUMVMIDC_MASK			GENMASK(31, 28)
 
 #define TRCIDR5_NUMEXTIN_MASK			GENMASK(8, 0)
-#define TRCIDR5_NUMEXTINSEL_MASK               GENMASK(11, 9)
+#define TRCIDR5_NUMEXTINSEL_MASK		GENMASK(11, 9)
 #define TRCIDR5_TRACEIDSIZE_MASK		GENMASK(21, 16)
 #define TRCIDR5_ATBTRIG				BIT(22)
 #define TRCIDR5_LPOVERRIDE			BIT(23)
@@ -920,8 +921,7 @@ struct etmv4_save_state {
 
 /**
  * struct etm4_drvdata - specifics associated to an ETM component
- * @pclk:       APB clock if present, otherwise NULL
- * @atclk:      Optional clock for the core parts of the ETMv4.
+ * @pclk        APB clock if present, otherwise NULL
  * @base:       Memory mapped base address for this component.
  * @csdev:      Component vitals needed by the framework.
  * @spinlock:   Only one at a time pls.
@@ -989,7 +989,6 @@ struct etmv4_save_state {
  */
 struct etmv4_drvdata {
 	struct clk			*pclk;
-	struct clk			*atclk;
 	void __iomem			*base;
 	struct coresight_device		*csdev;
 	spinlock_t			spinlock;
@@ -999,9 +998,9 @@ struct etmv4_drvdata {
 	u8				nr_pe_cmp;
 	u8				nr_addr_cmp;
 	u8				nr_cntr;
+	u8				ext_inp_sel;
 	u8				nr_ext_inp;
 	u8				numcidc;
-	u8				numextinsel;
 	u8				numvmidc;
 	u8				nrseqstate;
 	u8				nr_event;
@@ -1072,4 +1071,6 @@ static inline bool etm4x_is_ete(struct etmv4_drvdata *drvdata)
 
 int etm4_read_alloc_trace_id(struct etmv4_drvdata *drvdata);
 void etm4_release_trace_id(struct etmv4_drvdata *drvdata);
+
+void etm4_os_unlock(struct etmv4_drvdata *drvdata);
 #endif

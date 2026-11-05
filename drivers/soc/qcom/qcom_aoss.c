@@ -13,6 +13,8 @@
 #include <linux/thermal.h>
 #include <linux/slab.h>
 #include <linux/soc/qcom/qcom_aoss.h>
+#include <linux/ipc_logging.h>
+#include <linux/suspend.h>
 
 #define CREATE_TRACE_POINTS
 #include "trace-aoss.h"
@@ -43,8 +45,8 @@
 #define QMP_MAGIC			0x4d41494c /* mail */
 #define QMP_VERSION			1
 
-/* 64 bytes is enough to store the requests and provides padding to 4 bytes */
-#define QMP_MSG_LEN			64
+/* 0x64 bytes is enough to store the requests and provides padding to 4 bytes */
+#define QMP_MSG_LEN			0x64
 
 #define QMP_NUM_COOLING_RESOURCES	2
 
@@ -73,6 +75,7 @@ struct qmp_cooling_device {
  * @cooling_devs: thermal cooling devices
  * @debugfs_root: directory for the developer/tester interface
  * @debugfs_files: array of individual debugfs entries under debugfs_root
+ * @ds_entry: deepsleep entry path
  */
 struct qmp {
 	void __iomem *msgram;
@@ -90,9 +93,19 @@ struct qmp {
 
 	struct clk_hw qdss_clk;
 	struct qmp_cooling_device *cooling_devs;
+#if IS_ENABLED(CONFIG_DEBUG_FS)
 	struct dentry *debugfs_root;
 	struct dentry *debugfs_files[QMP_DEBUGFS_FILES];
+	struct dentry *debugfs_file;
+#endif /* CONFIG_DEBUG_FS */
+	bool ds_entry;
 };
+
+/* IPC Logging helpers */
+#define AOSS_IPC_LOG_PAGE_CNT	2
+static void *ilc;
+#define AOSS_INFO(x, ...)						  \
+	ipc_log_string(ilc, "[%s]: "x, __func__, ##__VA_ARGS__)
 
 static void qmp_kick(struct qmp *qmp)
 {
@@ -179,6 +192,8 @@ static int qmp_open(struct qmp *qmp)
 		goto timeout_close_channel;
 	}
 
+	qmp->ds_entry = false;
+
 	return 0;
 
 timeout_close_channel:
@@ -202,6 +217,7 @@ static irqreturn_t qmp_intr(int irq, void *data)
 {
 	struct qmp *qmp = data;
 
+	AOSS_INFO("\n");
 	wake_up_all(&qmp->event);
 
 	return IRQ_HANDLED;
@@ -209,6 +225,7 @@ static irqreturn_t qmp_intr(int irq, void *data)
 
 static bool qmp_message_empty(struct qmp *qmp)
 {
+	AOSS_INFO("ack msg size: %u\n", readl(qmp->msgram + qmp->offset));
 	return readl(qmp->msgram + qmp->offset) == 0;
 }
 
@@ -235,6 +252,9 @@ int __printf(2, 3) qmp_send(struct qmp *qmp, const char *fmt, ...)
 	if (WARN_ON(IS_ERR_OR_NULL(qmp) || !fmt))
 		return -EINVAL;
 
+	if (qmp->ds_entry)
+		return -ENXIO;
+
 	memset(buf, 0, sizeof(buf));
 	va_start(args, fmt);
 	len = vsnprintf(buf, sizeof(buf), fmt, args);
@@ -255,6 +275,7 @@ int __printf(2, 3) qmp_send(struct qmp *qmp, const char *fmt, ...)
 	/* Read back length to confirm data written in message RAM */
 	readl(qmp->msgram + qmp->offset);
 	qmp_kick(qmp);
+	AOSS_INFO("msg: %.*s\n", min_t(int, len, QMP_MSG_LEN), (char *)fmt);
 
 	time_left = wait_event_interruptible_timeout(qmp->event,
 						     qmp_message_empty(qmp), HZ);
@@ -263,9 +284,15 @@ int __printf(2, 3) qmp_send(struct qmp *qmp, const char *fmt, ...)
 		ret = -ETIMEDOUT;
 
 		/* Clear message from buffer */
+		AOSS_INFO("timed out clearing msg: %.*s\n", min_t(int, len, QMP_MSG_LEN),
+			  (char *)fmt);
 		writel(0, qmp->msgram + qmp->offset);
+	} else if (time_left < 0) {
+		dev_err(qmp->dev, "wait error %ld\n", time_left);
+		ret = time_left;
 	} else {
 		ret = 0;
+		AOSS_INFO("ack: %.*s\n", min_t(int, len, QMP_MSG_LEN), (char *)fmt);
 	}
 
 	trace_aoss_send_done(buf, ret);
@@ -394,7 +421,7 @@ static int qmp_cooling_device_add(struct qmp *qmp,
 
 static int qmp_cooling_devices_register(struct qmp *qmp)
 {
-	struct device_node *np;
+	struct device_node *np, *child;
 	int count = 0;
 	int ret;
 
@@ -407,13 +434,15 @@ static int qmp_cooling_devices_register(struct qmp *qmp)
 	if (!qmp->cooling_devs)
 		return -ENOMEM;
 
-	for_each_available_child_of_node_scoped(np, child) {
+	for_each_available_child_of_node(np, child) {
 		if (!of_property_present(child, "#cooling-cells"))
 			continue;
 		ret = qmp_cooling_device_add(qmp, &qmp->cooling_devs[count++],
 					     child);
-		if (ret)
+		if (ret) {
+			of_node_put(child);
 			goto unroll;
+		}
 	}
 
 	if (!count)
@@ -487,6 +516,7 @@ void qmp_put(struct qmp *qmp)
 }
 EXPORT_SYMBOL_GPL(qmp_put);
 
+#if IS_ENABLED(CONFIG_DEBUG_FS)
 struct qmp_debugfs_entry {
 	const char *name;
 	const char *fmt;
@@ -572,6 +602,31 @@ static void qmp_debugfs_create(struct qmp *qmp)
 	}
 }
 
+static ssize_t aoss_dbg_write(struct file *file, const char __user *userstr,
+			      size_t len, loff_t *pos)
+{
+	struct qmp *qmp = file->private_data;
+	char buf[QMP_MSG_LEN] = {};
+	int ret;
+
+	if (!len || len >= QMP_MSG_LEN)
+		return -EINVAL;
+
+	ret = copy_from_user(buf, userstr, len);
+	if (ret)
+		return -EFAULT;
+
+	ret = qmp_send(qmp, strim(buf), QMP_MSG_LEN);
+
+	return ret ? ret : len;
+}
+
+static const struct file_operations aoss_dbg_fops = {
+	.open = simple_open,
+	.write = aoss_dbg_write,
+};
+#endif /* CONFIG_DEBUG_FS */
+
 static int qmp_probe(struct platform_device *pdev)
 {
 	struct qmp *qmp;
@@ -585,6 +640,7 @@ static int qmp_probe(struct platform_device *pdev)
 	qmp->dev = &pdev->dev;
 	init_waitqueue_head(&qmp->event);
 	mutex_init(&qmp->tx_lock);
+	ilc = ipc_log_context_create(AOSS_IPC_LOG_PAGE_CNT, "aoss", 0);
 
 	qmp->msgram = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(qmp->msgram))
@@ -605,6 +661,7 @@ static int qmp_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to request interrupt\n");
 		goto err_free_mbox;
 	}
+	enable_irq_wake(irq);
 
 	ret = qmp_open(qmp);
 	if (ret < 0)
@@ -619,8 +676,13 @@ static int qmp_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to register aoss cooling devices\n");
 
 	platform_set_drvdata(pdev, qmp);
+	dev_set_drvdata(&pdev->dev, qmp);
 
+#if IS_ENABLED(CONFIG_DEBUG_FS)
 	qmp_debugfs_create(qmp);
+	qmp->debugfs_file = debugfs_create_file("aoss_send_message", 0220, NULL,
+						qmp, &aoss_dbg_fops);
+#endif /* CONFIG_DEBUG_FS */
 
 	return 0;
 
@@ -636,7 +698,10 @@ static void qmp_remove(struct platform_device *pdev)
 {
 	struct qmp *qmp = platform_get_drvdata(pdev);
 
+#if IS_ENABLED(CONFIG_DEBUG_FS)
 	debugfs_remove_recursive(qmp->debugfs_root);
+	debugfs_remove(qmp->debugfs_file);
+#endif /* CONFIG_DEBUG_FS */
 
 	qmp_qdss_clk_remove(qmp);
 	qmp_cooling_devices_remove(qmp);
@@ -644,6 +709,59 @@ static void qmp_remove(struct platform_device *pdev)
 	qmp_close(qmp);
 	mbox_free_channel(qmp->mbox_chan);
 }
+
+static int aoss_qmp_mbox_freeze(struct device *dev)
+{
+	return 0;
+}
+
+static int aoss_qmp_mbox_restore(struct device *dev)
+{
+	struct qmp *qmp = dev_get_drvdata(dev);
+	int ret;
+
+	ret = qmp_open(qmp);
+	if (ret < 0)
+		dev_err(dev, "QMP restore failed, ret = %d\n", ret);
+
+	return 0;
+}
+
+static int aoss_qmp_mbox_suspend_noirq(struct device *dev)
+{
+	struct qmp *qmp = dev_get_drvdata(dev);
+
+	if (pm_suspend_target_state == PM_SUSPEND_MEM) {
+		qmp->ds_entry = true;
+		dev_info(dev, "AOSS: Deep sleep entry\n");
+	}
+
+	return 0;
+}
+
+static int aoss_qmp_mbox_resume_early(struct device *dev)
+{
+	struct qmp *qmp = dev_get_drvdata(dev);
+	int ret = 0;
+
+	if (pm_suspend_target_state == PM_SUSPEND_MEM) {
+		ret = qmp_open(qmp);
+
+		if (ret < 0)
+			dev_err(dev, "QMP restore failed, ret = %d\n", ret);
+
+		dev_info(dev, "AOSS: Deep sleep exit\n");
+	}
+
+	return ret;
+}
+
+static const struct dev_pm_ops aoss_qmp_mbox_pm_ops = {
+	.freeze_late = aoss_qmp_mbox_freeze,
+	.restore_early = aoss_qmp_mbox_restore,
+	.suspend_noirq = aoss_qmp_mbox_suspend_noirq,
+	.resume_early = aoss_qmp_mbox_resume_early,
+};
 
 static const struct of_device_id qmp_dt_match[] = {
 	{ .compatible = "qcom,sc7180-aoss-qmp", },
@@ -662,9 +780,10 @@ static struct platform_driver qmp_driver = {
 		.name		= "qcom_aoss_qmp",
 		.of_match_table	= qmp_dt_match,
 		.suppress_bind_attrs = true,
+		.pm = &aoss_qmp_mbox_pm_ops,
 	},
 	.probe = qmp_probe,
-	.remove = qmp_remove,
+	.remove_new = qmp_remove,
 };
 module_platform_driver(qmp_driver);
 

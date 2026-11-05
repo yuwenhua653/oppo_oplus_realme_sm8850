@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
 /*
  * Copyright (c) 2022, The Linux Foundation. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6115_H
@@ -29,6 +30,8 @@
 #define DISP_CC_MDSS_VSYNC_CLK_SRC	19
 #define DISP_CC_SLEEP_CLK		20
 #define DISP_CC_SLEEP_CLK_SRC		21
+#define DISP_CC_XO_CLK			22
+#define DISP_CC_XO_CLK_SRC		23
 
 /* DISP_CC GDSCR */
 #define MDSS_GDSC			0

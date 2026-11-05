@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2019, The Linux Foundation. All rights reserved.
  * Copyright (c) 2023, Linaro Limited
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #ifndef _DT_BINDINGS_RESET_QCOM_GPU_CC_SM8450_H
@@ -16,5 +17,6 @@
 #define GPUCC_GPU_CC_GX_BCR			6
 #define GPUCC_GPU_CC_XO_BCR			7
 #define GPUCC_GPU_CC_GX_ACD_IROOT_BCR		8
+#define GPUCC_GPU_CC_FREQUENCY_LIMITER_IRQ_CLEAR	9
 
 #endif

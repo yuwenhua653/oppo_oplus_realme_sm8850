@@ -92,16 +92,12 @@ obj-$(CONFIG_MMC_SDHCI_OF_MA35D1)	+= sdhci-of-ma35d1.o
 obj-$(CONFIG_MMC_SDHCI_BCM_KONA)	+= sdhci-bcm-kona.o
 obj-$(CONFIG_MMC_SDHCI_IPROC)		+= sdhci-iproc.o
 obj-$(CONFIG_MMC_SDHCI_NPCM)		+= sdhci-npcm.o
-obj-$(CONFIG_MMC_SDHCI_MSM)		+= sdhci-msm.o
 obj-$(CONFIG_MMC_SDHCI_ST)		+= sdhci-st.o
 obj-$(CONFIG_MMC_SDHCI_MICROCHIP_PIC32)	+= sdhci-pic32.o
 obj-$(CONFIG_MMC_SDHCI_BRCMSTB)		+= sdhci-brcmstb.o
 obj-$(CONFIG_MMC_SDHCI_OMAP)		+= sdhci-omap.o
 obj-$(CONFIG_MMC_SDHCI_SPRD)		+= sdhci-sprd.o
 obj-$(CONFIG_MMC_SUNPLUS)		+= sunplus-mmc.o
-obj-$(CONFIG_MMC_CQHCI)			+= cqhci.o
-cqhci-y					+= cqhci-core.o
-cqhci-$(CONFIG_MMC_CRYPTO)		+= cqhci-crypto.o
 obj-$(CONFIG_MMC_HSQ)			+= mmc_hsq.o
 obj-$(CONFIG_MMC_LITEX)			+= litex_mmc.o
 
@@ -111,3 +107,17 @@ endif
 
 obj-$(CONFIG_MMC_SDHCI_XENON)	+= sdhci-xenon-driver.o
 sdhci-xenon-driver-y		+= sdhci-xenon.o sdhci-xenon-phy.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/mmc/host
+obj-$(CONFIG_MMC_CQHCI) += cqhci.o
+cqhci-y := cqhci-core.o
+ifneq ($(filter y m,$(CONFIG_MMC_CRYPTO)),)
+cqhci-y += cqhci-crypto.o
+endif
+ifneq ($(filter y m,$(CONFIG_MMC_CRYPTO_QTI)),)
+cqhci-y += cqhci-crypto-qti.o
+endif
+obj-$(CONFIG_MMC_SDHCI_MSM) += sdhci-msm.o

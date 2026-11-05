@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2015 Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #include <linux/clk.h>
@@ -123,6 +124,302 @@ static const struct nvmem_keepout sc7280_qfprom_keepout[] = {
 static const struct qfprom_soc_compatible_data sc7280_qfprom = {
 	.keepout = sc7280_qfprom_keepout,
 	.nkeepout = ARRAY_SIZE(sc7280_qfprom_keepout)
+};
+
+static const struct nvmem_keepout sun_qfprom_keepout[] = {
+	{.start = 0x20, .end = 0x24},
+	{.start = 0x28, .end = 0x30},
+	{.start = 0x34, .end = 0x40},
+	{.start = 0x58, .end = 0x60},
+	{.start = 0x68, .end = 0x70},
+	{.start = 0x78, .end = 0x80},
+	{.start = 0x90, .end = 0x100},
+	{.start = 0x150, .end = 0x200},
+	{.start = 0x238, .end = 0x300},
+	{.start = 0x330, .end = 0x400},
+	{.start = 0x4e8, .end = 0x500},
+	{.start = 0x550, .end = 0x600},
+	{.start = 0x608, .end = 0x610},
+	{.start = 0x618, .end = 0x630},
+	{.start = 0x638, .end = 0x700},
+	{.start = 0x738, .end = 0x73c},
+	{.start = 0x74c, .end = 0x770},
+	{.start = 0x900, .end = 0x948},
+	{.start = 0xbf0, .end = 0xcf0},
+	{.start = 0xd00, .end = 0x1000},
+};
+
+static const struct qfprom_soc_compatible_data sun_qfprom = {
+	 .keepout = sun_qfprom_keepout,
+	 .nkeepout = ARRAY_SIZE(sun_qfprom_keepout)
+};
+
+static const struct nvmem_keepout canoe_qfprom_keepout[] = {
+	{.start = 0x20, .end = 0x24},
+	{.start = 0x28, .end = 0x30},
+	{.start = 0x34, .end = 0x40},
+	{.start = 0x58, .end = 0x60},
+	{.start = 0x68, .end = 0x70},
+	{.start = 0x90, .end = 0x100},
+	{.start = 0x150, .end = 0x200},
+	{.start = 0x238, .end = 0x300},
+	{.start = 0x330, .end = 0x400},
+	{.start = 0x4e0, .end = 0x500},
+	{.start = 0x550, .end = 0x600},
+	{.start = 0x608, .end = 0x610},
+	{.start = 0x618, .end = 0x630},
+	{.start = 0x638, .end = 0x700},
+	{.start = 0x738, .end = 0x73c},
+	{.start = 0x74c, .end = 0x770},
+	{.start = 0x900, .end = 0x948},
+	{.start = 0x950, .end = 0x958},
+	{.start = 0xbf0, .end = 0xcf0},
+	{.start = 0xed0, .end = 0x1000},
+};
+
+static const struct qfprom_soc_compatible_data canoe_qfprom = {
+	 .keepout = canoe_qfprom_keepout,
+	 .nkeepout = ARRAY_SIZE(canoe_qfprom_keepout)
+};
+
+static const struct nvmem_keepout seraph_qfprom_keepout[] = {
+	{.start = 0x20, .end = 0x24},
+	{.start = 0x28, .end = 0x30},
+	{.start = 0x34, .end = 0x40},
+	{.start = 0x58, .end = 0x60},
+	{.start = 0x68, .end = 0x70},
+	{.start = 0x78, .end = 0x80},
+	{.start = 0x90, .end = 0x100},
+	{.start = 0x150, .end = 0x200},
+	{.start = 0x238, .end = 0x300},
+	{.start = 0x328, .end = 0x400},
+	{.start = 0x4a8, .end = 0x500},
+	{.start = 0x550, .end = 0x600},
+	{.start = 0x608, .end = 0x610},
+	{.start = 0x618, .end = 0x630},
+	{.start = 0x638, .end = 0x700},
+	{.start = 0x738, .end = 0x73c},
+	{.start = 0x748, .end = 0x770},
+	{.start = 0x8a0, .end = 0x910},
+	{.start = 0x918, .end = 0xa00},
+	{.start = 0xa50, .end = 0xb00},
+	{.start = 0xb04, .end = 0xb08},
+	{.start = 0xb0c, .end = 0xb10},
+	{.start = 0xde0, .end = 0x1000},
+};
+
+static const struct qfprom_soc_compatible_data seraph_qfprom = {
+	.keepout = seraph_qfprom_keepout,
+	.nkeepout = ARRAY_SIZE(seraph_qfprom_keepout)
+};
+
+static const struct nvmem_keepout pikachu_qfprom_keepout[] = {
+	{.start = 0x20, .end = 0x24},
+	{.start = 0x28, .end = 0x30},
+	{.start = 0x34, .end = 0x40},
+	{.start = 0x58, .end = 0x60},
+	{.start = 0x68, .end = 0x70},
+	{.start = 0x78, .end = 0x80},
+	{.start = 0x90, .end = 0x100},
+	{.start = 0x150, .end = 0x200},
+	{.start = 0x238, .end = 0x300},
+	{.start = 0x328, .end = 0x400},
+	{.start = 0x4a8, .end = 0x500},
+	{.start = 0x550, .end = 0x600},
+	{.start = 0x608, .end = 0x610},
+	{.start = 0x618, .end = 0x630},
+	{.start = 0x638, .end = 0x700},
+	{.start = 0x738, .end = 0x73c},
+	{.start = 0x748, .end = 0x770},
+	{.start = 0x8a0, .end = 0x910},
+	{.start = 0x918, .end = 0xa00},
+	{.start = 0xa50, .end = 0xb00},
+	{.start = 0xb04, .end = 0xb08},
+	{.start = 0xb0c, .end = 0xb10},
+	{.start = 0xde0, .end = 0x1000},
+};
+
+static const struct qfprom_soc_compatible_data pikachu_qfprom = {
+	.keepout = pikachu_qfprom_keepout,
+	.nkeepout = ARRAY_SIZE(pikachu_qfprom_keepout)
+};
+
+static const struct nvmem_keepout chora_qfprom_keepout[] = {
+	{.start = 0x20, .end = 0x24},
+	{.start = 0x28, .end = 0x30},
+	{.start = 0x34, .end = 0x40},
+	{.start = 0x58, .end = 0x60},
+	{.start = 0x68, .end = 0x70},
+	{.start = 0x90, .end = 0x100},
+	{.start = 0x150, .end = 0x200},
+	{.start = 0x230, .end = 0x300},
+	{.start = 0x330, .end = 0x400},
+	{.start = 0x480, .end = 0x500},
+	{.start = 0x550, .end = 0x600},
+	{.start = 0x608, .end = 0x610},
+	{.start = 0x618, .end = 0x630},
+	{.start = 0x638, .end = 0x700},
+	{.start = 0x738, .end = 0x73c},
+	{.start = 0x74c, .end = 0x770},
+	{.start = 0x7e0, .end = 0x820},
+	{.start = 0x900, .end = 0x948},
+	{.start = 0x94c, .end = 0x958},
+	{.start = 0xab0, .end = 0xcf0},
+	{.start = 0xd00, .end = 0xe90},
+	{.start = 0xea8, .end = 0x1000},
+};
+
+static const struct qfprom_soc_compatible_data chora_qfprom = {
+	.keepout = chora_qfprom_keepout,
+	.nkeepout = ARRAY_SIZE(chora_qfprom_keepout)
+};
+
+static const struct nvmem_keepout malabar_qfprom_keepout[] = {
+	{.start = 0x0a20, .end = 0x203c},
+	{.start = 0x2070, .end = 0x208c},
+	{.start = 0x209c, .end = 0x20a8},
+	{.start = 0x20ac, .end = 0x20f0},
+	{.start = 0x20f4, .end = 0x2100},
+	{.start = 0x2114, .end = 0x2120},
+	{.start = 0x2124, .end = 0x2144},
+	{.start = 0x214c, .end = 0x4000},
+	{.start = 0x4a20, .end = 0x6000},
+	{.start = 0x6064, .end = 0x6070},
+	{.start = 0x6074, .end = 0x607c},
+	{.start = 0x6080, .end = 0x60c0},
+	{.start = 0x60e4, .end = 0x6100},
+	{.start = 0x6104, .end = 0x6110},
+	{.start = 0x611c, .end = 0x6130},
+	{.start = 0x6148, .end = 0x6150},
+	{.start = 0x6154, .end = 0x6160},
+	{.start = 0x6170, .end = 0x6190},
+	{.start = 0x61c0, .end = 0x61f0},
+	{.start = 0x61f8, .end = 0x6200},
+	{.start = 0x6220, .end = 0x6250},
+	{.start = 0x6260, .end = 0x6300},
+	{.start = 0x630c, .end = 0x6400},
+	{.start = 0x6440, .end = 0x7000},
+	{.start = 0x800c, .end = 0x8010},
+	{.start = 0x8014, .end = 0x8018},
+	{.start = 0x8024, .end = 0x8040},
+	{.start = 0x804c, .end = 0x8100},
+	{.start = 0x8108, .end = 0x8400},
+	{.start = 0x8414, .end = 0x8800},
+	{.start = 0x884c, .end = 0x8850},
+	{.start = 0x885c, .end = 0x8860},
+	{.start = 0x886c, .end = 0x8870},
+	{.start = 0x887c, .end = 0x8880},
+	{.start = 0x8884, .end = 0x88d0},
+	{.start = 0x88d8, .end = 0x88e0},
+	{.start = 0x8900, .end = 0x8c00},
+	{.start = 0x8c04, .end = 0x8c0c},
+	{.start = 0x8c18, .end = 0x8c20},
+	{.start = 0xe004, .end = 0xe008},
+	{.start = 0xe00c, .end = 0xe010},
+	{.start = 0xe014, .end = 0xe080},
+	{.start = 0xe084, .end = 0xe090},
+	{.start = 0xe094, .end = 0xe100},
+	{.start = 0xe104, .end = 0xe110},
+	{.start = 0xe114, .end = 0xe3ec},
+	{.start = 0xe404, .end = 0xe500},
+	{.start = 0xe504, .end = 0xe800},
+	{.start = 0xe81c, .end = 0xe880},
+	{.start = 0xe89c, .end = 0xe900},
+	{.start = 0xe904, .end = 0xf000},
+	{.start = 0xf004, .end = 0xf00c},
+};
+
+static const struct qfprom_soc_compatible_data malabar_qfprom = {
+	.keepout = malabar_qfprom_keepout,
+	.nkeepout = ARRAY_SIZE(malabar_qfprom_keepout)
+};
+
+static const struct nvmem_keepout ravelin_qfprom_keepout[] = {
+	{.start = 0x20, .end = 0x24},
+	{.start = 0x28, .end = 0x30},
+	{.start = 0x34, .end = 0x40},
+	{.start = 0x58, .end = 0x60},
+	{.start = 0x68, .end = 0x70},
+	{.start = 0x78, .end = 0x80},
+	{.start = 0x90, .end = 0x100},
+	{.start = 0x138, .end = 0x200},
+	{.start = 0x230, .end = 0x300},
+	{.start = 0x320, .end = 0x400},
+	{.start = 0x460, .end = 0x500},
+	{.start = 0x550, .end = 0x600},
+	{.start = 0x608, .end = 0x610},
+	{.start = 0x618, .end = 0x630},
+	{.start = 0x638, .end = 0x700},
+	{.start = 0x738, .end = 0x73c},
+	{.start = 0x748, .end = 0x770},
+	{.start = 0x7e8, .end = 0x800},
+	{.start = 0x888, .end = 0xa00},
+	{.start = 0xa38, .end = 0xb00},
+	{.start = 0xb08, .end = 0xb10},
+	{.start = 0xb18, .end = 0xd00},
+	{.start = 0xe18, .end = 0x1000}
+};
+
+static const struct qfprom_soc_compatible_data ravelin_qfprom = {
+	.keepout = ravelin_qfprom_keepout,
+	.nkeepout = ARRAY_SIZE(ravelin_qfprom_keepout)
+};
+
+static const struct nvmem_keepout x1e80100_qfprom_keepout[] = {
+	{.start = 0x20, .end = 0x24},
+	{.start = 0x28, .end = 0x30},
+	{.start = 0x34, .end = 0x40},
+	{.start = 0x58, .end = 0x60},
+	{.start = 0x68, .end = 0x70},
+	{.start = 0x78, .end = 0x80},
+	{.start = 0x90, .end = 0x100},
+	{.start = 0x1c0, .end = 0x200},
+	{.start = 0x240, .end = 0x300},
+	{.start = 0x328, .end = 0x400},
+	{.start = 0x568, .end = 0x600},
+	{.start = 0x608, .end = 0x610},
+	{.start = 0x618, .end = 0x630},
+	{.start = 0x638, .end = 0x700},
+	{.start = 0x738, .end = 0x73c},
+	{.start = 0x748, .end = 0x770},
+	{.start = 0x8a0, .end = 0xa00},
+	{.start = 0xac0, .end = 0xb00},
+	{.start = 0xb08, .end = 0xb10},
+	{.start = 0xd54, .end = 0x1000}
+};
+
+static const struct qfprom_soc_compatible_data x1e80100_qfprom = {
+	.keepout = x1e80100_qfprom_keepout,
+	.nkeepout = ARRAY_SIZE(x1e80100_qfprom_keepout)
+};
+
+static const struct nvmem_keepout glymur_qfprom_keepout[] = {
+	{ .start = 0x20,  .end = 0x24 },
+	{ .start = 0x28,  .end = 0x30 },
+	{ .start = 0x34,  .end = 0x40 },
+	{ .start = 0x58,  .end = 0x60 },
+	{ .start = 0x68,  .end = 0x70 },
+	{ .start = 0x90,  .end = 0x100 },
+	{ .start = 0x180, .end = 0x200 },
+	{ .start = 0x280, .end = 0x300 },
+	{ .start = 0x328, .end = 0x400 },
+	{ .start = 0x4d0, .end = 0x500 },
+	{ .start = 0x550, .end = 0x600 },
+	{ .start = 0x608, .end = 0x610 },
+	{ .start = 0x618, .end = 0x630 },
+	{ .start = 0x638, .end = 0x700 },
+	{ .start = 0x738, .end = 0x73c },
+	{ .start = 0x74c, .end = 0x770 },
+	{ .start = 0x930, .end = 0x948 },
+	{ .start = 0x950, .end = 0x958 },
+	{ .start = 0xbb0, .end = 0xcf0 },
+	{ .start = 0xd38, .end = 0xe00 },
+	{ .start = 0xe68, .end = 0x1000 },
+};
+
+static const struct qfprom_soc_compatible_data glymur_qfprom = {
+	.keepout = glymur_qfprom_keepout,
+	.nkeepout = ARRAY_SIZE(glymur_qfprom_keepout)
 };
 
 /**
@@ -321,30 +618,30 @@ static int qfprom_reg_read(void *context,
 			unsigned int reg, void *_val, size_t bytes)
 {
 	struct qfprom_priv *priv = context;
-	u32 *val = _val;
+	u8 *val = _val;
+	int buf_start, buf_end, index, i = 0;
 	void __iomem *base = priv->qfpcorrected;
-	int words = DIV_ROUND_UP(bytes, sizeof(u32));
-	int i;
+	char *buffer = NULL;
+	u32 read_val;
 
 	if (read_raw_data && priv->qfpraw)
 		base = priv->qfpraw;
+	buf_start = ALIGN_DOWN(reg, 4);
+	buf_end = ALIGN(reg + bytes, 4);
+	buffer = kzalloc(buf_end - buf_start, GFP_KERNEL);
+	if (!buffer) {
+		pr_err("memory allocation failed in %s\n", __func__);
+		return -ENOMEM;
+	}
 
-	for (i = 0; i < words; i++)
-		*val++ = readl(base + reg + i * sizeof(u32));
+	for (index = buf_start; index < buf_end; index += 4, i += 4) {
+		read_val = readl_relaxed(base + index);
+		memcpy(buffer + i, &read_val, 4);
+	}
 
+	memcpy(val, buffer + reg % 4, bytes);
+	kfree(buffer);
 	return 0;
-}
-
-/* Align reads to word boundary */
-static void qfprom_fixup_dt_cell_info(struct nvmem_device *nvmem,
-				      struct nvmem_cell_info *cell)
-{
-	unsigned int byte_offset = cell->offset % sizeof(u32);
-
-	cell->bit_offset += byte_offset * BITS_PER_BYTE;
-	cell->offset -= byte_offset;
-	if (byte_offset && !cell->nbits)
-		cell->nbits = cell->bytes * BITS_PER_BYTE;
 }
 
 static void qfprom_runtime_disable(void *data)
@@ -371,11 +668,10 @@ static int qfprom_probe(struct platform_device *pdev)
 	struct nvmem_config econfig = {
 		.name = "qfprom",
 		.add_legacy_fixed_of_cells = true,
-		.stride = 4,
-		.word_size = 4,
+		.stride = 1,
+		.word_size = 1,
 		.id = NVMEM_DEVID_AUTO,
 		.reg_read = qfprom_reg_read,
-		.fixup_dt_cell_info = qfprom_fixup_dt_cell_info,
 	};
 	struct device *dev = &pdev->dev;
 	struct resource *res;
@@ -461,6 +757,16 @@ static const struct of_device_id qfprom_of_match[] = {
 	{ .compatible = "qcom,qfprom",},
 	{ .compatible = "qcom,sc7180-qfprom", .data = &sc7180_qfprom},
 	{ .compatible = "qcom,sc7280-qfprom", .data = &sc7280_qfprom},
+	{ .compatible = "qcom,sun-qfprom",    .data = &sun_qfprom},
+	{ .compatible = "qcom,canoe-qfprom",    .data = &canoe_qfprom},
+	{ .compatible = "qcom,alor-qfprom",    .data = &canoe_qfprom},
+	{ .compatible = "qcom,chora-qfprom", .data = &chora_qfprom},
+	{ .compatible = "qcom,malabar-qfprom", .data = &malabar_qfprom},
+	{ .compatible = "qcom,ravelin-qfprom", .data = &ravelin_qfprom},
+	{ .compatible = "qcom,bourtzi-qfprom", .data = &ravelin_qfprom},
+	{ .compatible = "qcom,pikachu-qfprom", .data = &pikachu_qfprom},
+	{ .compatible = "qcom,x1e80100-qfprom", .data = &x1e80100_qfprom},
+	{ .compatible = "qcom,glymur-qfprom", .data = &glymur_qfprom},
 	{/* sentinel */},
 };
 MODULE_DEVICE_TABLE(of, qfprom_of_match);

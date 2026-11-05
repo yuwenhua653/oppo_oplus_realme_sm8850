@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016-2018, 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.
+/* Copyright (c) 2016-2018, 2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2023-2024, Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #include <linux/bitfield.h>
@@ -21,6 +20,7 @@
 #define MAX_SLV_ID		8
 #define SLAVE_ID_MASK		0x7
 #define SLAVE_ID_SHIFT		16
+#define CMD_DB_STANDALONE_MASK BIT(0)
 #define SLAVE_ID(addr)		FIELD_GET(GENMASK(19, 16), addr)
 #define VRM_ADDR(addr)		FIELD_GET(GENMASK(19, 4), addr)
 
@@ -338,6 +338,16 @@ static const struct file_operations cmd_db_debugfs_ops = {
 	.release = single_release,
 };
 
+bool cmd_db_is_standalone(void)
+{
+	int ret = cmd_db_ready();
+	u32 standalone = le32_to_cpu(cmd_db_header->reserved) &
+			 CMD_DB_STANDALONE_MASK;
+
+	return !ret && standalone;
+}
+EXPORT_SYMBOL(cmd_db_is_standalone);
+
 static int cmd_db_dev_probe(struct platform_device *pdev)
 {
 	struct reserved_mem *rmem;
@@ -349,22 +359,22 @@ static int cmd_db_dev_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	cmd_db_header = devm_memremap(&pdev->dev, rmem->base, rmem->size, MEMREMAP_WC);
-	if (IS_ERR(cmd_db_header)) {
-		ret = PTR_ERR(cmd_db_header);
+	cmd_db_header = memremap(rmem->base, rmem->size, MEMREMAP_WC);
+	if (!cmd_db_header) {
+		ret = -ENOMEM;
 		cmd_db_header = NULL;
 		return ret;
 	}
 
 	if (!cmd_db_magic_matches(cmd_db_header)) {
 		dev_err(&pdev->dev, "Invalid Command DB Magic\n");
-		cmd_db_header = NULL;
 		return -EINVAL;
 	}
 
 	debugfs_create_file("cmd-db", 0400, NULL, NULL, &cmd_db_debugfs_ops);
 
-	device_set_pm_not_required(&pdev->dev);
+	if (cmd_db_is_standalone())
+		pr_info("Command DB is initialized in standalone mode\n");
 
 	return 0;
 }

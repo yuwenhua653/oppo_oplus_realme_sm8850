@@ -10,3 +10,16 @@ obj-$(CONFIG_GUNYAH_PLATFORM_HOOKS) += gunyah_platform_hooks.o
 obj-$(CONFIG_GUNYAH_QCOM_PLATFORM) += gunyah_qcom.o
 obj-$(CONFIG_GUNYAH_IRQFD) += gunyah_irqfd.o
 obj-$(CONFIG_GUNYAH_IOEVENTFD) += gunyah_ioeventfd.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/virt/gunyah
+obj-$(CONFIG_GH_DBL) += gh_dbl.o
+obj-$(CONFIG_GH_IRQ_LEND) += gh_irq_lend.o
+obj-$(CONFIG_GH_MEM_NOTIFIER) += gh_mem_notifier.o
+obj-$(CONFIG_GH_MSGQ) += gh_msgq.o
+obj-$(CONFIG_GH_RM_DRV) += gh_rm_drv.o
+gh_rm_drv-y := gh_rm_core.o gh_rm_iface.o gh_devices.o
+obj-$(CONFIG_GH_RM_HEAP_MANAGER) += gh_rm_heap_manager.o
+obj-$(CONFIG_GH_VCPU_MGR) += gh_vcpu_mgr.o

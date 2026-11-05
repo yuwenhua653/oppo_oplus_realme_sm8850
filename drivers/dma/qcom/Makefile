@@ -6,3 +6,9 @@ obj-$(CONFIG_QCOM_HIDMA_MGMT) += hdma_mgmt.o
 hdma_mgmt-objs	 := hidma_mgmt.o hidma_mgmt_sys.o
 obj-$(CONFIG_QCOM_HIDMA) +=  hdma.o
 hdma-objs        := hidma_ll.o hidma.o hidma_dbg.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/dma/qcom
+obj-$(CONFIG_MSM_GPI_DMA) += msm_gpi.o

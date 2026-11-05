@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config TOUCHSCREEN_XIAOMI_TOUCHFEATURE
+	tristate "Xiaomi touch framework (Myron source candidate)"
+	depends on INPUT_TOUCHSCREEN && DRM && QCOM_PANEL_EVENT_NOTIFIER
+	depends on MIEV && POWER_SUPPLY && NET && PROC_FS && SYSFS
+	help
+	  Xiaomi framework and touchfeature userspace interfaces. This does not
+	  provide the Myron FocalTech FT3683 controller driver.

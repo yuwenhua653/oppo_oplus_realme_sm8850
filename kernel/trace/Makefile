@@ -111,3 +111,13 @@ obj-$(CONFIG_TRACEPOINT_BENCHMARK) += trace_benchmark.o
 obj-$(CONFIG_RV) += rv/
 
 libftrace-y := ftrace.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/kernel/trace
+obj-$(CONFIG_IPC_LOGGING) += qcom_ipc_logging.o
+qcom_ipc_logging-y := ipc_logging.o ipc_logging_debug.o
+ifneq ($(filter y m,$(CONFIG_IPC_LOGGING_CDEV)),)
+qcom_ipc_logging-y += ipc_logging_cdev.o
+endif

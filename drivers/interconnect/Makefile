@@ -9,4 +9,9 @@ obj-$(CONFIG_INTERCONNECT_MTK)		+= mediatek/
 obj-$(CONFIG_INTERCONNECT_QCOM)		+= qcom/
 obj-$(CONFIG_INTERCONNECT_SAMSUNG)	+= samsung/
 
-obj-$(CONFIG_INTERCONNECT_CLK)		+= icc-clk.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/interconnect
+obj-$(CONFIG_INTERCONNECT_CLK) += icc-clk.o

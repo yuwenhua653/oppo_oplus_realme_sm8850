@@ -82,6 +82,15 @@ struct socinfo {
 	__le32 num_func_clusters;
 	__le32 boot_cluster;
 	__le32 boot_core;
+	/* Version 20 */
+	__le32 raw_package_type;
+	/* Version 21 */
+	__le32 nsubpart_feat_array_offset;
+	/* Version 22 */
+	__le32 ncluster_cores_array_offset;
+	/* Version 23 */
+	__le32 part_instances_offset;
+	__le32 num_part_instances;
 };
 
 /* Internal feature codes */
@@ -96,6 +105,7 @@ enum qcom_socinfo_feature_code {
 	SOCINFO_FC_AF,
 	SOCINFO_FC_AG,
 	SOCINFO_FC_AH,
+	SOCINFO_FC_EXT_RESERVE,
 };
 
 /* Internal feature codes */

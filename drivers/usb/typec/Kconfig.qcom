@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+
+if TYPEC
+
+source "drivers/usb/typec/mux/Kconfig.qcom"
+
+source "drivers/usb/typec/ucsi/Kconfig.qcom"
+
+endif # TYPEC

@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2015, 2017-2018, 2022, The Linux Foundation. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #ifndef __QCOM_GDSC_H__
 #define __QCOM_GDSC_H__
 
 #include <linux/err.h>
+#include <linux/interconnect.h>
 #include <linux/pm_domain.h>
 
 struct regmap;
@@ -68,12 +70,17 @@ struct gdsc {
 #define RETAIN_FF_ENABLE	BIT(7)
 #define NO_RET_PERIPH	BIT(8)
 #define HW_CTRL_TRIGGER	BIT(9)
+#define SKIP_DIS	BIT(10)
 	struct reset_controller_dev	*rcdev;
 	unsigned int			*resets;
 	unsigned int			reset_count;
 
 	const char 			*supply;
 	struct regulator		*rsupply;
+
+	const char			*path_name;
+	struct icc_path			*path;
+	bool				hw_ctrl_mode;
 };
 
 struct gdsc_desc {
@@ -87,6 +94,56 @@ int gdsc_register(struct gdsc_desc *desc, struct reset_controller_dev *,
 		  struct regmap *);
 void gdsc_unregister(struct gdsc_desc *desc);
 int gdsc_gx_do_nothing_enable(struct generic_pm_domain *domain);
+void gdsc_pm_restore(struct gdsc *sc);
+
+struct gdsc_register_data {
+	char *name;
+	u32 offset;
+};
+
+#define gdsc_debug_output(m, fmt, ...)			\
+	do {							\
+		if (m)						\
+			seq_printf(m, fmt, ##__VA_ARGS__);	\
+		else						\
+			pr_info(fmt, ##__VA_ARGS__);		\
+	} while (0)
+
+/**
+ * gdsc_genpd_print_regs - Print GDSC register values for debugging
+ * @sc: GDSC to print registers for
+ *
+ * Prints the values of key GDSC registers to help diagnose issues
+ * when status polling timeouts occur.
+ */
+static inline void gdsc_genpd_print_regs(struct seq_file *f,
+					 struct gdsc *sc)
+{
+	int i;
+	u32 val;
+
+	const struct gdsc_register_data data[] = {
+		{"GDSCR", 0x0},
+		{"CFG_GDSCR", 0x4},
+		{"CFG2_GDSCR", 0x8},
+	};
+
+	for (i = 0; i < ARRAY_SIZE(data); i++) {
+		regmap_read(sc->regmap, sc->gdscr + data[i].offset,
+					&val);
+		gdsc_debug_output(f, "%s: 0x%.8x\n", data[i].name, val);
+	}
+
+	if (sc->gds_hw_ctrl) {
+		regmap_read(sc->regmap, sc->gds_hw_ctrl, &val);
+		gdsc_debug_output(f, "GDS_HW_CTRL: 0x%.8x\n", val);
+	}
+
+	if (sc->collapse_ctrl) {
+		regmap_read(sc->regmap, sc->collapse_ctrl, &val);
+		gdsc_debug_output(f, "COLLAPSE_CTRL: 0x%.8x\n", val);
+	}
+}
 #else
 static inline int gdsc_register(struct gdsc_desc *desc,
 				struct reset_controller_dev *rcdev,
@@ -96,5 +153,7 @@ static inline int gdsc_register(struct gdsc_desc *desc,
 }
 
 static inline void gdsc_unregister(struct gdsc_desc *desc) {};
+static inline void gdsc_genpd_print_regs(struct gdsc *sc) {};
+static inline void gdsc_pm_restore(struct gdsc *sc) {};
 #endif /* CONFIG_QCOM_GDSC */
 #endif /* __QCOM_GDSC_H__ */

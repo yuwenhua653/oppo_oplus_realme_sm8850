@@ -17,20 +17,11 @@ struct qcom_tzmem_pool;
  * enum qcom_tzmem_policy - Policy for pool growth.
  */
 enum qcom_tzmem_policy {
-	/**
-	 * @QCOM_TZMEM_POLICY_STATIC: Static pool,
-	 * never grow above initial size.
-	 */
+	/**< Static pool, never grow above initial size. */
 	QCOM_TZMEM_POLICY_STATIC = 1,
-	/**
-	 * @QCOM_TZMEM_POLICY_MULTIPLIER: When out of memory,
-	 * add increment * current size of memory.
-	 */
+	/**< When out of memory, add increment * current size of memory. */
 	QCOM_TZMEM_POLICY_MULTIPLIER,
-	/**
-	 * @QCOM_TZMEM_POLICY_ON_DEMAND: When out of memory
-	 * add as much as is needed until max_size.
-	 */
+	/**< When out of memory add as much as is needed until max_size. */
 	QCOM_TZMEM_POLICY_ON_DEMAND,
 };
 
@@ -40,12 +31,14 @@ enum qcom_tzmem_policy {
  * @policy: Pool size growth policy.
  * @increment: Used with policies that allow pool growth.
  * @max_size: Size above which the pool will never grow.
+ * @is_cached: Specify memory required is cached
  */
 struct qcom_tzmem_pool_config {
 	size_t initial_size;
 	enum qcom_tzmem_policy policy;
 	size_t increment;
 	size_t max_size;
+	bool is_cached;
 };
 
 struct qcom_tzmem_pool *
@@ -61,5 +54,22 @@ void qcom_tzmem_free(void *ptr);
 DEFINE_FREE(qcom_tzmem, void *, if (_T) qcom_tzmem_free(_T))
 
 phys_addr_t qcom_tzmem_to_phys(void *ptr);
+void qcom_tzmem_flush_shm_buf(phys_addr_t paddr, size_t size);
+void qcom_tzmem_inv_shm_buf(phys_addr_t paddr, size_t size);
+
+#if IS_ENABLED(CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE)
+int qcom_tzmem_shm_bridge_create(phys_addr_t paddr, size_t size, u64 *handle);
+void qcom_tzmem_shm_bridge_delete(u64 handle);
+#else
+static inline int qcom_tzmem_shm_bridge_create(phys_addr_t paddr,
+					       size_t size, u64 *handle)
+{
+	return 0;
+}
+
+static inline void qcom_tzmem_shm_bridge_delete(u64 handle)
+{
+}
+#endif
 
 #endif /* __QCOM_TZMEM */

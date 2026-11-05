@@ -1,21 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-obj-$(CONFIG_COMMON_CLK_QCOM) += clk-qcom.o
 
-clk-qcom-y += common.o
-clk-qcom-y += clk-regmap.o
-clk-qcom-y += clk-alpha-pll.o
-clk-qcom-y += clk-pll.o
-clk-qcom-y += clk-rcg.o
-clk-qcom-y += clk-rcg2.o
-clk-qcom-y += clk-branch.o
-clk-qcom-y += clk-regmap-divider.o
-clk-qcom-y += clk-regmap-mux.o
-clk-qcom-y += clk-regmap-mux-div.o
-clk-qcom-y += clk-regmap-phy-mux.o
-clk-qcom-$(CONFIG_KRAIT_CLOCKS) += clk-krait.o
-clk-qcom-y += clk-hfpll.o
-clk-qcom-y += reset.o
-clk-qcom-$(CONFIG_QCOM_GDSC) += gdsc.o
 
 # Keep alphabetically sorted by config
 obj-$(CONFIG_APQ_GCC_8084) += gcc-apq8084.o
@@ -65,7 +49,6 @@ obj-$(CONFIG_QCOM_CLK_APCS_MSM8916) += apcs-msm8916.o
 obj-$(CONFIG_QCOM_CLK_APCC_MSM8996) += apcs-msm8996.o clk-cpu-8996.o clk-cbf-8996.o
 obj-$(CONFIG_QCOM_CLK_APCS_SDX55) += apcs-sdx55.o
 obj-$(CONFIG_QCOM_CLK_RPM) += clk-rpm.o
-obj-$(CONFIG_QCOM_CLK_RPMH) += clk-rpmh.o
 obj-$(CONFIG_QCOM_CLK_SMD_RPM) += clk-smd-rpm.o
 obj-$(CONFIG_QCM_GCC_2290) += gcc-qcm2290.o
 obj-$(CONFIG_QCM_DISPCC_2290) += dispcc-qcm2290.o
@@ -159,3 +142,30 @@ obj-$(CONFIG_SPMI_PMIC_CLKDIV) += clk-spmi-pmic-div.o
 obj-$(CONFIG_KPSS_XCC) += kpss-xcc.o
 obj-$(CONFIG_QCOM_HFPLL) += hfpll.o
 obj-$(CONFIG_KRAITCC) += krait-cc.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/clk/qcom
+obj-$(CONFIG_SM_CAMBISTMCLKCC_CANOE) += cambistmclkcc-canoe.o
+obj-$(CONFIG_SM_CAMCC_ALOR) += camcc-alor.o
+obj-$(CONFIG_SM_CAMCC_CANOE) += camcc-canoe.o
+obj-$(CONFIG_COMMON_CLK_QCOM) += clk-dummy.o
+obj-$(CONFIG_COMMON_CLK_QCOM) += clk-qcom.o
+clk-qcom-y := clk-alpha-pll.o clk-branch.o clk-debug.o clk-hfpll.o clk-opp.o clk-pll.o clk-pm.o clk-rcg.o clk-rcg2.o clk-regmap-divider.o clk-regmap-mux-div.o clk-regmap-mux.o clk-regmap-phy-mux.o clk-regmap.o common.o reset.o vdd-class.o
+ifneq ($(filter y m,$(CONFIG_KRAIT_CLOCKS)),)
+clk-qcom-y += clk-krait.o
+endif
+ifneq ($(filter y m,$(CONFIG_QCOM_GDSC)),)
+clk-qcom-y += gdsc.o gdsc-debug.o
+endif
+obj-$(CONFIG_QCOM_CLK_RPMH) += clk-rpmh.o
+obj-$(CONFIG_SM_DEBUGCC_CANOE) += debugcc-canoe.o
+obj-$(CONFIG_SM_DISPCC_CANOE) += dispcc-canoe.o
+obj-$(CONFIG_SM_EVACC_CANOE) += evacc-canoe.o
+obj-$(CONFIG_SM_GCC_ALOR) += gcc-alor.o
+obj-$(CONFIG_SM_GCC_CANOE) += gcc-canoe.o
+obj-$(CONFIG_QCOM_GDSC_REGULATOR) += gdsc-regulator.o
+obj-$(CONFIG_SM_GPUCC_CANOE) += gpucc-canoe.o
+obj-$(CONFIG_SM_TCSRCC_CANOE) += tcsrcc-canoe.o
+obj-$(CONFIG_SM_VIDEOCC_CANOE) += videocc-canoe.o

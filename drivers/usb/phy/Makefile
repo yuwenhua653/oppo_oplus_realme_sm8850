@@ -9,7 +9,6 @@ obj-$(CONFIG_OF)			+= of.o
 
 obj-$(CONFIG_AB8500_USB)		+= phy-ab8500-usb.o
 obj-$(CONFIG_FSL_USB2_OTG)		+= phy-fsl-usb.o
-obj-$(CONFIG_NOP_USB_XCEIV)		+= phy-generic.o
 obj-$(CONFIG_TAHVO_USB)			+= phy-tahvo.o
 obj-$(CONFIG_AM335X_CONTROL_USB)	+= phy-am335x-control.o
 obj-$(CONFIG_AM335X_PHY_USB)		+= phy-am335x.o
@@ -23,3 +22,12 @@ obj-$(CONFIG_USB_MXS_PHY)		+= phy-mxs-usb.o
 obj-$(CONFIG_USB_ULPI)			+= phy-ulpi.o
 obj-$(CONFIG_USB_ULPI_VIEWPORT)		+= phy-ulpi-viewport.o
 obj-$(CONFIG_KEYSTONE_USB_PHY)		+= phy-keystone.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/usb/phy
+obj-$(CONFIG_NOP_USB_XCEIV) += phy-generic.o
+obj-$(CONFIG_USB_M31_MSM_EUSB2_PHY) += phy-msm-m31-eusb2.o
+obj-$(CONFIG_MSM_HSUSB_PHY) += phy-msm-snps-hs.o
+obj-$(CONFIG_USB_MSM_SSPHY_QMP) += phy-msm-ssusb-qmp.o

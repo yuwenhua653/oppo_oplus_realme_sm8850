@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2012, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2022, 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #include <linux/acpi.h>
@@ -183,6 +184,33 @@ static int of_coresight_get_cpu(struct device *dev)
 	return cpu;
 }
 
+static const char *of_coresight_get_device_name(struct device *dev)
+{
+	const char *name = NULL;
+
+	if (!dev->of_node)
+		return NULL;
+
+	/*
+	 * Get the device name from DT. The name describes the HW or
+	 * system the device is for.
+	 */
+	of_property_read_string(dev->of_node, "device-name", &name);
+
+	return name;
+}
+
+/*
+ * of_coresight_secure: Check whether the device is a secure node
+ *
+ * Return true, it means this is a secure node.
+ */
+bool of_coresight_secure_node(struct coresight_device *csdev)
+{
+	return of_property_read_bool(csdev->dev.parent->of_node,
+					"qcom,secure-component");
+}
+
 /*
  * of_coresight_parse_endpoint : Parse the given output endpoint @ep
  * and fill the connection information in @pdata->out_conns
@@ -242,6 +270,27 @@ static int of_coresight_parse_endpoint(struct device *dev,
 		 */
 		conn.dest_fwnode = fwnode_handle_get(rdev_fwnode);
 		conn.dest_port = rendpoint.port;
+
+		/*
+		 * Get the firmware node of the filter source through the
+		 * reference. This could be used to filter the source in
+		 * building path.
+		 */
+		conn.filter_src_fwnode =
+			fwnode_find_reference(&ep->fwnode, "filter-source", 0);
+		if (IS_ERR(conn.filter_src_fwnode)) {
+			conn.filter_src_fwnode = NULL;
+		} else {
+			conn.filter_src_dev =
+			 coresight_find_csdev_by_fwnode(conn.filter_src_fwnode);
+			if (conn.filter_src_dev &&
+			    !coresight_is_device_source(conn.filter_src_dev)) {
+				dev_warn(dev, "port %d: Filter handle is not a trace source : %s\n",
+					 conn.src_port, dev_name(&conn.filter_src_dev->dev));
+				conn.filter_src_dev = NULL;
+				conn.filter_src_fwnode = NULL;
+			}
+		}
 
 		new_conn = coresight_add_out_conn(dev, pdata, &conn);
 		if (IS_ERR_VALUE(new_conn)) {
@@ -317,6 +366,12 @@ static inline int of_coresight_get_cpu(struct device *dev)
 {
 	return -ENODEV;
 }
+
+static inline const char *of_coresight_get_device_name(struct device *dev)
+{
+	return NULL;
+}
+
 #endif
 
 #ifdef CONFIG_ACPI
@@ -795,6 +850,15 @@ int coresight_get_cpu(struct device *dev)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(coresight_get_cpu);
+
+const char *coresight_get_device_name(struct device *dev)
+{
+	if (is_of_node(dev->fwnode))
+		return of_coresight_get_device_name(dev);
+	else
+		return NULL;
+}
+EXPORT_SYMBOL_GPL(coresight_get_device_name);
 
 struct coresight_platform_data *
 coresight_get_platform_data(struct device *dev)

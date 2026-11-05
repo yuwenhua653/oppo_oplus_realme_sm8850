@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
 #ifndef _ARM_SMMU_V3_COMMON_H
 #define _ARM_SMMU_V3_COMMON_H
 
@@ -14,6 +17,7 @@
 #define IDR0_STALL_MODEL_FORCE		2
 #define IDR0_TTENDIAN			GENMASK(22, 21)
 #define IDR0_TTENDIAN_MIXED		0
+#define IDR0_TTENDIAN_RESERVED	1
 #define IDR0_TTENDIAN_LE		2
 #define IDR0_TTENDIAN_BE		3
 #define IDR0_CD2L			(1 << 19)
@@ -35,6 +39,7 @@
 #define IDR0_S2P			(1 << 0)
 
 #define ARM_SMMU_IDR1			0x4
+#define IDR1_ECMDQ			(1 << 31)
 #define IDR1_TABLES_PRESET		(1 << 30)
 #define IDR1_QUEUES_PRESET		(1 << 29)
 #define IDR1_REL			(1 << 28)
@@ -179,6 +184,7 @@
  *       256 lazy entries per table (each table covers a PCI bus)
  */
 #define STRTAB_SPLIT			8
+#define STRTAB_L1_DESC_DWORDS		1
 
 #define STRTAB_L1_DESC_SPAN		GENMASK_ULL(4, 0)
 #define STRTAB_L1_DESC_L2PTR_MASK	GENMASK_ULL(51, 6)
@@ -243,6 +249,7 @@ static inline void arm_smmu_write_strtab_l1_desc(struct arm_smmu_strtab_l1 *dst,
 #define STRTAB_STE_0_CFG_BYPASS		4
 #define STRTAB_STE_0_CFG_S1_TRANS	5
 #define STRTAB_STE_0_CFG_S2_TRANS	6
+#define STRTAB_STE_0_CFG_NESTED		7
 
 #define STRTAB_STE_0_S1FMT		GENMASK_ULL(5, 4)
 #define STRTAB_STE_0_S1FMT_LINEAR	0

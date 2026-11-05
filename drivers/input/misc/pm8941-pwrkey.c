@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2010-2011, 2020-2021, The Linux Foundation. All rights reserved.
  * Copyright (c) 2014, Sony Mobile Communications Inc.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #include <linux/delay.h>
@@ -17,6 +18,7 @@
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
 #include <linux/regmap.h>
+#include <linux/suspend.h>
 
 #define PON_REV2			0x01
 
@@ -54,6 +56,30 @@
 #define  PON_DBC_SHIFT_GEN1		6
 #define  PON_DBC_SHIFT_GEN2		14
 
+#define  BTN_EN_CTL			0x45
+#define  BTN_EN_DEB			BIT(7)
+#define  BTN_DEB_IN_POL			BIT(3)
+#define  BTN_DEB_OUT_SEL_MASK		GENMASK(2, 1)
+#define  BTN_DEB_OUT_SEL_DEBOUNCED	(0x2 << 1)
+#define  BTN_EN_TMR_SEL			BIT(0)
+
+#define  BTN_GPIO_MUX_SEL		0x46
+#define  BTN_MUX_SEL_MASK		GENMASK(2, 0)
+#define  BTN_MUX_SEL_BTN		0x0
+
+#define  BTN_POLARITY			0x47
+#define  BTN_INV_DEB_IN			BIT(7)
+
+#define  BTN_DEBOUNCER_CFG1		0x48
+#define  BTN_DEBOUNCER_CFG2		0x49
+#define  BTN_DEB_CNT_LSB_MASK		0xFF
+#define  BTN_DEB_CNT_MSB_MASK		0x03
+#define  BTN_DEB_CLK_US			31
+
+#define  BTN_RT_STS_BIT			BIT(0)
+
+#define  PON_SUBTYPE_BTN		0x72
+
 struct pm8941_data {
 	unsigned int	pull_up_bit;
 	unsigned int	status_bit;
@@ -79,7 +105,9 @@ struct pm8941_pwrkey {
 	u32 code;
 	u32 sw_debounce_time_us;
 	ktime_t sw_debounce_end_time;
+	u32 req_delay;
 	bool last_status;
+	bool pull_up;
 	const struct pm8941_data *data;
 };
 
@@ -219,6 +247,144 @@ static int pm8941_pwrkey_sw_debounce_init(struct pm8941_pwrkey *pwrkey)
 	return 0;
 }
 
+static int pmar2230_btn_hw_init(struct pm8941_pwrkey *pwrkey)
+{
+	u32 deb_cnt, deb_lsb, deb_msb, pol_val;
+	int error;
+
+	error = regmap_update_bits(pwrkey->regmap,
+						pwrkey->baseaddr + BTN_GPIO_MUX_SEL,
+						BTN_MUX_SEL_MASK,
+						BTN_MUX_SEL_BTN);
+	if (error) {
+		dev_err(pwrkey->dev, "failed to set MUX_SEL: %d\n", error);
+		return error;
+	}
+
+	if (of_property_read_bool(pwrkey->dev->of_node, "active-high"))
+		pol_val = 0;
+	else
+		pol_val = BTN_INV_DEB_IN;
+
+	error = regmap_update_bits(pwrkey->regmap,
+							pwrkey->baseaddr + BTN_POLARITY,
+							BTN_INV_DEB_IN,
+							pol_val);
+	if (error) {
+		dev_err(pwrkey->dev, "failed to set polarity: %d\n", error);
+		return error;
+	}
+
+	deb_cnt = pwrkey->req_delay / BTN_DEB_CLK_US;
+	deb_cnt = clamp_val(deb_cnt, 1U, 0x3FFU);
+	deb_lsb = deb_cnt & BTN_DEB_CNT_LSB_MASK;
+	deb_msb = (deb_cnt >> 8) & BTN_DEB_CNT_MSB_MASK;
+
+	error = regmap_write(pwrkey->regmap,
+		pwrkey->baseaddr + BTN_DEBOUNCER_CFG1,
+		deb_lsb);
+	if (error) {
+		dev_err(pwrkey->dev, "failed to set DEB_CFG1: %d\n", error);
+		return error;
+	}
+
+	error = regmap_write(pwrkey->regmap,
+	pwrkey->baseaddr + BTN_DEBOUNCER_CFG2,
+	deb_msb);
+	if (error) {
+		dev_err(pwrkey->dev, "failed to set DEB_CFG2: %d\n", error);
+		return error;
+	}
+
+	error = regmap_update_bits(pwrkey->regmap,
+						pwrkey->baseaddr + BTN_EN_CTL,
+						BTN_EN_DEB | BTN_DEB_IN_POL |
+						BTN_DEB_OUT_SEL_MASK | BTN_EN_TMR_SEL,
+						BTN_EN_DEB | BTN_DEB_IN_POL |
+						BTN_DEB_OUT_SEL_DEBOUNCED | BTN_EN_TMR_SEL);
+	if (error) {
+		dev_err(pwrkey->dev, "failed to set EN_CTL: %d\n", error);
+		return error;
+	}
+
+	return 0;
+}
+
+static int pm8941_pwrkey_hw_init(struct pm8941_pwrkey *pwrkey)
+{
+
+	u32 req_delay = 0, mask, delay_shift;
+	int error;
+
+	if (pwrkey->data->supports_debounce_config) {
+
+		if (pwrkey->subtype >= PON_SUBTYPE_GEN2_PRIMARY) {
+			mask = PON_DBC_DELAY_MASK_GEN2;
+			delay_shift = PON_DBC_SHIFT_GEN2;
+		} else {
+			mask = PON_DBC_DELAY_MASK_GEN1;
+			delay_shift = PON_DBC_SHIFT_GEN1;
+		}
+
+		req_delay = (req_delay << delay_shift) / USEC_PER_SEC;
+		req_delay = ilog2(req_delay);
+
+		error = regmap_update_bits(pwrkey->regmap,
+				pwrkey->baseaddr + PON_DBC_CTL,
+				mask,
+				req_delay);
+		if (error) {
+			dev_err(pwrkey->dev, "failed to set debounce config: %d\n",
+				error);
+			return error;
+		}
+	}
+
+	if (pwrkey->data->pull_up_bit) {
+		error = regmap_update_bits(pwrkey->regmap,
+					pwrkey->baseaddr + PON_PULL_CTL,
+					pwrkey->data->pull_up_bit,
+					pwrkey->pull_up ? pwrkey->data->pull_up_bit :
+						0);
+		if (error) {
+			dev_err(pwrkey->dev, "failed to set pull-up config: %d\n",
+						error);
+			return error;
+		}
+	}
+
+	return 0;
+}
+
+static int pm8941_pwrkey_restore(struct device *dev)
+{
+	struct pm8941_pwrkey *pwrkey = dev_get_drvdata(dev);
+	int error = 0;
+
+	if (pwrkey->irq > 0) {
+		pr_debug("Disabling and freeing pwrkey interrupts\n");
+		disable_irq(pwrkey->irq);
+		devm_free_irq(dev, pwrkey->irq, pwrkey);
+	}
+
+	error = pm8941_pwrkey_hw_init(pwrkey);
+	if (error) {
+		dev_err(dev, "Failed to initialize H/W error :%d\n", error);
+		return error;
+	}
+
+	error = devm_request_threaded_irq(dev, pwrkey->irq,
+				NULL, pm8941_pwrkey_irq,
+				IRQF_ONESHOT,
+				pwrkey->data->name, pwrkey);
+	if (error) {
+		dev_err(dev, "failed requesting IRQ: %d\n", error);
+		return error;
+	}
+
+	return 0;
+}
+
 static int pm8941_pwrkey_suspend(struct device *dev)
 {
 	struct pm8941_pwrkey *pwrkey = dev_get_drvdata(dev);
@@ -233,14 +399,20 @@ static int pm8941_pwrkey_resume(struct device *dev)
 {
 	struct pm8941_pwrkey *pwrkey = dev_get_drvdata(dev);
 
+	if (pm_suspend_target_state == PM_SUSPEND_MEM)
+		return pm8941_pwrkey_restore(dev);
+
 	if (device_may_wakeup(dev))
 		disable_irq_wake(pwrkey->irq);
 
 	return 0;
 }
 
-static DEFINE_SIMPLE_DEV_PM_OPS(pm8941_pwr_key_pm_ops,
-				pm8941_pwrkey_suspend, pm8941_pwrkey_resume);
+static const struct dev_pm_ops pm8941_pwr_key_pm_ops = {
+	.restore = pm8941_pwrkey_restore,
+	.suspend = pm8941_pwrkey_suspend,
+	.resume = pm8941_pwrkey_resume,
+};
 
 static int pm8941_pwrkey_probe(struct platform_device *pdev)
 {
@@ -249,7 +421,7 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
 	struct device *parent;
 	struct device_node *regmap_node;
 	const __be32 *addr;
-	u32 req_delay, mask, delay_shift;
+	u32 req_delay;
 	int error;
 
 	if (of_property_read_u32(pdev->dev.of_node, "debounce", &req_delay))
@@ -268,6 +440,10 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
 
 	pwrkey->dev = &pdev->dev;
 	pwrkey->data = of_device_get_match_data(&pdev->dev);
+	if (!pwrkey->data) {
+		dev_err(&pdev->dev, "match data not found\n");
+		return -ENODEV;
+	}
 
 	parent = pdev->dev.parent;
 	regmap_node = pdev->dev.of_node;
@@ -285,6 +461,9 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
 			return -ENODEV;
 		}
 	}
+
+	pwrkey->req_delay = req_delay;
+	pwrkey->pull_up = pull_up;
 
 	addr = of_get_address(regmap_node, 0, NULL, NULL);
 	if (!addr) {
@@ -337,44 +516,18 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
 	pwrkey->input->name = pwrkey->data->name;
 	pwrkey->input->phys = pwrkey->data->phys;
 
-	if (pwrkey->data->supports_debounce_config) {
-		if (pwrkey->subtype >= PON_SUBTYPE_GEN2_PRIMARY) {
-			mask = PON_DBC_DELAY_MASK_GEN2;
-			delay_shift = PON_DBC_SHIFT_GEN2;
-		} else {
-			mask = PON_DBC_DELAY_MASK_GEN1;
-			delay_shift = PON_DBC_SHIFT_GEN1;
-		}
-
-		req_delay = (req_delay << delay_shift) / USEC_PER_SEC;
-		req_delay = ilog2(req_delay);
-
-		error = regmap_update_bits(pwrkey->regmap,
-					   pwrkey->baseaddr + PON_DBC_CTL,
-					   mask,
-					   req_delay);
-		if (error) {
-			dev_err(&pdev->dev, "failed to set debounce: %d\n",
-				error);
-			return error;
-		}
+	if (pwrkey->subtype == PON_SUBTYPE_BTN)
+		error = pmar2230_btn_hw_init(pwrkey);
+	else
+		error = pm8941_pwrkey_hw_init(pwrkey);
+	if (error) {
+		dev_err(&pdev->dev, "Failed to initialize H/W : %d\n", error);
+		return error;
 	}
 
 	error = pm8941_pwrkey_sw_debounce_init(pwrkey);
 	if (error)
 		return error;
-
-	if (pwrkey->data->pull_up_bit) {
-		error = regmap_update_bits(pwrkey->regmap,
-					   pwrkey->baseaddr + PON_PULL_CTL,
-					   pwrkey->data->pull_up_bit,
-					   pull_up ? pwrkey->data->pull_up_bit :
-						     0);
-		if (error) {
-			dev_err(&pdev->dev, "failed to set pull: %d\n", error);
-			return error;
-		}
-	}
 
 	error = devm_request_threaded_irq(&pdev->dev, pwrkey->irq,
 					  NULL, pm8941_pwrkey_irq,
@@ -454,11 +607,22 @@ static const struct pm8941_data pon_gen3_resin_data = {
 	.has_pon_pbs = true,
 };
 
+static const struct pm8941_data pmar2230_btn_data = {
+	.status_bit                  = BTN_RT_STS_BIT,
+	.pull_up_bit                 = 0,
+	.name                        = "pmar2230_btn",
+	.phys                        = "pmar2230_btn/input0",
+	.supports_ps_hold_poff_config = false,
+	.supports_debounce_config    = true,
+	.has_pon_pbs                 = false,
+};
+
 static const struct of_device_id pm8941_pwr_key_id_table[] = {
 	{ .compatible = "qcom,pm8941-pwrkey", .data = &pwrkey_data },
 	{ .compatible = "qcom,pm8941-resin", .data = &resin_data },
 	{ .compatible = "qcom,pmk8350-pwrkey", .data = &pon_gen3_pwrkey_data },
 	{ .compatible = "qcom,pmk8350-resin", .data = &pon_gen3_resin_data },
+	{ .compatible = "qcom,pmar2230-btn",       .data = &pmar2230_btn_data },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, pm8941_pwr_key_id_table);

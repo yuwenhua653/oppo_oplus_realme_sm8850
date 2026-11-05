@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
 /*
- * Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SM4450_H
@@ -41,6 +41,7 @@
 #define GPU_CC_SLEEP_CLK					31
 #define GPU_CC_XO_CLK_SRC					32
 #define GPU_CC_XO_DIV_CLK_SRC					33
+#define GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK				34
 
 /* GPU_CC power domains */
 #define GPU_CC_CX_GDSC						0
@@ -58,5 +59,6 @@
 #define GPU_CC_XO_BCR						8
 #define GPU_CC_GX_ACD_IROOT_BCR					9
 #define GPU_CC_RBCPR_BCR					10
+#define GPUCC_GPU_CC_FREQUENCY_LIMITER_IRQ_CLEAR		11
 
 #endif

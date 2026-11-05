@@ -1,0 +1,5 @@
+config MI_HARDWARE_ID
+	tristate "Xiaomi hardware identification"
+	depends on QCOM_SOCINFO
+	help
+	  Xiaomi hardware identification from bootloader module parameters.

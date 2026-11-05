@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2022, 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #include <linux/bitfield.h>
@@ -8,9 +8,13 @@
 #include <linux/leds.h>
 #include <linux/led-class-flash.h>
 #include <linux/module.h>
+#include <linux/of.h>
 #include <linux/platform_device.h>
+#include <linux/power_supply.h>
 #include <linux/property.h>
 #include <linux/regmap.h>
+#include <linux/soc/qcom/battery_charger.h>
+#include <linux/iio/consumer.h>
 #include <media/v4l2-flash-led-class.h>
 
 /* registers definitions */
@@ -23,6 +27,8 @@
 #define FLASH_SUBTYPE_REG		0x05
 #define FLASH_SUBTYPE_3CH_PM8150_VAL	0x04
 #define FLASH_SUBTYPE_3CH_PMI8998_VAL	0x03
+#define FLASH_SUBTYPE_3CH_PMI632_VAL	0x05
+#define FLASH_SUBTYPE_1CH_PM2250_VAL	0x06
 #define FLASH_SUBTYPE_4CH_VAL		0x07
 
 #define FLASH_STS_3CH_OTST1		BIT(0)
@@ -42,6 +48,14 @@
 #define FLASH_STS_4CH_OTST1		BIT(5)
 #define FLASH_STS_4CHG_BOB_THM_OVERLOAD	BIT(6)
 
+#define FLASH_STS_1CH_VPH_LOW		BIT(0)
+#define FLASH_STS_1CH_OVLO_HIGH		BIT(1)
+#define FLASH_STS_1CH_BOB_ILIM_S1	BIT(2)
+#define FLASH_STS_1CH_BOB_ILIM_S2	BIT(3)
+#define FLASH_STS_1CH_OTST2		BIT(4)
+#define FLASH_STS_1CH_USB_PRESENT	BIT(5)
+#define FLASH_STS_1CHG_BOB_THM_OVERLOAD	BIT(6)
+
 #define FLASH_TIMER_EN_BIT		BIT(7)
 #define FLASH_TIMER_VAL_MASK		GENMASK(6, 0)
 #define FLASH_TIMER_STEP_MS		10
@@ -56,9 +70,11 @@
 #define STROBE_ACTIVE_HIGH_VAL		1
 
 #define FLASH_IRES_MASK_4CH		BIT(0)
+#define FLASH_IRES_MASK_1CH		BIT(0)
 #define FLASH_IRES_MASK_3CH		GENMASK(1, 0)
 #define FLASH_IRES_12P5MA_VAL		0
 #define FLASH_IRES_5MA_VAL_4CH		1
+#define FLASH_IRES_5MA_VAL_1CH		1
 #define FLASH_IRES_5MA_VAL_3CH		3
 
 /* constants */
@@ -81,14 +97,18 @@
 #define OTST1_4CH_MIN_VAL		0
 #define OTST1_4CH_V0P1_MIN_VAL		3
 #define OTST2_4CH_MIN_VAL		0
+#define OTST2_1CH_MIN_VAL		0
 
 #define OTST1_MAX_CURRENT_MA		1000
 #define OTST2_MAX_CURRENT_MA		500
 #define OTST3_MAX_CURRENT_MA		200
 
+#define FLASH_LMH_TRIGGER_LIMIT_MA	1000
+
 enum hw_type {
 	QCOM_MVFLASH_3CH,
 	QCOM_MVFLASH_4CH,
+	QCOM_MVFLASH_1CH,
 };
 
 enum led_mode {
@@ -101,6 +121,28 @@ enum led_strobe {
 	HW_STROBE,
 };
 
+struct flash_current_headroom {
+	u16 current_ma;
+	u16 headroom_mv;
+};
+
+enum qcom_flash_iio_props {
+	RBATT,
+	OCV,
+};
+
+static const char * const qcom_flash_iio_prop_names[] = {
+	[RBATT] = "rbatt",
+	[OCV] = "voltage_ocv",
+};
+
+static const struct flash_current_headroom mvflash_4ch_map[4] = {
+	{750,	200},
+	{1000,	250},
+	{1250,	300},
+	{1500,	400},
+};
+
 enum {
 	REG_STATUS1,
 	REG_STATUS2,
@@ -111,48 +153,91 @@ enum {
 	REG_IRESOLUTION,
 	REG_CHAN_STROBE,
 	REG_CHAN_EN,
+	REG_TORCH_CLAMP,
+	REG_MITIGATION_SW,
 	REG_THERM_THRSH1,
 	REG_THERM_THRSH2,
 	REG_THERM_THRSH3,
-	REG_TORCH_CLAMP,
 	REG_MAX_COUNT,
 };
 
+static const struct reg_field mvflash_3ch_pmi8998_regs[REG_MAX_COUNT] = {
+	REG_FIELD(0x08, 0, 7),			/* status1	*/
+	REG_FIELD(0x09, 0, 7),			/* status2	*/
+	REG_FIELD(0x0a, 0, 7),			/* status3	*/
+	REG_FIELD_ID(0x40, 0, 7, 3, 1),		/* chan_timer	*/
+	REG_FIELD_ID(0x43, 0, 6, 3, 1),		/* itarget	*/
+	REG_FIELD(0x46, 7, 7),			/* module_en	*/
+	REG_FIELD(0x47, 0, 5),			/* iresolution	*/
+	REG_FIELD_ID(0x49, 0, 2, 3, 1),		/* chan_strobe	*/
+	REG_FIELD(0x4c, 0, 2),			/* chan_en	*/
+	REG_FIELD(0xea, 0, 6),			/* torch_clamp	*/
+	REG_FIELD(0x6f, 0, 1),			/* mitigation_sw */
+	REG_FIELD(0x56, 0, 2),			/* therm_thrsh1 */
+	REG_FIELD(0x57, 0, 2),			/* therm_thrsh2 */
+	REG_FIELD(0x58, 0, 2),			/* therm_thrsh3 */
+};
+
 static const struct reg_field mvflash_3ch_regs[REG_MAX_COUNT] = {
-	[REG_STATUS1]		= REG_FIELD(0x08, 0, 7),
-	[REG_STATUS2]		= REG_FIELD(0x09, 0, 7),
-	[REG_STATUS3]		= REG_FIELD(0x0a, 0, 7),
-	[REG_CHAN_TIMER]	= REG_FIELD_ID(0x40, 0, 7, 3, 1),
-	[REG_ITARGET]		= REG_FIELD_ID(0x43, 0, 6, 3, 1),
-	[REG_MODULE_EN]		= REG_FIELD(0x46, 7, 7),
-	[REG_IRESOLUTION]	= REG_FIELD(0x47, 0, 5),
-	[REG_CHAN_STROBE]	= REG_FIELD_ID(0x49, 0, 2, 3, 1),
-	[REG_CHAN_EN]		= REG_FIELD(0x4c, 0, 2),
-	[REG_THERM_THRSH1]	= REG_FIELD(0x56, 0, 2),
-	[REG_THERM_THRSH2]	= REG_FIELD(0x57, 0, 2),
-	[REG_THERM_THRSH3]	= REG_FIELD(0x58, 0, 2),
-	[REG_TORCH_CLAMP]	= REG_FIELD(0xec, 0, 6),
+	REG_FIELD(0x08, 0, 7),			/* status1	*/
+	REG_FIELD(0x09, 0, 7),                  /* status2	*/
+	REG_FIELD(0x0a, 0, 7),                  /* status3	*/
+	REG_FIELD_ID(0x40, 0, 7, 3, 1),         /* chan_timer	*/
+	REG_FIELD_ID(0x43, 0, 6, 3, 1),         /* itarget	*/
+	REG_FIELD(0x46, 7, 7),                  /* module_en	*/
+	REG_FIELD(0x47, 0, 5),                  /* iresolution	*/
+	REG_FIELD_ID(0x49, 0, 2, 3, 1),         /* chan_strobe	*/
+	REG_FIELD(0x4c, 0, 2),                  /* chan_en	*/
+	REG_FIELD(0xec, 0, 6),			/* torch_clamp	*/
+	REG_FIELD(0x6f, 0, 1),			/* mitigation_sw */
+	REG_FIELD(0x56, 0, 2),			/* therm_thrsh1 */
+	REG_FIELD(0x57, 0, 2),			/* therm_thrsh2 */
+	REG_FIELD(0x58, 0, 2),			/* therm_thrsh3 */
 };
 
 static const struct reg_field mvflash_4ch_regs[REG_MAX_COUNT] = {
-	[REG_STATUS1]		= REG_FIELD(0x06, 0, 7),
-	[REG_STATUS2]		= REG_FIELD(0x07, 0, 6),
-	[REG_STATUS3]		= REG_FIELD(0x09, 0, 7),
-	[REG_CHAN_TIMER]	= REG_FIELD_ID(0x3e, 0, 7, 4, 1),
-	[REG_ITARGET]		= REG_FIELD_ID(0x42, 0, 6, 4, 1),
-	[REG_MODULE_EN]		= REG_FIELD(0x46, 7, 7),
-	[REG_IRESOLUTION]	= REG_FIELD(0x49, 0, 3),
-	[REG_CHAN_STROBE]	= REG_FIELD_ID(0x4a, 0, 6, 4, 1),
-	[REG_CHAN_EN]		= REG_FIELD(0x4e, 0, 3),
-	[REG_THERM_THRSH1]	= REG_FIELD(0x7a, 0, 2),
-	[REG_THERM_THRSH2]	= REG_FIELD(0x78, 0, 2),
-	[REG_TORCH_CLAMP]	= REG_FIELD(0xed, 0, 6),
+	REG_FIELD(0x06, 0, 7),			/* status1	*/
+	REG_FIELD(0x07, 0, 6),			/* status2	*/
+	REG_FIELD(0x09, 0, 7),			/* status3	*/
+	REG_FIELD_ID(0x3e, 0, 7, 4, 1),		/* chan_timer	*/
+	REG_FIELD_ID(0x42, 0, 6, 4, 1),		/* itarget	*/
+	REG_FIELD(0x46, 7, 7),			/* module_en	*/
+	REG_FIELD(0x49, 0, 3),			/* iresolution	*/
+	REG_FIELD_ID(0x4a, 0, 6, 4, 1),		/* chan_strobe	*/
+	REG_FIELD(0x4e, 0, 3),			/* chan_en	*/
+	REG_FIELD(0xed, 0, 6),			/* torch_clamp	*/
+	REG_FIELD(0x65, 0, 1),			/* mitigation_sw */
+	REG_FIELD(0x7a, 0, 2),			/* therm_thrsh1 */
+	REG_FIELD(0x78, 0, 2),			/* therm_thrsh2 */
+};
+
+static const struct reg_field mvflash_1ch_regs[REG_MAX_COUNT] = {
+	REG_FIELD(0x06, 0, 1),			/* status1      */
+	REG_FIELD(0x07, 0, 6),			/* status2      */
+	REG_FIELD(0x09, 0, 1),			/* status3      */
+	REG_FIELD_ID(0x3e, 0, 7, 1, 1),		/* chan_timer   */
+	REG_FIELD_ID(0x42, 0, 6, 1, 1),		/* itarget      */
+	REG_FIELD(0x46, 7, 7),			/* module_en    */
+	REG_FIELD(0x49, 0, 0),                  /* iresolution  */
+	REG_FIELD_ID(0x4a, 0, 2, 1, 1),		/* chan_strobe  */
+	REG_FIELD(0x4e, 0, 0),			/* chan_en      */
+	REG_FIELD(0xed, 0, 6),			/* torch_clamp  */
+	REG_FIELD(0xff, 0, 0),			/* mitigation sw - just a placeholder
+						 * since pm2250 does not support this
+						 * register
+						 */
+	REG_FIELD(0x78, 0, 0),			/* therm_thrsh1 */
+	REG_FIELD(0xff, 0, 0),			/* therm_thrsh2 - placeholder, not used on 1CH */
+	REG_FIELD(0xff, 0, 0),			/* therm_thrsh3 - placeholder, not used on 1CH */
 };
 
 struct qcom_flash_data {
+	struct device		*dev;
 	struct v4l2_flash	**v4l2_flash;
 	struct regmap_field     *r_fields[REG_MAX_COUNT];
-	struct mutex		lock;
+	struct power_supply	*batt_psy;
+	struct iio_channel	**iio_channels;
+	spinlock_t              lock;
 	enum hw_type		hw_type;
 	u32			total_ma;
 	u8			leds_count;
@@ -160,6 +245,9 @@ struct qcom_flash_data {
 	u8			chan_en_bits;
 	u8			revision;
 	u8			torch_clamp;
+	bool			trigger_lmh;
+	bool			debug_board_present;
+	bool			use_smb_battery_interface;
 };
 
 struct qcom_flash_led {
@@ -174,6 +262,7 @@ struct qcom_flash_led {
 	u8				*chan_id;
 	u8				chan_count;
 	bool				enabled;
+	bool				torch_enabled;
 };
 
 static int set_flash_module_en(struct qcom_flash_led *led, bool en)
@@ -185,7 +274,7 @@ static int set_flash_module_en(struct qcom_flash_led *led, bool en)
 	for (i = 0; i < led->chan_count; i++)
 		led_mask |= BIT(led->chan_id[i]);
 
-	mutex_lock(&flash_data->lock);
+	spin_lock(&flash_data->lock);
 	if (en)
 		flash_data->chan_en_bits |= led_mask;
 	else
@@ -195,9 +284,32 @@ static int set_flash_module_en(struct qcom_flash_led *led, bool en)
 	rc = regmap_field_write(flash_data->r_fields[REG_MODULE_EN], enable);
 	if (rc)
 		dev_err(led->flash.led_cdev.dev, "write module_en failed, rc=%d\n", rc);
-	mutex_unlock(&flash_data->lock);
+	spin_unlock(&flash_data->lock);
 
 	return rc;
+}
+
+static int set_lmh_mitigation(struct qcom_flash_led *led, bool enable)
+{
+	struct qcom_flash_data *flash_data = led->flash_data;
+	int rc;
+
+	if (flash_data->debug_board_present)
+		return 0;
+
+	if (flash_data->hw_type == QCOM_MVFLASH_1CH)
+		return 0;
+
+	if (enable == flash_data->trigger_lmh)
+		return 0;
+
+	rc = regmap_field_write(flash_data->r_fields[REG_MITIGATION_SW],
+						enable ? 1 : 0);
+	if (rc < 0)
+		return rc;
+
+	flash_data->trigger_lmh = enable;
+	return 0;
 }
 
 static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current_ma, bool strobe)
@@ -206,7 +318,7 @@ static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current
 	u32 therm_ma, avail_ma, thrsh[3], min_thrsh, sts;
 	int rc = 0;
 
-	mutex_lock(&flash_data->lock);
+	spin_lock(&flash_data->lock);
 	/*
 	 * Put previously allocated current into allowed budget in either of these two cases:
 	 * 1) LED is disabled;
@@ -217,6 +329,12 @@ static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current
 			flash_data->total_ma -= led->current_in_use_ma;
 		else
 			flash_data->total_ma = 0;
+
+		if (flash_data->total_ma < FLASH_LMH_TRIGGER_LIMIT_MA) {
+			rc  = set_lmh_mitigation(led, false);
+			if (rc < 0)
+				goto unlock;
+		}
 
 		led->current_in_use_ma = 0;
 		if (!strobe)
@@ -233,10 +351,12 @@ static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current
 	rc = regmap_field_read(flash_data->r_fields[REG_THERM_THRSH1], &thrsh[0]);
 	if (rc < 0)
 		goto unlock;
-
-	rc = regmap_field_read(flash_data->r_fields[REG_THERM_THRSH2], &thrsh[1]);
-	if (rc < 0)
-		goto unlock;
+	if ((flash_data->hw_type == QCOM_MVFLASH_3CH) ||
+			(flash_data->hw_type == QCOM_MVFLASH_4CH)) {
+		rc = regmap_field_read(flash_data->r_fields[REG_THERM_THRSH2], &thrsh[1]);
+		if (rc < 0)
+			goto unlock;
+	}
 
 	if (flash_data->hw_type == QCOM_MVFLASH_3CH) {
 		rc = regmap_field_read(flash_data->r_fields[REG_THERM_THRSH3], &thrsh[2]);
@@ -245,6 +365,9 @@ static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current
 	}
 
 	min_thrsh = OTST_3CH_MIN_VAL;
+
+	if (flash_data->hw_type == QCOM_MVFLASH_1CH)
+		min_thrsh = OTST2_1CH_MIN_VAL;
 	if (flash_data->hw_type == QCOM_MVFLASH_4CH)
 		min_thrsh = (flash_data->revision == FLASH_4CH_REVISION_V0P1) ?
 			OTST1_4CH_V0P1_MIN_VAL : OTST1_4CH_MIN_VAL;
@@ -260,9 +383,12 @@ static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current
 	 * The default thermal threshold settings have been updated hence
 	 * restore them if any fault happens starting from here.
 	 */
-	rc = regmap_field_write(flash_data->r_fields[REG_THERM_THRSH2], min_thrsh);
-	if (rc < 0)
-		goto restore;
+	if ((flash_data->hw_type == QCOM_MVFLASH_3CH) ||
+			(flash_data->hw_type == QCOM_MVFLASH_4CH)) {
+		rc = regmap_field_write(flash_data->r_fields[REG_THERM_THRSH2], min_thrsh);
+		if (rc < 0)
+			goto restore;
+	}
 
 	if (flash_data->hw_type == QCOM_MVFLASH_3CH) {
 		rc = regmap_field_write(flash_data->r_fields[REG_THERM_THRSH3], min_thrsh);
@@ -283,11 +409,14 @@ static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current
 			therm_ma = OTST2_MAX_CURRENT_MA;
 		else if (sts & FLASH_STS_3CH_OTST1)
 			therm_ma = OTST1_MAX_CURRENT_MA;
-	} else {
+	} else if (flash_data->hw_type == QCOM_MVFLASH_4CH) {
 		if (sts & FLASH_STS_4CH_OTST2)
 			therm_ma = OTST2_MAX_CURRENT_MA;
 		else if (sts & FLASH_STS_4CH_OTST1)
 			therm_ma = OTST1_MAX_CURRENT_MA;
+	} else {
+		if (sts & FLASH_STS_1CH_OTST2)
+			therm_ma = OTST2_MAX_CURRENT_MA;
 	}
 
 	/* Calculate the allowed flash current for the request */
@@ -300,6 +429,15 @@ static int update_allowed_flash_current(struct qcom_flash_led *led, u32 *current
 	led->current_in_use_ma = *current_ma;
 	flash_data->total_ma += led->current_in_use_ma;
 
+	if (flash_data->total_ma >= FLASH_LMH_TRIGGER_LIMIT_MA) {
+		rc = set_lmh_mitigation(led, true);
+		if (rc < 0)
+			goto unlock;
+
+		/* Wait for LMH mitigation to take effect */
+		udelay(500);
+	}
+
 	dev_dbg(led->flash.led_cdev.dev, "allowed flash current: %dmA, total current: %dmA\n",
 					led->current_in_use_ma, flash_data->total_ma);
 
@@ -308,16 +446,17 @@ restore:
 	rc = regmap_field_write(flash_data->r_fields[REG_THERM_THRSH1], thrsh[0]);
 	if (rc < 0)
 		goto unlock;
-
-	rc = regmap_field_write(flash_data->r_fields[REG_THERM_THRSH2], thrsh[1]);
-	if (rc < 0)
-		goto unlock;
-
+	if ((flash_data->hw_type == QCOM_MVFLASH_3CH) ||
+		(flash_data->hw_type == QCOM_MVFLASH_4CH)) {
+		rc = regmap_field_write(flash_data->r_fields[REG_THERM_THRSH2], thrsh[1]);
+		if (rc < 0)
+			goto unlock;
+	}
 	if (flash_data->hw_type == QCOM_MVFLASH_3CH)
 		rc = regmap_field_write(flash_data->r_fields[REG_THERM_THRSH3], thrsh[2]);
 
 unlock:
-	mutex_unlock(&flash_data->lock);
+	spin_unlock(&flash_data->lock);
 	return rc;
 }
 
@@ -359,6 +498,12 @@ static int set_flash_current(struct qcom_flash_led *led, u32 current_ma, enum le
 			ires_val |= ((mode == FLASH_MODE) ?
 				(FLASH_IRES_12P5MA_VAL << shift) :
 				(FLASH_IRES_5MA_VAL_4CH << shift));
+		} else if (flash_data->hw_type == QCOM_MVFLASH_1CH) {
+			shift = chan_id;
+			ires_mask |= FLASH_IRES_MASK_1CH << shift;
+			ires_val |= ((mode == FLASH_MODE) ?
+				(FLASH_IRES_12P5MA_VAL << shift) :
+				(FLASH_IRES_5MA_VAL_1CH << shift));
 		} else {
 			dev_err(led->flash.led_cdev.dev,
 					"HW type %d is not supported\n", flash_data->hw_type);
@@ -533,6 +678,14 @@ static int qcom_flash_fault_get(struct led_classdev_flash *fled_cdev, u32 *fault
 			  FLASH_STS_4CH_BOB_ILIM_S1 |
 			  FLASH_STS_4CH_BOB_ILIM_S2;
 		uv_mask = FLASH_STS_4CH_VPH_LOW;
+	} else if (flash_data->hw_type == QCOM_MVFLASH_1CH) {
+		ot_mask = FLASH_STS_1CH_OTST2 |
+			  FLASH_STS_1CH_OVLO_HIGH |
+			  FLASH_STS_1CH_USB_PRESENT |
+			  FLASH_STS_1CHG_BOB_THM_OVERLOAD;
+		oc_mask = FLASH_STS_1CH_BOB_ILIM_S1 |
+			  FLASH_STS_1CH_BOB_ILIM_S2;
+		uv_mask = FLASH_STS_1CH_VPH_LOW;
 	}
 
 	if (val & ot_mask)
@@ -548,7 +701,8 @@ static int qcom_flash_fault_get(struct led_classdev_flash *fled_cdev, u32 *fault
 	if (rc)
 		return rc;
 
-	if (flash_data->hw_type == QCOM_MVFLASH_3CH) {
+	if ((flash_data->hw_type == QCOM_MVFLASH_3CH) ||
+		(flash_data->hw_type == QCOM_MVFLASH_1CH)) {
 		if (val & chan_mask)
 			fault_sts |= LED_FAULT_TIMEOUT;
 	} else if (flash_data->hw_type == QCOM_MVFLASH_4CH) {
@@ -574,13 +728,16 @@ static int qcom_flash_led_brightness_set(struct led_classdev *led_cdev,
 	bool enable = !!brightness;
 	int rc;
 
-	rc = set_flash_strobe(led, SW_STROBE, false);
-	if (rc)
-		return rc;
+	/* Ignore disabling torch LED when it's reenabled to avoid a flicker */
+	if (!led->torch_enabled) {
+		rc = set_flash_strobe(led, SW_STROBE, false);
+		if (rc)
+			return rc;
 
-	rc = set_flash_module_en(led, false);
-	if (rc)
-		return rc;
+		rc = set_flash_module_en(led, false);
+		if (rc)
+			return rc;
+	}
 
 	rc = update_allowed_flash_current(led, &current_ma, enable);
 	if (rc < 0)
@@ -599,8 +756,233 @@ static int qcom_flash_led_brightness_set(struct led_classdev *led_cdev,
 	if (rc)
 		return rc;
 
-	return set_flash_strobe(led, SW_STROBE, enable);
+	rc = set_flash_strobe(led, SW_STROBE, enable);
+	if (!rc)
+		led->torch_enabled = enable;
+
+	return rc;
 }
+
+#define MAX_FLASH_CURRENT_MA		2000
+#define IBATT_OCP_THRESH_DEFAULT_UA	4500000
+#define VLED_MAX_DEFAULT_UV		3500000
+#define UCONV				1000000LL
+#define MCONV				1000LL
+#define VIN_FLASH_MIN_UV		3300000LL
+#define BOB_EFFICIENCY			900LL
+#define VFLASH_DIP_MARGIN_UV		50000
+#define VOLTAGE_HDRM_DEFAULT_MV		400
+#define VDIP_THRESH_DEFAULT_UV		2800000LL
+
+static int qcom_flash_get_iio_chan(struct qcom_flash_data *flash_data,
+		enum qcom_flash_iio_props chan)
+{
+	int rc;
+
+	/*
+	 * if the channel pointer is not-NULL and has a ERR value it has
+	 * already been queried upon earlier, hence return from here.
+	 */
+	if (IS_ERR(flash_data->iio_channels[chan]))
+		return PTR_ERR(flash_data->iio_channels[chan]);
+
+	if (!flash_data->iio_channels[chan]) {
+		flash_data->iio_channels[chan] = devm_iio_channel_get(flash_data->dev,
+						qcom_flash_iio_prop_names[chan]);
+		if (IS_ERR(flash_data->iio_channels[chan])) {
+			rc = PTR_ERR(flash_data->iio_channels[chan]);
+			if (rc == -EPROBE_DEFER) {
+				flash_data->iio_channels[chan] = NULL;
+				return rc;
+			}
+			dev_err(flash_data->dev, "%s channel unavailable %d\n",
+				qcom_flash_iio_prop_names[chan], rc);
+			return rc;
+		}
+	}
+
+	return 0;
+}
+
+static int qcom_flash_iio_getprop(struct qcom_flash_data *flash_data,
+				enum qcom_flash_iio_props chan, int *data)
+{
+	int rc;
+
+	rc = qcom_flash_get_iio_chan(flash_data, chan);
+	if (rc < 0)
+		return rc;
+
+	rc = iio_read_channel_processed(flash_data->iio_channels[chan], data);
+
+	if (rc < 0)
+		dev_err(flash_data->dev,
+				"Error in reading IIO channel data rc = %d\n", rc);
+
+	return rc;
+}
+
+static int qcom_flash_led_voltage_headroom_get(struct qcom_flash_data *flash_data)
+{
+	int i, voltage_hdrm_mv = 0;
+	u32 current_ma;
+
+	voltage_hdrm_mv = VOLTAGE_HDRM_DEFAULT_MV;
+	if (flash_data->hw_type == QCOM_MVFLASH_3CH)
+		return voltage_hdrm_mv;
+
+	spin_lock(&flash_data->lock);
+	current_ma = flash_data->total_ma;
+	spin_unlock(&flash_data->lock);
+
+	for (i = 0; i < ARRAY_SIZE(mvflash_4ch_map); i++) {
+		if (current_ma <= mvflash_4ch_map[i].current_ma)
+			voltage_hdrm_mv = mvflash_4ch_map[i].headroom_mv;
+	}
+
+	return voltage_hdrm_mv;
+}
+
+/*
+ * Myron's stock MCA proxy implements BATTERY_RESISTANCE as a fixed 100 mOhm
+ * model (100000 uOhm), not a live gauge reading.  The generic QTI provider
+ * correctly rejects MCA-owned supplies; do not remove its ownership check or
+ * export the same symbol from a second module.  Keep this compatibility model
+ * local to the observed PMH0101 + MCA battery pairing.  Voltage/current reads,
+ * dynamic budgeting and PMIC protections below still apply.
+ */
+#define MYRON_MCA_RBATT_MODEL_UOHM 100000
+
+static bool qcom_flash_is_pmh0101(struct qcom_flash_data *flash_data)
+{
+	return flash_data->dev &&
+		of_device_is_compatible(flash_data->dev->of_node,
+					"qcom,pmh0101-flash-led");
+}
+
+static bool qcom_flash_uses_mca_model(struct qcom_flash_data *flash_data)
+{
+	struct power_supply *psy = flash_data->batt_psy;
+
+	return qcom_flash_is_pmh0101(flash_data) && psy &&
+		psy->dev.parent &&
+		of_device_is_compatible(psy->dev.parent->of_node,
+					"mca,business_battery");
+}
+
+static int __qcom_flash_led_get_max_avail_current(
+		struct qcom_flash_data *flash_data, int *max_current_ma)
+{
+	int rbatt_uohm, ocv_uv, ibatt_now_ua, voltage_hdrm_mv;
+	int64_t ibatt_safe_ua, i_flash_ua, i_avail_ua, vflash_vdip,
+		vph_flash_uv, vin_flash_uv, p_flash_fw;
+	union power_supply_propval prop = {};
+	int rc;
+
+	if (!flash_data->batt_psy)
+		flash_data->batt_psy = power_supply_get_by_name("battery");
+
+	if (!flash_data->batt_psy) {
+		/* The production PMH0101 board requires battery data. */
+		if (qcom_flash_is_pmh0101(flash_data))
+			return -ENODEV;
+		*max_current_ma = MAX_FLASH_CURRENT_MA;
+		return 0;
+	}
+
+	if (flash_data->use_smb_battery_interface) {
+		rc = qcom_flash_iio_getprop(flash_data, RBATT, &rbatt_uohm);
+	} else if (qcom_flash_uses_mca_model(flash_data)) {
+		rbatt_uohm = MYRON_MCA_RBATT_MODEL_UOHM;
+		rc = 0;
+		dev_info_once(flash_data->dev,
+			"using OEM MCA battery model: %d uOhm\n", rbatt_uohm);
+	} else {
+		rc = qti_battery_charger_get_prop("battery", BATTERY_RESISTANCE,
+						&rbatt_uohm);
+	}
+	if (rc < 0) {
+		pr_err("Failed to get battery resistance, rc=%d\n",
+				rc);
+		return rc;
+	}
+
+	if (!rbatt_uohm) {
+		*max_current_ma = MAX_FLASH_CURRENT_MA;
+		flash_data->debug_board_present = true;
+		return 0;
+	}
+
+	if (flash_data->use_smb_battery_interface) {
+		rc = qcom_flash_iio_getprop(flash_data, OCV, &ocv_uv);
+		if (rc < 0) {
+			dev_err(flash_data->dev,
+					"Failed to get battery OCV, rc=%d\n", rc);
+			return rc;
+		}
+	} else {
+		rc = power_supply_get_property(flash_data->batt_psy,
+					POWER_SUPPLY_PROP_VOLTAGE_OCV, &prop);
+		if (rc < 0) {
+			dev_err(flash_data->dev,
+					"Failed to get battery OCV, rc=%d\n", rc);
+			return rc;
+		}
+		ocv_uv = prop.intval;
+	}
+
+	rc = power_supply_get_property(flash_data->batt_psy,
+		POWER_SUPPLY_PROP_CURRENT_NOW, &prop);
+	if (rc < 0) {
+		pr_err("Failed to get battery current, rc=%d\n", rc);
+		return rc;
+	}
+
+	/* Battery power supply returns -ve value for discharging */
+	ibatt_now_ua = -(prop.intval);
+
+	voltage_hdrm_mv = qcom_flash_led_voltage_headroom_get(flash_data);
+	vflash_vdip = VDIP_THRESH_DEFAULT_UV;
+
+	ibatt_safe_ua = DIV_ROUND_CLOSEST((ocv_uv -
+				(vflash_vdip + VFLASH_DIP_MARGIN_UV)) * UCONV,
+				rbatt_uohm);
+
+	if (ibatt_safe_ua < IBATT_OCP_THRESH_DEFAULT_UA) {
+		i_flash_ua = ibatt_safe_ua - ibatt_now_ua;
+		vph_flash_uv = vflash_vdip + VFLASH_DIP_MARGIN_UV;
+	} else {
+		i_flash_ua = IBATT_OCP_THRESH_DEFAULT_UA - ibatt_now_ua;
+		vph_flash_uv = ocv_uv - DIV_ROUND_CLOSEST((int64_t)rbatt_uohm
+				* IBATT_OCP_THRESH_DEFAULT_UA, UCONV);
+	}
+
+	vin_flash_uv = max(VLED_MAX_DEFAULT_UV +
+				(voltage_hdrm_mv * MCONV), VIN_FLASH_MIN_UV);
+
+	p_flash_fw = BOB_EFFICIENCY * vph_flash_uv * i_flash_ua;
+	i_avail_ua = DIV_ROUND_CLOSEST(p_flash_fw, (vin_flash_uv * MCONV));
+
+	/* Never let a depleted/overloaded budget wrap in the camera's u32 API. */
+	*max_current_ma = clamp_t(int64_t,
+			DIV_ROUND_CLOSEST(i_avail_ua, MCONV),
+			0, MAX_FLASH_CURRENT_MA);
+
+	pr_debug("rbatt_uohm=%d ocv_uv=%d ibatt_now_ua=%d i_avail_ua=%lld\n",
+			rbatt_uohm, ocv_uv, ibatt_now_ua, i_avail_ua);
+
+	return 0;
+}
+
+int qcom_flash_led_get_max_avail_current(
+		struct led_classdev *led_cdev, int *max_current_ma)
+{
+	struct led_classdev_flash *fled_cdev = lcdev_to_flcdev(led_cdev);
+	struct qcom_flash_led *led = flcdev_to_qcom_fled(fled_cdev);
+
+	return __qcom_flash_led_get_max_avail_current(led->flash_data, max_current_ma);
+}
+EXPORT_SYMBOL_GPL(qcom_flash_led_get_max_avail_current);
 
 static const struct led_flash_ops qcom_flash_ops = {
 	.flash_brightness_set = qcom_flash_brightness_set,
@@ -833,6 +1215,7 @@ static int qcom_flash_led_probe(struct platform_device *pdev)
 	flash_data = devm_kzalloc(dev, sizeof(*flash_data), GFP_KERNEL);
 	if (!flash_data)
 		return -ENOMEM;
+	flash_data->dev = dev;
 
 	regmap = dev_get_regmap(dev->parent, NULL);
 	if (!regmap) {
@@ -863,11 +1246,18 @@ static int qcom_flash_led_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-	if (val == FLASH_SUBTYPE_3CH_PM8150_VAL || val == FLASH_SUBTYPE_3CH_PMI8998_VAL) {
+	if (val == FLASH_SUBTYPE_3CH_PM8150_VAL || val == FLASH_SUBTYPE_3CH_PMI632_VAL) {
 		flash_data->hw_type = QCOM_MVFLASH_3CH;
 		flash_data->max_channels = 3;
 		regs = devm_kmemdup(dev, mvflash_3ch_regs, sizeof(mvflash_3ch_regs),
 				    GFP_KERNEL);
+		if (!regs)
+			return -ENOMEM;
+	} else if (val == FLASH_SUBTYPE_3CH_PMI8998_VAL) {
+		flash_data->hw_type = QCOM_MVFLASH_3CH;
+		flash_data->max_channels = 3;
+		regs = devm_kmemdup(dev, mvflash_3ch_pmi8998_regs,
+				    sizeof(mvflash_3ch_pmi8998_regs), GFP_KERNEL);
 		if (!regs)
 			return -ENOMEM;
 	} else if (val == FLASH_SUBTYPE_4CH_VAL) {
@@ -885,6 +1275,14 @@ static int qcom_flash_led_probe(struct platform_device *pdev)
 		}
 
 		flash_data->revision = val;
+	} else if (val == FLASH_SUBTYPE_1CH_PM2250_VAL) {
+		flash_data->hw_type = QCOM_MVFLASH_1CH;
+		flash_data->max_channels = 1;
+		regs = devm_kmemdup(dev, mvflash_1ch_regs, sizeof(mvflash_1ch_regs),
+				    GFP_KERNEL);
+		if (!regs)
+			return -ENOMEM;
+
 	} else {
 		dev_err(dev, "flash LED subtype %#x is not yet supported\n", val);
 		return -ENODEV;
@@ -901,7 +1299,7 @@ static int qcom_flash_led_probe(struct platform_device *pdev)
 	devm_kfree(dev, regs); /* devm_regmap_field_bulk_alloc() makes copies */
 
 	platform_set_drvdata(pdev, flash_data);
-	mutex_init(&flash_data->lock);
+	spin_lock_init(&flash_data->lock);
 
 	count = device_get_child_node_count(dev);
 	if (count == 0 || count > flash_data->max_channels) {
@@ -929,6 +1327,19 @@ static int qcom_flash_led_probe(struct platform_device *pdev)
 		flash_data->leds_count++;
 	}
 
+	flash_data->use_smb_battery_interface =
+		device_property_read_bool(&pdev->dev,
+				"qcom,use-smb-battery-interface");
+	if (flash_data->use_smb_battery_interface) {
+		flash_data->iio_channels = devm_kcalloc(&pdev->dev,
+				ARRAY_SIZE(qcom_flash_iio_prop_names),
+					sizeof(struct iio_channel *), GFP_KERNEL);
+		if (!flash_data->iio_channels) {
+			rc = -ENOMEM;
+			goto release;
+		}
+	}
+
 	return regmap_field_write(flash_data->r_fields[REG_TORCH_CLAMP], flash_data->torch_clamp);
 release:
 	fwnode_handle_put(child);
@@ -943,8 +1354,6 @@ static void qcom_flash_led_remove(struct platform_device *pdev)
 
 	while (flash_data->v4l2_flash[flash_data->leds_count] && flash_data->leds_count)
 		v4l2_flash_release(flash_data->v4l2_flash[flash_data->leds_count--]);
-
-	mutex_destroy(&flash_data->lock);
 }
 
 static const struct of_device_id qcom_flash_led_match_table[] = {

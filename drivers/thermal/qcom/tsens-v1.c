@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2019, Linaro Limited
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #include <linux/bitops.h>
@@ -44,7 +45,7 @@ static struct tsens_legacy_calibration_format tsens_qcs404_nvmem = {
 
 static int calibrate_v1(struct tsens_priv *priv)
 {
-	u32 p1[10], p2[10];
+	u32 p1[MAX_SENSORS], p2[MAX_SENSORS];
 	u32 *qfprom_cdata;
 	int mode, ret;
 
@@ -77,6 +78,9 @@ static struct tsens_features tsens_v1_feat = {
 	.max_sensors	= 11,
 	.trip_min_temp	= -40000,
 	.trip_max_temp	= 120000,
+	.valid_bit = BIT(14),
+	.last_temp_mask = 0x3FF,
+	.last_temp_resolution = 9,
 };
 
 static const struct reg_field tsens_v1_regfields[MAX_REGFIELDS] = {
@@ -121,8 +125,7 @@ static const struct reg_field tsens_v1_regfields[MAX_REGFIELDS] = {
 	/* NO CRITICAL INTERRUPT SUPPORT on v1 */
 
 	/* Sn_STATUS */
-	REG_FIELD_FOR_EACH_SENSOR11(LAST_TEMP,    TM_Sn_STATUS_OFF,  0,  9),
-	REG_FIELD_FOR_EACH_SENSOR11(VALID,        TM_Sn_STATUS_OFF, 14, 14),
+	REG_FIELD_FOR_EACH_SENSOR11(LAST_TEMP,    TM_Sn_STATUS_OFF,  0,  14),
 	/* xxx_STATUS bits: 1 == threshold violated */
 	REG_FIELD_FOR_EACH_SENSOR11(MIN_STATUS,   TM_Sn_STATUS_OFF, 10, 10),
 	REG_FIELD_FOR_EACH_SENSOR11(LOWER_STATUS, TM_Sn_STATUS_OFF, 11, 11),
@@ -162,19 +165,6 @@ struct tsens_plat_data data_tsens_v1 = {
 	.fields	= tsens_v1_regfields,
 };
 
-static const struct tsens_ops ops_common = {
-	.init		= init_common,
-	.calibrate	= tsens_calibrate_common,
-	.get_temp	= get_temp_tsens_valid,
-};
-
-struct tsens_plat_data data_8937 = {
-	.num_sensors	= 11,
-	.ops		= &ops_common,
-	.feat		= &tsens_v1_feat,
-	.fields		= tsens_v1_regfields,
-};
-
 static const struct tsens_ops ops_8956 = {
 	.init		= init_8956,
 	.calibrate	= tsens_calibrate_common,
@@ -188,9 +178,15 @@ struct tsens_plat_data data_8956 = {
 	.fields		= tsens_v1_regfields,
 };
 
+static const struct tsens_ops ops_8976 = {
+	.init		= init_common,
+	.calibrate	= tsens_calibrate_common,
+	.get_temp	= get_temp_tsens_valid,
+};
+
 struct tsens_plat_data data_8976 = {
 	.num_sensors	= 11,
-	.ops		= &ops_common,
+	.ops		= &ops_8976,
 	.feat		= &tsens_v1_feat,
 	.fields		= tsens_v1_regfields,
 };

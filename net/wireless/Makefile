@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0
-obj-$(CONFIG_CFG80211) += cfg80211.o
 obj-$(CONFIG_LIB80211) += lib80211.o
 obj-$(CONFIG_LIB80211_CRYPT_WEP) += lib80211_crypt_wep.o
 obj-$(CONFIG_LIB80211_CRYPT_CCMP) += lib80211_crypt_ccmp.o
@@ -11,18 +10,10 @@ obj-$(CONFIG_WEXT_PROC) += wext-proc.o
 obj-$(CONFIG_WEXT_SPY) += wext-spy.o
 obj-$(CONFIG_WEXT_PRIV) += wext-priv.o
 
-cfg80211-y += core.o sysfs.o radiotap.o util.o reg.o scan.o nl80211.o
-cfg80211-y += mlme.o ibss.o sme.o chan.o ethtool.o mesh.o ap.o trace.o ocb.o
-cfg80211-y += pmsr.o
-cfg80211-$(CONFIG_OF) += of.o
-cfg80211-$(CONFIG_CFG80211_DEBUGFS) += debugfs.o
-cfg80211-$(CONFIG_CFG80211_WEXT) += wext-compat.o wext-sme.o
 
 CFLAGS_trace.o := -I$(src)
 
-cfg80211-$(CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS) += shipped-certs.o
 ifneq ($(CONFIG_CFG80211_EXTRA_REGDB_KEYDIR),)
-cfg80211-y += extra-certs.o
 endif
 
 $(obj)/shipped-certs.c: $(sort $(wildcard $(src)/certs/*.hex))
@@ -59,3 +50,19 @@ $(obj)/extra-certs.c: $(CONFIG_CFG80211_EXTRA_REGDB_KEYDIR) \
 	  ) > $@)
 
 clean-files += shipped-certs.c extra-certs.c
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/net/wireless
+obj-$(CONFIG_CFG80211) += cfg80211.o
+cfg80211-y := ap.o chan.o core.o ethtool.o ibss.o mesh.o mlme.o nl80211.o ocb.o pmsr.o radiotap.o reg.o scan.o sme.o sysfs.o trace.o util.o shipped-certs.o
+ifneq ($(filter y m,$(CONFIG_OF)),)
+cfg80211-y += of.o
+endif
+ifneq ($(filter y m,$(CONFIG_CFG80211_DEBUGFS)),)
+cfg80211-y += debugfs.o
+endif
+ifneq ($(filter y m,$(CONFIG_CFG80211_WEXT)),)
+cfg80211-y += wext-compat.o wext-sme.o
+endif

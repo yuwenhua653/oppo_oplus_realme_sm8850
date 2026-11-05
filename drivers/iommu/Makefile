@@ -31,3 +31,23 @@ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
 obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
 obj-$(CONFIG_APPLE_DART) += apple-dart.o
 obj-$(CONFIG_PKVM_PVIOMMU) += pkvm-pviommu.o
+
+# Qualcomm SM8850 platform modules.
+# Platform drivers reference private in-tree headers by source-root paths.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(srctree)/drivers/iommu
+obj-$(CONFIG_QTI_IOMMU_SUPPORT) += iommu-logger.o
+obj-$(CONFIG_QCOM_LAZY_MAPPING) += msm_dma_iommu_mapping.o
+obj-$(CONFIG_QCOM_IOMMU_DEBUG) += qcom_iommu_debug.o
+qcom_iommu_debug-y := qcom-iommu-debug-user.o qcom-iommu-debug.o qcom-iommu-debug-alloc.o
+ifneq ($(filter y m,$(CONFIG_QCOM_DPD_PROXY)),)
+qcom_iommu_debug-y += qcom-iommu-debug-dpd.o
+endif
+obj-$(CONFIG_QCOM_IOMMU_UTIL) += qcom_iommu_util.o
+qcom_iommu_util-y := qcom-iommu-util.o
+ifneq ($(filter y m,$(CONFIG_IOMMU_IO_PGTABLE_FAST)),)
+qcom_iommu_util-y += qcom-dma-iommu-generic.o io-pgtable-fast.o dma-mapping-fast.o
+endif
+ifneq ($(filter y m,$(CONFIG_IOMMU_IO_PGTABLE_LPAE)),)
+qcom_iommu_util-y += qcom-io-pgtable-arm.o qcom-io-pgtable-alloc.o
+endif

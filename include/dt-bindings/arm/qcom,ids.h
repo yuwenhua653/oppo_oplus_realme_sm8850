@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2015, The Linux Foundation. All rights reserved.
  * Copyright (c) 2022 Linaro Ltd
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  * Author: Krzysztof Kozlowski <krzk@kernel.org> based on previous work of Kumar Gala.
  */
 #ifndef _DT_BINDINGS_ARM_QCOM_IDS_H
@@ -210,18 +211,21 @@
 #define QCOM_ID_IPQ8174			399
 #define QCOM_ID_IPQ6018			402
 #define QCOM_ID_IPQ6028			403
+#define QCOM_ID_SM8350                  415
 #define QCOM_ID_SDM429W			416
 #define QCOM_ID_SM4250			417
+#define QCOM_ID_SM4250P			420
 #define QCOM_ID_IPQ6000			421
 #define QCOM_ID_IPQ6010			422
 #define QCOM_ID_SC7180			425
 #define QCOM_ID_SM6350			434
 #define QCOM_ID_QCM2150			436
 #define QCOM_ID_SDA429W			437
-#define QCOM_ID_SM8350			439
+#define QCOM_ID_SM8350P			439
 #define QCOM_ID_QCM2290			441
 #define QCOM_ID_SM7125			443
 #define QCOM_ID_SM6115			444
+#define QCOM_ID_SM6115P			445
 #define QCOM_ID_IPQ5010			446
 #define QCOM_ID_IPQ5018			447
 #define QCOM_ID_IPQ5028			448
@@ -234,13 +238,18 @@
 #define QCOM_ID_SA8540P			461
 #define QCOM_ID_QCM4290			469
 #define QCOM_ID_QCS4290			470
+#define QCOM_ID_QCM_SCUBA		473
+#define QCOM_ID_QCS_SCUBA		474
 #define QCOM_ID_SM7325			475
 #define QCOM_ID_SM8450_2		480
 #define QCOM_ID_SM8450_3		482
+#define QCOM_ID_MONACO			486
 #define QCOM_ID_SC7280			487
 #define QCOM_ID_SC7180P			495
 #define QCOM_ID_QCM6490			497
-#define QCOM_ID_SM7325P			499
+#define QCOM_ID_QCS6490			498
+#define QCOM_ID_SM8325			501
+#define QCOM_ID_SM8325P			502
 #define QCOM_ID_IPQ5000			503
 #define QCOM_ID_IPQ0509			504
 #define QCOM_ID_IPQ0518			505
@@ -250,6 +259,9 @@
 #define QCOM_ID_IPQ9554			512
 #define QCOM_ID_IPQ9570			513
 #define QCOM_ID_IPQ9574			514
+#define QCOM_ID_SM7315			515
+#define QCOM_ID_MONACOP                 517
+#define QCOM_ID_KHAJE			518
 #define QCOM_ID_SM8550			519
 #define QCOM_ID_IPQ5016			520
 #define QCOM_ID_IPQ9510			521
@@ -263,21 +275,68 @@
 #define QCOM_ID_QDU1000			545
 #define QCOM_ID_X1E80100		555
 #define QCOM_ID_SM8650			557
-#define QCOM_ID_SM4450			568
+#define QCOM_ID_KHAJEP			561
+#define QCOM_ID_KHAJEQ			562
+#define QCOM_ID_RAVELIN			568
+#define QCOM_ID_QCS5430			575
+#define QCOM_ID_QCM5430			576
+#define QCOM_ID_KHAJEG			585
+#define QCOM_ID_KHAJEIOT		586
 #define QCOM_ID_QDU1010			587
 #define QCOM_ID_QRU1032			588
 #define QCOM_ID_QRU1052			589
 #define QCOM_ID_QRU1062			590
 #define QCOM_ID_IPQ5332			592
 #define QCOM_ID_IPQ5322			593
+#define QCOM_ID_PINEAPPLE		557
+#define QCOM_ID_PINEAPPLEP		577
 #define QCOM_ID_IPQ5312			594
 #define QCOM_ID_IPQ5302			595
+#define QCOM_ID_RAVELINP		602
 #define QCOM_ID_QCS8550			603
 #define QCOM_ID_QCM8550			604
+#define QCOM_ID_SUN				618
+#define QCOM_ID_QWM2290			621
+#define QCOM_ID_QWS2290			622
+#define QCOM_ID_SUNP			639
 #define QCOM_ID_IPQ5300			624
+#define QCOM_ID_X1P42100		635
 #define QCOM_ID_IPQ5321			650
-#define QCOM_ID_QCS8300			674
-#define QCOM_ID_QCS8275			675
+#define QCOM_ID_SG_RAVELIN		653
+#define QCOM_ID_SG_RAVELINP		654
+#define QCOM_ID_CANOE			660
+#define QCOM_ID_QCS8845			764
+#define QCOM_ID_CANOEP			661
+#define QCOM_ID_SERAPH			672
+#define QCOM_ID_SERAPHP                 673
+#define QCOM_ID_SERAPH_MEP_POP          792
+#define QCOM_ID_QCS_KALAMAP_N		668
+#define QCOM_ID_VIENNA			669
+#define QCOM_ID_VIENNAP			670
+#define QCOM_ID_ALOR			685
+#define QCOM_ID_ALORP			727
+#define QCOM_ID_QCS8625_PINEAPPLE	702
+#define QCOM_ID_ALOR_INTERPOSER		704
+#define QCOM_ID_CQ8750S			705
+#define QCOM_ID_CQ8725S			706
+#define QCOM_ID_WHALE			722
+#define QCOM_ID_WHALEP			723
+#define QCOM_ID_CHORA			724
+#define QCOM_ID_CHORAP			744
+#define QCOM_ID_MALABAR			733
+#define QCOM_ID_PIKACHU			736
+#define QCOM_ID_PIKACHUP                737
+#define QCOM_ID_PIKACHUS                784
+#define QCOM_ID_PIKACHUPS               783
+#define QCOM_ID_CANOEPSG		743
+#define QCOM_ID_SHIKRA			756
+#define QCOM_ID_MALABARP                757
+#define QCOM_ID_KHAJEAPQ		762
+#define QCOM_ID_BOURTZI			776
+#define QCOM_ID_BOURTZIP		777
+#define QCOM_ID_DIWALI			506
+#define QCOM_ID_DIWALIP			547
+#define QCOM_ID_MAHUA			693
 
 /*
  * The board type and revision information, used by Qualcomm bootloaders and

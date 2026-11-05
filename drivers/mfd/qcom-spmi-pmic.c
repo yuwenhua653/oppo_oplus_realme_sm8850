@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2014, 2017-2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #include <linux/device.h>
@@ -11,6 +12,7 @@
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
+#include <linux/qti-regmap-debugfs.h>
 #include <linux/spmi.h>
 #include <linux/types.h>
 #include <linux/regmap.h>
@@ -84,6 +86,7 @@ static const struct of_device_id pmic_spmi_id_table[] = {
 static struct spmi_device *qcom_pmic_get_base_usid(struct spmi_device *sdev, struct qcom_spmi_dev *ctx)
 {
 	struct device_node *spmi_bus;
+	struct device_node *child;
 	int function_parent_usid, ret;
 	u32 pmic_addr;
 
@@ -107,9 +110,10 @@ static struct spmi_device *qcom_pmic_get_base_usid(struct spmi_device *sdev, str
 	 */
 	spmi_bus = of_get_parent(sdev->dev.of_node);
 	sdev = ERR_PTR(-ENODATA);
-	for_each_child_of_node_scoped(spmi_bus, child) {
+	for_each_child_of_node(spmi_bus, child) {
 		ret = of_property_read_u32_index(child, "reg", 0, &pmic_addr);
 		if (ret) {
+			of_node_put(child);
 			sdev = ERR_PTR(ret);
 			break;
 		}
@@ -123,6 +127,7 @@ static struct spmi_device *qcom_pmic_get_base_usid(struct spmi_device *sdev, str
 				 */
 				sdev = ERR_PTR(-EPROBE_DEFER);
 			}
+			of_node_put(child);
 			break;
 		}
 	}
@@ -250,13 +255,25 @@ static const struct regmap_config spmi_regmap_config = {
 	.fast_io	= true,
 };
 
+static const struct regmap_config spmi_regmap_can_sleep_config = {
+	.reg_bits	= 16,
+	.val_bits	= 8,
+	.max_register	= 0xffff,
+	.fast_io	= false,
+};
+
 static int pmic_spmi_probe(struct spmi_device *sdev)
 {
+	struct device_node *root = sdev->dev.of_node;
 	struct regmap *regmap;
 	struct qcom_spmi_dev *ctx;
 	int ret;
 
-	regmap = devm_regmap_init_spmi_ext(sdev, &spmi_regmap_config);
+	if (of_property_read_bool(root, "qcom,can-sleep"))
+		regmap = devm_regmap_init_spmi_ext(sdev,
+						&spmi_regmap_can_sleep_config);
+	else
+		regmap = devm_regmap_init_spmi_ext(sdev, &spmi_regmap_config);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
@@ -280,6 +297,8 @@ static int pmic_spmi_probe(struct spmi_device *sdev)
 	mutex_lock(&pmic_spmi_revid_lock);
 	spmi_device_set_drvdata(sdev, ctx);
 	mutex_unlock(&pmic_spmi_revid_lock);
+
+	devm_regmap_qti_debugfs_register(&sdev->dev, regmap);
 
 	return devm_of_platform_populate(&sdev->dev);
 }
