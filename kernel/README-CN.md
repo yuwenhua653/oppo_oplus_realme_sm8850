@@ -49,6 +49,7 @@ R123 源码 DT 已通过本轮真机功能验证，默认启用 `MYRON_DT_MODE=s
 
 ```sh
 export OUT_DIR=out-myron-source
+export SOONG_NINJA=ninja
 python3 -B device/xiaomi/myron/kernel/rom_kernel.py prepare \
   --workspace "$OUT_DIR/target/product/myron/obj/MYRON_KERNEL/workspace" --jobs 4
 source build/envsetup.sh
@@ -59,6 +60,9 @@ m kernel
 ```
 
 `prepare` 只同步并检查源码、工具链，不编译内核。后续 `m` 自动编译。
+`OUT_DIR` 使用相对 ROM 根目录的路径；当前 cnb 的 fsgen 会拒绝绝对路径形式的源码模块和 DTBO 输入。
+若已经使用绝对路径，只需在 ROM 根目录将 `OUT_DIR` 改成同一目录的相对写法，无需删除输出或重新同步。
+`SOONG_NINJA=ninja` 在当前 shell 中选择原生 Ninja，可避开 Siso 的 `@config//main.star` 配置加载失败。
 可通过构建参数 `MYRON_KERNEL_JOBS=4 MYRON_KERNEL_RAM_MB=16000` 调整资源；
 默认 2 个任务 / 10000 MB。宿主为 x86-64 Ubuntu，内核工作区至少预留 100 GB，
 完整 ROM 另需其正常磁盘和内存空间。内核工具链与 ROM 用户空间 Clang 独立，均按原有配置使用。
@@ -81,6 +85,15 @@ m kernel
 未改动且已验证的源码编译结果会复用；只改设备打包规则时，也会先尝试验证并复用完整编译原始产物，
 避免重新编译整个内核。缺失或被篡改的缓存停止，不降级使用旧内核。
 版本来自真实 common 提交，时间来自实际构建开始时间，保留表示 4 KiB 页的 `-4k`。
+
+内核与源码 DT 的每次成功校验分别生成 `kernel-check.d`、`dt-check.d` 依赖文件，
+记录保留的不存在输入 `$(MYRON_KERNEL_OUT)/.source-check-force`。
+原生 Ninja 的动态依赖处理使校验每次运行，同时兼容 cnb 的真实产物依赖 `.PHONY` 限制，
+以及缺失输出和缺失依赖文件的严格检查。该保留路径不是输出，不要创建同名文件或规则。
+`Image` 与 DT 的 `.KATI_RESTAT`、模块及 DTBO 隐式输出声明保持不变。
+内容相同时不重写的 `PRODUCT_OUT/kernel`、`PRODUCT_OUT/dtb.img` 复制规则也启用 restat。
+已用真实 Kati/Android Ninja 的 cnb 严格选项验证上述规则、连续两次校验、缓存复用、
+直接构建隐式输出和失败阻断；该小型测试用替代命令模拟昂贵的内核/DT 任务，不代表完整 ROM 构建通过。
 
 ## 当前验证与边界
 

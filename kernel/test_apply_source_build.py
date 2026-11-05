@@ -126,10 +126,10 @@ class AdapterUpgradeTest(unittest.TestCase):
         self.assertEqual(self.policy.read_bytes(), b'# Keep my existing policy.\n')
 
     @unittest.skipUnless(PREVIOUS, 'Set MYRON_TEST_PREVIOUS_ADAPTER to a verified prior checkout')
-    def test_published_r119_checkout_upgrade(self):
+    def test_published_previous_checkout_upgrade(self):
         prior = Path(PREVIOUS)
-        self.assertEqual(json.loads((self.source / 'kernel/previous-adapter.json').read_text())
-                         ['commit'], 'dbcb4178513c8e9e722258f031a018bdd64af223')
+        known = json.loads((self.source / 'kernel/previous-adapter.json').read_text())['files']['build.mk']
+        self.assertIn(hashlib.sha256((prior / 'kernel/build.mk').read_bytes()).hexdigest(), known)
         self.installed_target(prior)
         before = snapshot(self.target)
         dry_run = self.run_adapter()
