@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0
 
+ifeq ($(CONFIG_TARGET_PRODUCT_MYRON),y)
+include $(src)/Makefile.myron
+else
+# SPDX-License-Identifier: GPL-2.0
+
 # add-overlay defines the target with following naming convention:
 # <base>-<board>-dtbs = base.dtb board.dtbo
 #
@@ -1230,3 +1235,5 @@ always-y        := $(dtb-y)
 subdir-y        := $(dts-dirs)
 subdir-y        += audio bt camera data display dsp eSE eva fingerprint graphics mm mmrm nfc securemsm synx video wlan
 clean-files     := *.dtb *.dtbo
+
+endif # CONFIG_TARGET_PRODUCT_MYRON

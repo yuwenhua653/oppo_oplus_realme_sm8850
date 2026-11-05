@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: GPL-2.0
+# Base trees and overlays from the device-validated R123 source profile.
+# ROM kernel.mk assembles images from these Kbuild outputs.
+dtb-y += \
+	audio/canoe-audio.dtbo \
+	camera/canoe-camera-v2.dtbo \
+	camera/canoe-camera.dtbo \
+	dsp/canoe/canoe-dsp.dtbo \
+	dsp/canoe/canoe-dsp_v2.dtbo \
+	eva/canoe-eva.dtbo \
+	fingerprint/canoe-fingerprint.dtbo \
+	graphics/gpu/canoe-gpu.dtbo \
+	mm/hfi_core/canoe-hfi-core.dtbo \
+	mm/hw_fence/canoe-hw-fence.dtbo \
+	data/canoe-ipa.dtbo \
+	mmrm/canoe/canoe-mmrm.dtbo \
+	wlan/canoe-peach-cnss.dtbo \
+	display/display/canoe-sde.dtbo \
+	data/canoe-smem-mailbox.dtbo \
+	synx/synx/canoe-synx.dtbo \
+	canoe-tp-v2.dtb \
+	canoe-tp.dtb \
+	graphics/gpu/canoe-v2-gpu.dtbo \
+	canoe-v2.dtb \
+	video/canoe-vidc-v2.dtbo \
+	video/canoe-vidc.dtbo \
+	bt/canoe-wcn786x-bt.dtbo \
+	canoe.dtb \
+	canoep-tp-v2.dtb \
+	canoep-tp.dtb \
+	canoep-v2.dtb \
+	canoep.dtb \
+	audio/myron-audio-mtp.dtbo \
+	display/display/myron-sde-display-mtp-overlay.dtbo \
+	camera/myron-sm8850-camera-sensor.dtbo \
+	myron-sm8850-overlay.dtbo
