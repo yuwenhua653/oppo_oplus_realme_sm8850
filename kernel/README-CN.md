@@ -106,6 +106,36 @@ python3 -B device/xiaomi/myron/kernel/rom_kernel.py verify \
 已用真实 Kati/Android Ninja 的 cnb 严格选项验证上述规则、连续两次校验、缓存复用、
 直接构建隐式输出和失败阻断；该小型测试用替代命令模拟昂贵的内核/DT 任务，不代表完整 ROM 构建通过。
 
+## 2026-11-05：源码镜像音频参数与 vendor_dlkm 打包
+
+本轮源码镜像可启动，但真机报告无声音。采集中 295 个模块已加载，三个 TFA I2C
+设备均已绑定，TFA 模块引用数却由正常 R123 的 3 变为 0；运行分区缺少 `modules.options`。
+正常 R123 的加载器会传入 `machine_dlkm.ko myron_tfa_links=1`，而锁定模块源码的
+该参数默认为关闭。本次通过 Android 标准 `BOARD_VENDOR_KERNEL_MODULES_OPTIONS_FILE`
+将 `options machine_dlkm myron_tfa_links=1` 装入 `vendor_dlkm/lib/modules/modules.options`，
+恢复三个 TFA codec 链路所需的加载参数。此修复尚待更新后的镜像真机验证，不能视为音频已恢复。
+
+同时保留已实测启动的 EROFS / `lz4hc,9` / 非 sparse 配置：此前镜像为 27,598,848
+字节，小于该设备现有 vendor_dlkm 分区的 53,805,056 字节。新增参数后的实际大小仍需检查。
+入口、DTS、源码 lock、Image 和模块源码均未修改。合并器保留既有扁平头文件修复，以及
+用户追加在设备 `BoardConfig.mk` 中的同值 EROFS 配置；未知适配器修改仍会停止合并。
+
+在已完成本轮 R123 全量源码构建、已 `lunch` 的同一 ROM 工作区中，沿用原输出目录重打包：
+
+```sh
+export OUT_DIR=out-myron-r123-source
+export SOONG_NINJA=ninja
+m -j4 vendor_dlkmimage
+cat "$OUT_DIR/target/product/myron/vendor_dlkm/lib/modules/modules.options"
+file "$OUT_DIR/target/product/myron/vendor_dlkm.img"
+stat -c '%s bytes' "$OUT_DIR/target/product/myron/vendor_dlkm.img"
+```
+
+已有完整源码产物通过校验时，此目标复用内核和模块，只更新打包结果；无需清空 OUT_DIR 或
+重跑 `prepare`。确认参数文件包含上述行、镜像为 EROFS 且适合现有分区。此单分区更新只适用于
+当前已运行的同一批 R123 Image/模块；切换内核来源时仍需配套镜像。重新启动加载后再检查
+`/sys/module/machine_dlkm/parameters/myron_tfa_links` 为 `Y`，并实际测试扬声器、听筒等音频路径。
+
 ## 当前验证与边界
 
 已用成功的 R115 完整编译产物运行适配器：297 个模块、18,543 项导入 CRC 检查通过。

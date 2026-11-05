@@ -134,6 +134,18 @@ class AdapterUpgradeTest(unittest.TestCase):
         self.assertIn('source_dt.py', result.stderr)
         self.assertEqual(snapshot(self.target), before)
 
+    def test_unknown_existing_module_options_reject_before_any_write(self):
+        self.fresh_target()
+        options = self.target / 'kernel/modules.options'
+        options.parent.mkdir(parents=True)
+        options.write_text('options machine_dlkm myron_tfa_links=0\n')
+        before = snapshot(self.target)
+        result = self.run_adapter(apply=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Existing adapter differs:', result.stderr)
+        self.assertIn('modules.options', result.stderr)
+        self.assertEqual(snapshot(self.target), before)
+
     def test_reviewed_previous_hash_upgrades_without_relaxing_policy(self):
         self.installed_target()
         old = self.target / 'kernel/BoardConfigKernel.mk'
@@ -170,6 +182,43 @@ class AdapterUpgradeTest(unittest.TestCase):
             if not name.startswith('kernel/') and name not in (
                     'BoardConfig.mk', 'evolution.dependencies', 'Android.mk'):
                 self.assertEqual((self.target / name).read_bytes(), data, name)
+        current = snapshot(self.target)
+        again = self.run_adapter(apply=True)
+        self.assertEqual(again.returncode, 0, again.stderr)
+        self.assertTrue(again.stdout.startswith('0 files;'), again.stdout)
+        self.assertEqual(snapshot(self.target), current)
+
+    @unittest.skipUnless(PREVIOUS, 'Set MYRON_TEST_PREVIOUS_ADAPTER to a verified prior checkout')
+    def test_previous_upgrade_preserves_headers_and_appended_erofs(self):
+        self.installed_target(Path(PREVIOUS))
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('merge_audio', HERE / 'apply_source_build.py')
+        merger = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(merger)
+        kernel_board = self.target / 'kernel/BoardConfigKernel.mk'
+        kernel_board.write_bytes(kernel_board.read_bytes().replace(
+            merger.HEADER_ANCHOR, merger.HEADER_ANCHOR + merger.HEADER_CONFIG))
+        board = self.target / 'BoardConfig.mk'
+        local_board = board.read_bytes() + b'''
+# Locally tested vendor_dlkm compression.
+BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_VENDOR_DLKMIMAGE_EROFS_COMPRESSOR := lz4hc,9
+TARGET_USERIMAGES_SPARSE_EROFS_DISABLED := true
+'''
+        board.write_bytes(local_board)
+        before = snapshot(self.target)
+        dry_run = self.run_adapter()
+        self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
+        self.assertEqual(snapshot(self.target), before)
+        applied = self.run_adapter(apply=True)
+        self.assertEqual(applied.returncode, 0, applied.stderr)
+        self.assertEqual(board.read_bytes(), local_board)
+        expected = (self.source / 'kernel/BoardConfigKernel.mk').read_bytes().replace(
+            merger.HEADER_ANCHOR, merger.HEADER_ANCHOR + merger.HEADER_CONFIG)
+        self.assertEqual(kernel_board.read_bytes(), expected)
+        self.assertEqual((self.target / 'kernel/modules.options').read_bytes(),
+                         b'options machine_dlkm myron_tfa_links=1\n')
+        self.assertEqual(self.policy.read_bytes(), before['sepolicy/private/local.te'])
         current = snapshot(self.target)
         again = self.run_adapter(apply=True)
         self.assertEqual(again.returncode, 0, again.stderr)
