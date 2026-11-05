@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Native Canoe MMRM selection from mmrm_modules.bzl.
+ccflags-y += -I$(src)/driver/src -I$(src)/config -I$(srctree)
+ccflags-y += -DCONFIG_MSM_MMRM=1
+obj-m += msm-mmrm.o
+msm-mmrm-y := driver/src/mmrm_clk_rsrc_mgr.o \
+	driver/src/mmrm_clk_rsrc_mgr_sw.o \
+	driver/src/mmrm_debug.o \
+	driver/src/mmrm_internal.o \
+	driver/src/mmrm_res_parse.o \
+	driver/src/msm_mmrm.o

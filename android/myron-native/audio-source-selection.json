@@ -1,0 +1,191 @@
+{
+  "modules": {
+    "adsp_loader_dlkm": [
+      "dsp/adsp-loader.c"
+    ],
+    "audio_pkt_dlkm": [
+      "ipc/audio-pkt.c"
+    ],
+    "audio_prm_dlkm": [
+      "dsp/audio_prm.c"
+    ],
+    "audpkt_ion_dlkm": [
+      "dsp/msm_audio_ion.c"
+    ],
+    "gpr_dlkm": [
+      "ipc/gpr-lite.c"
+    ],
+    "hdmi_dlkm": [
+      "asoc/codecs/msm_hdmi_codec_rx.c"
+    ],
+    "lpass_bt_swr_dlkm": [
+      "asoc/codecs/lpass-bt-swr.c"
+    ],
+    "lpass_cdc_dlkm": [
+      "asoc/codecs/lpass-cdc/lpass-cdc.c",
+      "asoc/codecs/lpass-cdc/lpass-cdc-comp.c",
+      "asoc/codecs/lpass-cdc/lpass-cdc-utils.c",
+      "asoc/codecs/lpass-cdc/lpass-cdc-regmap.c",
+      "asoc/codecs/lpass-cdc/lpass-cdc-tables.c",
+      "asoc/codecs/lpass-cdc/lpass-cdc-clk-rsc.c"
+    ],
+    "lpass_cdc_rx_macro_dlkm": [
+      "asoc/codecs/lpass-cdc/lpass-cdc-rx-macro.c"
+    ],
+    "lpass_cdc_tx_macro_dlkm": [
+      "asoc/codecs/lpass-cdc/lpass-cdc-tx-macro.c"
+    ],
+    "lpass_cdc_va_macro_dlkm": [
+      "asoc/codecs/lpass-cdc/lpass-cdc-va-macro.c"
+    ],
+    "lpass_cdc_wsa2_macro_dlkm": [
+      "asoc/codecs/lpass-cdc/lpass-cdc-wsa2-macro.c"
+    ],
+    "lpass_cdc_wsa_macro_dlkm": [
+      "asoc/codecs/lpass-cdc/lpass-cdc-wsa-macro.c"
+    ],
+    "machine_dlkm": [
+      "asoc/msm_common.c",
+      "asoc/audio_machine.c"
+    ],
+    "mbhc_dlkm": [
+      "asoc/codecs/wcd-mbhc-v2.c",
+      "asoc/codecs/wcd-mbhc-adc.c"
+    ],
+    "pinctrl_lpi_dlkm": [
+      "soc/pinctrl-lpi.c"
+    ],
+    "q6_dlkm": [
+      "dsp/msm-audio-event-notify.c",
+      "dsp/q6_init.c"
+    ],
+    "q6_notifier_dlkm": [
+      "dsp/audio_notifier.c",
+      "dsp/audio_ssr.c"
+    ],
+    "q6_pdr_dlkm": [
+      "dsp/audio_pdr.c"
+    ],
+    "sdca_registers_dlkm": [
+      "asoc/codecs/sdca-registers-api.c"
+    ],
+    "snd_event_dlkm": [
+      "soc/snd_event.c"
+    ],
+    "spf_core_dlkm": [
+      "dsp/spf-core.c",
+      "dsp/digital-cdc-rsc-mgr.c"
+    ],
+    "stub_dlkm": [
+      "asoc/codecs/msm_stub.c"
+    ],
+    "swr_ctrl_dlkm": [
+      "soc/swr-mstr-ctrl.c"
+    ],
+    "swr_dlkm": [
+      "soc/regmap-swr.c",
+      "soc/soundwire.c"
+    ],
+    "swr_haptics_dlkm": [
+      "asoc/codecs/swr-haptics.c"
+    ],
+    "wcd9378_dlkm": [
+      "asoc/codecs/wcd9378/wcd9378.c",
+      "asoc/codecs/wcd9378/wcd9378-regmap.c",
+      "asoc/codecs/wcd9378/wcd9378-tables.c",
+      "asoc/codecs/wcd9378/wcd9378-mbhc.c"
+    ],
+    "wcd937x_dlkm": [
+      "asoc/codecs/wcd937x/wcd937x.c",
+      "asoc/codecs/wcd937x/wcd937x-regmap.c",
+      "asoc/codecs/wcd937x/wcd937x-tables.c",
+      "asoc/codecs/wcd937x/wcd937x-mbhc.c"
+    ],
+    "wcd939x_dlkm": [
+      "asoc/codecs/wcd939x/wcd939x.c",
+      "asoc/codecs/wcd939x/wcd939x-regmap.c",
+      "asoc/codecs/wcd939x/wcd939x-tables.c",
+      "asoc/codecs/wcd939x/wcd939x-mbhc.c",
+      "asoc/codecs/wcd939x/wcd939x-regulator.c"
+    ],
+    "wcd939x_slave_dlkm": [
+      "asoc/codecs/wcd939x/wcd939x-slave.c"
+    ],
+    "wcd9xxx_dlkm": [
+      "asoc/codecs/wcdcal-hwdep.c",
+      "asoc/codecs/wcd9xxx-soc-init.c",
+      "asoc/codecs/audio-ext-clk-up.c",
+      "asoc/codecs/wcd-clsh.c"
+    ],
+    "wcd_core_dlkm": [
+      "asoc/codecs/wcd9xxx-core-init.c",
+      "asoc/codecs/msm-cdc-pinctrl.c",
+      "asoc/codecs/msm-cdc-supply.c",
+      "asoc/codecs/wcd-irq.c"
+    ],
+    "wsa883x_dlkm": [
+      "asoc/codecs/wsa883x/wsa883x.c",
+      "asoc/codecs/wsa883x/wsa883x-regmap.c",
+      "asoc/codecs/wsa883x/wsa883x-tables.c"
+    ],
+    "wsa884x_dlkm": [
+      "asoc/codecs/wsa884x/wsa884x.c",
+      "asoc/codecs/wsa884x/wsa884x-regmap.c",
+      "asoc/codecs/wsa884x/wsa884x-tables.c"
+    ]
+  },
+  "defines": [
+    "CONFIG_AUDIO_BTFM_PROXY",
+    "CONFIG_AUDIO_PKT",
+    "CONFIG_AUDIO_PKT_ION",
+    "CONFIG_AUDIO_PRM",
+    "CONFIG_BOLERO_VER_2P85",
+    "CONFIG_DIGITAL_CDC_RSC_MGR",
+    "CONFIG_LPASS_BT_SWR",
+    "CONFIG_LPASS_CDC_RX_MACRO",
+    "CONFIG_LPASS_CDC_TX_MACRO",
+    "CONFIG_LPASS_CDC_VA_MACRO",
+    "CONFIG_LPASS_CDC_WSA2_MACRO",
+    "CONFIG_LPASS_CDC_WSA_MACRO",
+    "CONFIG_MSM_ADSP_LOADER",
+    "CONFIG_MSM_CDC_PINCTRL",
+    "CONFIG_MSM_EXT_DISPLAY",
+    "CONFIG_MSM_QDSP6_GPR_RPMSG",
+    "CONFIG_MSM_QDSP6_NOTIFIER",
+    "CONFIG_MSM_QDSP6_PDR",
+    "CONFIG_MSM_QDSP6_SSR",
+    "CONFIG_PINCTRL_LPI",
+    "CONFIG_SND_EVENT",
+    "CONFIG_SND_SOC_CANOE",
+    "CONFIG_SND_SOC_LPASS_CDC",
+    "CONFIG_SND_SOC_MSM_HDMI_CODEC_RX",
+    "CONFIG_SND_SOC_MSM_QDSP6V2_INTF",
+    "CONFIG_SND_SOC_MSM_STUB",
+    "CONFIG_SND_SOC_QMP",
+    "CONFIG_SND_SOC_SDCA_REGISTERS",
+    "CONFIG_SND_SOC_SIMPLE_AMP",
+    "CONFIG_SND_SOC_SWR_DMIC",
+    "CONFIG_SND_SOC_WCD9378",
+    "CONFIG_SND_SOC_WCD9378_SLAVE",
+    "CONFIG_SND_SOC_WCD937X",
+    "CONFIG_SND_SOC_WCD937X_SLAVE",
+    "CONFIG_SND_SOC_WCD938X",
+    "CONFIG_SND_SOC_WCD938X_SLAVE",
+    "CONFIG_SND_SOC_WCD939X",
+    "CONFIG_SND_SOC_WCD939X_SLAVE",
+    "CONFIG_SND_SOC_WCD9XXX_V2",
+    "CONFIG_SND_SOC_WCD_IRQ",
+    "CONFIG_SND_SOC_WCD_MBHC",
+    "CONFIG_SND_SOC_WCD_MBHC_ADC",
+    "CONFIG_SND_SOC_WSA883X",
+    "CONFIG_SND_SOC_WSA884X",
+    "CONFIG_SND_SOC_WSA885X_I2C",
+    "CONFIG_SND_SWR_HAPTICS",
+    "CONFIG_SOUNDWIRE",
+    "CONFIG_SOUNDWIRE_MSTR_CTRL",
+    "CONFIG_SPF_CORE",
+    "CONFIG_SWRM_VER_2P0",
+    "CONFIG_WCD9XXX_CODEC_CORE_V2"
+  ],
+  "source_commit": "b2877f865a4fc591ce15223059062dc0162e058b"
+}

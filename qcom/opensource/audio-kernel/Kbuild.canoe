@@ -1,0 +1,193 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe audio: preserve the tested source list and feature definitions.
+# Source: audio_modules.bzl and build/canoe.bzl at b2877f865a4f.
+
+ccflags-y += -I$(src)/include -I$(src)/include/uapi/audio -I$(src)/config
+ccflags-y += -I$(src)/../mm-drivers/msm_ext_display/include
+ccflags-y += -I$(srctree)
+
+# The DDK target enables these features across all Canoe audio objects.
+ccflags-y += -DCONFIG_AUDIO_BTFM_PROXY
+ccflags-y += -DCONFIG_AUDIO_PKT
+ccflags-y += -DCONFIG_AUDIO_PKT_ION
+ccflags-y += -DCONFIG_AUDIO_PRM
+ccflags-y += -DCONFIG_BOLERO_VER_2P85
+ccflags-y += -DCONFIG_DIGITAL_CDC_RSC_MGR
+ccflags-y += -DCONFIG_LPASS_BT_SWR
+ccflags-y += -DCONFIG_LPASS_CDC_RX_MACRO
+ccflags-y += -DCONFIG_LPASS_CDC_TX_MACRO
+ccflags-y += -DCONFIG_LPASS_CDC_VA_MACRO
+ccflags-y += -DCONFIG_LPASS_CDC_WSA2_MACRO
+ccflags-y += -DCONFIG_LPASS_CDC_WSA_MACRO
+ccflags-y += -DCONFIG_MSM_ADSP_LOADER
+ccflags-y += -DCONFIG_MSM_CDC_PINCTRL
+ccflags-y += -DCONFIG_MSM_EXT_DISPLAY
+ccflags-y += -DCONFIG_MSM_QDSP6_GPR_RPMSG
+ccflags-y += -DCONFIG_MSM_QDSP6_NOTIFIER
+ccflags-y += -DCONFIG_MSM_QDSP6_PDR
+ccflags-y += -DCONFIG_MSM_QDSP6_SSR
+ccflags-y += -DCONFIG_PINCTRL_LPI
+ccflags-y += -DCONFIG_SND_EVENT
+ccflags-y += -DCONFIG_SND_SOC_CANOE
+ccflags-y += -DCONFIG_SND_SOC_LPASS_CDC
+ccflags-y += -DCONFIG_SND_SOC_MSM_HDMI_CODEC_RX
+ccflags-y += -DCONFIG_SND_SOC_MSM_QDSP6V2_INTF
+ccflags-y += -DCONFIG_SND_SOC_MSM_STUB
+ccflags-y += -DCONFIG_SND_SOC_QMP
+ccflags-y += -DCONFIG_SND_SOC_SDCA_REGISTERS
+ccflags-y += -DCONFIG_SND_SOC_SIMPLE_AMP
+ccflags-y += -DCONFIG_SND_SOC_SWR_DMIC
+ccflags-y += -DCONFIG_SND_SOC_WCD9378
+ccflags-y += -DCONFIG_SND_SOC_WCD9378_SLAVE
+ccflags-y += -DCONFIG_SND_SOC_WCD937X
+ccflags-y += -DCONFIG_SND_SOC_WCD937X_SLAVE
+ccflags-y += -DCONFIG_SND_SOC_WCD938X
+ccflags-y += -DCONFIG_SND_SOC_WCD938X_SLAVE
+ccflags-y += -DCONFIG_SND_SOC_WCD939X
+ccflags-y += -DCONFIG_SND_SOC_WCD939X_SLAVE
+ccflags-y += -DCONFIG_SND_SOC_WCD9XXX_V2
+ccflags-y += -DCONFIG_SND_SOC_WCD_IRQ
+ccflags-y += -DCONFIG_SND_SOC_WCD_MBHC
+ccflags-y += -DCONFIG_SND_SOC_WCD_MBHC_ADC
+ccflags-y += -DCONFIG_SND_SOC_WSA883X
+ccflags-y += -DCONFIG_SND_SOC_WSA884X
+ccflags-y += -DCONFIG_SND_SOC_WSA885X_I2C
+ccflags-y += -DCONFIG_SND_SWR_HAPTICS
+ccflags-y += -DCONFIG_SOUNDWIRE
+ccflags-y += -DCONFIG_SOUNDWIRE_MSTR_CTRL
+ccflags-y += -DCONFIG_SPF_CORE
+ccflags-y += -DCONFIG_SWRM_VER_2P0
+ccflags-y += -DCONFIG_WCD9XXX_CODEC_CORE_V2
+
+obj-m += adsp_loader_dlkm.o
+adsp_loader_dlkm-y := dsp/adsp-loader.o
+
+obj-m += audio_pkt_dlkm.o
+audio_pkt_dlkm-y := ipc/audio-pkt.o
+
+obj-m += audio_prm_dlkm.o
+audio_prm_dlkm-y := dsp/audio_prm.o
+
+obj-m += audpkt_ion_dlkm.o
+audpkt_ion_dlkm-y := dsp/msm_audio_ion.o
+
+obj-m += gpr_dlkm.o
+gpr_dlkm-y := ipc/gpr-lite.o
+
+obj-m += hdmi_dlkm.o
+hdmi_dlkm-y := asoc/codecs/msm_hdmi_codec_rx.o
+
+obj-m += lpass_bt_swr_dlkm.o
+lpass_bt_swr_dlkm-y := asoc/codecs/lpass-bt-swr.o
+
+obj-m += lpass_cdc_dlkm.o
+lpass_cdc_dlkm-y := asoc/codecs/lpass-cdc/lpass-cdc.o \
+	asoc/codecs/lpass-cdc/lpass-cdc-comp.o \
+	asoc/codecs/lpass-cdc/lpass-cdc-utils.o \
+	asoc/codecs/lpass-cdc/lpass-cdc-regmap.o \
+	asoc/codecs/lpass-cdc/lpass-cdc-tables.o \
+	asoc/codecs/lpass-cdc/lpass-cdc-clk-rsc.o
+
+obj-m += lpass_cdc_rx_macro_dlkm.o
+lpass_cdc_rx_macro_dlkm-y := asoc/codecs/lpass-cdc/lpass-cdc-rx-macro.o
+
+obj-m += lpass_cdc_tx_macro_dlkm.o
+lpass_cdc_tx_macro_dlkm-y := asoc/codecs/lpass-cdc/lpass-cdc-tx-macro.o
+
+obj-m += lpass_cdc_va_macro_dlkm.o
+lpass_cdc_va_macro_dlkm-y := asoc/codecs/lpass-cdc/lpass-cdc-va-macro.o
+
+obj-m += lpass_cdc_wsa2_macro_dlkm.o
+lpass_cdc_wsa2_macro_dlkm-y := asoc/codecs/lpass-cdc/lpass-cdc-wsa2-macro.o
+
+obj-m += lpass_cdc_wsa_macro_dlkm.o
+lpass_cdc_wsa_macro_dlkm-y := asoc/codecs/lpass-cdc/lpass-cdc-wsa-macro.o
+
+obj-m += machine_dlkm.o
+machine_dlkm-y := asoc/msm_common.o \
+	asoc/audio_machine.o
+
+obj-m += mbhc_dlkm.o
+mbhc_dlkm-y := asoc/codecs/wcd-mbhc-v2.o \
+	asoc/codecs/wcd-mbhc-adc.o
+
+obj-m += pinctrl_lpi_dlkm.o
+pinctrl_lpi_dlkm-y := soc/pinctrl-lpi.o
+
+obj-m += q6_dlkm.o
+q6_dlkm-y := dsp/msm-audio-event-notify.o \
+	dsp/q6_init.o
+
+obj-m += q6_notifier_dlkm.o
+q6_notifier_dlkm-y := dsp/audio_notifier.o \
+	dsp/audio_ssr.o
+
+obj-m += q6_pdr_dlkm.o
+q6_pdr_dlkm-y := dsp/audio_pdr.o
+
+obj-m += sdca_registers_dlkm.o
+sdca_registers_dlkm-y := asoc/codecs/sdca-registers-api.o
+
+obj-m += snd_event_dlkm.o
+snd_event_dlkm-y := soc/snd_event.o
+
+obj-m += spf_core_dlkm.o
+spf_core_dlkm-y := dsp/spf-core.o \
+	dsp/digital-cdc-rsc-mgr.o
+
+obj-m += stub_dlkm.o
+stub_dlkm-y := asoc/codecs/msm_stub.o
+
+obj-m += swr_ctrl_dlkm.o
+swr_ctrl_dlkm-y := soc/swr-mstr-ctrl.o
+
+obj-m += swr_dlkm.o
+swr_dlkm-y := soc/regmap-swr.o \
+	soc/soundwire.o
+
+obj-m += swr_haptics_dlkm.o
+swr_haptics_dlkm-y := asoc/codecs/swr-haptics.o
+
+obj-m += wcd9378_dlkm.o
+wcd9378_dlkm-y := asoc/codecs/wcd9378/wcd9378.o \
+	asoc/codecs/wcd9378/wcd9378-regmap.o \
+	asoc/codecs/wcd9378/wcd9378-tables.o \
+	asoc/codecs/wcd9378/wcd9378-mbhc.o
+
+obj-m += wcd937x_dlkm.o
+wcd937x_dlkm-y := asoc/codecs/wcd937x/wcd937x.o \
+	asoc/codecs/wcd937x/wcd937x-regmap.o \
+	asoc/codecs/wcd937x/wcd937x-tables.o \
+	asoc/codecs/wcd937x/wcd937x-mbhc.o
+
+obj-m += wcd939x_dlkm.o
+wcd939x_dlkm-y := asoc/codecs/wcd939x/wcd939x.o \
+	asoc/codecs/wcd939x/wcd939x-regmap.o \
+	asoc/codecs/wcd939x/wcd939x-tables.o \
+	asoc/codecs/wcd939x/wcd939x-mbhc.o \
+	asoc/codecs/wcd939x/wcd939x-regulator.o
+
+obj-m += wcd939x_slave_dlkm.o
+wcd939x_slave_dlkm-y := asoc/codecs/wcd939x/wcd939x-slave.o
+
+obj-m += wcd9xxx_dlkm.o
+wcd9xxx_dlkm-y := asoc/codecs/wcdcal-hwdep.o \
+	asoc/codecs/wcd9xxx-soc-init.o \
+	asoc/codecs/audio-ext-clk-up.o \
+	asoc/codecs/wcd-clsh.o
+
+obj-m += wcd_core_dlkm.o
+wcd_core_dlkm-y := asoc/codecs/wcd9xxx-core-init.o \
+	asoc/codecs/msm-cdc-pinctrl.o \
+	asoc/codecs/msm-cdc-supply.o \
+	asoc/codecs/wcd-irq.o
+
+obj-m += wsa883x_dlkm.o
+wsa883x_dlkm-y := asoc/codecs/wsa883x/wsa883x.o \
+	asoc/codecs/wsa883x/wsa883x-regmap.o \
+	asoc/codecs/wsa883x/wsa883x-tables.o
+
+obj-m += wsa884x_dlkm.o
+wsa884x_dlkm-y := asoc/codecs/wsa884x/wsa884x.o \
+	asoc/codecs/wsa884x/wsa884x-regmap.o \
+	asoc/codecs/wsa884x/wsa884x-tables.o

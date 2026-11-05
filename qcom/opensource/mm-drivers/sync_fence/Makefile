@@ -1,15 +1,11 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
+# M and O are supplied by the ROM's standard external-module rule.
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
+KBUILD_OPTIONS += SYNC_FENCE_ROOT=$(abspath $(module_src)/..)/
 
-KBUILD_OPTIONS += SYNC_FENCE_ROOT=$(KERNEL_SRC)/$(M)/../
-
+.PHONY: all modules modules_install clean
 all: modules
 
-modules_install:
-	$(MAKE) INSTALL_MOD_STRIP=1 -C $(KERNEL_SRC) M=$(M) modules_install
-
-%:
+modules modules_install clean:
 	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)
-
-clean:
-	rm -f *.o *.ko *.mod.c *.mod.o *~ .*.cmd Module.symvers
-	rm -rf .tmp_versions

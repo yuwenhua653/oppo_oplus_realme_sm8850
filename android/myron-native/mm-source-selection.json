@@ -1,0 +1,71 @@
+{
+  "hfi_core": {
+    "module": "msm_hfi_core",
+    "inputs": {
+      "srcs": [
+        "src/hfi_transport/hfi_queue.c",
+        "src/hfi_transport/hfi_ipc.c",
+        "src/hfi_transport/hfi_smmu.c",
+        "src/hfi_transport/hfi_swi.c",
+        "src/hfi_transport/hfi_queue_controller.c",
+        "src/hfi_transport/hfi_if_abstraction.c",
+        "src/hfi_base/hfi_core.c",
+        "src/hfi_base/hfi_core_irq.c",
+        "src/hfi_base/hfi_core_firmware.c",
+        "src/hfi_base/hfi_core_ssr.c",
+        "src/hfi_dbg_packet.c",
+        "src/hfi_core_debug.c",
+        "src/hfi_core_probe.c"
+      ]
+    },
+    "defines": [
+      "CONFIG_QTI_HFI_CORE"
+    ]
+  },
+  "hw_fence": {
+    "module": "msm_hw_fence",
+    "inputs": {
+      "srcs": [
+        "src/hw_fence_drv_debug.c",
+        "src/hw_fence_drv_ipc.c",
+        "src/hw_fence_drv_priv.c",
+        "src/hw_fence_drv_utils.c",
+        "src/msm_hw_fence.c"
+      ],
+      "conditional_srcs": {
+        "CONFIG_DEBUG_FS": {
+          "true": [
+            "src/hw_fence_ioctl.c"
+          ]
+        },
+        "CONFIG_QTI_HW_FENCE_USE_SYNX": {
+          "true": [
+            "src/msm_hw_fence_synx_translation.c",
+            "src/hw_fence_drv_interop.c"
+          ]
+        },
+        "CONFIG_MSM_HAB": {
+          "true": [
+            "src/hw_fence_drv_virtio.c"
+          ]
+        }
+      }
+    },
+    "defines": [
+      "CONFIG_QTI_HW_FENCE",
+      "CONFIG_QTI_HW_FENCE_USE_SYNX",
+      "CONFIG_QTI_ENABLE_HW_FENCE_DEFAULT"
+    ]
+  },
+  "sync_fence": {
+    "module": "sync_fence",
+    "inputs": {
+      "srcs": [
+        "src/qcom_sync_file.c"
+      ]
+    },
+    "defines": [
+      "CONFIG_QCOM_SPEC_SYNC"
+    ]
+  }
+}

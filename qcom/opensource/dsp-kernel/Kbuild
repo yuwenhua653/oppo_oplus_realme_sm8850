@@ -1,3 +1,10 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
+CONFIG_QCOM_FASTRPC_TRUSTED := m
+ifeq ($(TARGET_SUPPORT),genericarmv8)
+CONFIG_ARCH_PINEAPPLE := y
+endif
 # ported from Android.mk
 $(info within KBUILD file KBUILD_EXTRA_SYMBOLS = $(KBUILD_EXTRA_SYMBOLS))
 
@@ -28,3 +35,5 @@ frpc-trusted-adsprpc-y := dsp/fastrpc.o	\
 					 dsp/fastrpc_sysfs.o \
 
 obj-m := frpc-trusted-adsprpc.o
+
+endif

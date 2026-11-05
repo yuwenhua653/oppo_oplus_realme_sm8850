@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Native Canoe host FastRPC selection from define_modules.bzl.
+ccflags-y += -I$(src)/include/linux -I$(src)/include/uapi
+ccflags-y += -I$(srctree) -DDSP_TRACE_INCLUDE_PATH=$(src)/dsp
+obj-m += frpc-adsprpc.o
+frpc-adsprpc-y := dsp/fastrpc.o dsp/fastrpc_rpmsg.o dsp/fastrpc_sysfs.o

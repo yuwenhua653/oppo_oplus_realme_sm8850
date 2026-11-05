@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canoe source selection from define_sync_fence.bzl.
+ccflags-y += -I$(srctree)
+ccflags-y += -I$(src)/../hfi_core/inc -I$(src)/../hw_fence/include
+ccflags-y += -I$(src)/../msm_ext_display/include -I$(src)/../sync_fence/include
+ccflags-y += -I$(src)/../sync_fence/include/uapi -I$(src)/../config
+ccflags-y += -DCONFIG_QCOM_SPEC_SYNC=1
+
+obj-m += sync_fence.o
+sync_fence-y := src/qcom_sync_file.o

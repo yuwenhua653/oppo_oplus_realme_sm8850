@@ -1,19 +1,10 @@
-DSP_KERNEL_ROOT=$(ROOTDIR)vendor/qcom/opensource/dsp-kernel
-KBUILD_OPTIONS := DSP_KERNEL_ROOT=$(DSP_KERNEL_ROOT) CONFIG_QCOM_FASTRPC_TRUSTED=m
+# SPDX-License-Identifier: GPL-2.0-only
+M ?= $(CURDIR)
+module_src := $(if $(filter /%,$(M)),$(M),$(abspath $(KERNEL_SRC)/$(M)))
+KBUILD_OPTIONS += DSP_KERNEL_ROOT=$(module_src)
 
-ifeq ($(TARGET_SUPPORT),genericarmv8)
-	KBUILD_OPTIONS += CONFIG_ARCH_PINEAPPLE=y
-endif
+.PHONY: all modules modules_install clean
+all: modules
 
-all:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) modules $(KBUILD_OPTIONS)
-
-modules_install:
-	$(MAKE) INSTALL_MOD_STRIP=1 -C $(KERNEL_SRC) M=$(M) modules_install
-
-%:
+modules modules_install clean:
 	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)
-
-clean:
-	rm -f *.o *.ko *.mod.c *.mod.o *~ .*.cmd Module.symvers
-	rm -rf .tmp_versions

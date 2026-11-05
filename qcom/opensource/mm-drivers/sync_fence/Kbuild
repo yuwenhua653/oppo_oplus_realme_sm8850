@@ -1,3 +1,6 @@
+ifeq ($(CONFIG_ARCH_CANOE),y)
+include $(src)/Kbuild.canoe
+else
 # SPDX-License-Identifier: GPL-2.0-only
 
 #KDIR := $(TOP)/kernel_platform/soc-repo
@@ -14,3 +17,5 @@ CDEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"
 endif
 EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
 		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
+
+endif
