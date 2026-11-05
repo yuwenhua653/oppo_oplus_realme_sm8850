@@ -1,6 +1,7 @@
 # Myron native Kbuild migration
 
-This is a development integration, not yet a complete ROM or a device-tested
+This native integration has passed host kernel/module compilation and device
+DT/module-packaging checks. It is not a complete ROM or a device-tested
 replacement for the working kernel adapter.
 
 ## Source layout
@@ -13,9 +14,9 @@ The three ordinary repo projects in `android/myron-native/manifest.xml` are:
 
 Source synchronization belongs to repo. Kernel compilation does not download
 sources or invoke Python, Starlark or Bazel. The normal ROM kernel.mk will use
-TARGET_KERNEL_SOURCE, TARGET_KERNEL_CONFIG and TARGET_KERNEL_EXT_MODULES once
-the remaining external drivers and image assembly are validated. This manifest
-does not activate or modify the ROM's BoardConfig.
+TARGET_KERNEL_SOURCE, TARGET_KERNEL_CONFIG and TARGET_KERNEL_EXT_MODULES.
+The native device integration uses these standard rules. This three-project
+manifest itself does not modify the ROM's BoardConfig.
 
 ## Kernel configuration
 
@@ -46,10 +47,15 @@ With Debian Clang 19.1.7 and normal host build tools:
   platform modules are present in modules.order and as .ko files.
 * A platform module rebuild and the Image/modules targets succeed with all
   three source repositories bind-mounted read-only.
-* 40 of the 68 required external modules compile and link through the normal
-  ROM-style make invocation, with all three source repositories read-only.
-  These are audio (34), external display, HFI core, hardware fence, sync fence,
-  FastRPC and MMRM. See the external repository's validation record.
+* All 68 required external modules compile and link through the normal ROM-style
+  make invocation, with all three source repositories read-only. Modpost checks
+  remain enabled.
+* Stock modules_install produces 406 modules. All 297 original catalog entries
+  are present, with a complete dependency closure and passing depmod symbol and
+  version checks. The actual Evolution kernel.mk module packaging macro passes
+  in a host fixture for system_dlkm, vendor_dlkm, vendor_boot and recovery.
+* Native headers_install exports 1005 headers, including asm/signal.h and
+  asm-generic/signal.h. This does not test Soong's sandbox or bionic cleaning.
 * All 32 DT inputs remain byte-identical to the pinned source reference using
   the same DTC. No-op, include-dependency and full read-only DT rebuild tests pass.
 
@@ -62,17 +68,30 @@ production toolchain remains necessary.
 
 `vendor/myron-dt.config` is retained for isolated DT compilation only.
 
-## Remaining integration
+## Device integration and remaining verification
 
-The other 28 external modules still need native source/configuration/symbol
-validation, including graphics, display, camera, connectivity and data drivers.
-Do not activate the native device BoardConfig before those checks pass.
+The native device branch uses standard BoardConfig kernel variables and
+kernel.mk for compilation and module installation. It removes the private
+Kleaf build rule, workspace setup helpers and writable-source exception.
 
-The normal GKI configuration also builds modules beyond the old installed
-catalog; ROM partition selection and size must be checked, rather than assuming
-that all 338 should be copied to vendor_dlkm.
+DT compilation uses make dtbs. The standard BOARD_CUSTOM_DTBIMG_MK and
+BOARD_CUSTOM_DTBOIMG_MK hooks retain the R123 DT image assembler, including
+FastRPC child order and the eight variants' selection IDs. That image helper
+consumes already compiled DTBs; it does not compile kernels or manage source
+workspaces. Native device make-rule tests produce byte-identical DTB/DTBO
+images to the R123 assembly reference with the same input compiler/tools.
 
-Native DT image assembly must preserve the R123 FastRPC child order, board IDs
-and eight base variants. Keep `options machine_dlkm myron_tfa_links=1` in the
-vendor module options file, and retain EROFS vendor_dlkm packaging. None of this
-phase's host checks demonstrates phone boot, camera, audio or full ROM success.
+The default fragment-by-fragment ROM configuration sequence matches the
+configuration used for the compiled native kernel. Tests also cover read-only
+source directories, separate outputs and no-op DT image builds.
+
+Keep `options machine_dlkm myron_tfa_links=1` in vendor_dlkm module options and
+retain EROFS lz4hc,9. A host payload estimate with all extra GKI modules is
+33,513,472 bytes, below the reported 53,805,056-byte partition. This estimate
+does not include final ROM SELinux/AVB metadata or production BTF/Rust changes.
+Extra GKI modules are installed but are not added to the original load lists.
+
+Production-toolchain, complete Android ROM/Kati/Soong, final signed-image and
+phone runtime checks remain necessary. No new boot, camera, audio or runtime
+success is inferred from the host tests. Device-side host validation records
+are in kernel/NATIVE-VALIDATION.json in the native device branch.

@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "scope": "native kernel headers_install only; Soong sbox and bionic header cleaning require a ROM checkout",
+  "read_only_kernel_source": true,
+  "headers": 1005,
+  "required_headers": [
+    "asm/signal.h",
+    "asm-generic/signal.h",
+    "linux/types.h"
+  ]
+}
