@@ -126,4 +126,25 @@ class Test(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,'Unknown required-property'):m.property_errors(nodes,{'/sound':{'gpio':{'unsupported':True}}})
  def test_disabled_parent_blocks_provider(self):
   self.assertEqual(m.provider_errors({'/':{},'/bus':{'status':b'disabled\0'},'/bus/dev':{'compatible':b'test,provider\0'}},['test,provider']),['test,provider'])
+
+class NativeCatalogTests(unittest.TestCase):
+ def setUp(self):
+  self.profile={'bases':[{'file':'base.dtb','overlays':['tech.dtbo']}], 'board_overlays':['board.dtbo']}
+ def test_selects_declared_native_outputs(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'sub').mkdir()
+   for name in ('base.dtb','tech.dtbo','board.dtbo','unused.dtbo'):(root/'sub'/name).write_bytes(b'fixture')
+   files,missing=m.native_catalog(root,self.profile)
+   self.assertEqual(set(files),{'base.dtb','tech.dtbo','board.dtbo'});self.assertEqual(missing,[])
+ def test_missing_and_duplicate_outputs(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'base.dtb').write_bytes(b'fixture')
+   self.assertEqual(m.native_catalog(root,self.profile)[1],['board.dtbo','tech.dtbo'])
+   (root/'sub').mkdir();(root/'sub/base.dtb').write_bytes(b'fixture')
+   with self.assertRaisesRegex(ValueError,'Duplicate native'):m.native_catalog(root,self.profile)
+ def test_rejects_redirected_output(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'payload').write_bytes(b'fixture');(root/'base.dtb').symlink_to(root/'payload')
+   with self.assertRaisesRegex(ValueError,'Redirected native'):m.native_catalog(root,self.profile)
+
 if __name__=='__main__':unittest.main(verbosity=2)

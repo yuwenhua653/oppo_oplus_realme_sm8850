@@ -5,7 +5,6 @@
 #
 
 DEVICE_PATH := device/xiaomi/myron
-KERNEL_PATH := kernel/xiaomi/myron-prebuilt
 
 # Inherit from sm8850-common
 include device/xiaomi/sm8850-common/BoardConfigCommon.mk
@@ -16,7 +15,7 @@ include device/xiaomi/myron-miuicamera/BoardConfig.mk
 # Display
 TARGET_SCREEN_DENSITY := 520
 
-# Source-built kernel and matching modules (device-owned Kleaf rule).
+# Native kernel and modules built by the ROM kernel.mk.
 include $(DEVICE_PATH)/kernel/BoardConfigKernel.mk
 
 TARGET_ODM_PROP += $(DEVICE_PATH)/configs/properties/odm.prop

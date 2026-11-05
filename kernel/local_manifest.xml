@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Native source projects; no build-time checkout or private workspace. -->
 <manifest>
-  <remote name="myron-source" fetch="https://github.com/" />
-  <project name="yuwenhua653/oppo_oplus_realme_sm8850"
-           path="kernel/xiaomi/myron-build"
-           remote="myron-source"
-           revision="ae506d4278722b0a02158de05e8f2918d3ece0f7"
-           upstream="refs/heads/myron/kernel-6.12"
-           clone-depth="1" />
+  <remote name="myron-native" fetch="https://github.com/" />
+  <project name="yuwenhua653/oppo_oplus_realme_sm8850" path="kernel/xiaomi/sm8850"
+    remote="myron-native" revision="refs/heads/myron/native-kbuild" clone-depth="1" />
+  <project name="yuwenhua653/oppo_oplus_realme_sm8850" path="kernel/xiaomi/sm8850-modules"
+    remote="myron-native" revision="refs/heads/myron/native-modules" clone-depth="1" />
+  <project name="yuwenhua653/oppo_oplus_realme_sm8850" path="kernel/xiaomi/sm8850-devicetrees"
+    remote="myron-native" revision="refs/heads/myron/native-devicetrees" clone-depth="1" />
 </manifest>

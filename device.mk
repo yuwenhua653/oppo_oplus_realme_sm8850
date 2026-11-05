@@ -49,3 +49,7 @@ PRODUCT_PACKAGES += \
 # Udfps
 TARGET_HAS_UDFPS := true
 
+
+# Native kernel.mk installs modules; preserve the validated audio option.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/kernel/modules.options:$(TARGET_COPY_OUT_VENDOR_DLKM)/lib/modules/modules.options

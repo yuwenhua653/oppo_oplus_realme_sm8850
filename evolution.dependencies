@@ -14,10 +14,6 @@
     "remote": "github-non-los"
   },
   {
-    "repository": "kernel_xiaomi_myron-prebuilt",
-    "target_path": "kernel/xiaomi/myron-prebuilt"
-  },
-  {
     "repository": "vendor_xiaomi_myron",
     "target_path": "vendor/xiaomi/myron"
   },
@@ -31,8 +27,20 @@
   },
   {
     "repository": "yuwenhua653/oppo_oplus_realme_sm8850",
-    "target_path": "kernel/xiaomi/myron-build",
-    "branch": "myron/kernel-6.12",
+    "target_path": "kernel/xiaomi/sm8850",
+    "branch": "myron/native-kbuild",
+    "remote": "github-non-los"
+  },
+  {
+    "repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+    "target_path": "kernel/xiaomi/sm8850-modules",
+    "branch": "myron/native-modules",
+    "remote": "github-non-los"
+  },
+  {
+    "repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+    "target_path": "kernel/xiaomi/sm8850-devicetrees",
+    "branch": "myron/native-devicetrees",
     "remote": "github-non-los"
   }
 ]

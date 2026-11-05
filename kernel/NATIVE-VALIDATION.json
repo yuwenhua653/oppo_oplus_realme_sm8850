@@ -1,0 +1,106 @@
+{
+  "scope": "native source integration host validation; full Android ROM and device runtime not tested",
+  "kernel_commit": "baa10617cb95a58c2e353db319c3e37293f94ad8",
+  "modules_tree": "9663e2fc125261083772543fe4ebcc48f7882cb2",
+  "dts_commit": "b84c303a85a8f8b73d7fa3d4df37b57a601dd5b1",
+  "device_parent": "f6e14d147eb60d11755fcfd84db85e29a155f8b4",
+  "external_modules": 68,
+  "in_tree_modules": 338,
+  "original_catalog_modules": 297,
+  "installed_modules": 406,
+  "device_rules": {
+    "pass": true,
+    "scope": "native device DT make rules with actual Evolution macros; not full Android/Kati build",
+    "read_only_sources": true,
+    "kernel_mk_blob": "343e4361f35ed01827663c67225d5129c13fbcec",
+    "config_differences": {},
+    "dtb.img": {
+      "bytes": 4598912,
+      "reference_identical": true
+    },
+    "dtbo.img": {
+      "bytes": 561152,
+      "reference_identical": true
+    }
+  },
+  "module_packaging": {
+    "pass": true,
+    "scope": "actual Evolution kernel.mk module packaging macro in a host fixture; not a full ROM build",
+    "kernel_mk_blob": "343e4361f35ed01827663c67225d5129c13fbcec",
+    "groups": {
+      "system_dlkm": {
+        "modules": 3,
+        "load_entries": 0,
+        "bytes": 176272,
+        "depmod_passed": true
+      },
+      "vendor_dlkm": {
+        "modules": 403,
+        "load_entries": 225,
+        "bytes": 84079687,
+        "depmod_passed": true
+      },
+      "vendor_boot": {
+        "modules": 234,
+        "load_entries": 114,
+        "bytes": 24081554,
+        "depmod_passed": true
+      },
+      "recovery": {
+        "modules": 234,
+        "load_entries": 234,
+        "bytes": 24083378,
+        "depmod_passed": true
+      }
+    },
+    "audio_option_preserved": true
+  },
+  "headers": {
+    "pass": true,
+    "scope": "native kernel headers_install only; Soong sbox and bionic header cleaning require a ROM checkout",
+    "read_only_kernel_source": true,
+    "headers": 1005,
+    "required_headers": [
+      "asm/signal.h",
+      "asm-generic/signal.h",
+      "linux/types.h"
+    ]
+  },
+  "erofs_estimate": {
+    "pass": true,
+    "scope": "host EROFS payload size estimate only, not a flashable Android image; SELinux/AVB/ROM depmod metadata not included",
+    "vendor_module_count": 403,
+    "all_catalog_dependencies_present": true,
+    "catalog_dependency_extras": {},
+    "erofs_compressor": "lz4hc,9",
+    "erofs_payload_bytes": 33513472,
+    "reported_partition_bytes": 53805056,
+    "remaining_bytes": 20291584
+  },
+  "dt_checks": {
+    "all_eight_variants_passed": true,
+    "native_and_reference_images_identical": true,
+    "images": {
+      "dtb.img": "ac3e650867c5849296c6a005c9de23e8cfc09b3ec10124518d4d1de87ea844de",
+      "dtbo.img": "12b6e585fe0ac4654b8af465bb401b075452f55bd75df119bd0c812f241d9767"
+    },
+    "incremental_make_noop": true,
+    "make_rule_include_dependency": true,
+    "command_line_source_symlinks_followed": true
+  },
+  "tests": {
+    "fastrpc_order": {
+      "passed": 6
+    },
+    "source_dt": {
+      "passed": 12,
+      "skipped": 1,
+      "skip_reason": "Historical R115 negative full-build fixture unavailable"
+    }
+  },
+  "limitations": [
+    "Clang 19.1.7 host toolchain; Rust and pahole unavailable",
+    "No full Android/Kati/Soong build in this workspace",
+    "Final AVB/SELinux/image packaging and phone test pending"
+  ]
+}

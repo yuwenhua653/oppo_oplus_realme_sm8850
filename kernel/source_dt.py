@@ -127,6 +127,21 @@ def compiled_catalog(compiled, profile):
     return files, sorted(wanted - files.keys())
 
 
+def native_catalog(root, profile):
+    """Select native dtbs outputs; compilation and its dependencies belong to Kbuild."""
+    wanted = {v['file'] for v in profile['bases']} | set(profile['board_overlays'])
+    wanted |= {n for v in profile['bases'] for n in v['overlays']}
+    files = {}
+    for path in root.rglob('*'):
+        if path.name not in wanted or not path.is_file():
+            continue
+        require(path.name not in files, 'Duplicate native DT output: ' + path.name)
+        require(not path.is_symlink() and path.resolve().is_relative_to(root.resolve()),
+                'Redirected native DT output: ' + path.name)
+        files[path.name] = path
+    return files, sorted(wanted - files.keys())
+
+
 def reviewed_rules(profile):
     # Deliberately narrower than ABL's general foundry-zero fallback. Adding a
     # device/revision requires another source review, not an arbitrary mask.
@@ -448,6 +463,7 @@ def assemble(files, trees, profile, output, tools):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     inputs = p.add_mutually_exclusive_group(required=True)
+    inputs.add_argument('--dtbs', type=Path, help='Native Kbuild dtbs output directory')
     inputs.add_argument('--full', type=Path)
     inputs.add_argument('--compiled', type=Path, help='Hash-checked DT-only output; does not attest a full kernel build')
     p.add_argument('--build-status', type=Path, help='Matching integration-reports/build-status.json; required with --full')
@@ -466,16 +482,19 @@ def main():
         require(not path.is_symlink(), 'Redirected image output')
         path.unlink(missing_ok=True)
     report = {'success': False, 'device_tested': False, 'full_rom_compiled': False,
-              'input_kind': 'host-dtc-only' if a.compiled else 'full-kernel-output',
+              'input_kind': 'native-kbuild-dtbs' if a.dtbs else ('host-dtc-only' if a.compiled else 'full-kernel-output'),
               'flash_package': False, 'errors': [], 'reviewed_matches': []}
     try:
         profile = json.loads(a.profile.read_text())
-        require(not (a.compiled and a.build_status), '--build-status is only valid with --full')
-        files, missing = compiled_catalog(a.compiled, profile) if a.compiled else catalog(a.full, profile, a.build_status)
+        require(not ((a.compiled or a.dtbs) and a.build_status), '--build-status is only valid with --full')
+        if a.dtbs:
+            files, missing = native_catalog(a.dtbs, profile)
+        else:
+            files, missing = compiled_catalog(a.compiled, profile) if a.compiled else catalog(a.full, profile, a.build_status)
         trees, errors = preflight(files, profile, missing, report['reviewed_matches'])
         if a.compiled:
             report['compile_manifest_sha256'] = sha(a.compiled / 'dt-compile.json')
-        else:
+        elif a.full:
             report['build_status_sha256'] = sha(a.build_status)
         report.update(profile_sha256=sha(a.profile), inputs={n: sha(v) for n, v in files.items()}, errors=errors,
                       base_count=len(profile['bases']), source_dts_commit=profile['dts_commit'])

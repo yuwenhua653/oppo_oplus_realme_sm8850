@@ -1,65 +1,58 @@
 # SPDX-License-Identifier: Apache-2.0
-# Redmi K90PM: build Image and all installed modules from committed Kleaf sources.
-MYRON_KERNEL_ENTRY := kernel/xiaomi/myron-build
-MYRON_KERNEL_OUT := $(PRODUCT_OUT)/obj/MYRON_KERNEL
-MYRON_KERNEL_DIST := $(MYRON_KERNEL_OUT)/dist
-MYRON_KERNEL_WORKSPACE := kernel/xiaomi/myron
-MYRON_KERNEL_LEGACY_WORKSPACE := $(MYRON_KERNEL_OUT)/workspace
-# Ninja mounts the ROM source tree read-only. Kleaf's workspace contains its
-# writable outputs and Git metadata; the cross-OUT_DIR lock is one existing file.
-# Run relocate/prepare outside Ninja first so both bind-mount sources exist.
-BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST += $(MYRON_KERNEL_WORKSPACE) kernel/xiaomi/.myron-adapter.lock
-MYRON_KERNEL_JOBS ?= 2
-MYRON_KERNEL_RAM_MB ?= 10000
-
-# The device Android.mk owns the kernel rule. Disable the legacy make/defconfig
-# builder, not kernel compilation. No TARGET_PREBUILT_KERNEL or Image copy input.
-TARGET_NO_KERNEL_OVERRIDE := true
+# Standard LineageOS/Evolution native kernel integration.
+TARGET_KERNEL_SOURCE := kernel/xiaomi/sm8850
 TARGET_KERNEL_VERSION := 6.12
-# Actual ACK and Qualcomm sources live below kernel/xiaomi, not PRODUCT_OUT.
-MYRON_KERNEL_SOURCE := $(MYRON_KERNEL_WORKSPACE)/common
-# With the legacy builder disabled, TARGET_KERNEL_SOURCE is consumed only by
-# generated_kernel_headers. Preserve the existing Qualcomm userspace UAPI
-# export Makefile; actual Image/module sources are MYRON_KERNEL_SOURCE above.
-TARGET_KERNEL_SOURCE := $(KERNEL_PATH)/kernel-headers
+TARGET_KERNEL_CONFIG := \
+    gki_defconfig \
+    vendor/canoe_GKI.config \
+    vendor/myron_GKI.config
 
-# Source mode is fail-closed: input/SoC-ID/provider checks must pass before the
-# source images enter ROM packaging. R123 passed device functional validation;
-# see DT-STATUS.md for scope and the explicit OEM fallback.
-MYRON_DT_MODE ?= source
-MYRON_SOURCE_DT_OUT := $(MYRON_KERNEL_OUT)/source-dt
-ifeq ($(MYRON_DT_MODE),source)
-BOARD_PREBUILT_DTBOIMAGE := $(MYRON_SOURCE_DT_OUT)/dtbo.img
-BOARD_PREBUILT_DTBIMAGE_DIR :=
-else ifeq ($(MYRON_DT_MODE),oem)
-BOARD_PREBUILT_DTBOIMAGE := $(KERNEL_PATH)/dtbo.img
-BOARD_PREBUILT_DTBIMAGE_DIR := $(KERNEL_PATH)/dtb
-else
-$(error MYRON_DT_MODE must be oem or source)
-endif
+TARGET_KERNEL_EXT_MODULE_ROOT := kernel/xiaomi/sm8850-modules
+TARGET_KERNEL_EXT_MODULES := \
+    qcom/opensource/mm-drivers/msm_ext_display \
+    qcom/opensource/mm-drivers/hfi_core \
+    qcom/opensource/mm-drivers/hw_fence \
+    qcom/opensource/mm-drivers/sync_fence \
+    qcom/opensource/audio-kernel \
+    qcom/opensource/dsp-kernel \
+    qcom/opensource/mmrm-driver \
+    qcom/opensource/synx-kernel \
+    qcom/opensource/securemsm-kernel \
+    qcom/opensource/datarmnet-ext/mem \
+    qcom/opensource/dataipa \
+    qcom/opensource/datarmnet \
+    qcom/opensource/datarmnet-ext/shs \
+    qcom/opensource/datarmnet-ext/perf \
+    qcom/opensource/data-kernel/drivers/smem-mailbox \
+    nxp/opensource/driver \
+    qcom/opensource/camera-kernel \
+    qcom/opensource/graphics-kernel \
+    qcom/opensource/display-drivers \
+    qcom/opensource/eva-kernel \
+    qcom/opensource/wlan/platform \
+    qcom/opensource/bt-kernel \
+    qcom/opensource/wlan/qcacld-3.0
 
+# Preserve the validated partition/load lists. kernel.mk owns installation.
 include $(DEVICE_PATH)/kernel/modules.mk
-BOARD_USES_SYSTEM_DLKMIMAGE := true
-BOARD_USES_VENDOR_DLKMIMAGE := true
-BOARD_SYSTEM_KERNEL_MODULES := $(addprefix $(MYRON_KERNEL_DIST)/modules/,$(MYRON_SYSTEM_MODULES))
+SYSTEM_KERNEL_MODULES := $(MYRON_SYSTEM_MODULES)
+BOOT_KERNEL_MODULES := $(MYRON_RAMDISK_MODULES)
+RECOVERY_KERNEL_MODULES := $(MYRON_RAMDISK_MODULES)
 BOARD_SYSTEM_KERNEL_MODULES_LOAD := false
-BOARD_VENDOR_KERNEL_MODULES := $(addprefix $(MYRON_KERNEL_DIST)/modules/,$(MYRON_VENDOR_MODULES))
 BOARD_VENDOR_KERNEL_MODULES_LOAD := $(MYRON_VENDOR_LOAD_MODULES)
-# Retain the three TFA codec links enabled by the validated R123 loader.
-BOARD_VENDOR_KERNEL_MODULES_OPTIONS_FILE := $(DEVICE_PATH)/kernel/modules.options
-BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(addprefix $(MYRON_KERNEL_DIST)/modules/,$(MYRON_RAMDISK_MODULES))
 BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := $(MYRON_BOOT_LOAD_MODULES)
 BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(MYRON_RECOVERY_LOAD_MODULES)
-BOARD_RECOVERY_KERNEL_MODULES := $(addprefix $(MYRON_KERNEL_DIST)/modules/,$(MYRON_RAMDISK_MODULES))
 BOARD_RECOVERY_KERNEL_MODULES_LOAD := $(MYRON_RECOVERY_LOAD_MODULES)
+BOARD_USES_SYSTEM_DLKMIMAGE := true
+BOARD_USES_VENDOR_DLKMIMAGE := true
 
-# The source module set exceeds the existing vendor_dlkm slot as raw ext4.
-# This EROFS configuration has booted on the target device; keep the image raw.
+# DT compilation uses the normal dtbs target. Image assembly retains the
+# device-validated IDs, provider checks and FastRPC child ordering.
+TARGET_NEEDS_DTBOIMAGE := true
+TARGET_KERNEL_DTB := dtbs
+BOARD_CUSTOM_DTBIMG_MK := $(DEVICE_PATH)/kernel/dtb.mk
+BOARD_CUSTOM_DTBOIMG_MK := $(DEVICE_PATH)/kernel/dtbo.mk
+
 BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_VENDOR_DLKMIMAGE_EROFS_COMPRESSOR := lz4hc,9
 TARGET_USERIMAGES_SPARSE_EROFS_DISABLED := true
-
-# GKI providers are signed; stripping after signing invalidates the signature.
-BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
-BOARD_DO_NOT_STRIP_VENDOR_RAMDISK_MODULES := true
-BOARD_DO_NOT_STRIP_RECOVERY_MODULES := true
