@@ -3,7 +3,8 @@
 MYRON_KERNEL_ENTRY := kernel/xiaomi/myron-build
 MYRON_KERNEL_OUT := $(PRODUCT_OUT)/obj/MYRON_KERNEL
 MYRON_KERNEL_DIST := $(MYRON_KERNEL_OUT)/dist
-MYRON_KERNEL_WORKSPACE := $(MYRON_KERNEL_OUT)/workspace
+MYRON_KERNEL_WORKSPACE := kernel/xiaomi/myron
+MYRON_KERNEL_LEGACY_WORKSPACE := $(MYRON_KERNEL_OUT)/workspace
 MYRON_KERNEL_JOBS ?= 2
 MYRON_KERNEL_RAM_MB ?= 10000
 
@@ -11,6 +12,7 @@ MYRON_KERNEL_RAM_MB ?= 10000
 # builder, not kernel compilation. No TARGET_PREBUILT_KERNEL or Image copy input.
 TARGET_NO_KERNEL_OVERRIDE := true
 TARGET_KERNEL_VERSION := 6.12
+# Actual ACK and Qualcomm sources live below kernel/xiaomi, not PRODUCT_OUT.
 MYRON_KERNEL_SOURCE := $(MYRON_KERNEL_WORKSPACE)/common
 # With the legacy builder disabled, TARGET_KERNEL_SOURCE is consumed only by
 # generated_kernel_headers. Preserve the existing Qualcomm userspace UAPI

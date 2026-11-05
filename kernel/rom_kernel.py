@@ -2,6 +2,7 @@
 """Device-owned Kleaf adapter. Does not patch the ROM or accept prebuilt kernels."""
 import argparse
 import collections
+import contextlib
 import fcntl
 import hashlib
 import importlib.util
@@ -154,11 +155,15 @@ def fingerprint(entry, catalog):
 
 
 def main():
+    # Loading the pinned entry must not create untracked __pycache__ files even
+    # when this adapter is invoked manually without Python's -B flag.
+    sys.dont_write_bytecode = True
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('action', choices=['prepare', 'build', 'verify', 'emit-make'])
+    p.add_argument('action', choices=['prepare', 'build', 'verify', 'relocate', 'emit-make'])
     p.add_argument('--entry', type=Path, default=Path('kernel/xiaomi/myron-build'))
-    p.add_argument('--workspace', type=Path, default=Path('out/target/product/myron/obj/MYRON_KERNEL/workspace'))
-    p.add_argument('--dist', type=Path, default=Path('out/target/product/myron/obj/MYRON_KERNEL/dist'))
+    p.add_argument('--workspace', type=Path, default=Path('kernel/xiaomi/myron'))
+    p.add_argument('--legacy-workspace', type=Path, help='Previous OUT_DIR workspace; defaults to the sibling of --dist')
+    p.add_argument('--dist', type=Path, default=Path(os.environ.get('OUT_DIR', 'out')) / 'target/product/myron/obj/MYRON_KERNEL/dist')
     p.add_argument('--jobs', type=int, default=2)
     p.add_argument('--ram-mb', type=int, default=10000)
     a = p.parse_args()
@@ -167,20 +172,37 @@ def main():
         (HERE / 'modules.mk').write_text(make_text(catalog))
         return
     validate_catalog(catalog)
-    entry, workspace, dist = a.entry.resolve(), a.workspace.resolve(), a.dist.resolve()
+    entry, workspace, dist = a.entry.resolve(), a.workspace.absolute(), a.dist.resolve()
+    legacy = a.legacy_workspace.absolute() if a.legacy_workspace else dist.parent / 'workspace'
     require(a.jobs >= 1 and a.ram_mb >= 2048, 'Invalid resource limits')
     entry_check(entry, catalog)
-    # Keep nested repositories outside Soong's source discovery and protect concurrent m invocations.
-    workspace.parent.mkdir(parents=True, exist_ok=True)
-    with (workspace.parent / 'adapter.lock').open('w') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
+    sys.path.insert(0, str(entry))
+    builder = load('myron_source_build', entry / 'build.py')
+    source_lock = read(entry / 'sources.lock.json')
+    builder.validate_source_lock(source_lock)
+    layout = load('myron_workspace_layout', HERE / 'workspace_layout.py')
+    # Share the workspace lock across OUT_DIRs, and retain the old adapter lock
+    # during migration so a previous-version build cannot race the directory move.
+    lock_paths = {workspace.parent / '.myron-adapter.lock',
+                  legacy.parent / 'adapter.lock', dist.parent / 'adapter.lock'}
+    with contextlib.ExitStack() as locks:
+        for lock_path in sorted(lock_paths):
+            lock_path.parent.mkdir(parents=True, exist_ok=True)
+            lock = locks.enter_context(lock_path.open('a'))
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise ValueError('Another kernel adapter is active: ' + str(lock_path))
+        state = layout.ensure_workspace(workspace, legacy, entry, apply=True,
+                    validate_sources=lambda root: builder.check_sources(root, source_lock),
+                    allow_incomplete=(a.action == 'prepare'))
+        if a.action == 'relocate':
+            print('Kernel workspace layout: ' + state['action'])
+            print('Kernel sources: ' + str(workspace / 'common'))
+            return
         if a.action == 'prepare':
             subprocess.run([sys.executable, '-B', str(entry / 'sync_sources.py'), '--workspace', str(workspace), '--jobs', str(min(a.jobs, 16))], check=True)
-        sys.path.insert(0, str(entry))
-        builder = load('myron_source_build', entry / 'build.py')
-        source_lock = read(entry / 'sources.lock.json')
-        builder.validate_source_lock(source_lock)
-        require((workspace / 'common/.git').exists(), 'Run python3 device/xiaomi/myron/kernel/rom_kernel.py prepare first (use the same --workspace when OUT_DIR differs).')
+        require((workspace / 'common/.git').exists(), 'Run python3 device/xiaomi/myron/kernel/rom_kernel.py prepare first; sources belong in kernel/xiaomi/myron.')
         source_state = builder.check_sources(workspace, source_lock)
         if a.action == 'prepare':
             print('Pinned sources ready. Use the normal ROM lunch and m commands; kernel compilation is a build dependency.')

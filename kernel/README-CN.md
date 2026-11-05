@@ -14,6 +14,11 @@ ROM 的 `kernel`、模块打包和镜像目标现在依赖 `kernel/build.mk` 中
 `TARGET_KERNEL_SOURCE` 在这个配置下仅供现有 `generated_kernel_headers` 使用，
 继续指向原 Qualcomm 用户空间 UAPI 导出目录；它不决定 Image/模块的来源。
 
+实际内核源码工作区固定为 `kernel/xiaomi/myron`：ACK 源码位于其 `common`，
+Qualcomm 模块和 DTS 位于其 `vendor` 等目录；编译入口仍为 `kernel/xiaomi/myron-build`。
+内核构建规则显示 `Building KERNEL image`，随后由原 Kleaf 流程构建或校验复用产物。
+这条提示不表示每次都会重编全部源码；缓存复用结果会继续明确输出。
+
 ## 接入现有 ROM 源码
 
 已有 SELinux、Recovery、相机等改动时，使用独立目录中的本设备分支合并，避免替换整个设备树：
@@ -45,32 +50,66 @@ R123 源码 DT 已通过本轮真机功能验证，默认启用 `MYRON_DT_MODE=s
 具体证据、使用方式和验证边界见 [DT-STATUS.md](DT-STATUS.md)。
 本轮检查的 OEM 仓库提交是 `9999f765b53876bf7a013a4fde5221153ad570fc`。
 
-第一次切换请用新 OUT_DIR，避免旧预编译模块和旧版本目录残留到增量输出：
+## 从已有 R123 工作区迁移并编译完整 ROM
+
+已完成源码镜像构建的工作区继续使用原 `OUT_DIR`。更新设备适配器后，在 ROM 根目录运行：
+
+```sh
+export OUT_DIR=out-myron-r123-source
+export SOONG_NINJA=ninja
+python3 -B device/xiaomi/myron/kernel/rom_kernel.py relocate \
+  --workspace kernel/xiaomi/myron \
+  --legacy-workspace "$OUT_DIR/target/product/myron/obj/MYRON_KERNEL/workspace" \
+  --dist "$OUT_DIR/target/product/myron/obj/MYRON_KERNEL/dist"
+python3 -B device/xiaomi/myron/kernel/rom_kernel.py verify
+```
+
+迁移先严格检查入口和源码版本，再以原子重命名将完整旧工作区移到
+`kernel/xiaomi/myron`，在旧位置建立相对符号链接，保持已有缓存中的旧路径可达。
+源码、工具链、Kleaf 内部缓存和原始产物整体保留；用于 ROM 打包的 `dist`、
+源码 DT 输出和最终镜像仍位于所选 `OUT_DIR`。不需要清空输出或重新执行 `prepare`。
+如果新旧位置各有独立工作区，工具会停止，不会覆盖或合并两套源码。
+
+新的工作区根目录包含 `.find-ignore`，由当前 cnb 的 Soong 文件扫描器排除其中的
+Android.bp、Android.mk，避免内核附带工具与 ROM 项目重名。该标记不能移到
+`kernel/xiaomi` 父目录，否则会屏蔽仍需使用的 UAPI 项目。不同 `OUT_DIR` 共用这一套
+内核源码和内部缓存；工作区锁用于串行处理内核操作。保留迁移生成的旧路径链接，
+不要手工删除缓存引用的路径。
+
+上述命令的默认工作区就是 `kernel/xiaomi/myron`，默认 `dist` 按 `OUT_DIR` 计算；
+迁移完成后日常 `verify` 和正常 ROM 编译不再需要指定旧工作区路径。
+已有完整源码产物通过校验时会复用；保留缓存不代表将来所有 Bazel 动作都能避免重新分析。
+
+在此前成功使用的同一 `lunch` 环境中，编译完整 Evolution X OTA 包：
+
+```sh
+m -j4 evolution MYRON_DT_MODE=source \
+  MYRON_KERNEL_JOBS=2 MYRON_KERNEL_RAM_MB=10000
+```
+
+新终端需要先 `source build/envsetup.sh` 并重新执行原来成功的 `lineage_myron` lunch 组合。
+`evolution` 是当前 cnb 的整包目标，自动带上 boot、vendor_boot、DTBO、system_dlkm、
+vendor_dlkm 等配套镜像，并在 `$OUT_DIR/target/product/myron/` 生成 ROM ZIP 和 SHA256 文件。
+可以先运行 `m -j4 kernel` 仅检查内核，但无需将它作为每次整包编译的额外前置步骤。
+这次目录迁移与构建规则检查不等于完整 ROM 编译成功；整包构建和刷入回归仍待执行。
+
+首次接入且没有已有源码工作区时，才执行下面的源码准备。若此前使用预编译内核，
+首次源码构建应选独立 `OUT_DIR`，避免混用旧预编译输出；不要因此更换已经成功的 R123 输出目录。
 
 ```sh
 export OUT_DIR=out-myron-source
 export SOONG_NINJA=ninja
-python3 -B device/xiaomi/myron/kernel/rom_kernel.py prepare \
-  --workspace "$OUT_DIR/target/product/myron/obj/MYRON_KERNEL/workspace" --jobs 4
+python3 -B device/xiaomi/myron/kernel/rom_kernel.py prepare --jobs 4
 source build/envsetup.sh
 # 使用你当前 cnb checkout 已正常使用的 lineage_myron lunch 组合。
 # lunch ...
-m kernel
-# 或执行平时的 ROM 打包目标；它同样会先构建内核和模块。
+m -j4 evolution MYRON_DT_MODE=source \
+  MYRON_KERNEL_JOBS=2 MYRON_KERNEL_RAM_MB=10000
 ```
 
 `prepare` 只同步并检查源码、工具链，不编译内核。后续 `m` 自动编译。
-已经准备好的 R123 工作区升级入口后先运行：
-
-```sh
-python3 -B device/xiaomi/myron/kernel/rom_kernel.py verify \
-  --workspace "$OUT_DIR/target/product/myron/obj/MYRON_KERNEL/workspace"
-```
-
-本次入口修正旧 R115 profile 检查，并在 `prepare`、`verify` 和 `build` 中共用校验。
-53 项依赖清单字节不变，继续使用原工作区和 Bazel 缓存，无需重复 prepare。
-合并脚本保留已安装的 Myron 扁平 UAPI 头文件修复。历史验证 JSON 保留当时的入口提交，
-本次入口修复经过本地回归测试，尚未执行完整内核或 ROM 编译。
+内核入口、53 项依赖清单及 DTS 锁定不变；合并脚本保留已安装的 Myron 扁平 UAPI
+头文件修复和音频模块选项。历史验证 JSON 保留原始内容，不作为本次完整 ROM 通过记录。
 `OUT_DIR` 使用相对 ROM 根目录的路径；当前 cnb 的 fsgen 会拒绝绝对路径形式的源码模块和 DTBO 输入。
 若已经使用绝对路径，只需在 ROM 根目录将 `OUT_DIR` 改成同一目录的相对写法，无需删除输出或重新同步。
 `SOONG_NINJA=ninja` 在当前 shell 中选择原生 Ninja，可避开 Siso 的 `@config//main.star` 配置加载失败。
@@ -113,7 +152,9 @@ python3 -B device/xiaomi/myron/kernel/rom_kernel.py verify \
 正常 R123 的加载器会传入 `machine_dlkm.ko myron_tfa_links=1`，而锁定模块源码的
 该参数默认为关闭。本次通过 Android 标准 `BOARD_VENDOR_KERNEL_MODULES_OPTIONS_FILE`
 将 `options machine_dlkm myron_tfa_links=1` 装入 `vendor_dlkm/lib/modules/modules.options`，
-恢复三个 TFA codec 链路所需的加载参数。此修复尚待更新后的镜像真机验证，不能视为音频已恢复。
+恢复三个 TFA codec 链路所需的加载参数。修复提交为
+`8241d5eb0f3d0700575dde5203157bed1c38702b`；用户于 2026-11-05 确认“音频已经恢复”。
+该结论来自用户真机反馈，本轮没有新增日志采集或参数读回，也不代表完整 ROM 已通过验证。
 
 同时保留已实测启动的 EROFS / `lz4hc,9` / 非 sparse 配置：此前镜像为 27,598,848
 字节，小于该设备现有 vendor_dlkm 分区的 53,805,056 字节。新增参数后的实际大小仍需检查。

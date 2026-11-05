@@ -19,8 +19,8 @@ endif
 $(myron_kernel_image): .KATI_IMPLICIT_OUTPUTS := $(myron_kernel_outputs)
 $(myron_kernel_image): .KATI_DEPFILE := $(MYRON_KERNEL_OUT)/kernel-check.d
 $(myron_kernel_image): $(myron_kernel_inputs)
-	@echo "Building/checking Redmi K90PM kernel from committed sources"
-	PATH=/usr/local/bin:/usr/bin:/bin /usr/bin/python3 -B $(DEVICE_PATH)/kernel/rom_kernel.py build --entry $(MYRON_KERNEL_ENTRY) --workspace $(MYRON_KERNEL_WORKSPACE) --dist $(MYRON_KERNEL_DIST) --jobs $(MYRON_KERNEL_JOBS) --ram-mb $(MYRON_KERNEL_RAM_MB)
+	@echo "Building KERNEL image"
+	PATH=/usr/local/bin:/usr/bin:/bin /usr/bin/python3 -B $(DEVICE_PATH)/kernel/rom_kernel.py build --entry $(MYRON_KERNEL_ENTRY) --workspace $(MYRON_KERNEL_WORKSPACE) --legacy-workspace $(MYRON_KERNEL_LEGACY_WORKSPACE) --dist $(MYRON_KERNEL_DIST) --jobs $(MYRON_KERNEL_JOBS) --ram-mb $(MYRON_KERNEL_RAM_MB)
 	@printf '%s: %s\n' '$@' '$(myron_source_check_force)' > $(MYRON_KERNEL_OUT)/kernel-check.d
 
 .KATI_RESTAT: $(PRODUCT_OUT)/kernel
