@@ -193,6 +193,11 @@ jobs:
           assert 'TARGET_NO_KERNEL_OVERRIDE' not in root
           assert 'preexported_kernel_headers' not in root
           PY
+      - name: Validate each expanded stock build recipe
+        run: |
+          set -euo pipefail
+          python3 device/xiaomi/myron/kernel/ci/check_recipes.py \
+            --out out/logs/recipe-preflight | tee out/logs/recipe-preflight.log
       - name: Build through stock Evolution kernel.mk with read-only sources
         id: native-build
         run: |

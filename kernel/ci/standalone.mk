@@ -2,6 +2,9 @@
 # Evolution's kernel.mk; this file is not part of the device's ROM build path.
 SHELL := /bin/bash
 .SHELLFLAGS := -eo pipefail -c
+# Kati keeps the nested multiline module-install macros in one build command.
+# GNU Make must also keep each full recipe together, including those newlines.
+.ONESHELL:
 .DEFAULT_GOAL := ci-all
 BUILD_TOP := $(CURDIR)
 DEVICE_PATH := device/xiaomi/myron

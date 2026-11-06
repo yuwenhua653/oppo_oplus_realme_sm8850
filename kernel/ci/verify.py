@@ -47,8 +47,10 @@ try:
     report['device_commit'] = output('git', '-C', str(device), 'rev-parse', 'HEAD')
     report['compiler'] = output('toolchains/clang/bin/clang', '--version')
     report['btf_preflight'] = json.loads((root / 'out/logs/btf-preflight/report.json').read_text())
+    report['recipe_preflight'] = json.loads((root / 'out/logs/recipe-preflight/report.json').read_text())
     report['pahole_sha256'] = digest(root / 'out/host/bin/pahole')
     check(report['btf_preflight']['success'], 'BTF preflight failed')
+    check(report['recipe_preflight']['success'], 'Build recipe preflight failed')
     config = (kernel / '.config').read_text()
     report['config_sha256'] = digest(kernel / '.config')
     report['config_features'] = {
