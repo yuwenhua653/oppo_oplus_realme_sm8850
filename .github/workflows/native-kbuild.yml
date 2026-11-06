@@ -77,8 +77,8 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bc bison flex libssl-dev libelf-dev \
-            dwarves kmod ccache rsync python3 device-tree-compiler erofs-utils lz4 zstd
+          sudo apt-get install -y build-essential bc bison flex libssl-dev libelf-dev libdw-dev \
+            zlib1g-dev pkg-config dwarves kmod ccache rsync python3 device-tree-compiler erofs-utils lz4 zstd
           mkdir -p out/host/bin out/logs
           df -h .
           free -h
@@ -114,6 +114,27 @@ jobs:
           path: .cache/ccache
           key: myron-native-ccache-r536225-${{ github.run_id }}
           restore-keys: myron-native-ccache-r536225-
+      - name: Compile and link native kernel host dependency probe
+        run: |
+          set -euo pipefail
+          cat > out/logs/host-deps.c <<'EOF'
+          #include <dwarf.h>
+          #include <elfutils/libdw.h>
+          #include <elfutils/libdwfl.h>
+          #include <gelf.h>
+          #include <zlib.h>
+          #include <openssl/crypto.h>
+          int main(void) {
+              Dwarf *dw = dwarf_begin(-1, DWARF_C_READ);
+              if (dw) dwarf_end(dw);
+              return elf_version(EV_CURRENT) == EV_NONE ||
+                     zlibVersion() == NULL || OpenSSL_version_num() == 0;
+          }
+          EOF
+          pkg-config --modversion libdw libelf zlib openssl | tee out/logs/host-deps-versions.txt
+          toolchains/clang/bin/clang out/logs/host-deps.c -o out/host/bin/host-deps \
+            $(pkg-config --cflags --libs libdw libelf zlib openssl)
+          out/host/bin/host-deps
       - name: Prepare host DT tools and check configuration
         env:
           MYRON_TEST_FDTOVERLAYMERGE: ${{ github.workspace }}/out/host/bin/fdtoverlaymerge
