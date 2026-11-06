@@ -84,7 +84,7 @@ jobs:
           free -h
       - name: Cache pinned Android Clang
         id: clang-cache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: toolchains/clang
           key: myron-native-clang-r536225-2d4dcbff7cb42f360f368bacf51cfe711fd1cb0f
@@ -98,8 +98,18 @@ jobs:
             -o "$RUNNER_TEMP/myron-clang.tar.gz"
           tar -xzf "$RUNNER_TEMP/myron-clang.tar.gz" -C toolchains/clang
           rm "$RUNNER_TEMP/myron-clang.tar.gz"
+      - name: Verify downloaded toolchain
+        run: |
+          set -euo pipefail
+          toolchains/clang/bin/clang --version | tee out/logs/compiler.txt
+      - name: Save verified toolchain before the build
+        if: steps.clang-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: toolchains/clang
+          key: myron-native-clang-r536225-2d4dcbff7cb42f360f368bacf51cfe711fd1cb0f
       - name: Cache compiler objects
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: .cache/ccache
           key: myron-native-ccache-r536225-${{ github.run_id }}
@@ -114,12 +124,16 @@ jobs:
           pahole --version | tee out/logs/pahole.txt
           git -C vendor/lineage rev-parse HEAD > out/logs/evolution-build-commit.txt
           test "$(git -C vendor/lineage hash-object build/tasks/kernel.mk)" = 343e4361f35ed01827663c67225d5129c13fbcec
-          make -C host-dtc -j"$(nproc)" dtc fdtput fdtoverlay
+          # This pinned Android libfdt has three signed/unsigned size comparisons.
+          # Retain the warnings; relax only their promotion to errors for host DTC.
+          # Bundle the pinned libfdt into the tools instead of loading a distro copy.
+          make -C host-dtc -j"$(nproc)" STATIC_BUILD=1 EXTRA_CFLAGS=-Wno-error=sign-compare dtc fdtput fdtoverlay
           cc -O2 -I host-dtc -I host-dtc/libfdt host-dtc/fdtoverlaymerge.c \
             host-dtc/util.c host-dtc/libfdt/*.c -o out/host/bin/fdtoverlaymerge
           cp host-dtc/dtc host-dtc/fdtput host-dtc/fdtoverlay out/host/bin/
           cp host-libufdt/utils/src/mkdtboimg.py out/host/bin/mkdtboimg
           chmod +x out/host/bin/mkdtboimg
+          export PATH="$GITHUB_WORKSPACE/out/host/bin:$PATH"
           python3 -B -m unittest discover -s device/xiaomi/myron/kernel -p 'test_*.py' -v \
             2>&1 | tee out/logs/device-tests.log
           python3 - <<'PY'
@@ -132,6 +146,7 @@ jobs:
           assert 'preexported_kernel_headers' not in root
           PY
       - name: Build through stock Evolution kernel.mk with read-only sources
+        id: native-build
         run: |
           set -euo pipefail
           for path in kernel/xiaomi/sm8850 kernel/xiaomi/sm8850-modules kernel/xiaomi/sm8850-devicetrees; do
@@ -140,6 +155,12 @@ jobs:
           done
           make -f device/xiaomi/myron/kernel/ci/standalone.mk -j1 ci-all \
             2>&1 | tee out/logs/native-kbuild.log
+      - name: Preserve compiler cache after a build attempt
+        if: always() && (steps.native-build.outcome == 'success' || steps.native-build.outcome == 'failure')
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/ccache
+          key: myron-native-ccache-r536225-${{ github.run_id }}
       - name: Check EROFS payload estimate and validate all outputs
         run: |
           set -euo pipefail
