@@ -78,10 +78,30 @@ jobs:
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y build-essential bc bison flex libssl-dev libelf-dev libdw-dev \
-            zlib1g-dev pkg-config dwarves kmod ccache rsync python3 device-tree-compiler erofs-utils lz4 zstd
+            zlib1g-dev pkg-config cmake kmod ccache rsync python3 device-tree-compiler erofs-utils lz4 zstd
           mkdir -p out/host/bin out/logs
           df -h .
           free -h
+      - name: Build pinned pahole with dynamic per-CPU variable storage
+        run: |
+          set -euo pipefail
+          # Ubuntu 24.04 pahole 1.25 truncates this kernel's >4096 per-CPU vars.
+          # Keep BTF enabled; use upstream 1.28 including distilled module BTF.
+          git init host-pahole
+          git -C host-pahole fetch --depth=1 \
+            https://kernel.googlesource.com/pub/scm/devel/pahole/pahole \
+            1cb4202ed2cbd591734f6b7fb1d2b8aa8eb5a1c3
+          git -C host-pahole checkout --detach FETCH_HEAD
+          git -C host-pahole submodule update --init --recursive --depth=1
+          test "$(git -C host-pahole rev-parse HEAD)" = 1cb4202ed2cbd591734f6b7fb1d2b8aa8eb5a1c3
+          test "$(git -C host-pahole/lib/bpf rev-parse HEAD)" = 09b9e83102eb8ab9e540d36b4559c55f3bcdb95d
+          cmake -S host-pahole -B out/host/pahole-build -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF -DGIT_SUBMODULE=OFF
+          cmake --build out/host/pahole-build --target pahole -j"$(nproc)"
+          cp out/host/pahole-build/pahole out/host/bin/pahole
+          test "$(out/host/bin/pahole --version)" = v1.28
+          out/host/bin/pahole --version | tee out/logs/pahole.txt
+          sha256sum out/host/bin/pahole > out/logs/pahole.sha256
       - name: Cache pinned Android Clang
         id: clang-cache
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
@@ -135,6 +155,13 @@ jobs:
           toolchains/clang/bin/clang out/logs/host-deps.c -o out/host/bin/host-deps \
             $(pkg-config --cflags --libs libdw libelf zlib openssl)
           out/host/bin/host-deps
+      - name: Check BTF encoding beyond the old per-CPU limit
+        run: |
+          set -euo pipefail
+          python3 device/xiaomi/myron/kernel/ci/check_btf.py \
+            --kernel kernel/xiaomi/sm8850 --pahole out/host/bin/pahole \
+            --cc toolchains/clang/bin/clang --objcopy toolchains/clang/bin/llvm-objcopy \
+            --out out/logs/btf-preflight | tee out/logs/btf-preflight.log
       - name: Prepare host DT tools and check configuration
         env:
           MYRON_TEST_FDTOVERLAYMERGE: ${{ github.workspace }}/out/host/bin/fdtoverlaymerge
@@ -142,7 +169,7 @@ jobs:
         run: |
           set -euo pipefail
           toolchains/clang/bin/clang --version | tee out/logs/compiler.txt
-          pahole --version | tee out/logs/pahole.txt
+          out/host/bin/pahole --version | tee out/logs/pahole.txt
           git -C vendor/lineage rev-parse HEAD > out/logs/evolution-build-commit.txt
           test "$(git -C vendor/lineage hash-object build/tasks/kernel.mk)" = 343e4361f35ed01827663c67225d5129c13fbcec
           # This pinned Android libfdt has three signed/unsigned size comparisons.

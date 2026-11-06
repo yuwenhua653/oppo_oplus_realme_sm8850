@@ -46,6 +46,9 @@ try:
               'Build changed source tree: ' + path)
     report['device_commit'] = output('git', '-C', str(device), 'rev-parse', 'HEAD')
     report['compiler'] = output('toolchains/clang/bin/clang', '--version')
+    report['btf_preflight'] = json.loads((root / 'out/logs/btf-preflight/report.json').read_text())
+    report['pahole_sha256'] = digest(root / 'out/host/bin/pahole')
+    check(report['btf_preflight']['success'], 'BTF preflight failed')
     config = (kernel / '.config').read_text()
     report['config_sha256'] = digest(kernel / '.config')
     report['config_features'] = {
@@ -54,6 +57,8 @@ try:
     }
     check(report['config_features']['EROFS_FS'] and report['config_features']['EROFS_FS_ZIP'],
           'EROFS support missing')
+    check(report['config_features']['DEBUG_INFO_BTF'], 'BTF support missing')
+    check('CONFIG_PAHOLE_VERSION=128' in config.splitlines(), 'Pinned pahole was not used')
     # Kernel modules installed by the actual upstream recipe, not a handpicked copy.
     installed = obj / 'PACKAGING/kernel_modules/lib/modules'
     modules = list(installed.rglob('*.ko'))

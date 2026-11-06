@@ -16,7 +16,7 @@ BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 BUILDING_VENDOR_BOOT_IMAGE := true
 TARGET_KERNEL_CLANG_PATH := $(CURDIR)/toolchains/clang
 KERNEL_MAKE_CMD := $(MAKE)
-KERNEL_MAKE_FLAGS := -j$(shell nproc) LLVM=1 LLVM_IAS=1
+KERNEL_MAKE_FLAGS := -j$(shell nproc) LLVM=1 LLVM_IAS=1 PAHOLE=$(abspath $(HOST_OUT_EXECUTABLES)/pahole)
 KERNEL_CROSS_COMPILE := CROSS_COMPILE=aarch64-linux-gnu-
 CCACHE_BIN := /usr/bin/ccache
 DEPMOD := /usr/sbin/depmod
