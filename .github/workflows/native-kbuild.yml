@@ -1,0 +1,177 @@
+name: Myron native kernel integration test
+
+on:
+  push:
+    branches: [myron/device-native-kbuild]
+    paths:
+      - '.github/workflows/native-kbuild.yml'
+      - 'kernel/ci/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-native-kbuild-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-kernel:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      CCACHE_DIR: ${{ github.workspace }}/.cache/ccache
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_MAXSIZE: 2G
+      KBUILD_BUILD_USER: myron-ci
+      KBUILD_BUILD_HOST: github-actions
+      KBUILD_BUILD_TIMESTAMP: 'Thu Nov 5 00:00:00 UTC 2026'
+    steps:
+      - name: Checkout native device integration
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          path: device/xiaomi/myron
+          persist-credentials: false
+      - name: Checkout pinned kernel source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 4f5a0cf774c7a109e8e4fa1269aeec91169ed267
+          path: kernel/xiaomi/sm8850
+          persist-credentials: false
+      - name: Checkout pinned external modules
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 4cf53542c7a90c5b285ec228c351ecbfa8e7218a
+          path: kernel/xiaomi/sm8850-modules
+          persist-credentials: false
+      - name: Checkout pinned device trees
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: b84c303a85a8f8b73d7fa3d4df37b57a601dd5b1
+          path: kernel/xiaomi/sm8850-devicetrees
+          persist-credentials: false
+      - name: Checkout stock Evolution build rules
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: Evolution-X/vendor_evolution
+          ref: cda547177491b2921aed502ad1fafe28d511ef22
+          path: vendor/lineage
+          persist-credentials: false
+      - name: Checkout DT tools
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: LineageOS/android_external_dtc
+          ref: c1197f56b8f468effbbf5e79feae353c4280e2ea
+          path: host-dtc
+          persist-credentials: false
+      - name: Checkout mkdtboimg
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: LineageOS/android_system_libufdt
+          ref: 70c20864187df19f3e7d358ca8436f77d61a3f39
+          path: host-libufdt
+          persist-credentials: false
+      - name: Install host tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bc bison flex libssl-dev libelf-dev \
+            dwarves kmod ccache rsync python3 device-tree-compiler erofs-utils lz4 zstd
+          mkdir -p out/host/bin out/logs
+          df -h .
+          free -h
+      - name: Cache pinned Android Clang
+        id: clang-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: toolchains/clang
+          key: myron-native-clang-r536225-2d4dcbff7cb42f360f368bacf51cfe711fd1cb0f
+      - name: Download Android Clang r536225
+        if: steps.clang-cache.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p toolchains/clang
+          curl --fail --location --retry 3 \
+            'https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/2d4dcbff7cb42f360f368bacf51cfe711fd1cb0f/clang-r536225.tar.gz' \
+            -o "$RUNNER_TEMP/myron-clang.tar.gz"
+          tar -xzf "$RUNNER_TEMP/myron-clang.tar.gz" -C toolchains/clang
+          rm "$RUNNER_TEMP/myron-clang.tar.gz"
+      - name: Cache compiler objects
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/ccache
+          key: myron-native-ccache-r536225-${{ github.run_id }}
+          restore-keys: myron-native-ccache-r536225-
+      - name: Prepare host DT tools and check configuration
+        env:
+          MYRON_TEST_FDTOVERLAYMERGE: ${{ github.workspace }}/out/host/bin/fdtoverlaymerge
+          MYRON_TEST_MKDTBOIMG: ${{ github.workspace }}/out/host/bin/mkdtboimg
+        run: |
+          set -euo pipefail
+          toolchains/clang/bin/clang --version | tee out/logs/compiler.txt
+          pahole --version | tee out/logs/pahole.txt
+          git -C vendor/lineage rev-parse HEAD > out/logs/evolution-build-commit.txt
+          test "$(git -C vendor/lineage hash-object build/tasks/kernel.mk)" = 343e4361f35ed01827663c67225d5129c13fbcec
+          make -C host-dtc -j"$(nproc)" dtc fdtput fdtoverlay
+          cc -O2 -I host-dtc -I host-dtc/libfdt host-dtc/fdtoverlaymerge.c \
+            host-dtc/util.c host-dtc/libfdt/*.c -o out/host/bin/fdtoverlaymerge
+          cp host-dtc/dtc host-dtc/fdtput host-dtc/fdtoverlay out/host/bin/
+          cp host-libufdt/utils/src/mkdtboimg.py out/host/bin/mkdtboimg
+          chmod +x out/host/bin/mkdtboimg
+          python3 -B -m unittest discover -s device/xiaomi/myron/kernel -p 'test_*.py' -v \
+            2>&1 | tee out/logs/device-tests.log
+          python3 - <<'PY'
+          import pathlib, re
+          root = pathlib.Path('device/xiaomi/myron/kernel/BoardConfigKernel.mk').read_text()
+          module_list = pathlib.Path('kernel/xiaomi/sm8850-modules/android/myron-native/external-modules.list').read_text().split()
+          actual = re.search(r'TARGET_KERNEL_EXT_MODULES := (.*?)(?=\n\n)', root, re.S).group(1).replace('\\', '').split()
+          assert actual == module_list, 'Device external module order differs from source list'
+          assert 'TARGET_NO_KERNEL_OVERRIDE' not in root
+          assert 'preexported_kernel_headers' not in root
+          PY
+      - name: Build through stock Evolution kernel.mk with read-only sources
+        run: |
+          set -euo pipefail
+          for path in kernel/xiaomi/sm8850 kernel/xiaomi/sm8850-modules kernel/xiaomi/sm8850-devicetrees; do
+            sudo mount --bind "$path" "$path"
+            sudo mount -o remount,bind,ro "$path"
+          done
+          make -f device/xiaomi/myron/kernel/ci/standalone.mk -j1 ci-all \
+            2>&1 | tee out/logs/native-kbuild.log
+      - name: Check EROFS payload estimate and validate all outputs
+        run: |
+          set -euo pipefail
+          mkfs.erofs -zlz4hc,9 out/vendor_dlkm.payload.erofs out/target/product/myron/vendor_dlkm \
+            2>&1 | tee out/logs/erofs.log
+          python3 device/xiaomi/myron/kernel/ci/verify.py
+          ccache --show-stats | tee out/logs/ccache.txt
+      - name: Upload native build outputs (not a flash package)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-native-kbuild-test-${{ github.run_id }}
+          path: |
+            out/target/product/myron/kernel
+            out/target/product/myron/dtb.img
+            out/target/product/myron/dtbo.img
+            out/target/product/myron/system_dlkm
+            out/target/product/myron/vendor_dlkm
+            out/target/product/myron/vendor_ramdisk
+            out/target/product/myron/recovery/root
+            out/native-ci-report.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-native-kbuild-diagnostics-${{ github.run_id }}
+          path: |
+            out/logs
+            out/native-ci-report.json
+            out/target/product/myron/obj/KERNEL_OBJ/.config
+            out/target/product/myron/obj/KERNEL_OBJ/Module.symvers
+            out/target/product/myron/obj/DTB_OBJ/myron-images/*.json
+          include-hidden-files: true
+          retention-days: 7
