@@ -70,9 +70,14 @@ def main():
     source.write_text(''.join(
         f'int {name} __attribute__((section(".data..percpu"), used)) = 1;\n'
         for name in sorted(expected)) + 'void _start(void) {}\n')
+    linker = args.out / 'percpu.lds'
+    # Preserve this section before the default .data.* wildcard consumes it.
+    # Both linkers have .text; LLD omits .data when all data is per-CPU.
+    linker.write_text('SECTIONS { .data..percpu : { *(.data..percpu) } } '
+                      'INSERT AFTER .text;\n')
     elf = args.out / 'percpu.elf'
     run(args.cc, '-g', '-nostdlib', '-no-pie', '-Wl,-e,_start',
-        '-Wl,--build-id=none', '-Wl,--unique=.data..percpu', str(source), '-o', str(elf))
+        '-Wl,--build-id=none', '-Wl,-T,' + str(linker), str(source), '-o', str(elf))
     run(pahole, '-J', *flags, str(elf), env={**os.environ, 'LLVM_OBJCOPY': args.objcopy})
     btf = args.out / 'percpu.btf'
     btf.unlink(missing_ok=True)
