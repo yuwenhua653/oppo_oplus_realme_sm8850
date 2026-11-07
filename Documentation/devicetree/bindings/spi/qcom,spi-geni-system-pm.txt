@@ -1,0 +1,24 @@
+System PM for the downstream qcom,spi-geni controller
+===================================================
+
+Optional boolean: qcom,system-suspend-managed
+
+Use only with qcom,la-vm, without qcom,le-vm, qcom,shared_ee or
+qcom,shared_se. The driver rejects other combinations at probe.
+
+This describes an LA controller whose SPI children stop all I/O in their
+system suspend callbacks and do not manage the controller's system sleep
+transition themselves. The controller drains its queue, rejects outstanding
+transfer/client runtime-PM references, and uses pm_runtime_force_suspend()
+and pm_runtime_force_resume() for the system sleep transition. An idle
+controller awaiting delayed autosuspend is therefore allowed to suspend.
+
+The property does not change VM resource ownership or bypass active client
+votes. LA GPIO/clock/interconnect handling stays in the existing runtime PM
+callbacks. Without this property the existing client-managed VM system PM
+behavior is unchanged.
+
+Myron's direct FocalTech driver uses this contract on qupv3_se19_spi only.
+Deploy the controller driver and board DT change together. Validate repeated
+sleep/wake, touchscreen recovery and suspend counter deltas on the device;
+successful compilation alone does not validate standby power consumption.

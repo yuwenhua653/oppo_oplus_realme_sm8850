@@ -281,6 +281,7 @@ struct spi_geni_master {
 	bool is_le_vm;	/* LE VM usecase */
 	bool is_la_vm;	/* LA VM property */
 	bool dis_autosuspend;
+	bool system_suspend_managed;
 	bool cmd_done;
 	bool set_miso_sampling;
 	u32 miso_sampling_ctrl_val;
@@ -3195,6 +3196,13 @@ static int spi_get_dt_property(struct platform_device *pdev, struct spi_geni_mas
 		of_property_read_bool(pdev->dev.of_node, "qcom,shared_ee");
 	}
 
+	geni_mas->system_suspend_managed =
+		of_property_read_bool(pdev->dev.of_node, "qcom,system-suspend-managed");
+	if (geni_mas->system_suspend_managed &&
+	    (!geni_mas->is_la_vm || geni_mas->is_le_vm || geni_mas->shared_ee))
+		return dev_err_probe(&pdev->dev, -EINVAL,
+				     "System-managed suspend requires an unshared LA controller\n");
+
 	geni_mas->set_miso_sampling =
 	of_property_read_bool(pdev->dev.of_node, "qcom,set-miso-sampling");
 	if (geni_mas->set_miso_sampling) {
@@ -3657,6 +3665,7 @@ static int spi_geni_levm_suspend_proc(struct spi_geni_master *geni_mas, struct s
 static int spi_geni_runtime_suspend(struct device *dev)
 {
 	int ret = 0;
+	int restore_ret;
 	struct spi_controller *spi = get_spi_master(dev);
 	struct spi_geni_master *geni_mas = spi_controller_get_devdata(spi);
 	unsigned long long start_time;
@@ -3673,7 +3682,7 @@ static int spi_geni_runtime_suspend(struct device *dev)
 	if (geni_mas->gsi_mode) {
 		ret = spi_geni_gpi_pause_resume(geni_mas, true);
 		if (ret)
-			return ret;
+			goto restore_irq;
 	}
 
 	/* For tui usecase LA should control clk/gpio/icb */
@@ -3696,13 +3705,33 @@ static int spi_geni_runtime_suspend(struct device *dev)
 
 exit_rt_suspend:
 	ret = geni_se_resources_off(&geni_mas->spi_rsc);
-	ret = geni_icc_disable(&geni_mas->spi_rsc);
 	if (ret)
+		goto restore_dma;
+	ret = geni_icc_disable(&geni_mas->spi_rsc);
+	if (ret) {
 		SPI_LOG_DBG(geni_mas->ipc, false, geni_mas->dev,
 		"%s failing at geni_icc_disable ret=%d\n", __func__, ret);
+		restore_ret = geni_icc_enable(&geni_mas->spi_rsc);
+		if (restore_ret)
+			dev_err(dev, "Failed to restore ICC vote: %d\n", restore_ret);
+		restore_ret = geni_se_resources_on(&geni_mas->spi_rsc);
+		if (restore_ret)
+			dev_err(dev, "Failed to restore SE resources: %d\n", restore_ret);
+		goto restore_dma;
+	}
 
 	geni_capture_stop_time(&geni_mas->spi_rsc, geni_mas->ipc_log_kpi, __func__,
 			       geni_mas->spi_kpi, start_time, 0, 0);
+	return ret;
+
+restore_dma:
+	if (geni_mas->gsi_mode) {
+		restore_ret = spi_geni_gpi_pause_resume(geni_mas, false);
+		if (restore_ret)
+			dev_err(dev, "Failed to restore GPI channel: %d\n", restore_ret);
+	}
+restore_irq:
+	enable_irq(geni_mas->irq);
 	return ret;
 }
 
@@ -3834,7 +3863,50 @@ exit_rt_resume:
 
 static int spi_geni_resume(struct device *dev)
 {
+	struct spi_controller *spi = get_spi_master(dev);
+	struct spi_geni_master *geni_mas = spi_controller_get_devdata(spi);
+	int ret;
+
+	if (geni_mas->system_suspend_managed) {
+		ret = pm_runtime_force_resume(dev);
+		if (ret)
+			return ret;
+		return spi_controller_resume(spi);
+	}
+
 	return 0;
+}
+
+static int spi_geni_managed_suspend(struct device *dev)
+{
+	struct spi_controller *spi = get_spi_master(dev);
+	struct spi_geni_master *geni_mas = spi_controller_get_devdata(spi);
+	int ret, resume_ret;
+
+	/* Children have suspended; drain queued transfers before cutting power. */
+	ret = spi_controller_suspend(spi);
+	if (ret)
+		goto restart_queue;
+
+	/* DPM owns one reference from device_prepare(), not a client vote. */
+	if (geni_mas->is_xfer_in_progress ||
+	    atomic_read(&dev->power.usage_count) > 1) {
+		ret = -EBUSY;
+		goto restart_queue;
+	}
+
+	/* Complete a pending autosuspend even inside DPM's runtime-PM barrier. */
+	ret = pm_runtime_force_suspend(dev);
+	if (!ret)
+		return 0;
+
+restart_queue:
+	/* SPI core marks the controller suspended even when queue stop fails. */
+	resume_ret = spi_controller_resume(spi);
+	if (resume_ret)
+		dev_err(dev, "Failed to restart SPI queue after suspend error: %d\n",
+			resume_ret);
+	return ret;
 }
 
 static int spi_geni_suspend(struct device *dev)
@@ -3843,6 +3915,9 @@ static int spi_geni_suspend(struct device *dev)
 	struct spi_controller *spi = get_spi_master(dev);
 	struct spi_geni_master *geni_mas = spi_controller_get_devdata(spi);
 	unsigned long long start_time;
+
+	if (geni_mas->system_suspend_managed)
+		return spi_geni_managed_suspend(dev);
 
 	start_time = geni_capture_start_time(&geni_mas->spi_rsc, geni_mas->ipc_log_kpi, __func__,
 					     geni_mas->spi_kpi);
