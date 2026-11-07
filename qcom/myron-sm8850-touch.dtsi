@@ -163,6 +163,8 @@
 				<&mi_ts_spi_clk_active>, <&mi_ts_spi_cs_active>;
 	pinctrl-1 = <&mi_ts_spi_sleep>, <&mi_ts_spi_cs_sleep>;
 	qcom,la-vm;
+	/* The direct FocalTech client quiesces I/O in its system PM callback. */
+	qcom,system-suspend-managed;
 	qcom,rt;
 	focaltech_ts@0 {
 		compatible = "focal,touch-spi";
