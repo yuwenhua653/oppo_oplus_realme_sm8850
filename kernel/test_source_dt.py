@@ -126,6 +126,16 @@ class Test(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,'Unknown required-property'):m.property_errors(nodes,{'/sound':{'gpio':{'unsupported':True}}})
  def test_disabled_parent_blocks_provider(self):
   self.assertEqual(m.provider_errors({'/':{},'/bus':{'status':b'disabled\0'},'/bus/dev':{'compatible':b'test,provider\0'}},['test,provider']),['test,provider'])
+ def test_managed_spi_pm_scope_and_ownership(self):
+  path='/soc/spi@1a80000';prop='qcom,system-suspend-managed'
+  node={prop:b'', 'qcom,la-vm':b'', 'status':b'ok\0'}
+  self.assertEqual(m.managed_spi_pm_errors({path:node},[path]),[])
+  self.assertTrue(m.managed_spi_pm_errors({},[path]))
+  self.assertTrue(m.managed_spi_pm_errors({path:node,'/other':node},[path]))
+  for key,bad in [(prop,b'1'),('qcom,la-vm',b'1'),('status',b'disabled\0'),('qcom,le-vm',b''),('qcom,shared_ee',b''),('qcom,shared_se',b'')]:
+   with self.subTest(key=key):self.assertTrue(m.managed_spi_pm_errors({path:{**node,key:bad}},[path]))
+  missing_la=dict(node);del missing_la['qcom,la-vm']
+  self.assertTrue(m.managed_spi_pm_errors({path:missing_la},[path]))
 
 class NativeCatalogTests(unittest.TestCase):
  def setUp(self):

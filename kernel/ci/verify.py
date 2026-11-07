@@ -33,9 +33,9 @@ def output(*args):
 
 try:
     pins = {
-        'kernel/xiaomi/sm8850': '4f5a0cf774c7a109e8e4fa1269aeec91169ed267',
+        'kernel/xiaomi/sm8850': 'ef4ea7236ddd1b29d4114df9d2b01b850abf54ef',
         'kernel/xiaomi/sm8850-modules': '4cf53542c7a90c5b285ec228c351ecbfa8e7218a',
-        'kernel/xiaomi/sm8850-devicetrees': 'b84c303a85a8f8b73d7fa3d4df37b57a601dd5b1',
+        'kernel/xiaomi/sm8850-devicetrees': '298274626768f19f3e9534058395c17ba4cde9b8',
     }
     report['sources'] = {}
     for path, expected in pins.items():
@@ -48,9 +48,15 @@ try:
     report['compiler'] = output('toolchains/clang/bin/clang', '--version')
     report['btf_preflight'] = json.loads((root / 'out/logs/btf-preflight/report.json').read_text())
     report['recipe_preflight'] = json.loads((root / 'out/logs/recipe-preflight/report.json').read_text())
+    report['spi_pm_preflight'] = json.loads((root / 'out/logs/spi-pm-preflight/report.json').read_text())
     report['pahole_sha256'] = digest(root / 'out/host/bin/pahole')
     check(report['btf_preflight']['success'], 'BTF preflight failed')
     check(report['recipe_preflight']['success'], 'Build recipe preflight failed')
+    check(report['spi_pm_preflight']['success'] and len(report['spi_pm_preflight']['tests']) == 12,
+          'SPI PM preflight failed')
+    check(report['spi_pm_preflight']['source_sha256'] ==
+          digest(root / 'kernel/xiaomi/sm8850/drivers/spi/spi-msm-geni.c'),
+          'SPI PM preflight used a different driver')
     config = (kernel / '.config').read_text()
     report['config_sha256'] = digest(kernel / '.config')
     report['config_features'] = {

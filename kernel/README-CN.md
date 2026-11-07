@@ -9,7 +9,7 @@
 
 - kernel/xiaomi/sm8850：ACK、平台驱动、正常 Kconfig/Makefile。
 - kernel/xiaomi/sm8850-modules：68 个外置驱动的原生 Kbuild。
-- kernel/xiaomi/sm8850-devicetrees：与 R123 保持一致的设备 DTS。
+- kernel/xiaomi/sm8850-devicetrees：基于 R123 功能基线并继续修复的设备 DTS。
 
 BoardConfig 使用 TARGET_KERNEL_SOURCE、TARGET_KERNEL_CONFIG、
 TARGET_KERNEL_EXT_MODULE_ROOT、TARGET_KERNEL_EXT_MODULES。所有产物由标准
@@ -65,5 +65,8 @@ vendor_dlkm 保持 EROFS lz4hc,9。
 Image、338 个树内模块及全部 68 个外置模块已经过主机编译；只读源码目录测试、
 modules_install、完整符号/版本检查及标准 ROM 模块打包宏测试已通过。
 原来的 297 个已验证模块全部存在，额外 GKI 模块不会自动加入 modules.load。
-测试主机缺少 Rust/pahole，没有据此证明生产工具链、完整 ROM 或新内核真机启动成功。
+后续 GitHub CI 已使用固定的 Android Clang 和 pahole 1.28 完成 BTF 构建；
+Rust 未启用。该结果仍不等于完整 ROM 或新内核真机启动成功。
 R123 的真机功能结论只属于原构建，不自动延伸到此次原生迁移。
+
+待机耗电的 SPI 休眠修复、证据和上机验收范围见 [STANDBY-PM.md](STANDBY-PM.md)。

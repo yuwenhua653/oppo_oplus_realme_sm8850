@@ -1,7 +1,10 @@
 {
   "schema": 1,
   "device": "Redmi K90PM / myron",
-  "dts_commit": "78c0b1cecb5cad48af8d01cd66afbb1759596190",
+  "system_suspend_managed_spi": [
+    "/soc/qcom,qupv3_4_geni_se@1ac0000/spi@1a80000"
+  ],
+  "dts_commit": "298274626768f19f3e9534058395c17ba4cde9b8",
   "bases": [
     {
       "file": "canoe-tp-v2.dtb",

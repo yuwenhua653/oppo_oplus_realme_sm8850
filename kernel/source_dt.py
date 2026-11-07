@@ -260,6 +260,20 @@ def property_errors(nodes, required):
     return errors
 
 
+def managed_spi_pm_errors(nodes, expected):
+    prop = 'qcom,system-suspend-managed'
+    actual = {path for path, node in nodes.items() if prop in node}
+    errors = sorted(actual.symmetric_difference(expected))
+    for path in actual:
+        node = nodes[path]
+        if (node[prop] != b'' or node.get('qcom,la-vm') != b'' or
+                any(key in node for key in ('qcom,le-vm', 'qcom,shared_ee', 'qcom,shared_se'))):
+            errors.append(path + ': invalid system PM ownership')
+        if node.get('status', b'okay\0') not in (b'ok\0', b'okay\0'):
+            errors.append(path + ': disabled system PM controller')
+    return errors
+
+
 def verify_table(data, overlay, table):
     require(len(data) >= 64, 'Truncated DTBO image')
     h = struct.unpack_from('>8I', data)
@@ -446,6 +460,8 @@ def assemble(files, trees, profile, output, tools):
         require(not absent, 'Missing/disabled hardware providers on ' + spec['file'] + ': ' + ', '.join(absent))
         invalid = property_errors(nodes, profile.get('required_properties', {}))
         require(not invalid, 'Missing/incorrect hardware properties on ' + spec['file'] + ': ' + ', '.join(invalid))
+        invalid_pm = managed_spi_pm_errors(nodes, profile.get('system_suspend_managed_spi', []))
+        require(not invalid_pm, 'Invalid SPI system PM policy on ' + spec['file'] + ': ' + ', '.join(invalid_pm))
         bases.append(base.read_bytes())
     table = profile['dtbo_table']
     raw_dtbo = work / 'dtbo.img'
