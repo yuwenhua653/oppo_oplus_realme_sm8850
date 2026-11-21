@@ -1,0 +1,82 @@
+name: Publish reviewed Myron Linux 6.12.118 source
+on:
+  push:
+    branches: [codex/myron-lts118-publish-20261121]
+  create:
+permissions:
+  contents: write
+concurrency:
+  group: myron-native-kbuild-source-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'yuwenhua653/oppo_oplus_realme_sm8850' && github.ref == 'refs/heads/codex/myron-lts118-publish-20261121'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+      - name: Verify source bundle and fast-forward the authorized branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          state = json.loads(Path('payload/manifest.json').read_text())
+          chunks = []
+          for part in state['parts']:
+              data = (Path('payload') / part['name']).read_bytes()
+              assert len(data) == part['size'], part['name']
+              assert hashlib.sha256(data).hexdigest() == part['sha256'], part['name']
+              chunks.append(data)
+          bundle = b''.join(chunks)
+          assert len(bundle) == state['bundle_bytes']
+          assert hashlib.sha256(bundle).hexdigest() == state['bundle_sha256']
+          Path('source.bundle').write_bytes(bundle)
+          print('PASS: all source chunks and reconstructed bundle SHA-256')
+          PY
+          expected_old=821dfb2ebc7735b9169573554ad05a7a508f1ec9
+          expected_new=3db85f696ae6cd550912c63a6c2251dd774b50a7
+          expected_tree=b0b9f32726e03c7c3927270c6fef5866699b557e
+          target=refs/heads/myron/native-kbuild
+          git fetch --no-tags --depth=64 origin "$target:refs/remotes/origin/myron/native-kbuild"
+          current=$(git rev-parse refs/remotes/origin/myron/native-kbuild)
+          if [[ "$current" != "$expected_old" && "$current" != "$expected_new" ]]; then
+            echo "STOP: target branch changed: $current" >&2
+            exit 1
+          fi
+          git bundle verify source.bundle
+          git fetch --no-tags source.bundle refs/heads/myron-lts118-upload:refs/heads/prepared-lts118
+          test "$(git rev-parse prepared-lts118)" = "$expected_new"
+          test "$(git rev-parse 'prepared-lts118^{tree}')" = "$expected_tree"
+          git merge-base --is-ancestor "$expected_old" "$expected_new"
+          git show prepared-lts118:Makefile > /tmp/myron-published-Makefile
+          python3 - <<'PY'
+          from pathlib import Path
+          values = {}
+          for line in Path('/tmp/myron-published-Makefile').read_text().splitlines():
+              if '=' in line:
+                  k, v = line.split('=', 1)
+                  values[k.strip()] = v.strip()
+          assert [values[k] for k in ('VERSION', 'PATCHLEVEL', 'SUBLEVEL')] == ['6', '12', '118']
+          print('PASS: expected source commit, tree, ancestry and Linux 6.12.118')
+          PY
+          current=$(git ls-remote origin "$target" | cut -f1)
+          if [[ "$current" == "$expected_old" ]]; then
+            git push origin "refs/heads/prepared-lts118:$target"
+          elif [[ "$current" != "$expected_new" ]]; then
+            echo "STOP: target changed before push: $current" >&2
+            exit 1
+          fi
+          test "$(git ls-remote origin "$target" | cut -f1)" = "$expected_new"
+          echo 'PASS: remote myron/native-kbuild is the reviewed Linux 6.12.118 source'
+          {
+            echo 'Published reviewed Linux 6.12.118 kernel source.'
+            echo "Commit: $expected_new"
+            echo "Tree: $expected_tree"
+            echo 'Target: myron/native-kbuild (ordinary fast-forward; no force push).'
+            echo 'No EvolutionX shared source, native-modules or native-devicetrees branch changes.'
+            echo 'This job verifies source publication, not a new kernel or ROM build.'
+          } >> "$GITHUB_STEP_SUMMARY"

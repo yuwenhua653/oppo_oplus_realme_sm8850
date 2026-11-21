@@ -1,0 +1,94 @@
+{
+  "old": "821dfb2ebc7735b9169573554ad05a7a508f1ec9",
+  "head": "3db85f696ae6cd550912c63a6c2251dd774b50a7",
+  "tree": "b0b9f32726e03c7c3927270c6fef5866699b557e",
+  "repository": "yuwenhua653/oppo_oplus_realme_sm8850",
+  "target_branch": "myron/native-kbuild",
+  "changes_verified": 6247,
+  "retention_guards": 33,
+  "bundle_sha256": "7d13db9a9abd6f0ba8e1e90aa3acc3dda52a8616119391fbeac8a69179dd8488",
+  "bundle_bytes": 7488317,
+  "parts": [
+    {
+      "name": "part.000",
+      "size": 131072,
+      "sha256": "968f9ae511c6c62b2c4bd6b0e7dee23ef46ab0c652e62855a11ad9715f87a51e"
+    },
+    {
+      "name": "part.001",
+      "size": 524288,
+      "sha256": "2f6fc0b522aed90858b79ae4cc16b416a4e21a4f46c779b27f6584b6d6cb3e20"
+    },
+    {
+      "name": "part.002",
+      "size": 524288,
+      "sha256": "9a3608ec997027222249f7614e67214241131b01d211c7a7e894158356517599"
+    },
+    {
+      "name": "part.003",
+      "size": 524288,
+      "sha256": "f01fdf158278190c1b57a0e5e29fb26b4ed693e26f9f1466f523edf7b9fce138"
+    },
+    {
+      "name": "part.004",
+      "size": 524288,
+      "sha256": "49566c0f604213f06f3df87f8562fcec405b9af8d5128d447eb454d1f643de3b"
+    },
+    {
+      "name": "part.005",
+      "size": 524288,
+      "sha256": "4e1fed425433f9d3e9c07ad33d6dc40e38ee48fa47b5b4ce409d9b3ba9840bb2"
+    },
+    {
+      "name": "part.006",
+      "size": 524288,
+      "sha256": "6c674c842ac79c1a2fbaa2b2e1d3c2cfc9a69922145eb6669f8ae6f072eca2c3"
+    },
+    {
+      "name": "part.007",
+      "size": 524288,
+      "sha256": "1af5d39e40ba371bf76492c9f8d8d0bad73686d756301bdbff7dee48abf53ac5"
+    },
+    {
+      "name": "part.008",
+      "size": 524288,
+      "sha256": "cdf35daec38e3bb3c4a16a690aa509bf57f288a660607000a99396db76b674c0"
+    },
+    {
+      "name": "part.009",
+      "size": 524288,
+      "sha256": "6f8a8bef25368a022eaa39a184f4ba5ffdb7a64c44f71143342a493367e362f6"
+    },
+    {
+      "name": "part.010",
+      "size": 524288,
+      "sha256": "5f44d34f2880be07cbdafac64daa1d08b5a04a12c1ed71c83b562ec404ecbb6b"
+    },
+    {
+      "name": "part.011",
+      "size": 524288,
+      "sha256": "9efbf798e0eb49db06e993f959aab82f0e6780765bb7bf8f7fd2a8301e0239c5"
+    },
+    {
+      "name": "part.012",
+      "size": 524288,
+      "sha256": "d5f11fd25fac647cd284a7b9f5a3a30198cc2363e9b032b8be4da42a7b230364"
+    },
+    {
+      "name": "part.013",
+      "size": 524288,
+      "sha256": "4a903fd034751e5eedf893c1fe27c9b4cae8cfdb3c7c5bb7520bebe7d14e4af4"
+    },
+    {
+      "name": "part.014",
+      "size": 524288,
+      "sha256": "db4e955bd655735c8e83125b64eef1657738fde4240ce1169b37e6fec482c141"
+    },
+    {
+      "name": "part.015",
+      "size": 17213,
+      "sha256": "38d60dc4bcf7f272e76cefc26b11bb07c8e816a42a1ee8dc697d3345591674e8"
+    }
+  ],
+  "transport_branch": "codex/myron-lts118-publish-20261121"
+}
