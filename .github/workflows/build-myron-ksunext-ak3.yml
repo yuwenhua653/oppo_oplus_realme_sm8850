@@ -3,9 +3,15 @@ run-name: Myron b5ed8bcc + KernelSU Next v3.4.2 / AnyKernel3
 
 on:
   workflow_dispatch:
+    inputs:
+      package_only:
+        description: Reuse the verified Image from run 46109668080 and repair AK3 tools
+        type: boolean
+        default: false
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: myron-ksunext-ak3
@@ -13,6 +19,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ !inputs.package_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     defaults:
@@ -27,6 +34,7 @@ jobs:
       KERNEL_COMMIT: b5ed8bcc4a5ada8b27ad28373fb8dbe060a25a2e
       KSU_COMMIT: 4c706b5938665866ebe16944a481a7b91e3396af
       AK3_COMMIT: 41f04bdb4ee30a44e429c2c1131d5e8bb32b15f1
+      AK3_ARM64_COMMIT: cc7d2cee9b1b4298f6ab8666eb4486dea342748c
     steps:
       - name: Checkout cloud build configuration
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -231,6 +239,47 @@ jobs:
           ref: 41f04bdb4ee30a44e429c2c1131d5e8bb32b15f1
           path: AnyKernel3
           persist-credentials: false
+      - name: Checkout official AnyKernel3 ARM64 tools
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: osm0sis/AnyKernel3
+          ref: cc7d2cee9b1b4298f6ab8666eb4486dea342748c
+          path: AnyKernel3-arm64
+          persist-credentials: false
+      - name: Install and execute the ARM64 recovery tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-user zip unzip
+          for tool in busybox magiskboot magiskpolicy httools_static lptools_static fec snapshotupdater_static; do
+            install -m 755 "AnyKernel3-arm64/$tool" "AnyKernel3/tools/$tool"
+          done
+          python3 - <<'PYELF'
+          import struct
+          from pathlib import Path
+          tools = ['busybox', 'magiskboot', 'magiskpolicy', 'httools_static',
+                   'lptools_static', 'fec', 'snapshotupdater_static']
+          for name in tools:
+              data = (Path('AnyKernel3/tools') / name).read_bytes()
+              assert data[:6] == b'\x7fELF\x02\x01', f'{name}: not ELF64 little endian'
+              assert struct.unpack_from('<H', data, 18)[0] == 183, f'{name}: not AArch64'
+              if name in ('busybox', 'magiskboot'):
+                  phoff = struct.unpack_from('<Q', data, 32)[0]
+                  entsize, count = struct.unpack_from('<HH', data, 54)
+                  assert all(struct.unpack_from('<I', data, phoff + i * entsize)[0] != 3
+                             for i in range(count)), f'{name}: unexpectedly needs an ELF interpreter'
+          PYELF
+          mkdir -p "$RUNNER_TEMP/ak3-bb-probe/bin"
+          qemu-aarch64 AnyKernel3/tools/busybox true
+          qemu-aarch64 AnyKernel3/tools/busybox chmod -R 755 "$RUNNER_TEMP/ak3-bb-probe"
+          qemu-aarch64 AnyKernel3/tools/busybox --install -s "$RUNNER_TEMP/ak3-bb-probe/bin"
+          for applet in sh chmod ls unzip; do
+            test -L "$RUNNER_TEMP/ak3-bb-probe/bin/$applet"
+          done
+          qemu-aarch64 AnyKernel3/tools/busybox ash -c 'printf "PASS: ARM64 BusyBox setup and shell execution\n"' | tee logs/arm64-tools-check.txt
+          test "$(qemu-aarch64 AnyKernel3/tools/magiskboot sha1 AnyKernel3/tools/busybox)" = "$(sha1sum AnyKernel3/tools/busybox | cut -d' ' -f1)"
+          echo 'PASS: ARM64 magiskboot execution' >> logs/arm64-tools-check.txt
+          sha256sum AnyKernel3/tools/* > logs/ak3-tools.sha256
       - name: Package with the documented AnyKernel3 layout
         run: |
           set -euo pipefail
@@ -241,12 +290,134 @@ jobs:
             echo "KERNEL=$KERNEL_COMMIT"
             echo "KERNELSU_NEXT=$KSU_COMMIT (v3.4.2)"
             echo "ANYKERNEL3=$AK3_COMMIT"
+            echo "ANYKERNEL3_ARM64_TOOLS=$AK3_ARM64_COMMIT"
+            echo "KERNEL_IMAGE_SOURCE_RUN=${IMAGE_SOURCE_RUN:-$GITHUB_RUN_ID}"
             echo "WORKFLOW=$GITHUB_SHA"
             echo 'Target: myron, current 6.12.118 b5ed8bcc Evolution build'
             echo 'Payload: Image only; existing vendor_boot/DTBO/DLKM retained'
           } > AnyKernel3/build-info.txt
           cd AnyKernel3
-          zip -r9 "$GITHUB_WORKSPACE/dist/AnyKernel3-myron-6.12.118-KSU-Next-v3.4.2-yuzuli.zip" * -x 'README.md' '*placeholder' > "$GITHUB_WORKSPACE/logs/zip.log"
+          zip -r9 "$GITHUB_WORKSPACE/dist/AnyKernel3-myron-6.12.118-KSU-Next-v3.4.2-yuzuli-ARM64-r2.zip" * -x 'README.md' '*placeholder' > "$GITHUB_WORKSPACE/logs/zip.log"
+          cd "$GITHUB_WORKSPACE/dist"
+          unzip -t AnyKernel3-*.zip > "$GITHUB_WORKSPACE/logs/zip-check.txt"
+          sha256sum AnyKernel3-*.zip > SHA256SUMS
+          test -s ../AnyKernel3/LICENSE
+          echo 'Standard AK3 ZIP built; boot/charging/root still require device validation.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload Recovery flashable ZIP
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-ksunext-ak3-${{ github.run_id }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-ksunext-logs-${{ github.run_id }}
+          path: logs/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  repair_package:
+    if: ${{ inputs.package_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    env:
+      KERNEL_COMMIT: b5ed8bcc4a5ada8b27ad28373fb8dbe060a25a2e
+      KSU_COMMIT: 4c706b5938665866ebe16944a481a7b91e3396af
+      AK3_COMMIT: 41f04bdb4ee30a44e429c2c1131d5e8bb32b15f1
+      AK3_ARM64_COMMIT: cc7d2cee9b1b4298f6ab8666eb4486dea342748c
+      IMAGE_SOURCE_RUN: '46109668080'
+    steps:
+      - name: Checkout cloud build configuration
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Download the successful kernel artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: myron-ksunext-ak3-46109668080
+          run-id: 46109668080
+          github-token: ${{ github.token }}
+          path: verified-source
+      - name: Verify and reuse the exact CRC-qualified Image
+        run: |
+          set -euo pipefail
+          mkdir -p out/arch/arm64/boot dist logs
+          echo '3a826f7dc16d411617e8c7aec16baa8d14eb7bb441ac18fc557a3a0ec85fce47  verified-source/AnyKernel3-myron-6.12.118-KSU-Next-v3.4.2-yuzuli.zip' | sha256sum -c -
+          unzip -p verified-source/AnyKernel3-myron-6.12.118-KSU-Next-v3.4.2-yuzuli.zip Image > out/arch/arm64/boot/Image
+          echo '1b619903137625482b8906b0eebca3637f02a401640cb51b762b3237e2a8b657  out/arch/arm64/boot/Image' | sha256sum -c - | tee logs/reused-image-check.txt
+          echo 'Image reused byte-for-byte from successful run 46109668080, which compared 18260 exports with zero CRC changes.' > logs/kernel-provenance.txt
+      - name: Checkout standard AnyKernel3
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: osm0sis/AnyKernel3
+          ref: 41f04bdb4ee30a44e429c2c1131d5e8bb32b15f1
+          path: AnyKernel3
+          persist-credentials: false
+      - name: Checkout official AnyKernel3 ARM64 tools
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: osm0sis/AnyKernel3
+          ref: cc7d2cee9b1b4298f6ab8666eb4486dea342748c
+          path: AnyKernel3-arm64
+          persist-credentials: false
+      - name: Install and execute the ARM64 recovery tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-user zip unzip
+          for tool in busybox magiskboot magiskpolicy httools_static lptools_static fec snapshotupdater_static; do
+            install -m 755 "AnyKernel3-arm64/$tool" "AnyKernel3/tools/$tool"
+          done
+          python3 - <<'PYELF'
+          import struct
+          from pathlib import Path
+          tools = ['busybox', 'magiskboot', 'magiskpolicy', 'httools_static',
+                   'lptools_static', 'fec', 'snapshotupdater_static']
+          for name in tools:
+              data = (Path('AnyKernel3/tools') / name).read_bytes()
+              assert data[:6] == b'\x7fELF\x02\x01', f'{name}: not ELF64 little endian'
+              assert struct.unpack_from('<H', data, 18)[0] == 183, f'{name}: not AArch64'
+              if name in ('busybox', 'magiskboot'):
+                  phoff = struct.unpack_from('<Q', data, 32)[0]
+                  entsize, count = struct.unpack_from('<HH', data, 54)
+                  assert all(struct.unpack_from('<I', data, phoff + i * entsize)[0] != 3
+                             for i in range(count)), f'{name}: unexpectedly needs an ELF interpreter'
+          PYELF
+          mkdir -p "$RUNNER_TEMP/ak3-bb-probe/bin"
+          qemu-aarch64 AnyKernel3/tools/busybox true
+          qemu-aarch64 AnyKernel3/tools/busybox chmod -R 755 "$RUNNER_TEMP/ak3-bb-probe"
+          qemu-aarch64 AnyKernel3/tools/busybox --install -s "$RUNNER_TEMP/ak3-bb-probe/bin"
+          for applet in sh chmod ls unzip; do
+            test -L "$RUNNER_TEMP/ak3-bb-probe/bin/$applet"
+          done
+          qemu-aarch64 AnyKernel3/tools/busybox ash -c 'printf "PASS: ARM64 BusyBox setup and shell execution\n"' | tee logs/arm64-tools-check.txt
+          test "$(qemu-aarch64 AnyKernel3/tools/magiskboot sha1 AnyKernel3/tools/busybox)" = "$(sha1sum AnyKernel3/tools/busybox | cut -d' ' -f1)"
+          echo 'PASS: ARM64 magiskboot execution' >> logs/arm64-tools-check.txt
+          sha256sum AnyKernel3/tools/* > logs/ak3-tools.sha256
+      - name: Package with the documented AnyKernel3 layout
+        run: |
+          set -euo pipefail
+          cp out/arch/arm64/boot/Image AnyKernel3/Image
+          cp .github/myron-ksunext/anykernel.sh AnyKernel3/anykernel.sh
+          bash -n AnyKernel3/anykernel.sh
+          {
+            echo "KERNEL=$KERNEL_COMMIT"
+            echo "KERNELSU_NEXT=$KSU_COMMIT (v3.4.2)"
+            echo "ANYKERNEL3=$AK3_COMMIT"
+            echo "ANYKERNEL3_ARM64_TOOLS=$AK3_ARM64_COMMIT"
+            echo "KERNEL_IMAGE_SOURCE_RUN=${IMAGE_SOURCE_RUN:-$GITHUB_RUN_ID}"
+            echo "WORKFLOW=$GITHUB_SHA"
+            echo 'Target: myron, current 6.12.118 b5ed8bcc Evolution build'
+            echo 'Payload: Image only; existing vendor_boot/DTBO/DLKM retained'
+          } > AnyKernel3/build-info.txt
+          cd AnyKernel3
+          zip -r9 "$GITHUB_WORKSPACE/dist/AnyKernel3-myron-6.12.118-KSU-Next-v3.4.2-yuzuli-ARM64-r2.zip" * -x 'README.md' '*placeholder' > "$GITHUB_WORKSPACE/logs/zip.log"
           cd "$GITHUB_WORKSPACE/dist"
           unzip -t AnyKernel3-*.zip > "$GITHUB_WORKSPACE/logs/zip-check.txt"
           sha256sum AnyKernel3-*.zip > SHA256SUMS
