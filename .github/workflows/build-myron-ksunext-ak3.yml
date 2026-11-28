@@ -1,0 +1,179 @@
+name: Myron 6.12.118 KernelSU Next AK3
+run-name: Myron b5ed8bcc + KernelSU Next v3.4.2 / AnyKernel3
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myron-ksunext-ak3
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    env:
+      ARCH: arm64
+      LLVM: '1'
+      LLVM_IAS: '1'
+      KBUILD_BUILD_USER: build-user
+      KBUILD_BUILD_HOST: build-host
+      KERNEL_COMMIT: b5ed8bcc4a5ada8b27ad28373fb8dbe060a25a2e
+      KSU_COMMIT: 4c706b5938665866ebe16944a481a7b91e3396af
+      AK3_COMMIT: 41f04bdb4ee30a44e429c2c1131d5e8bb32b15f1
+    steps:
+      - name: Checkout cloud build configuration
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Checkout the currently booting Myron source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: yuwenhua653/android_kernel_xiaomi_sm8850
+          ref: b5ed8bcc4a5ada8b27ad28373fb8dbe060a25a2e
+          path: kernel/xiaomi/sm8850
+          persist-credentials: false
+      - name: Checkout module headers used by the kernel
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: yuwenhua653/android_kernel_xiaomi_sm8850-modules
+          ref: 5638362f5eeb3cc0c8bbcd7d9cbf456e0fd9cc74
+          path: kernel/xiaomi/sm8850-modules
+          persist-credentials: false
+      - name: Install build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential bc bison flex \
+            libssl-dev libelf-dev libdw-dev zlib1g-dev dwarves cpio rsync zip unzip xz-utils
+          mkdir -p toolchains/clang toolchains/rust toolchains/bin out dist logs
+      - name: Download the matching Android toolchains
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 \
+            'https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/531a564ba5426707dee226eccb19f104a7af5a5f/clang-r563880c.tar.gz' \
+            -o "$RUNNER_TEMP/clang.tar.gz"
+          tar -xzf "$RUNNER_TEMP/clang.tar.gz" -C toolchains/clang
+          curl -fL --retry 5 \
+            'https://android.googlesource.com/platform/prebuilts/rust-toolchain/linux-x86/+archive/dd9de2cd33ba15d2e41346fd210d5937440196ed/1.93.1.tar.gz' \
+            -o "$RUNNER_TEMP/rust.tar.gz"
+          tar -xzf "$RUNNER_TEMP/rust.tar.gz" -C toolchains/rust
+          CARGO_BUILD_JOBS=2 cargo install bindgen-cli --version 0.72.0 --locked --root "$GITHUB_WORKSPACE/toolchains/bindgen"
+          sha256sum "$RUNNER_TEMP/clang.tar.gz" "$RUNNER_TEMP/rust.tar.gz" toolchains/bindgen/bin/bindgen > logs/toolchains.sha256
+          rm "$RUNNER_TEMP/clang.tar.gz" "$RUNNER_TEMP/rust.tar.gz"
+          printf '%s\n' "$GITHUB_WORKSPACE/toolchains/clang/bin" "$GITHUB_WORKSPACE/toolchains/rust/bin" "$GITHUB_WORKSPACE/toolchains/bindgen/bin" >> "$GITHUB_PATH"
+          echo "LIBCLANG_PATH=$GITHUB_WORKSPACE/toolchains/clang/lib" >> "$GITHUB_ENV"
+      - name: Verify toolchain and preserve the captured configuration
+        run: |
+          set -euo pipefail
+          clang --version | tee logs/clang.txt
+          rustc --version | tee logs/rust.txt
+          bindgen --version | tee logs/bindgen.txt
+          pahole --version | tee logs/pahole.txt
+          grep -Fq 'r563880c' logs/clang.txt
+          grep -Fq '14054515' logs/clang.txt
+          grep -Fq '1.93.1' logs/rust.txt
+          grep -Fq '14933020' logs/rust.txt
+          grep -Fxq 'bindgen 0.72.0' logs/bindgen.txt
+          test -f "$(rustc --print sysroot)/lib/rustlib/src/rust/library/core/src/lib.rs"
+          cp .github/myron-ksunext/known-good.config out/.config
+          make -C kernel/xiaomi/sm8850 O="$GITHUB_WORKSPACE/out" olddefconfig
+          kernel/xiaomi/sm8850/scripts/diffconfig .github/myron-ksunext/known-good.config out/.config | tee logs/baseline-config.diff
+          # Stop if an environment dependency silently changes a shipping option.
+          test ! -s logs/baseline-config.diff
+          make -s -C kernel/xiaomi/sm8850 O="$GITHUB_WORKSPACE/out" kernelrelease > logs/kernelrelease.txt
+          grep -Fxq '6.12.118-gb5ed8bcc4a5a-yuzuli' logs/kernelrelease.txt
+      - name: Build the baseline exported symbol versions
+        run: |
+          set -euo pipefail
+          make -C kernel/xiaomi/sm8850 O="$GITHUB_WORKSPACE/out" -j4 Image 2>&1 | tee logs/baseline-build.log
+          test -s out/vmlinux.symvers
+          cp out/vmlinux.symvers logs/baseline.symvers
+          cp out/.config logs/baseline.config
+      - name: Integrate official KernelSU Next with its setup script
+        run: |
+          set -euo pipefail
+          cd kernel/xiaomi/sm8850
+          curl -fL --retry 3 "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/$KSU_COMMIT/kernel/setup.sh" -o "$RUNNER_TEMP/ksunext-setup.sh"
+          sh "$RUNNER_TEMP/ksunext-setup.sh" "$KSU_COMMIT"
+          test "$(git -C KernelSU-Next rev-parse HEAD)" = "$KSU_COMMIT"
+          test "$(git -C KernelSU-Next describe --tags --exact-match)" = v3.4.2
+          scripts/config --file "$GITHUB_WORKSPACE/out/.config" --enable KSU --disable KSU_DEBUG --disable KSU_DISABLE_MANAGER --disable KSU_DISABLE_POLICY
+          make O="$GITHUB_WORKSPACE/out" olddefconfig
+          grep -Fxq 'CONFIG_KSU=y' "$GITHUB_WORKSPACE/out/.config"
+          scripts/diffconfig "$GITHUB_WORKSPACE/logs/baseline.config" "$GITHUB_WORKSPACE/out/.config" | tee "$GITHUB_WORKSPACE/logs/ksunext-config.diff"
+          if grep -Ev '^\+?KSU(_[A-Z0-9_]+)? ' "$GITHUB_WORKSPACE/logs/ksunext-config.diff"; then
+            echo '::error::Unexpected configuration change outside KernelSU'; exit 1
+          fi
+      - name: Build the rooted kernel with standard Kbuild
+        run: |
+          set -euo pipefail
+          make -C kernel/xiaomi/sm8850 O="$GITHUB_WORKSPACE/out" -j4 Image 2>&1 | tee logs/ksunext-build.log
+          grep -Fq 'KernelSU-Next tag: v3.4.2' logs/ksunext-build.log
+          llvm-nm out/vmlinux | grep -w kernelsu_init > logs/ksunext-symbol.txt
+          make -s -C kernel/xiaomi/sm8850 O="$GITHUB_WORKSPACE/out" kernelrelease > logs/root-kernelrelease.txt
+          cmp logs/kernelrelease.txt logs/root-kernelrelease.txt
+          cp out/.config logs/root.config
+          cp out/vmlinux.symvers logs/root.symvers
+      - name: Verify existing exported symbol CRCs are unchanged
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          def read(path):
+              return {f[1]: f[0] for line in Path(path).read_text().splitlines() if (f := line.split())}
+          old, new = read('logs/baseline.symvers'), read('logs/root.symvers')
+          assert old, 'No baseline exported symbols'
+          changed = [name for name, crc in old.items() if new.get(name) != crc]
+          Path('logs/exported-crc-check.txt').write_text(f'Compared {len(old)} baseline exports; changed/missing: {len(changed)}\n' + '\n'.join(changed))
+          assert not changed, 'KernelSU changes existing exported CRCs; do not package for existing DLKM'
+          PY
+      - name: Checkout standard AnyKernel3
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: osm0sis/AnyKernel3
+          ref: 41f04bdb4ee30a44e429c2c1131d5e8bb32b15f1
+          path: AnyKernel3
+          persist-credentials: false
+      - name: Package with the documented AnyKernel3 layout
+        run: |
+          set -euo pipefail
+          cp out/arch/arm64/boot/Image AnyKernel3/Image
+          cp .github/myron-ksunext/anykernel.sh AnyKernel3/anykernel.sh
+          bash -n AnyKernel3/anykernel.sh
+          {
+            echo "KERNEL=$KERNEL_COMMIT"
+            echo "KERNELSU_NEXT=$KSU_COMMIT (v3.4.2)"
+            echo "ANYKERNEL3=$AK3_COMMIT"
+            echo "WORKFLOW=$GITHUB_SHA"
+            echo 'Target: myron, current 6.12.118 b5ed8bcc Evolution build'
+            echo 'Payload: Image only; existing vendor_boot/DTBO/DLKM retained'
+          } > AnyKernel3/build-info.txt
+          cd AnyKernel3
+          zip -r9 "$GITHUB_WORKSPACE/dist/AnyKernel3-myron-6.12.118-KSU-Next-v3.4.2-yuzuli.zip" * -x 'README.md' '*placeholder' > "$GITHUB_WORKSPACE/logs/zip.log"
+          cd "$GITHUB_WORKSPACE/dist"
+          unzip -t AnyKernel3-*.zip > "$GITHUB_WORKSPACE/logs/zip-check.txt"
+          sha256sum AnyKernel3-*.zip > SHA256SUMS
+          test -s ../AnyKernel3/LICENSE
+          echo 'Standard AK3 ZIP built; boot/charging/root still require device validation.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload Recovery flashable ZIP
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-ksunext-ak3-${{ github.run_id }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: myron-ksunext-logs-${{ github.run_id }}
+          path: logs/*
+          if-no-files-found: warn
+          retention-days: 14
