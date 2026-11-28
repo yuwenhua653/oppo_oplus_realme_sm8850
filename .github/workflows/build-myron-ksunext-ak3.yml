@@ -51,8 +51,43 @@ jobs:
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends build-essential bc bison flex \
-            libssl-dev libelf-dev libdw-dev zlib1g-dev dwarves cpio rsync zip unzip xz-utils
+            libssl-dev libelf-dev libdw-dev zlib1g-dev dwarves cpio rsync zip unzip xz-utils cmake pkg-config
           mkdir -p toolchains/clang toolchains/rust toolchains/bin out dist logs
+      - name: Checkout pahole 1.25 for the upstream per-CPU fix
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: acmel/dwarves
+          ref: 81558a5a996005df0d607dd33f74ec5b7bdb619d
+          path: toolchains/pahole-src
+          submodules: recursive
+          persist-credentials: false
+      - name: Backport and verify the upstream pahole capacity fix
+        run: |
+          set -euo pipefail
+          # Preserve v1.25's BTF features and CONFIG_PAHOLE_VERSION=125.
+          # Replace the fixed 4096-entry array with upstream dynamic allocation.
+          git -C toolchains/pahole-src fetch --depth=2 origin f32ec0c79f3e8065e5b0e4aced65cba4cdf6675b
+          git -C toolchains/pahole-src show --format= f32ec0c79f3e8065e5b0e4aced65cba4cdf6675b > logs/pahole-percpu.patch
+          git -C toolchains/pahole-src apply --check "$GITHUB_WORKSPACE/logs/pahole-percpu.patch"
+          git -C toolchains/pahole-src apply "$GITHUB_WORKSPACE/logs/pahole-percpu.patch"
+          cmake -S toolchains/pahole-src -B toolchains/pahole-build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
+          cmake --build toolchains/pahole-build --target pahole -j4
+          test "$(toolchains/pahole-build/pahole --version)" = v1.25
+          python3 - <<'PYPERCPU'
+          from pathlib import Path
+          Path('logs/percpu-probe.c').write_text(''.join(
+              f'int percpu_probe_{i} __attribute__((section(".data..percpu"))) = {i};\n'
+              for i in range(5000)))
+          PYPERCPU
+          gcc -g -O0 -c logs/percpu-probe.c -o logs/percpu-probe.o
+          if /usr/bin/pahole -J --btf_encode_detached=logs/percpu-original.btf logs/percpu-probe.o > logs/pahole-original-probe.log 2>&1; then
+            echo '::error::Original pahole did not reproduce the capacity failure'; exit 1
+          fi
+          grep -Fq 'Reached the limit of per-CPU variables: 4096' logs/pahole-original-probe.log
+          toolchains/pahole-build/pahole -J --btf_encode_detached=logs/percpu-fixed.btf logs/percpu-probe.o
+          test -s logs/percpu-fixed.btf
+          echo 'PASS: upstream fix encodes 5000 per-CPU variables with pahole v1.25' | tee logs/pahole-percpu-check.txt
+          echo "$GITHUB_WORKSPACE/toolchains/pahole-build" >> "$GITHUB_PATH"
       - name: Restore pinned toolchains
         id: toolchain-cache
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
