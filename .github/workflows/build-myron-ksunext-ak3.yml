@@ -80,12 +80,30 @@ jobs:
               for i in range(5000)))
           PYPERCPU
           gcc -g -O0 -c logs/percpu-probe.c -o logs/percpu-probe.o
-          if /usr/bin/pahole -J --btf_encode_detached=logs/percpu-original.btf logs/percpu-probe.o > logs/pahole-original-probe.log 2>&1; then
-            echo '::error::Original pahole did not reproduce the capacity failure'; exit 1
-          fi
+          # Ubuntu's build may report this failure with exit status zero.
+          /usr/bin/pahole -J --btf_encode_detached=logs/percpu-original.btf logs/percpu-probe.o > logs/pahole-original-probe.log 2>&1 || true
           grep -Fq 'Reached the limit of per-CPU variables: 4096' logs/pahole-original-probe.log
+          test ! -s logs/percpu-original.btf
           toolchains/pahole-build/pahole -J --btf_encode_detached=logs/percpu-fixed.btf logs/percpu-probe.o
           test -s logs/percpu-fixed.btf
+          python3 - <<'PYBTF'
+          import struct
+          from pathlib import Path
+          data = Path('logs/percpu-fixed.btf').read_bytes()
+          magic, version, flags, hdr, off, size, strings, strings_size = struct.unpack_from('<HBBIIIII', data)
+          assert (magic, version) == (0xeb9f, 1)
+          pos, end, variables = hdr + off, hdr + off + size, 0
+          fixed = {1: 4, 2: 0, 3: 12, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0,
+                   12: 0, 14: 4, 16: 0, 17: 4, 18: 0}
+          variable = {4: 12, 5: 12, 6: 8, 13: 8, 15: 12, 19: 12}
+          while pos < end:
+              name, info, type_size = struct.unpack_from('<III', data, pos)
+              kind, count = (info >> 24) & 31, info & 0xffff
+              assert kind in fixed or kind in variable, f'Unknown BTF kind {kind}'
+              variables += kind == 14
+              pos += 12 + (fixed[kind] if kind in fixed else variable[kind] * count)
+          assert pos == end and variables == 5000, (pos, end, variables)
+          PYBTF
           echo 'PASS: upstream fix encodes 5000 per-CPU variables with pahole v1.25' | tee logs/pahole-percpu-check.txt
           echo "$GITHUB_WORKSPACE/toolchains/pahole-build" >> "$GITHUB_PATH"
       - name: Restore pinned toolchains
